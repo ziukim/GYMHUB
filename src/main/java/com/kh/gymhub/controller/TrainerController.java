@@ -8,6 +8,6 @@ public class TrainerController {
     
     @GetMapping("/trainer/dashboard")
     public String trainerDashboard() {
-        return "views/trainer/trainerDashboard";
+        return "trainer/trainerDashboard";
     }
 }
