@@ -206,12 +206,12 @@
 
     <!-- Navigation -->
     <nav class="navigation">
-        <button class="nav-button" onclick="location.href='${pageContext.request.contextPath}/dashboard'">
+        <button class="nav-button" onclick="location.href='${pageContext.request.contextPath}/member/dashboard'">
             <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="대시보드 아이콘">
             <span>대시보드</span>
         </button>
 
-        <button class="nav-button" onclick="location.href='${pageContext.request.contextPath}/myinfo'">
+        <button class="nav-button" onclick="location.href='${pageContext.request.contextPath}/member/info'">
             <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="내 정보 아이콘">
             <span>내 정보</span>
         </button>

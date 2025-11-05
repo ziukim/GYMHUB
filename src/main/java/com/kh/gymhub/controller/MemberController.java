@@ -10,4 +10,11 @@ public class MemberController {
     public String memberDashboard() {
         return "member/memberDashboard";
     }
+
+    @GetMapping("/member/videolist")
+    public String memberVideoList() { return "member/memberVideoList"; }
+
+    @GetMapping("/member/info")
+    public String memberInfo() { return "member/memberInfo"; }
+
 }
