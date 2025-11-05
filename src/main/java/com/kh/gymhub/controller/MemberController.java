@@ -8,6 +8,6 @@ public class MemberController {
     
     @GetMapping("/member/dashboard")
     public String memberDashboard() {
-        return "views/member/memberDashboard";
+        return "member/memberDashboard";
     }
 }

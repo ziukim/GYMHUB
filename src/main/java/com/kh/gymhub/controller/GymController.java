@@ -8,6 +8,6 @@ public class GymController {
     
     @GetMapping("/dashboard.do")
     public String gymDashboard() {
-        return "views/gym/gymDashBoard";
+        return "gym/gymDashBoard";
     }
 }
