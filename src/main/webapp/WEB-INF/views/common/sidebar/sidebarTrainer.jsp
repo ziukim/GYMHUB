@@ -2,44 +2,73 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
-    /* 네온 효과만 추가 (common.css에 없는 스타일) */
+    /* 로고 아이콘 네온 효과 */
+    .icon img {
+        filter: drop-shadow(0 0 4px #e67000) 
+                drop-shadow(0 0 8px #e67000) 
+                drop-shadow(0 0 12px #e68900);
+        animation: iconNeonBuzz 3s ease-in-out infinite;
+    }
+
+    @keyframes iconNeonBuzz {
+        0%, 100% {
+            filter: drop-shadow(0 0 4px #e67000) 
+                    drop-shadow(0 0 8px #e67000) 
+                    drop-shadow(0 0 12px #e68900);
+        }
+        10% {
+            filter: drop-shadow(0 0 2px #e67000) 
+                    drop-shadow(0 0 4px #e67000);
+        }
+        20% {
+            filter: drop-shadow(0 0 6px #e67000) 
+                    drop-shadow(0 0 10px #e67000) 
+                    drop-shadow(0 0 14px #e68900);
+        }
+        30% {
+            filter: drop-shadow(0 0 4px #e67000) 
+                    drop-shadow(0 0 8px #e67000);
+        }
+    }
+
+    /* 로고 텍스트 스타일 */
     .logo-text {
-        font-family: 'ADLaM Display', cursive;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.2rem;
+        font-weight: 800;
+        font-style: italic;
+        color: #ff6b00;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         text-shadow:
-                0 0 10px #ff8800,
-                0 0 20px #ff8800,
-                0 0 30px #ff8800,
-                0 0 40px #ffaa00,
-                0 0 60px #ffdd00;
+                0 0 5px #e67000,
+                0 0 10px #e67000,
+                0 0 15px #e68900;
         animation: neonBuzz 3s ease-in-out infinite;
     }
 
     @keyframes neonBuzz {
         0%, 100% {
             text-shadow:
-                    0 0 10px #ff8800,
-                    0 0 20px #ff8800,
-                    0 0 30px #ff8800,
-                    0 0 40px #ffaa00,
-                    0 0 60px #ffdd00;
+                    0 0 5px #e67000,
+                    0 0 10px #e67000,
+                    0 0 15px #e68900;
         }
         10% {
             text-shadow:
-                    0 0 5px #ff8800,
-                    0 0 10px #ff8800;
+                    0 0 3px #e67000,
+                    0 0 5px #e67000;
         }
         20% {
             text-shadow:
-                    0 0 15px #ff8800,
-                    0 0 25px #ff8800,
-                    0 0 40px #ffaa00,
-                    0 0 70px #ffdd00;
+                    0 0 7px #e67000,
+                    0 0 12px #e67000,
+                    0 0 18px #e68900;
         }
         30% {
             text-shadow:
-                    0 0 10px #ff8800,
-                    0 0 20px #ff8800,
-                    0 0 30px #ff8800;
+                    0 0 5px #e67000,
+                    0 0 10px #e67000;
         }
     }
 
