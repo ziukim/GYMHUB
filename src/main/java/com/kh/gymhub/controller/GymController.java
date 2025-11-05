@@ -10,4 +10,8 @@ public class GymController {
     public String gymDashboard() {
         return "gym/gymDashBoard";
     }
+    @GetMapping("/ptBoard.bo")
+    public String ptBoard() {
+        return "gym/gymPtBoard";
+    }
 }

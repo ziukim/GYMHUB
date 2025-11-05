@@ -1,94 +1,86 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymHub</title>
 
-    <!-- Common CSS 로드 -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
+<!-- 사이드바 스타일 (include 시 함께 포함) -->
+<style>
+    /* 로고 아이콘 네온 효과 */
+    .logo-icon img {
+        filter: drop-shadow(0 0 4px #e67000) 
+                drop-shadow(0 0 8px #e67000) 
+                drop-shadow(0 0 12px #e68900);
+        animation: iconNeonBuzz 3s ease-in-out infinite;
+    }
 
-    <style>
-        /* 로고 아이콘 네온 효과 */
-        .logo-icon img {
+    @keyframes iconNeonBuzz {
+        0%, 100% {
             filter: drop-shadow(0 0 4px #e67000) 
                     drop-shadow(0 0 8px #e67000) 
                     drop-shadow(0 0 12px #e68900);
-            animation: iconNeonBuzz 3s ease-in-out infinite;
         }
-
-        @keyframes iconNeonBuzz {
-            0%, 100% {
-                filter: drop-shadow(0 0 4px #e67000) 
-                        drop-shadow(0 0 8px #e67000) 
-                        drop-shadow(0 0 12px #e68900);
-            }
-            10% {
-                filter: drop-shadow(0 0 2px #e67000) 
-                        drop-shadow(0 0 4px #e67000);
-            }
-            20% {
-                filter: drop-shadow(0 0 6px #e67000) 
-                        drop-shadow(0 0 10px #e67000) 
-                        drop-shadow(0 0 14px #e68900);
-            }
-            30% {
-                filter: drop-shadow(0 0 4px #e67000) 
-                        drop-shadow(0 0 8px #e67000);
-            }
+        10% {
+            filter: drop-shadow(0 0 2px #e67000) 
+                    drop-shadow(0 0 4px #e67000);
         }
+        20% {
+            filter: drop-shadow(0 0 6px #e67000) 
+                    drop-shadow(0 0 10px #e67000) 
+                    drop-shadow(0 0 14px #e68900);
+        }
+        30% {
+            filter: drop-shadow(0 0 4px #e67000) 
+                    drop-shadow(0 0 8px #e67000);
+        }
+    }
 
-        /* 로고 텍스트 스타일 */
-        .logo-text {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 1.2rem;
-            font-weight: 800;
-            font-style: italic;
-            color: #ff6b00;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+    /* 로고 텍스트 스타일 */
+    .logo-text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.2rem;
+        font-weight: 800;
+        font-style: italic;
+        color: #ff6b00;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        text-shadow:
+                0 0 5px #e67000,
+                0 0 10px #e67000,
+                0 0 15px #e68900;
+        animation: neonBuzz 3s ease-in-out infinite;
+    }
+
+    @keyframes neonBuzz {
+        0%, 100% {
             text-shadow:
                     0 0 5px #e67000,
                     0 0 10px #e67000,
                     0 0 15px #e68900;
-            animation: neonBuzz 3s ease-in-out infinite;
         }
+        10% {
+            text-shadow:
+                    0 0 3px #e67000,
+                    0 0 5px #e67000;
+        }
+        20% {
+            text-shadow:
+                    0 0 7px #e67000,
+                    0 0 12px #e67000,
+                    0 0 18px #e68900;
+        }
+        30% {
+            text-shadow:
+                    0 0 5px #e67000,
+                    0 0 10px #e67000;
+        }
+    }
 
-        @keyframes neonBuzz {
-            0%, 100% {
-                text-shadow:
-                        0 0 5px #e67000,
-                        0 0 10px #e67000,
-                        0 0 15px #e68900;
-            }
-            10% {
-                text-shadow:
-                        0 0 3px #e67000,
-                        0 0 5px #e67000;
-            }
-            20% {
-                text-shadow:
-                        0 0 7px #e67000,
-                        0 0 12px #e67000,
-                        0 0 18px #e68900;
-            }
-            30% {
-                text-shadow:
-                        0 0 5px #e67000,
-                        0 0 10px #e67000;
-            }
-        }
+    /* 사이드바 마진 제거 */
+    .sidebar {
+        margin: 0;
+        padding: 0;
+    }
+</style>
 
-        /* main-content 배경색 조정 */
-        .main-content {
-            background-color: #000;
-        }
-    </style>
-</head>
-<body>
 <c:if test="${not empty alertMsg}">
     <script>
         alert("${alertMsg}");
@@ -96,9 +88,8 @@
     <c:remove var="alertMsg"/>
 </c:if>
 
-<div class="app-container">
-    <!-- Sidebar (common.css 클래스 사용) -->
-    <div class="sidebar">
+<!-- Sidebar (common.css 클래스 사용) -->
+<div class="sidebar">
         <!-- Logo Container -->
         <div class="logo-container">
             <div class="logo-icon">
@@ -159,7 +150,7 @@
                 <span>트레이너 관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/pt/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/ptBoard.bo" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="PT 관리" class="nav-icon">
                 <span>PT 관리</span>
             </a>
@@ -169,12 +160,6 @@
                 <span>로그아웃</span>
             </a>
         </nav>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="main-content">
-        <!-- 여기에 각 페이지의 콘텐츠가 들어갑니다 -->
-    </div>
 </div>
 
 <script>
@@ -198,5 +183,3 @@
         });
     });
 </script>
-</body>
-</html>
