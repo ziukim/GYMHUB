@@ -17,4 +17,14 @@ public class MemberController {
     @GetMapping("/member/info")
     public String memberInfo() { return "member/memberInfo"; }
 
+    @GetMapping("/notice")
+    public String memberNotice() { return "member/noticeList"; }
+
+    @GetMapping("/schedule")
+    public String memberPtSchedule() { return "member/ptSchedule"; }
+
+    @GetMapping("/schedule/ptbooking")
+    public String memberptBookingForm() { return "member/ptBookingForm"; }
+
+
 }
