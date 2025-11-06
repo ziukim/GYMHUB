@@ -440,8 +440,90 @@
             font-size: 16px;
             font-weight: 700;
         }
+         .trainer-select-container {
+             position: relative;
+             width: 100%;
+         }
 
+        .trainer-select {
+            width: 100%;
+            background-color: #2d1810;
+            border: 1px solid #ff6b00;
+            border-radius: 6px;
+            padding: 0 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+        }
 
+        .trainer-select:hover {
+            opacity: 0.9;
+        }
+
+        .trainer-select-arrow {
+            margin-left: auto;
+            color: #ff6b00;
+            font-size: 18px;
+        }
+
+        .trainer-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background-color: #1a0f0a;
+            border: 1px solid #ff6b00;
+            border-radius: 6px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .trainer-dropdown.show {
+            display: block;
+        }
+
+        .trainer-option {
+            padding: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #2d1810;
+        }
+
+        .trainer-option:last-child {
+            border-bottom: none;
+        }
+
+        .trainer-option:hover {
+            background-color: #2d1810;
+        }
+
+        .trainer-option-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trainer-option-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .trainer-option-name {
+            font-size: 16px;
+            color: #ffa366;
+            font-weight: 500;
+        }
+
+        .trainer-option-info {
+            font-size: 12px;
+            color: #8a6a50;
+        }
     </style>
 </head>
 <body>
@@ -464,13 +546,19 @@
         <div class="trainer-card">
             <div class="card-title">희망 트레이너</div>
             <div class="trainer-info">
-                <div class="trainer-avatar">
+                <div class="trainer-avatar" id="selectedTrainerAvatar">
                     T
                 </div>
-                <div class="trainer-details">
-                    <span class="trainer-name">김트레이너</span>
-                    <span class="trainer-specialty">전문 분야: 체형교정, 근력강화, 다이어트</span>
-                    <span class="trainer-experience">경력: 5년</span>
+                <div class="trainer-select-container">
+                    <div class="trainer-select" onclick="toggleTrainerDropdown()">
+                        <span class="trainer-name" id="selectedTrainerName">김트레이너</span>
+                        <span class="trainer-specialty" id="selectedTrainerSpecialty">전문 분야: 체형교정, 근력강화, 다이어트</span>
+                        <span class="trainer-experience" id="selectedTrainerExperience">경력: 5년</span>
+                        <span class="trainer-select-arrow">▼</span>
+                    </div>
+                    <div class="trainer-dropdown" id="trainerDropdown">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -693,6 +781,106 @@
     window.onload = function() {
         renderTimeSlots();
     };
+    // 트레이너 목록 데이터
+    const trainers = [
+        {
+            id: 1,
+            name: '김트레이너',
+            avatar: 'K',
+            specialty: '체형교정, 근력강화, 다이어트',
+            experience: '5년'
+        },
+        {
+            id: 2,
+            name: '이트레이너',
+            avatar: 'L',
+            specialty: '재활운동, 기능성 트레이닝',
+            experience: '7년'
+        },
+        {
+            id: 3,
+            name: '박트레이너',
+            avatar: 'P',
+            specialty: '보디빌딩, 근비대',
+            experience: '3년'
+        },
+        {
+            id: 4,
+            name: '최트레이너',
+            avatar: 'C',
+            specialty: '필라테스, 요가',
+            experience: '4년'
+        },
+        {
+            id: 5,
+            name: '정트레이너',
+            avatar: 'J',
+            specialty: '크로스핏, 기능성 훈련',
+            experience: '6년'
+        }
+    ];
+
+    let selectedTrainer = trainers[0];
+
+    // 트레이너 드롭다운 초기화
+    function initTrainerDropdown() {
+        const dropdown = document.getElementById('trainerDropdown');
+        dropdown.innerHTML = '';
+
+        trainers.forEach(function(trainer) {
+            const option = document.createElement('div');
+            option.className = 'trainer-option';
+            option.onclick = function() {
+                selectTrainer(trainer);
+            };
+
+            option.innerHTML =
+                '<div class="trainer-option-content">' +
+                '<div class="trainer-avatar">' + trainer.avatar + '</div>' +
+                '<div class="trainer-option-details">' +
+                '<span class="trainer-option-name">' + trainer.name + '</span>' +
+                '<span class="trainer-option-info">전문 분야: ' + trainer.specialty + '</span>' +
+                '<span class="trainer-option-info">경력: ' + trainer.experience + '</span>' +
+                '</div>' +
+                '</div>';
+
+            dropdown.appendChild(option);
+        });
+    }
+
+    // 트레이너 선택
+    function selectTrainer(trainer) {
+        selectedTrainer = trainer;
+        document.getElementById('selectedTrainerAvatar').textContent = trainer.avatar;
+        document.getElementById('selectedTrainerName').textContent = trainer.name;
+        document.getElementById('selectedTrainerSpecialty').textContent = '전문 분야: ' + trainer.specialty;
+        document.getElementById('selectedTrainerExperience').textContent = '경력: ' + trainer.experience;
+
+        // 드롭다운 닫기
+        document.getElementById('trainerDropdown').classList.remove('show');
+
+        // 실제 구현 시 해당 트레이너의 예약 가능 시간 다시 로드
+        // loadAvailableTimeSlots(selectedDate, trainer.id);
+    }
+
+    // 트레이너 드롭다운 토글
+    function toggleTrainerDropdown() {
+        const dropdown = document.getElementById('trainerDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    // 드롭다운 외부 클릭 시 닫기
+    document.addEventListener('click', function(e) {
+        const trainerSelect = document.querySelector('.trainer-select-container');
+        if (trainerSelect && !trainerSelect.contains(e.target)) {
+            document.getElementById('trainerDropdown').classList.remove('show');
+        }
+    });
+
+    // 페이지 로드 시 트레이너 드롭다운 초기화
+    window.addEventListener('load', function() {
+        initTrainerDropdown();
+    });
 </script>
 </body>
 </html>

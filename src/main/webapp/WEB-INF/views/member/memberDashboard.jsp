@@ -401,6 +401,41 @@
         </div>
     </div>
 </div>
+<!-- Video Detail Modal -->
+<div class="modal-overlay" id="videoDetailModal">
+    <div class="modal-content" style="width: 800px; height: auto; max-height: 90vh;">
+        <!-- Close Button -->
+        <button class="close-button" id="closeVideoDetailBtn">
+            <svg fill="none" viewBox="0 0 16 16">
+                <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
+                <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
+            </svg>
+        </button>
+
+        <!-- Header -->
+        <div style="padding: 25px 25px 0;">
+            <h2 class="modal-title" id="videoModalTitle">올바른 스쿼트 자세</h2>
+            <p style="color: #8a6a50; font-size: 14px; margin-top: 8px;" id="videoModalAuthor">김트레이너</p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding: 16px 25px 25px;">
+            <!-- Video Player -->
+            <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                <div class="play-button" style="width: 64px; height: 64px; font-size: 24px;">▶</div>
+            </div>
+
+            <!-- Video Description -->
+            <div style="background: #2d1810; border-radius: 10px; padding: 16px;">
+                <h3 style="color: #ff6b00; font-size: 16px; margin-bottom: 12px;">영상 설명</h3>
+                <p style="color: #b0b0b0; font-size: 14px; line-height: 1.6;" id="videoModalDescription">
+                    이 영상에서는 올바른 스쿼트 자세에 대해 자세히 설명합니다.
+                    무릎과 허리 부상을 방지하고 효과적인 운동을 위한 팁을 알려드립니다.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     // DOM이 로드된 후 실행
@@ -546,6 +581,63 @@
                 }
             }
         });
+    });
+    // 기존 DOMContentLoaded 이벤트 리스너 안에 추가
+    // Video Detail Modal 관련 요소
+    const videoDetailModal = document.getElementById('videoDetailModal');
+    const closeVideoDetailBtn = document.getElementById('closeVideoDetailBtn');
+    const videoCards = document.querySelectorAll('.video-card');
+
+    // 비디오 카드 클릭시 모달 열기
+    videoCards.forEach(card => {
+        card.addEventListener('click', () => {
+            // 카드에서 정보 가져오기
+            const title = card.querySelector('.video-title').textContent;
+            const author = card.querySelector('.video-author').textContent;
+
+            // 모달에 정보 설정
+            document.getElementById('videoModalTitle').textContent = title;
+            document.getElementById('videoModalAuthor').textContent = author;
+
+            // 모달 열기
+            videoDetailModal.classList.add('active');
+        });
+    });
+
+    // 비디오 상세 모달 닫기
+    if (closeVideoDetailBtn) {
+        closeVideoDetailBtn.addEventListener('click', () => {
+            videoDetailModal.classList.remove('active');
+        });
+    }
+
+    // 비디오 상세 모달 오버레이 클릭시 닫기
+    if (videoDetailModal) {
+        videoDetailModal.addEventListener('click', (e) => {
+            if (e.target === videoDetailModal) {
+                videoDetailModal.classList.remove('active');
+            }
+        });
+    }
+
+    // 기존 ESC 키 이벤트 리스너에 추가
+    // 기존 코드에서 이 부분을 찾아서:
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (modal && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+            }
+            if (addGoalModal && addGoalModal.classList.contains('active')) {
+                addGoalModal.classList.remove('active');
+                if (goalInput) {
+                    goalInput.value = '';
+                }
+            }
+            // 여기에 추가:
+            if (videoDetailModal && videoDetailModal.classList.contains('active')) {
+                videoDetailModal.classList.remove('active');
+            }
+        }
     });
 </script>
 </body>

@@ -58,21 +58,20 @@
             position: absolute;
             right: 0;
             bottom: 0;
-            width: 24px;
-            height: 24px;
-            background-color: #2d1810;
-            border: 1px solid #ff6b00;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: transparent;  /* 배경 투명하게 */
+            border: none;  /* 테두리 제거 */
             cursor: pointer;
-            font-size: 12px;
+            font-size: 20px;  /* 아이콘 크기 조정 */
+            padding: 0;
+            width: auto;  /* 자동 너비 */
+            height: auto;  /* 자동 높이 */
             transform: none;
+            line-height: 1;
         }
 
         .camera-button:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);  /* 호버 시 살짝 커지는 효과 */
+            filter: brightness(1.2);  /* 호버 시 밝아지는 효과 */
         }
 
         .profile-info {
