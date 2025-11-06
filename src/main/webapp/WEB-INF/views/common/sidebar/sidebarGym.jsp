@@ -1,79 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!-- 사이드바 스타일 (include 시 함께 포함) -->
 <style>
-    /* 로고 아이콘 네온 효과 */
-    .logo-icon img {
-        filter: drop-shadow(0 0 4px #e67000) 
-                drop-shadow(0 0 8px #e67000) 
-                drop-shadow(0 0 12px #e68900);
-        animation: iconNeonBuzz 3s ease-in-out infinite;
-    }
-
-    @keyframes iconNeonBuzz {
-        0%, 100% {
-            filter: drop-shadow(0 0 4px #e67000) 
-                    drop-shadow(0 0 8px #e67000) 
-                    drop-shadow(0 0 12px #e68900);
-        }
-        10% {
-            filter: drop-shadow(0 0 2px #e67000) 
-                    drop-shadow(0 0 4px #e67000);
-        }
-        20% {
-            filter: drop-shadow(0 0 6px #e67000) 
-                    drop-shadow(0 0 10px #e67000) 
-                    drop-shadow(0 0 14px #e68900);
-        }
-        30% {
-            filter: drop-shadow(0 0 4px #e67000) 
-                    drop-shadow(0 0 8px #e67000);
-        }
-    }
-
-    /* 로고 텍스트 스타일 */
-    .logo-text {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-size: 1.2rem;
-        font-weight: 800;
-        font-style: italic;
-        color: #ff6b00;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        text-shadow:
-                0 0 5px #e67000,
-                0 0 10px #e67000,
-                0 0 15px #e68900;
-        animation: neonBuzz 3s ease-in-out infinite;
-    }
-
-    @keyframes neonBuzz {
-        0%, 100% {
-            text-shadow:
-                    0 0 5px #e67000,
-                    0 0 10px #e67000,
-                    0 0 15px #e68900;
-        }
-        10% {
-            text-shadow:
-                    0 0 3px #e67000,
-                    0 0 5px #e67000;
-        }
-        20% {
-            text-shadow:
-                    0 0 7px #e67000,
-                    0 0 12px #e67000,
-                    0 0 18px #e68900;
-        }
-        30% {
-            text-shadow:
-                    0 0 5px #e67000,
-                    0 0 10px #e67000;
-        }
-    }
-
     /* 사이드바 마진 제거 */
     .sidebar {
         margin: 0;
@@ -100,57 +28,57 @@
 
         <!-- Navigation -->
         <nav class="sidebar-nav">
-            <a href="${pageContext.request.contextPath}/dashboard.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/dashboard.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="대시보드" class="nav-icon">
                 <span>대시보드</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/member/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/member.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="회원 관리" class="nav-icon">
                 <span>회원 관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/sales/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/sales.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="매출 현황" class="nav-icon">
                 <span>매출 현황</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/facility/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/facility.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="시설 관리" class="nav-icon">
                 <span>시설 관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/reservation/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/reservation.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="예약 상담 관리" class="nav-icon">
                 <span>예약 상담 관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/product/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/product.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/book.png" alt="물품관리" class="nav-icon">
                 <span>물품관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/video/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/video.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="영상관리" class="nav-icon">
                 <span>영상관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/gym/info.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/gym/info.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 정보 관리" class="nav-icon">
                 <span>헬스장 정보 관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/notice/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/notice.no" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/campaign.png" alt="공지사항" class="nav-icon">
                 <span>공지사항</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/trainer/list.do" class="nav-item">
+            <a href="${pageContext.request.contextPath}/trainer.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너 관리" class="nav-icon">
                 <span>트레이너 관리</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/ptBoard.bo" class="nav-item">
+            <a href="${pageContext.request.contextPath}/ptBoard.gym" class="nav-item">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="PT 관리" class="nav-icon">
                 <span>PT 관리</span>
             </a>
@@ -173,12 +101,27 @@
     // 현재 페이지에 맞는 메뉴 활성화
     window.addEventListener('DOMContentLoaded', function() {
         const currentPath = window.location.pathname;
+        const contextPath = '${pageContext.request.contextPath}';
         const navItems = document.querySelectorAll('.nav-item:not(.logout)');
 
         navItems.forEach(item => {
             const href = item.getAttribute('href');
-            if(href && currentPath.includes(href.split('/').pop())) {
-                item.classList.add('active');
+            if(href && !href.startsWith('javascript:')) {
+                // href에서 contextPath 제거하여 실제 경로만 추출
+                let hrefPath = href;
+                if (contextPath && hrefPath.startsWith(contextPath)) {
+                    hrefPath = hrefPath.substring(contextPath.length);
+                }
+                
+                // .gym 또는 .no로 끝나는 경로는 간단하게 비교
+                // 현재 경로가 해당 hrefPath로 끝나거나, 시설 관리 관련 페이지인 경우
+                if (currentPath.endsWith(hrefPath)) {
+                    item.classList.add('active');
+                }
+                // 시설 관리: 기구 등록 페이지도 시설 관리 메뉴 활성화
+                else if (hrefPath === '/facility.gym' && currentPath.includes('/facility/machine/enroll.gym')) {
+                    item.classList.add('active');
+                }
             }
         });
     });

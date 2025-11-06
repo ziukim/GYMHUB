@@ -41,31 +41,6 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-        filter: drop-shadow(0 0 4px #e67000) 
-                drop-shadow(0 0 8px #e67000) 
-                drop-shadow(0 0 12px #e68900);
-        animation: iconNeonBuzz 3s ease-in-out infinite;
-    }
-
-    @keyframes iconNeonBuzz {
-        0%, 100% {
-            filter: drop-shadow(0 0 4px #e67000) 
-                    drop-shadow(0 0 8px #e67000) 
-                    drop-shadow(0 0 12px #e68900);
-        }
-        10% {
-            filter: drop-shadow(0 0 2px #e67000) 
-                    drop-shadow(0 0 4px #e67000);
-        }
-        20% {
-            filter: drop-shadow(0 0 6px #e67000) 
-                    drop-shadow(0 0 10px #e67000) 
-                    drop-shadow(0 0 14px #e68900);
-        }
-        30% {
-            filter: drop-shadow(0 0 4px #e67000) 
-                    drop-shadow(0 0 8px #e67000);
-        }
     }
 
     .logo-text-container {
@@ -80,44 +55,7 @@
         left: 7px;
         top: 19px;
         width: 129px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-size: 1.2rem;
-        font-weight: 800;
-        font-style: italic;
         line-height: 24px;
-        color: #ff6b00;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        text-shadow:
-                0 0 5px #e67000,
-                0 0 10px #e67000,
-                0 0 15px #e68900;
-        animation: neonBuzz 3s ease-in-out infinite;
-    }
-
-    @keyframes neonBuzz {
-        0%, 100% {
-            text-shadow:
-                    0 0 5px #e67000,
-                    0 0 10px #e67000,
-                    0 0 15px #e68900;
-        }
-        10% {
-            text-shadow:
-                    0 0 3px #e67000,
-                    0 0 5px #e67000;
-        }
-        20% {
-            text-shadow:
-                    0 0 7px #e67000,
-                    0 0 12px #e67000,
-                    0 0 18px #e68900;
-        }
-        30% {
-            text-shadow:
-                    0 0 5px #e67000,
-                    0 0 10px #e67000;
-        }
     }
 
     /* Divider */
