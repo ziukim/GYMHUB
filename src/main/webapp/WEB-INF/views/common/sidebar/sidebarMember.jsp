@@ -234,9 +234,16 @@
 </div>
 
 <script>
-    document.querySelectorAll('.nav-button').forEach(button => {
-        button.addEventListener('click', function() {
-            console.log(this.querySelector('span').textContent + ' 클릭됨');
+    // 현재 페이지에 맞는 메뉴 활성화
+    window.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.nav-item:not(.logout)');
+
+        navItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if(href && currentPath.includes(href.split('/').pop())) {
+                item.classList.add('active');
+            }
         });
     });
 </script>
