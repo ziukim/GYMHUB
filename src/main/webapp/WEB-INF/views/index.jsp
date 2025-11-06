@@ -37,77 +37,6 @@
             gap: 10px;
         }
 
-        .logo-icon {
-            width: 35px;
-            height: 35px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 4px #e67000) 
-                    drop-shadow(0 0 8px #e67000) 
-                    drop-shadow(0 0 12px #e68900);
-            animation: iconNeonBuzz 3s ease-in-out infinite;
-        }
-
-        @keyframes iconNeonBuzz {
-            0%, 100% {
-                filter: drop-shadow(0 0 4px #e67000) 
-                        drop-shadow(0 0 8px #e67000) 
-                        drop-shadow(0 0 12px #e68900);
-            }
-            10% {
-                filter: drop-shadow(0 0 2px #e67000) 
-                        drop-shadow(0 0 4px #e67000);
-            }
-            20% {
-                filter: drop-shadow(0 0 6px #e67000) 
-                        drop-shadow(0 0 10px #e67000) 
-                        drop-shadow(0 0 14px #e68900);
-            }
-            30% {
-                filter: drop-shadow(0 0 4px #e67000) 
-                        drop-shadow(0 0 8px #e67000);
-            }
-        }
-
-        .logo-text {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 1.2rem;
-            font-weight: 800;
-            font-style: italic;
-            color: #ff6b00;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            text-shadow:
-                    0 0 5px #e67000,
-                    0 0 10px #e67000,
-                    0 0 15px #e68900;
-            animation: neonBuzz 3s ease-in-out infinite;
-        }
-
-        @keyframes neonBuzz {
-            0%, 100% {
-                text-shadow:
-                        0 0 5px #e67000,
-                        0 0 10px #e67000,
-                        0 0 15px #e68900;
-            }
-            10% {
-                text-shadow:
-                        0 0 3px #e67000,
-                        0 0 5px #e67000;
-            }
-            20% {
-                text-shadow:
-                        0 0 7px #e67000,
-                        0 0 12px #e67000,
-                        0 0 18px #e68900;
-            }
-            30% {
-                text-shadow:
-                        0 0 5px #e67000,
-                        0 0 10px #e67000;
-            }
-        }
-
         header .header-buttons {
             display: flex;
             gap: 10px;
@@ -904,7 +833,7 @@
     <div class="header-buttons">
         <a href="${pageContext.request.contextPath}/member/dashboard" class="btn btn-secondary" style="margin-right: 10px;">회원 대시보드</a>
         <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary" style="margin-right: 10px;">트레이너 대시보드</a>
-        <a href="${pageContext.request.contextPath}/dashboard.do" class="btn btn-secondary" style="margin-right: 10px;">헬스장 대시보드</a>
+        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary" style="margin-right: 10px;">헬스장 대시보드</a>
         <c:choose>
             <c:when test="${not empty loginMember}">
                 <span class="welcome-message">${loginMember.name}님 환영합니다</span>
