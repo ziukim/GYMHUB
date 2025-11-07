@@ -31,5 +31,9 @@ public class MemberController {
     @GetMapping("/schedule/ptbooking")
     public String memberptBookingForm() { return "member/ptBookingForm"; }
 
+    // 수정 요함
+    @GetMapping("/booking/booking")
+    public String Booking() { return "booking/booking"; }
+
 
 }

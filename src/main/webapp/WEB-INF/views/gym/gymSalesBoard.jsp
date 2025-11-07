@@ -216,7 +216,7 @@
                 <!-- 이번 달 총매출 -->
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <span style="font-size: 24px;">💰</span>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/money.png" alt="매출" style="width: 24px; height: 24px;">
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">이번 달 총매출</div>
@@ -228,7 +228,7 @@
                 <!-- 전체 회원 -->
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <span style="font-size: 24px;">👥</span>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="회원" style="width: 24px; height: 24px;">
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">전체 회원</div>

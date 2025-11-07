@@ -389,7 +389,9 @@
     <div class="modal-container">
         <div class="modal-header">
             <h3 class="modal-title">정보 수정</h3>
-            <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+            <button class="modal-close" onclick="closeModal('editModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
         </div>
         <div class="modal-body">
             <form action="${pageContext.request.contextPath}/updateMemberInfo.me" method="post">
@@ -431,7 +433,9 @@
     <div class="modal-container">
         <div class="modal-header">
             <h3 class="modal-title">비밀번호 변경</h3>
-            <button class="modal-close" onclick="closeModal('passwordModal')">✕</button>
+            <button class="modal-close" onclick="closeModal('passwordModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
         </div>
         <div class="modal-body">
             <form id="passwordForm" action="${pageContext.request.contextPath}/updatePassword.me" method="post">
@@ -461,7 +465,9 @@
     <div class="modal-container">
         <div class="modal-header">
             <h3 class="modal-title">인바디 기록</h3>
-            <button class="modal-close" onclick="closeModal('inbodyModal')">✕</button>
+            <button class="modal-close" onclick="closeModal('inbodyModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
         </div>
         <div class="modal-body">
             <form action="${pageContext.request.contextPath}/insertInbody.me" method="post">
@@ -497,7 +503,9 @@
     <div class="modal-container">
         <div class="modal-header">
             <h3 class="modal-title">운동 기록</h3>
-            <button class="modal-close" onclick="closeModal('exerciseModal')">✕</button>
+            <button class="modal-close" onclick="closeModal('exerciseModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
         </div>
         <div class="modal-body">
             <form action="${pageContext.request.contextPath}/insertExercise.me" method="post">
