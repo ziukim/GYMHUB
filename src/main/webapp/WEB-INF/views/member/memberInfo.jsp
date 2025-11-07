@@ -182,7 +182,9 @@
                         </svg>
                     </div>
                     <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
-                    <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">📷</button>
+                    <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 24px; height: 24px;">
+                    </button>
                 </div>
 
                 <div class="profile-info">
