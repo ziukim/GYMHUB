@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+
+=======
+>>>>>>> 7ac563c3d9bd457e2e6176a95c92c33402e6afaa
 * {
     margin: 0;
     padding: 0;
@@ -352,6 +356,8 @@ body {
     background-color: #e65f00;
 }
 
+<<<<<<< HEAD
+=======
 /* 달력 팝업 */
 .calendar-overlay {
     display: none;
@@ -472,6 +478,7 @@ body {
     background-color: #ff8533;
 }
 
+>>>>>>> 7ac563c3d9bd457e2e6176a95c92c33402e6afaa
 /* 예약 확인 모달 */
 .confirm-overlay {
     display: none;

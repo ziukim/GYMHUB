@@ -11,6 +11,11 @@ public class MemberController {
         return "member/memberDashboard";
     }
 
+    @GetMapping("/booking/booking")
+    public String Booking() {
+        return "booking/booking";
+    }
+
     @GetMapping("/member/videolist")
     public String memberVideoList() { return "member/memberVideoList"; }
 

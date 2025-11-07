@@ -293,8 +293,10 @@ webapp/resources/css/common.css
 | 카드 배경 | `#1a0f0a` | 밝은 검정 |
 | 강조 배경 | `#2d1810` | 갈색 계열 |
 | 주요 색상 | `#ff6b00` | 주황색 (강조) |
+| 주요 색상 호버 | `#ff8533` | 주황색 (호버) |
 | 보조 텍스트 | `#ffa366` | 밝은 주황 |
 | 설명 텍스트 | `#b0b0b0` | 회색 |
+| 설명 텍스트 2 | `#8a6a50` | 갈색 회색 |
 | 구분선 | `#4a3020` | 어두운 갈색 |
 | 오류/삭제 | `#ff5252` | 빨강 |
 | 성공/정상 | `#4caf50` | 초록 |
@@ -513,6 +515,148 @@ document.getElementById('myModal').classList.remove('active');
 <input type="file" id="file" class="hidden">
 ```
 
+### 달력 팝업 (공통)
+```html
+<!-- 날짜 입력 필드 -->
+<input type="text" class="date-input-field" id="dateInput" placeholder="날짜를 선택하세요" readonly onclick="openCalendar()">
+
+<!-- 달력 팝업 -->
+<div class="calendar-overlay" id="calendarOverlay" onclick="closeCalendarOnOverlay(event)">
+    <div class="calendar-popup" onclick="event.stopPropagation()">
+        <div class="calendar-header">
+            <button type="button" class="calendar-nav-btn" onclick="prevMonth()">◀</button>
+            <div class="calendar-month" id="calendarMonth"></div>
+            <button type="button" class="calendar-nav-btn" onclick="nextMonth()">▶</button>
+        </div>
+
+        <div class="calendar-weekdays">
+            <div class="calendar-weekday">일</div>
+            <div class="calendar-weekday">월</div>
+            <div class="calendar-weekday">화</div>
+            <div class="calendar-weekday">수</div>
+            <div class="calendar-weekday">목</div>
+            <div class="calendar-weekday">금</div>
+            <div class="calendar-weekday">토</div>
+        </div>
+
+        <div class="calendar-days" id="calendarDays"></div>
+
+        <button type="button" class="calendar-close-btn" onclick="closeCalendar()">확인</button>
+    </div>
+</div>
+
+<script>
+    let currentMonth = new Date();
+    let tempSelectedDate = null;
+    let selectedDate = null;
+
+    // 달력 열기
+    function openCalendar() {
+        document.getElementById('calendarOverlay').classList.add('show');
+        renderCalendar();
+    }
+
+    // 달력 닫기
+    function closeCalendar() {
+        document.getElementById('calendarOverlay').classList.remove('show');
+        if (tempSelectedDate) {
+            selectedDate = tempSelectedDate;
+            updateDateDisplay();
+        }
+    }
+
+    // 오버레이 클릭 시 닫기
+    function closeCalendarOnOverlay(event) {
+        if (event.target === event.currentTarget) {
+            closeCalendar();
+        }
+    }
+
+    // 이전 달
+    function prevMonth() {
+        currentMonth.setMonth(currentMonth.getMonth() - 1);
+        renderCalendar();
+    }
+
+    // 다음 달
+    function nextMonth() {
+        currentMonth.setMonth(currentMonth.getMonth() + 1);
+        renderCalendar();
+    }
+
+    // 달력 렌더링
+    function renderCalendar() {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+
+        document.getElementById('calendarMonth').textContent =
+            year + '년 ' + (month + 1) + '월';
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        const daysContainer = document.getElementById('calendarDays');
+        daysContainer.innerHTML = '';
+
+        // 빈 칸 채우기
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDay = document.createElement('div');
+            daysContainer.appendChild(emptyDay);
+        }
+
+        // 날짜 채우기
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.textContent = day;
+
+            const currentDate = new Date(year, month, day);
+
+            // 과거 날짜는 비활성화
+            if (currentDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                dayElement.classList.add('disabled');
+            } else {
+                // 선택된 날짜 표시
+                if (tempSelectedDate &&
+                    tempSelectedDate.getDate() === day &&
+                    tempSelectedDate.getMonth() === month &&
+                    tempSelectedDate.getFullYear() === year) {
+                    dayElement.classList.add('selected');
+                }
+
+                dayElement.onclick = function() {
+                    document.querySelectorAll('.calendar-day.selected').forEach(d => {
+                        d.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    tempSelectedDate = new Date(year, month, day);
+                };
+            }
+
+            daysContainer.appendChild(dayElement);
+        }
+    }
+
+    // 날짜 표시 업데이트
+    function updateDateDisplay() {
+        if (selectedDate) {
+            const year = selectedDate.getFullYear();
+            const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const day = String(selectedDate.getDate()).padStart(2, '0');
+
+            const dateString = year + '-' + month + '-' + day;
+            document.getElementById('dateInput').value = dateString;
+        }
+    }
+</script>
+```
+
+**참고:** 
+- 여러 달력을 사용하는 경우 ID와 함수명을 고유하게 변경하세요 (예: `startDateCalendar`, `endDateCalendar`)
+- 과거 날짜 비활성화 기능이 기본으로 포함되어 있습니다
+- 스타일은 common.css에 정의되어 있으므로 별도 CSS 작성이 필요 없습니다
+
 ### 유틸리티 클래스
 ```html
 <!-- 텍스트 정렬 -->
@@ -603,6 +747,8 @@ document.getElementById('myModal').classList.remove('active');
 | 버튼 (주황) | `.btn.btn-primary` | 공통 |
 | 버튼 (테두리) | `.btn.btn-secondary` | 공통 |
 | 기본 모달 구조 | `.modal-overlay` + `.modal-container` | 공통 |
+| 달력 팝업 | `.calendar-overlay` + `.calendar-popup` | 공통 |
+| 날짜 입력 필드 | `.date-input-field` | 공통 |
 | 배지 | `.badge` 또는 `.status-badge` | 공통 |
 | 페이지 헤더 | 페이지별 `<style>` 태그 | 페이지별 |
 | 페이지 특수 레이아웃 | 페이지별 `<style>` 태그 | 페이지별 |
