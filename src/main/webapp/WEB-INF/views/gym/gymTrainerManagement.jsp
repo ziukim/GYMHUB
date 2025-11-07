@@ -435,18 +435,12 @@
                 <div class="page-header">
                     <div class="header-left">
                         <button class="back-button" onclick="history.back()">
-                            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                                <path d="M8 12.6667L3.33333 8L8 3.33333" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                                <path d="M12.6667 8H3.33333" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/arrow.png" alt="뒤로가기" style="width: 16px; height: 16px;">
                         </button>
                         <h1 class="page-title">트레이너 관리</h1>
                     </div>
                     <button class="add-trainer-button" onclick="openAddModal()">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                            <path d="M8 3.33333V12.6667" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M3.33333 8H12.6667" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
                         <span>트레이너 등록</span>
                     </button>
                 </div>
@@ -462,7 +456,9 @@
     <!-- Add/Edit Trainer Modal -->
     <div class="modal-overlay" id="trainerModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
+            <button class="modal-close" onclick="closeModal()">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
 
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">트레이너 등록</h2>
@@ -504,24 +500,17 @@
                                 <span class="detail-value" id="trainerDetailBirth">010915</span>
                             </div>
                             <div class="detail-row">
-                                <svg class="detail-icon" fill="none" viewBox="0 0 16 16">
-                                    <path d="M14.667 11.333V13.333C14.667 13.701 14.368 14 14 14H2C1.632 14 1.333 13.701 1.333 13.333V11.333M14.667 11.333C14.667 10.965 14.368 10.667 14 10.667H2C1.632 10.667 1.333 10.965 1.333 11.333M14.667 11.333V6.667C14.667 4.825 13.175 3.333 11.333 3.333H4.667C2.825 3.333 1.333 4.825 1.333 6.667V11.333M5.333 1.333V4M10.667 1.333V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                </svg>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" class="detail-icon">
                                 <span class="detail-label">연락처</span>
                                 <span class="detail-value" id="trainerDetailPhone">010-1234-5678</span>
                             </div>
                             <div class="detail-row">
-                                <svg class="detail-icon" fill="none" viewBox="0 0 16 16">
-                                    <path d="M2.667 4L8 8.667L13.333 4M2.667 4H13.333M2.667 4V12C2.667 12.368 2.965 12.667 3.333 12.667H12.667C13.035 12.667 13.333 12.368 13.333 12V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="이메일" class="detail-icon">
                                 <span class="detail-label">이메일</span>
                                 <span class="detail-value" id="trainerDetailEmail">hong@example.com</span>
                             </div>
                             <div class="detail-row">
-                                <svg class="detail-icon" fill="none" viewBox="0 0 16 16">
-                                    <path d="M8 8C9.10457 8 10 7.10457 10 6C10 4.89543 9.10457 4 8 4C6.89543 4 6 4.89543 6 6C6 7.10457 6.89543 8 8 8Z" stroke="currentColor" stroke-width="1.5"/>
-                                    <path d="M8 2C5.79086 2 4 3.79086 4 6C4 8.5 8 14 8 14C8 14 12 8.5 12 6C12 3.79086 10.2091 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" class="detail-icon">
                                 <span class="detail-label">주소</span>
                                 <span class="detail-value" id="trainerDetailAddress">서울시 강남구 테헤란로 123</span>
                             </div>
@@ -585,9 +574,7 @@
                     '<div class="trainer-info">' + infoHTML + '</div>' +
                     '<div class="trainer-actions">' +
                         '<button class="delete-button" onclick="deleteTrainer(' + trainer.id + ')">' +
-                            '<svg class="delete-icon" fill="none" viewBox="0 0 20 20">' +
-                                '<path d="M2.5 5h15M6.667 5V3.333A1.667 1.667 0 018.333 1.667h3.334A1.667 1.667 0 0113.333 5v1.667m2.5 0v11.666A1.667 1.667 0 0114.167 20H5.833a1.667 1.667 0 01-1.666-1.667V6.667h10z" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-                            '</svg>' +
+                            '<img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="delete-icon">' +
                         '</button>' +
                     '</div>';
                 grid.appendChild(card);

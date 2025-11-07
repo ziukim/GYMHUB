@@ -194,11 +194,11 @@
                     <h2 class="notice-detail-title" id="noticeTitle">연말연시 운영시간 안내</h2>
                     <div class="notice-meta">
                         <div class="notice-meta-item">
-                            <span class="notice-icon">👤</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
                             <span><strong id="noticeAuthor">관리자 (운영자)</strong></span>
                         </div>
                         <div class="notice-meta-item">
-                            <span class="notice-icon">📅</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
                             <span id="noticeDate">2025-10-25</span>
                         </div>
                     </div>

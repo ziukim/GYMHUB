@@ -168,11 +168,11 @@
                         <div class="consultation-name">홍길지</div>
                         <div class="consultation-details">
                             <div class="detail-item">
-                                <span class="detail-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>10월 29일 15:00</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-icon">📞</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>010-1234-5678</span>
                             </div>
                         </div>
@@ -186,11 +186,11 @@
                         <div class="consultation-name">김민현</div>
                         <div class="consultation-details">
                             <div class="detail-item">
-                                <span class="detail-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>10월 30일 10:00</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-icon">📞</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>010-2345-6789</span>
                             </div>
                         </div>
@@ -204,11 +204,11 @@
                         <div class="consultation-name">박서준</div>
                         <div class="consultation-details">
                             <div class="detail-item">
-                                <span class="detail-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>10월 28일 14:00</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-icon">📞</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>010-3456-7890</span>
                             </div>
                         </div>
@@ -222,11 +222,11 @@
                         <div class="consultation-name">이수진</div>
                         <div class="consultation-details">
                             <div class="detail-item">
-                                <span class="detail-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>10월 27일 16:00</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-icon">📞</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>010-4567-8901</span>
                             </div>
                         </div>
@@ -240,11 +240,11 @@
                         <div class="consultation-name">최영희</div>
                         <div class="consultation-details">
                             <div class="detail-item">
-                                <span class="detail-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>10월 26일 11:00</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-icon">📞</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>010-5678-9012</span>
                             </div>
                         </div>
@@ -258,11 +258,11 @@
                         <div class="consultation-name">정민수</div>
                         <div class="consultation-details">
                             <div class="detail-item">
-                                <span class="detail-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>10월 25일 13:00</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-icon">📞</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
                                 <span>010-6789-0123</span>
                             </div>
                         </div>
@@ -333,7 +333,7 @@
     // 전화 걸기 기능 (모바일에서만 작동)
     document.querySelectorAll('.detail-item').forEach(item => {
         const icon = item.querySelector('.detail-icon');
-        if (icon && icon.textContent === '📞') {
+        if (icon && icon.alt === '전화') {
             item.style.cursor = 'pointer';
             item.addEventListener('click', function(event) {
                 event.stopPropagation();

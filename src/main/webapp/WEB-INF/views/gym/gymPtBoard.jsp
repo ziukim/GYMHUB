@@ -329,7 +329,9 @@
                 <!-- PT 신청 카드 1 -->
                 <div class="pt-request-card">
                     <div class="card-header-section">
-                        <div class="user-icon">👤</div>
+                        <div class="user-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
+                        </div>
                         <div class="card-user-info">
                             <div class="card-user-name">김영희</div>
                             <div class="card-user-id">회원 ID: M002</div>
@@ -339,37 +341,53 @@
 
                     <div class="card-details">
                         <div class="detail-item">
-                            <span class="detail-label">📅 신청일:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
+                            </span>
                             <span class="detail-value">2025.10.28</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">👨‍🏫 희망 트레이너:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 트레이너:
+                            </span>
                             <span class="detail-value">이코치</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">🕐 희망 시간:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
+                            </span>
                             <span class="detail-value">14:00</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📆 희망 날짜:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
+                            </span>
                             <span class="detail-value">2025-11-08</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📞 연락처:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
+                            </span>
                             <span class="detail-value">010-1111-2222</span>
                         </div>
                     </div>
 
                     <div class="card-actions">
-                        <button class="action-btn approve-btn" onclick="handleApprove(this)">✓ 승인</button>
-                        <button class="action-btn reject-btn" onclick="handleReject(this)">✕ 거절</button>
+                        <button class="action-btn approve-btn" onclick="handleApprove(this)">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="승인" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 승인
+                        </button>
+                        <button class="action-btn reject-btn" onclick="handleReject(this)">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="거절" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 거절
+                        </button>
                     </div>
                 </div>
 
                 <!-- PT 신청 카드 2 -->
                 <div class="pt-request-card">
                     <div class="card-header-section">
-                        <div class="user-icon">👤</div>
+                        <div class="user-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
+                        </div>
                         <div class="card-user-info">
                             <div class="card-user-name">정수진</div>
                             <div class="card-user-id">회원 ID: M005</div>
@@ -379,30 +397,44 @@
 
                     <div class="card-details">
                         <div class="detail-item">
-                            <span class="detail-label">📅 신청일:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
+                            </span>
                             <span class="detail-value">2025.10.28</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">👨‍🏫 희망 트레이너:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 트레이너:
+                            </span>
                             <span class="detail-value">최트레이너</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">🕐 희망 시간:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
+                            </span>
                             <span class="detail-value">18:00</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📆 희망 날짜:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
+                            </span>
                             <span class="detail-value">2025-11-10</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📞 연락처:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
+                            </span>
                             <span class="detail-value">010-1111-2222</span>
                         </div>
                     </div>
 
                     <div class="card-actions">
-                        <button class="action-btn approve-btn" onclick="handleApprove(this)">✓ 승인</button>
-                        <button class="action-btn reject-btn" onclick="handleReject(this)">✕ 거절</button>
+                        <button class="action-btn approve-btn" onclick="handleApprove(this)">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="승인" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 승인
+                        </button>
+                        <button class="action-btn reject-btn" onclick="handleReject(this)">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="거절" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 거절
+                        </button>
                     </div>
                 </div>
             </div>
@@ -412,7 +444,9 @@
                 <!-- PT 신청 카드 1 (완료) -->
                 <div class="pt-request-card">
                     <div class="card-header-section">
-                        <div class="user-icon">👤</div>
+                        <div class="user-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
+                        </div>
                         <div class="card-user-info">
                             <div class="card-user-name">홍길동</div>
                             <div class="card-user-id">회원 ID: M001</div>
@@ -422,23 +456,33 @@
 
                     <div class="card-details">
                         <div class="detail-item">
-                            <span class="detail-label">📅 신청일:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
+                            </span>
                             <span class="detail-value">2025.10.28</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">👨‍🏫 배정 트레이너:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 배정 트레이너:
+                            </span>
                             <span class="detail-value">박강사</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">🕐 희망 시간:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
+                            </span>
                             <span class="detail-value">10:00</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📆 희망 날짜:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
+                            </span>
                             <span class="detail-value">2025-11-05</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📞 연락처:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
+                            </span>
                             <span class="detail-value">010-1111-2222</span>
                         </div>
                     </div>
@@ -447,7 +491,9 @@
                 <!-- PT 신청 카드 2 (완료) -->
                 <div class="pt-request-card">
                     <div class="card-header-section">
-                        <div class="user-icon">👤</div>
+                        <div class="user-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
+                        </div>
                         <div class="card-user-info">
                             <div class="card-user-name">박철수</div>
                             <div class="card-user-id">회원 ID: M003</div>
@@ -457,23 +503,33 @@
 
                     <div class="card-details">
                         <div class="detail-item">
-                            <span class="detail-label">📅 신청일:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
+                            </span>
                             <span class="detail-value">2025.10.25</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">👨‍🏫 희망 트레이너:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 트레이너:
+                            </span>
                             <span class="detail-value">김트레이너</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">🕐 희망 시간:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
+                            </span>
                             <span class="detail-value">16:00</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📆 희망 날짜:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
+                            </span>
                             <span class="detail-value">2025-11-03</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">📞 연락처:</span>
+                            <span class="detail-label">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
+                            </span>
                             <span class="detail-value">010-1111-2222</span>
                         </div>
                     </div>

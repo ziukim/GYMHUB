@@ -354,7 +354,9 @@
                     <button class="back-button" onclick="history.back()">←</button>
                     <h1 class="page-title">상품 관리</h1>
                 </div>
-                <button class="add-button" onclick="openAddModal()">➕ 상품 추가</button>
+                <button class="add-button" onclick="openAddModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 상품 추가
+                </button>
             </div>
 
             <!-- Stats Cards -->
@@ -364,9 +366,15 @@
                     <div class="stat-card-header">
                         <div class="stat-card-title">수건</div>
                         <div class="stat-card-icons">
-                            <button class="icon-button" onclick="openManageInventoryModal(event, '수건')">🎁</button>
-                            <button class="icon-button" onclick="openQuantityChangeModal(event, '수건')">📝</button>
-                            <button class="icon-button" onclick="deleteItem(event, '수건')">🗑️</button>
+                            <button class="icon-button" onclick="openManageInventoryModal(event, '수건')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/change.png" alt="재고 관리" style="width: 16px; height: 16px;">
+                            </button>
+                            <button class="icon-button" onclick="openQuantityChangeModal(event, '수건')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
+                            </button>
+                            <button class="icon-button" onclick="deleteItem(event, '수건')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" style="width: 16px; height: 16px;">
+                            </button>
                         </div>
                     </div>
                     <div class="stat-card-info">현재 재고 150개</div>
@@ -381,9 +389,15 @@
                     <div class="stat-card-header">
                         <div class="stat-card-title">운동복(상의)</div>
                         <div class="stat-card-icons">
-                            <button class="icon-button" onclick="openManageInventoryModal(event, '운동복(상의)')">🎁</button>
-                            <button class="icon-button" onclick="openQuantityChangeModal(event, '운동복(상의)')">📝</button>
-                            <button class="icon-button" onclick="deleteItem(event, '운동복(상의)')">🗑️</button>
+                            <button class="icon-button" onclick="openManageInventoryModal(event, '운동복(상의)')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/change.png" alt="재고 관리" style="width: 16px; height: 16px;">
+                            </button>
+                            <button class="icon-button" onclick="openQuantityChangeModal(event, '운동복(상의)')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
+                            </button>
+                            <button class="icon-button" onclick="deleteItem(event, '운동복(상의)')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" style="width: 16px; height: 16px;">
+                            </button>
                         </div>
                     </div>
                     <div class="stat-card-info">현재 재고 100개</div>
@@ -398,9 +412,15 @@
                     <div class="stat-card-header">
                         <div class="stat-card-title">당일권 패키지</div>
                         <div class="stat-card-icons">
-                            <button class="icon-button" onclick="openManageInventoryModal(event, '당일권 패키지')">🎁</button>
-                            <button class="icon-button" onclick="openQuantityChangeModal(event, '당일권 패키지')">📝</button>
-                            <button class="icon-button" onclick="deleteItem(event, '당일권 패키지')">🗑️</button>
+                            <button class="icon-button" onclick="openManageInventoryModal(event, '당일권 패키지')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/change.png" alt="재고 관리" style="width: 16px; height: 16px;">
+                            </button>
+                            <button class="icon-button" onclick="openQuantityChangeModal(event, '당일권 패키지')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
+                            </button>
+                            <button class="icon-button" onclick="deleteItem(event, '당일권 패키지')">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" style="width: 16px; height: 16px;">
+                            </button>
                         </div>
                     </div>
                     <div class="stat-card-info">현재 재고 50개</div>
@@ -467,7 +487,9 @@
     <div class="modal-overlay" id="addModal">
         <div class="modal-container">
             <div class="modal-header">
-                <button class="modal-close" onclick="closeAddModal()">✕</button>
+                <button class="modal-close" onclick="closeAddModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+                </button>
                 <div class="modal-title">상품 추가</div>
                 <div class="modal-subtitle">새로운 상품을 등록합니다</div>
             </div>
@@ -508,7 +530,9 @@
     <div class="modal-overlay" id="editModal">
         <div class="modal-container">
             <div class="modal-header">
-                <button class="modal-close" onclick="closeEditModal()">✕</button>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+                </button>
                 <div class="modal-title">상품 수정</div>
                 <div class="modal-subtitle">상품 정보를 수정합니다</div>
             </div>
@@ -550,7 +574,9 @@
     <div class="modal-overlay" id="quantityChangeModal">
         <div class="modal-container">
             <div class="modal-header">
-                <button class="modal-close" onclick="closeQuantityChangeModal()">✕</button>
+                <button class="modal-close" onclick="closeQuantityChangeModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+                </button>
                 <div class="modal-title">수량 변경</div>
                 <div class="modal-subtitle">재고 수량을 변경합니다.</div>
             </div>
@@ -585,7 +611,9 @@
     <div class="modal-overlay" id="manageInventoryModal">
         <div class="modal-container">
             <div class="modal-header">
-                <button class="modal-close" onclick="closeManageInventoryModal()">✕</button>
+                <button class="modal-close" onclick="closeManageInventoryModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+                </button>
                 <div class="modal-title">관리 재고 수정</div>
                 <div class="modal-subtitle">재고의 변경된 사항을 입력해주세요.</div>
             </div>

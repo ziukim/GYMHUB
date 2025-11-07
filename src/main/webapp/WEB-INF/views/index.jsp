@@ -1189,10 +1189,7 @@
         <div class="modal-header">
             <h2 class="modal-title" id="gymDetailTitle">헬스 클럽 강남점</h2>
             <button class="close-btn" id="closeGymDetailModal">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M12 4L4 12" stroke="#FFA366" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M4 4L12 12" stroke="#FFA366" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
             </button>
         </div>
 
@@ -1221,10 +1218,7 @@
 
             <div class="info-card">
                 <div class="info-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M16.6667 8.33333C16.6667 12.4942 12.0508 16.8275 10.5008 18.1658C10.3564 18.2744 10.1807 18.3331 10 18.3331C9.81933 18.3331 9.64356 18.2744 9.49917 18.1658C7.94917 16.8275 3.33333 12.4942 3.33333 8.33333C3.33333 6.56522 4.03571 4.86953 5.28595 3.61929C6.5362 2.36905 8.23189 1.66667 10 1.66667C11.7681 1.66667 13.4638 2.36905 14.714 3.61929C15.9643 4.86953 16.6667 6.56522 16.6667 8.33333Z" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 10.8333C11.3807 10.8333 12.5 9.71405 12.5 8.33333C12.5 6.95262 11.3807 5.83333 10 5.83333C8.61929 5.83333 7.5 6.95262 7.5 8.33333C7.5 9.71405 8.61929 10.8333 10 10.8333Z" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" style="width: 20px; height: 20px;">
                 </div>
                 <div class="info-content">
                     <div class="info-label">주소</div>
@@ -1234,9 +1228,7 @@
 
             <div class="info-card">
                 <div class="info-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M11.5267 13.8067C11.6988 13.8857 11.8927 13.9038 12.0764 13.8579C12.2602 13.812 12.4228 13.7049 12.5375 13.5542L12.8333 13.1667C12.9886 12.9597 13.1899 12.7917 13.4213 12.676C13.6527 12.5602 13.9079 12.5 14.1667 12.5H16.6667C17.1087 12.5 17.5326 12.6756 17.8452 12.9882C18.1577 13.3007 18.3333 13.7246 18.3333 14.1667V16.6667C18.3333 17.1087 18.1577 17.5326 17.8452 17.8452C17.5326 18.1577 17.1087 18.3333 16.6667 18.3333C12.6884 18.3333 8.87311 16.753 6.06006 13.9399C3.24702 11.1269 1.66667 7.31158 1.66667 3.33333C1.66667 2.89131 1.84226 2.46738 2.15482 2.15482C2.46738 1.84226 2.89131 1.66667 3.33333 1.66667H5.83333C6.27536 1.66667 6.69928 1.84226 7.01184 2.15482C7.3244 2.46738 7.5 2.89131 7.5 3.33333V5.83333C7.5 6.09208 7.43976 6.34726 7.32405 6.57869C7.20833 6.81011 7.04033 7.01142 6.83333 7.16667L6.44333 7.45917C6.29035 7.57598 6.18252 7.74215 6.13816 7.92946C6.0938 8.11676 6.11565 8.31365 6.2 8.48667C7.3389 10.7999 9.21202 12.6707 11.5267 13.8067Z" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화번호" style="width: 20px; height: 20px;">
                 </div>
                 <div class="info-content">
                     <div class="info-label">전화번호</div>
@@ -1251,27 +1243,19 @@
 
             <div class="facility-grid">
                 <div class="facility-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 11H20C20.6 11 21 10.6 21 10V7C21 6.1 20.3 5.3 19.5 5.1C17.7 4.6 15 4 15 4C15 4 13.7 2.6 12.8 1.7C12.3 1.3 11.7 1 11 1H4C3.4 1 2.9 1.4 2.6 1.9L1.2 4.8C1.06758 5.18623 1 5.5917 1 6V10C1 10.6 1.4 11 2 11H4" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차" style="width: 24px; height: 24px;">
                     <span>주차</span>
                 </div>
                 <div class="facility-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M8 20C9.85652 20 11.637 19.2625 12.9497 17.9497C14.2625 16.637 15 14.8565 15 13C15 11 14 9.1 12 7.5C10 5.9 8.5 3.5 8 1C7.5 3.5 6 5.9 4 7.5C2 9.1 1 11 1 13C1 14.8565 1.7375 16.637 3.05025 17.9497C4.36301 19.2625 6.14348 20 8 20Z" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" style="width: 24px; height: 24px;">
                     <span>샤워실</span>
                 </div>
                 <div class="facility-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M1 4.5L3.3 6.8C3.48693 6.98323 3.73825 7.08586 4 7.08586C4.26175 7.08586 4.51307 6.98323 4.7 6.8L6.8 4.7C6.98323 4.51307 7.08586 4.26175 7.08586 4C7.08586 3.73825 6.98323 3.48693 6.8 3.3L4.5 1" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커" style="width: 24px; height: 24px;">
                     <span>락커</span>
                 </div>
                 <div class="facility-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M7.94991 11.8391C8.32505 12.2142 8.83386 12.425 9.3644 12.425C9.89495 12.425 10.4038 12.2142 10.7789 11.8391C11.1541 11.4639 11.3648 10.9551 11.3648 10.4246C11.3648 9.89401 11.1541 9.3852 10.7789 9.01005L9.0109 7.24305C9.38605 7.61807 9.89481 7.8287 10.4253 7.8286C10.6879 7.82856 10.948 7.77678 11.1906 7.67622C11.4333 7.57567 11.6537 7.42831 11.8394 7.24255C12.0251 7.0568 12.1724 6.83629 12.2728 6.59361C12.3733 6.35094 12.425 6.09085 12.425 5.8282C12.4249 5.56555 12.3731 5.30548 12.2726 5.06284C12.172 4.8202 12.0247 4.59974 11.8389 4.41405L9.0109 1.58605C8.63589 1.2109 8.1272 1.00009 7.59676 1C7.06631 0.999906 6.55755 1.21054 6.1824 1.58555C5.80726 1.96057 5.59645 2.46925 5.59635 2.9997C5.59626 3.53014 5.80689 4.0389 6.1819 4.41405L4.4149 2.64605C4.22915 2.4603 4.00863 2.31295 3.76593 2.21242C3.52323 2.11189 3.2631 2.06015 3.0004 2.06015C2.73771 2.06015 2.47758 2.11189 2.23488 2.21242C1.99218 2.31295 1.77166 2.4603 1.58591 2.64605C1.40015 2.83181 1.2528 3.05233 1.15227 3.29503C1.05174 3.53773 1 3.79785 1 4.06055C1 4.32325 1.05174 4.58337 1.15227 4.82607C1.2528 5.06877 1.40015 5.2893 1.58591 5.47505L7.94991 11.8391Z" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/machine.png" alt="최신기구" style="width: 24px; height: 24px;">
                     <span>최신기구</span>
                 </div>
             </div>
@@ -1322,12 +1306,7 @@
         <div class="cards-grid">
             <div class="info-card-box">
                 <div class="card-header">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M13.3333 17.5V15.8333C13.3333 14.9493 12.9821 14.1014 12.357 13.4763C11.7319 12.8512 10.8841 12.5 10 12.5H5C4.11595 12.5 3.2681 12.8512 2.64298 13.4763C2.01786 14.1014 1.66667 14.9493 1.66667 15.8333V17.5" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M18.3333 17.5V15.8333C18.3328 15.0948 18.087 14.3773 17.6345 13.7936C17.182 13.2099 16.5484 12.793 15.8333 12.6083" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M13.3333 2.60671C14.0481 2.79202 14.6812 3.20943 15.1331 3.79343C15.585 4.37743 15.8302 5.09495 15.8302 5.83338C15.8302 6.5718 15.585 7.28933 15.1331 7.87332C14.6812 8.45732 14.0481 8.87473 13.3333 9.06004" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M7.5 9.16667C9.34095 9.16667 10.8333 7.67428 10.8333 5.83333C10.8333 3.99238 9.34095 2.5 7.5 2.5C5.65905 2.5 4.16667 3.99238 4.16667 5.83333C4.16667 7.67428 5.65905 9.16667 7.5 9.16667Z" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/money.png" alt="가격 정보" style="width: 20px; height: 20px;">
                     <span>가격 정보</span>
                 </div>
                 <div class="card-content" id="gymDetailPrice">
@@ -1339,10 +1318,7 @@
 
             <div class="info-card-box">
                 <div class="card-header">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M10 5V10L13.3333 11.6667" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 18.3333C14.6024 18.3333 18.3333 14.6024 18.3333 10C18.3333 5.39763 14.6024 1.66667 10 1.66667C5.39763 1.66667 1.66667 5.39763 1.66667 10C1.66667 14.6024 5.39763 18.3333 10 18.3333Z" stroke="#FF6B00" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="운영시간" style="width: 20px; height: 20px;">
                     <span>운영시간</span>
                 </div>
                 <div class="card-content" id="gymDetailHours">
@@ -1386,12 +1362,7 @@
 
         <!-- 방문 예약 버튼 -->
         <button class="booking-btn" id="bookingBtn">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M5.33333 1.33333V4" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10.6667 1.33333V4" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12.6667 2.66667H3.33333C2.59695 2.66667 2 3.26362 2 4V13.3333C2 14.0697 2.59695 14.6667 3.33333 14.6667H12.6667C13.403 14.6667 14 14.0697 14 13.3333V4C14 3.26362 13.403 2.66667 12.6667 2.66667Z" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 6.66667H14" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="방문 예약" style="width: 16px; height: 16px;">
             방문 예약
         </button>
     </div>

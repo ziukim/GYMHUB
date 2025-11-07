@@ -234,7 +234,7 @@
                     </div>
                 </div>
                 <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
-                    ➕ 공지사항 작성
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
                 </button>
             </div>
 
@@ -255,11 +255,11 @@
                         <div class="notice-content">12월 31일과 1월 1일은 오전 10시부터 오후 6시까지 운영합니다. 회원 여러분의 양해 부탁드립니다.</div>
                         <div class="notice-meta">
                             <div class="notice-meta-item">
-                                <span class="notice-icon">👤</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>관리자 (운영자)</span>
                             </div>
                             <div class="notice-meta-item">
-                                <span class="notice-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>2025-10-25</span>
                             </div>
                         </div>
@@ -273,11 +273,11 @@
                         <div class="notice-content">새로운 GX 프로그램이 준비되었습니다!</div>
                         <div class="notice-meta">
                             <div class="notice-meta-item">
-                                <span class="notice-icon">👤</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>빅트레이너 (트레이너)</span>
                             </div>
                             <div class="notice-meta-item">
-                                <span class="notice-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>2025-10-23</span>
                             </div>
                         </div>
@@ -291,11 +291,11 @@
                         <div class="notice-content">내일(금)의 오전 2시부터 6시까지 시설 점검이 예정되어 있습니다. 해당 시간에는 이용이 불가합니다.</div>
                         <div class="notice-meta">
                             <div class="notice-meta-item">
-                                <span class="notice-icon">👤</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>시설관리 (운영자)</span>
                             </div>
                             <div class="notice-meta-item">
-                                <span class="notice-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>2025-10-20</span>
                             </div>
                         </div>
@@ -309,11 +309,11 @@
                         <div class="notice-content">회원 여러분이 요청하신 최신 스미스머신과 케이블 크로스오버가 입고되었습니다. 2층 프리웨이트존에서 이용하실 수 있습니다.</div>
                         <div class="notice-meta">
                             <div class="notice-meta-item">
-                                <span class="notice-icon">👤</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>어트레이너 (트레이너)</span>
                             </div>
                             <div class="notice-meta-item">
-                                <span class="notice-icon">📅</span>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
                                 <span>2025-10-18</span>
                             </div>
                         </div>
@@ -322,7 +322,9 @@
 
                 <!-- Empty State -->
                 <div class="empty-state" id="emptyState">
-                    <div class="empty-icon">🔍</div>
+                    <div class="empty-icon">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="검색" style="width: 48px; height: 48px;">
+                    </div>
                     <h3>검색 결과가 없습니다</h3>
                     <p>다른 검색어로 시도해보세요</p>
                 </div>
