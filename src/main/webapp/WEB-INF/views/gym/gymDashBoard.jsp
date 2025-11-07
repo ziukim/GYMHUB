@@ -308,7 +308,7 @@
                 <!-- 이번 달 매출 -->
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <span>💰</span>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/money.png" alt="매출" style="width: 24px; height: 24px;">
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">이번 달 매출</div>
@@ -320,7 +320,7 @@
                 <!-- 전체 회원 -->
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <span>👥</span>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="회원" style="width: 24px; height: 24px;">
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">전체 회원</div>
@@ -332,7 +332,7 @@
                 <!-- 오늘 출석 -->
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <span>✓</span>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="출석" style="width: 24px; height: 24px;">
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">오늘 출석</div>
@@ -344,7 +344,7 @@
                 <!-- 만료 예정 -->
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <span>⏰</span>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/expiration.png" alt="만료 예정" style="width: 24px; height: 24px;">
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">만료 예정</div>
@@ -364,7 +364,7 @@
                     <!-- 1월 -->
                     <div class="monthly-card">
                         <div class="stat-icon">
-                            <span>📊</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
                         </div>
                         <div class="stat-info">
                             <div class="stat-label">1월 회원수</div>
@@ -377,7 +377,7 @@
                     <!-- 2월 -->
                     <div class="monthly-card">
                         <div class="stat-icon">
-                            <span>📊</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
                         </div>
                         <div class="stat-info">
                             <div class="stat-label">2월 회원수</div>
@@ -390,7 +390,7 @@
                     <!-- 3월 -->
                     <div class="monthly-card">
                         <div class="stat-icon">
-                            <span>📊</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
                         </div>
                         <div class="stat-info">
                             <div class="stat-label">3월 회원수</div>
@@ -403,7 +403,7 @@
                     <!-- 4월 -->
                     <div class="monthly-card">
                         <div class="stat-icon">
-                            <span>📊</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
                         </div>
                         <div class="stat-info">
                             <div class="stat-label">4월 회원수</div>
@@ -416,7 +416,7 @@
                     <!-- 5월 -->
                     <div class="monthly-card">
                         <div class="stat-icon">
-                            <span>📊</span>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
                         </div>
                         <div class="stat-info">
                             <div class="stat-label">5월 회원수</div>

@@ -361,17 +361,11 @@
                 <div class="page-header">
                     <div class="header-left">
                         <button class="back-button" onclick="history.back()">
-                            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                                <path d="M8 12.6667L3.33333 8L8 3.33333" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                                <path d="M12.6667 8H3.33333" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/arrow.png" alt="뒤로가기" style="width: 16px; height: 16px;">
                         </button>
                         <h1 class="page-title">헬스장 정보 관리</h1>
                     </div>
                     <button class="save-button" onclick="saveGymInfo()">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                            <path d="M13.8333 7.16667H12.18C11.8886 7.16604 11.6051 7.26087 11.3727 7.43664C11.1404 7.61242 10.972 7.85947 10.8933 8.14L9.32667 13.7133C9.31657 13.748 9.29552 13.7784 9.26667 13.8C9.23782 13.8216 9.20273 13.8333 9.16667 13.8333C9.1306 13.8333 9.09552 13.8216 9.06667 13.8C9.03782 13.7784 9.01676 13.748 9.00667 13.7133L5.32667 0.62C5.31657 0.585381 5.29552 0.55497 5.26667 0.533333C5.23782 0.511696 5.20273 0.5 5.16667 0.5C5.1306 0.5 5.09552 0.511696 5.06667 0.533333C5.03782 0.55497 5.01676 0.585381 5.00667 0.62L3.44 6.19333C3.36164 6.47277 3.19425 6.71901 2.96324 6.89468C2.73223 7.07034 2.45021 7.16584 2.16 7.16667H0.5" stroke="#0a0a0a" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
                         <span>저장</span>
                     </button>
                 </div>
@@ -379,20 +373,12 @@
                 <!-- Image Upload Section -->
                 <div class="section">
                     <div class="section-title">
-                        <svg class="section-icon" fill="none" viewBox="0 0 18 18">
-                            <path d="M15.75 2.25H2.25C1.42157 2.25 0.75 2.92157 0.75 3.75V14.25C0.75 15.0784 1.42157 15.75 2.25 15.75H15.75C16.5784 15.75 17.25 15.0784 17.25 14.25V3.75C17.25 2.92157 16.5784 2.25 15.75 2.25Z" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M6.375 7.5C7.20343 7.5 7.875 6.82843 7.875 6C7.875 5.17157 7.20343 4.5 6.375 4.5C5.54657 4.5 4.875 5.17157 4.875 6C4.875 6.82843 5.54657 7.5 6.375 7.5Z" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M17.25 11.25L13.5 7.5L2.25 15.75" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="대표 이미지" class="section-icon">
                         대표 이미지
                     </div>
                     <div class="image-upload-area">
                         <button class="upload-button" onclick="uploadImage()">
-                            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                                <path d="M14 10v2.667A1.334 1.334 0 0112.667 14H3.333A1.333 1.333 0 012 12.667V10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M11.333 5.333L8 2 4.667 5.333" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8 2v8" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
                             <span>이미지 업로드</span>
                         </button>
                     </div>
@@ -401,19 +387,13 @@
                 <!-- Basic Information Section -->
                 <div class="section">
                     <div class="section-title">
-                        <svg class="section-icon" fill="none" viewBox="0 0 18 18">
-                            <path d="M2.25 2.25H15.75V15.75H2.25V2.25Z" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M6 6H12" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M6 9.75H12" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/book.png" alt="기본 정보" class="section-icon">
                         기본 정보
                     </div>
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">
-                                <svg class="label-icon" fill="none" viewBox="0 0 14 14">
-                                    <path d="M7 1v12M1 7h12" stroke="#FFA366" stroke-width="1.5" stroke-linecap="round"/>
-                                </svg>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="헬스장 이름" class="label-icon">
                                 헬스장 이름
                             </label>
                             <input type="text" class="form-input" placeholder="피트니스 센터 강남점" id="gymName">
@@ -424,19 +404,14 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">
-                                <svg class="label-icon" fill="none" viewBox="0 0 14 14">
-                                    <path d="M12.25 5.833c0 4.084-5.25 7.584-5.25 7.584S1.75 9.917 1.75 5.833a5.25 5.25 0 1110.5 0z" stroke="#FFA366" stroke-width="1.5"/>
-                                    <circle cx="7" cy="5.833" r="1.75" stroke="#FFA366" stroke-width="1.5"/>
-                                </svg>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화번호" class="label-icon">
                                 전화번호
                             </label>
                             <input type="text" class="form-input" placeholder="02-1234-5678" id="gymPhone">
                         </div>
                         <div class="form-group">
                             <label class="form-label">
-                                <svg class="label-icon" fill="none" viewBox="0 0 14 14">
-                                    <path d="M7 12.833A5.833 5.833 0 107 1.167a5.833 5.833 0 000 11.666z" stroke="#FFA366" stroke-width="1.5"/>
-                                </svg>
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" class="label-icon">
                                 주소
                             </label>
                             <input type="text" class="form-input" placeholder="서울 강남구 테헤란로 123" id="gymAddress">
@@ -451,10 +426,7 @@
                 <!-- Membership Prices Section -->
                 <div class="section">
                     <div class="section-title">
-                        <svg class="section-icon" fill="none" viewBox="0 0 18 18">
-                            <path d="M9 16.5a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" stroke="#FF6B00" stroke-width="1.5"/>
-                            <path d="M9 4.5v7.5M11.625 6.75H8.25a1.125 1.125 0 100 2.25h1.5a1.125 1.125 0 010 2.25H6.375" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/money.png" alt="회원권 가격" class="section-icon">
                         회원권 가격
                     </div>
                     <div class="price-grid">
@@ -480,10 +452,7 @@
                 <!-- Operating Hours Section -->
                 <div class="section">
                     <div class="section-title">
-                        <svg class="section-icon" fill="none" viewBox="0 0 18 18">
-                            <path d="M9 16.5a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" stroke="#FF6B00" stroke-width="1.5"/>
-                            <path d="M9 4.5V9l3 1.5" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="운영 시간" class="section-icon">
                         운영 시간
                     </div>
 
@@ -523,10 +492,7 @@
                 <!-- Facilities Section -->
                 <div class="section">
                     <div class="section-title">
-                        <svg class="section-icon" fill="none" viewBox="0 0 18 18">
-                            <rect x="2.25" y="2.25" width="13.5" height="13.5" rx="2" stroke="#FF6B00" stroke-width="1.5"/>
-                            <path d="M6.75 8.25l1.5 1.5 3-3" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="시설 정보" class="section-icon">
                         시설 정보
                     </div>
                     <div class="facilities-label">제공하는 시설을 선택해주세요</div>
@@ -534,50 +500,31 @@
                     
                     <div class="facilities-grid">
                         <button class="facility-button" data-facility="24시간">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" stroke="#FFA366" stroke-width="2"/>
-                                <path d="M12 6v6l4 2" stroke="#FFA366" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="24시간" class="facility-icon">
                             <span>24시간</span>
                         </button>
                         <button class="facility-button" data-facility="주차가능">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <path d="M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2z" stroke="#FFA366" stroke-width="2"/>
-                                <path d="M9 10h2a1.5 1.5 0 010 3H9v-3zM9 7v10" stroke="#FFA366" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차가능" class="facility-icon">
                             <span>주차가능</span>
                         </button>
                         <button class="facility-button" data-facility="샤워실">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <path d="M12 2v6M9 4l3 3 3-3M12 18a2 2 0 100-4 2 2 0 000 4zM8 14l-2 2M16 14l2 2M12 14v8" stroke="#FFA366" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" class="facility-icon">
                             <span>샤워실</span>
                         </button>
                         <button class="facility-button" data-facility="락커실">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <rect x="4" y="3" width="16" height="18" rx="2" stroke="#FFA366" stroke-width="2"/>
-                                <circle cx="12" cy="13" r="2" stroke="#FFA366" stroke-width="2"/>
-                                <path d="M12 15v3" stroke="#FFA366" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커실" class="facility-icon">
                             <span>락커실</span>
                         </button>
                         <button class="facility-button" data-facility="무료 WiFi">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <path d="M5 12.55a11 11 0 0114.08 0M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke="#FFA366" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="무료 WiFi" class="facility-icon">
                             <span>무료 WiFi</span>
                         </button>
                         <button class="facility-button" data-facility="PT">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <circle cx="9" cy="7" r="4" stroke="#FFA366" stroke-width="2"/>
-                                <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2M16 11l2 2 4-4" stroke="#FFA366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="PT" class="facility-icon">
                             <span>PT</span>
                         </button>
                         <button class="facility-button" data-facility="GX 프로그램">
-                            <svg class="facility-icon" fill="none" viewBox="0 0 24 24">
-                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#FFA366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="GX 프로그램" class="facility-icon">
                             <span>GX 프로그램</span>
                         </button>
                     </div>

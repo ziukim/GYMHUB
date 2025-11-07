@@ -495,23 +495,31 @@
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-card-icon">🏋️</div>
+                <div class="stat-card-icon">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/machine.png" alt="운동 기구" style="width: 24px; height: 24px;">
+                </div>
                 <div class="stat-card-label">운동 기구</div>
                 <div class="stat-card-value">43개</div>
                 <div class="stat-card-sub">전체 기구수</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-icon">✅</div>
+                <div class="stat-card-icon">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="정상" style="width: 24px; height: 24px;">
+                </div>
                 <div class="stat-card-value">42개</div>
                 <div class="stat-card-sub">정상</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-icon">🛠️</div>
+                <div class="stat-card-icon">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/inspection.png" alt="수리" style="width: 24px; height: 24px;">
+                </div>
                 <div class="stat-card-value">2개</div>
                 <div class="stat-card-sub">점검</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-icon">⚠️</div>
+                <div class="stat-card-icon">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="경고" style="width: 24px; height: 24px;">
+                </div>
                 <div class="stat-card-value">1개</div>
                 <div class="stat-card-sub">고장</div>
             </div>
