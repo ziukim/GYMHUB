@@ -11,19 +11,14 @@ public class MemberController {
         return "member/memberDashboard";
     }
 
-    @GetMapping("/booking/booking")
-    public String Booking() {
-        return "booking/booking";
-    }
-
-    @GetMapping("/member/videolist")
+    @GetMapping("/member/violist")
     public String memberVideoList() { return "member/memberVideoList"; }
 
     @GetMapping("/member/info")
     public String memberInfo() { return "member/memberInfo"; }
 
     @GetMapping("/notice")
-    public String memberNotice() { return "member/noticeList"; }
+    public String memberNotice() { return "notice/noticeList"; }
 
     @GetMapping("/schedule")
     public String memberPtSchedule() { return "member/ptSchedule"; }

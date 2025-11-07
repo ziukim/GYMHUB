@@ -171,8 +171,11 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
 
+        <!-- notice 폴더에 있는 jsp 파일들은 모두 C:if 를 사용하여, 회원 타입 별 사이드바가 다르게 나오도록 해야한다. -->
+        <!--include page="../common/sidebar/sidebarMember.jsp.jsp" />
+        jsp:include page="../common/sidebar/sidebarTrainer.jsp.jsp" -->
+        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->

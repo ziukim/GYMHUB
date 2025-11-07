@@ -325,7 +325,9 @@
 <div id="gh-logout-modal" class="gh-modal hidden" aria-hidden="true">
     <div class="gh-modal__overlay" data-close="true"></div>
     <div class="gh-modal__box" role="dialog" aria-modal="true" aria-labelledby="gh-logout-title">
-        <div class="gh-modal__icon">⚠️</div>
+        <div class="gh-modal__icon">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/warning.png" alt="경고" style="width: 32px; height: 32px;">
+        </div>
         <h3 id="gh-logout-title" class="gh-modal__title">로그아웃 하시겠습니까?</h3>
         <p class="gh-modal__desc">현재 세션이 종료되고 메인 화면으로 이동합니다.</p>
         <div class="gh-modal__actions">
