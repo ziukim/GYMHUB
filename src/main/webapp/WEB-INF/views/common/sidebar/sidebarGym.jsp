@@ -341,9 +341,8 @@
             <span>물품관리</span>
         </a>
 
-<<<<<<< HEAD
         <a href="${pageContext.request.contextPath}/ticket.gym" class="nav-item">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/book.png" alt="이용권 관리" class="nav-icon">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="이용권 관리" class="nav-icon">
             <span>이용권 관리</span>
         </a>
 
@@ -367,28 +366,6 @@
             <span>트레이너 관리</span>
         </a>
 
-=======
-        <a href="${pageContext.request.contextPath}/video.gym" class="nav-item">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="영상관리" class="nav-icon">
-            <span>영상관리</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/gym/info.gym" class="nav-item">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 정보 관리" class="nav-icon">
-            <span>헬스장 정보 관리</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/notice.no" class="nav-item">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/campaign.png" alt="공지사항" class="nav-icon">
-            <span>공지사항</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/trainer.gym" class="nav-item">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너 관리" class="nav-icon">
-            <span>트레이너 관리</span>
-        </a>
-
->>>>>>> 7ac563c3d9bd457e2e6176a95c92c33402e6afaa
         <a href="${pageContext.request.contextPath}/ptBoard.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="PT 관리" class="nav-icon">
             <span>PT 관리</span>
@@ -405,7 +382,9 @@
 <div id="gh-logout-modal" class="gh-modal hidden" aria-hidden="true">
     <div class="gh-modal__overlay" data-close="true"></div>
     <div class="gh-modal__box" role="dialog" aria-modal="true" aria-labelledby="gh-logout-title">
-        <div class="gh-modal__icon">⚠️</div>
+        <div class="gh-modal__icon">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/warning.png" alt="경고" style="width: 32px; height: 32px;">
+        </div>
         <h3 id="gh-logout-title" class="gh-modal__title">로그아웃 하시겠습니까?</h3>
         <p class="gh-modal__desc">현재 세션이 종료되고 메인 화면으로 이동합니다.</p>
         <div class="gh-modal__actions">

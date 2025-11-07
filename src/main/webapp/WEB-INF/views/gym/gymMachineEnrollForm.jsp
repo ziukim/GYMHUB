@@ -149,7 +149,9 @@
                     <div class="equipment-content">
                         <!-- Image Upload -->
                         <div class="image-upload-area" onclick="document.getElementById('imageInput1').click()">
-                            <div class="upload-icon">📷</div>
+                            <div class="upload-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 48px; height: 48px;">
+                            </div>
                             <div class="upload-text">클릭하여 이미지 업로드</div>
                             <div class="upload-subtext">JPG, PNG 파일 (최대 5MB)</div>
                         </div>
@@ -205,7 +207,9 @@
 
                 <div class="equipment-content">
                     <div class="image-upload-area" onclick="document.getElementById('imageInput${equipmentCount}').click()">
-                        <div class="upload-icon">📷</div>
+                        <div class="upload-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 48px; height: 48px;">
+                        </div>
                         <div class="upload-text">클릭하여 이미지 업로드</div>
                         <div class="upload-subtext">JPG, PNG 파일 (최대 5MB)</div>
                     </div>
