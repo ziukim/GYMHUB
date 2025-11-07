@@ -1123,11 +1123,11 @@
             <div class="modal-date-row">
                 <div class="modal-form-group">
                     <label>시작일 <span class="required">*</span></label>
-                    <input type="date" class="modal-input" id="startDateInput" onchange="calculateEndDate()">
+                    <input type="text" class="date-input-field" id="startDateInput" placeholder="날짜를 선택하세요" readonly onclick="openStartDateCalendar()">
                 </div>
                 <div class="modal-form-group">
                     <label>만료일 <span class="required">*</span></label>
-                    <input type="date" class="modal-input" id="endDateInput">
+                    <input type="text" class="modal-input" id="endDateInput" placeholder="자동 계산됩니다" readonly>
                 </div>
             </div>
 
@@ -1272,6 +1272,31 @@
     </div>
 </div>
 
+<!-- 달력 팝업 -->
+<div class="calendar-overlay" id="startDateCalendarOverlay" onclick="closeCalendarOnOverlay(event, 'startDateCalendarOverlay')">
+    <div class="calendar-popup" onclick="event.stopPropagation()">
+        <div class="calendar-header">
+            <button type="button" class="calendar-nav-btn" onclick="prevMonthStartDate()">◀</button>
+            <div class="calendar-month" id="startDateCalendarMonth"></div>
+            <button type="button" class="calendar-nav-btn" onclick="nextMonthStartDate()">▶</button>
+        </div>
+
+        <div class="calendar-weekdays">
+            <div class="calendar-weekday">일</div>
+            <div class="calendar-weekday">월</div>
+            <div class="calendar-weekday">화</div>
+            <div class="calendar-weekday">수</div>
+            <div class="calendar-weekday">목</div>
+            <div class="calendar-weekday">금</div>
+            <div class="calendar-weekday">토</div>
+        </div>
+
+        <div class="calendar-days" id="startDateCalendarDays"></div>
+
+        <button type="button" class="calendar-close-btn" onclick="closeStartDateCalendar()">확인</button>
+    </div>
+</div>
+
 <script>
     // 회원 필터링 함수
     function filterMembers(status) {
@@ -1308,10 +1333,13 @@
         document.getElementById('startDateInput').value = '';
         const endDateInput = document.getElementById('endDateInput');
         endDateInput.value = '';
-        endDateInput.readOnly = false;
         document.getElementById('lockerInput').value = '';
         // 프로필 카드 숨기기
         document.getElementById('memberProfileCard').style.display = 'none';
+        // 달력 변수 초기화
+        startDateSelected = null;
+        startDateTempSelected = null;
+        startDateCurrentMonth = new Date();
     }
 
     // 아이디 조회 함수
@@ -1449,7 +1477,7 @@
         const membershipDisplay = document.getElementById('membershipDisplay').textContent;
 
         // 시작일이 선택되지 않았으면 리턴
-        if (!startDateInput.value) {
+        if (!startDateInput.value || !startDateSelected) {
             return;
         }
 
@@ -1457,6 +1485,8 @@
         if (!membershipDisplay) {
             alert('먼저 이용권을 선택해주세요.');
             startDateInput.value = '';
+            startDateSelected = null;
+            startDateTempSelected = null;
             return;
         }
 
@@ -1490,12 +1520,8 @@
             return;
         }
 
-        // 시작일을 파싱 (timezone 문제 방지를 위해 직접 파싱)
-        const [startYear, startMonth, startDay] = startDateInput.value.split('-').map(Number);
-        const startDate = new Date(startYear, startMonth - 1, startDay);
-        
         // 종료일 계산
-        const endDate = new Date(startDate.getTime());
+        const endDate = new Date(startDateSelected.getTime());
         endDate.setDate(endDate.getDate() + maxDays);
 
         // 종료일을 YYYY-MM-DD 형식으로 변환
@@ -1506,7 +1532,6 @@
 
         // 종료일 필드에 설정
         endDateInput.value = endDateString;
-        endDateInput.readOnly = true;
     }
 
     // 이용권 선택 모달 외부 클릭 시 닫기
@@ -1698,6 +1723,117 @@
             document.querySelector('.header-info p').textContent = '전체 ' + totalRows + '명';
 
             alert(name + ' 회원을 삭제했습니다.');
+        }
+    }
+
+    // ========================================
+    // 달력 관련 함수
+    // ========================================
+    
+    let startDateCurrentMonth = new Date();
+    let startDateTempSelected = null;
+    let startDateSelected = null;
+
+    // 달력 열기
+    function openStartDateCalendar() {
+        document.getElementById('startDateCalendarOverlay').classList.add('show');
+        renderStartDateCalendar();
+    }
+
+    // 달력 닫기
+    function closeStartDateCalendar() {
+        document.getElementById('startDateCalendarOverlay').classList.remove('show');
+        if (startDateTempSelected) {
+            startDateSelected = startDateTempSelected;
+            updateStartDateDisplay();
+            calculateEndDate();
+        }
+    }
+
+    // 오버레이 클릭 시 닫기
+    function closeCalendarOnOverlay(event, overlayId) {
+        if (event.target === event.currentTarget) {
+            if (overlayId === 'startDateCalendarOverlay') {
+                closeStartDateCalendar();
+            }
+        }
+    }
+
+    // 이전 달
+    function prevMonthStartDate() {
+        startDateCurrentMonth.setMonth(startDateCurrentMonth.getMonth() - 1);
+        renderStartDateCalendar();
+    }
+
+    // 다음 달
+    function nextMonthStartDate() {
+        startDateCurrentMonth.setMonth(startDateCurrentMonth.getMonth() + 1);
+        renderStartDateCalendar();
+    }
+
+    // 달력 렌더링
+    function renderStartDateCalendar() {
+        const year = startDateCurrentMonth.getFullYear();
+        const month = startDateCurrentMonth.getMonth();
+
+        document.getElementById('startDateCalendarMonth').textContent =
+            year + '년 ' + (month + 1) + '월';
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        const daysContainer = document.getElementById('startDateCalendarDays');
+        daysContainer.innerHTML = '';
+
+        // 빈 칸 채우기
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDay = document.createElement('div');
+            daysContainer.appendChild(emptyDay);
+        }
+
+        // 날짜 채우기
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.textContent = day;
+
+            const currentDate = new Date(year, month, day);
+
+            // 과거 날짜는 비활성화
+            if (currentDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                dayElement.classList.add('disabled');
+            } else {
+                // 선택된 날짜 표시
+                if (startDateTempSelected &&
+                    startDateTempSelected.getDate() === day &&
+                    startDateTempSelected.getMonth() === month &&
+                    startDateTempSelected.getFullYear() === year) {
+                    dayElement.classList.add('selected');
+                }
+
+                dayElement.onclick = function() {
+                    document.querySelectorAll('#startDateCalendarDays .calendar-day.selected').forEach(d => {
+                        d.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    startDateTempSelected = new Date(year, month, day);
+                };
+            }
+
+            daysContainer.appendChild(dayElement);
+        }
+    }
+
+    // 시작일 표시 업데이트
+    function updateStartDateDisplay() {
+        if (startDateSelected) {
+            const year = startDateSelected.getFullYear();
+            const month = String(startDateSelected.getMonth() + 1).padStart(2, '0');
+            const day = String(startDateSelected.getDate()).padStart(2, '0');
+
+            const dateString = year + '-' + month + '-' + day;
+            document.getElementById('startDateInput').value = dateString;
         }
     }
 </script>

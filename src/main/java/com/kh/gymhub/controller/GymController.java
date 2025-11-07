@@ -61,4 +61,7 @@ public class GymController {
         return "gym/gymProductManagement";
     }
 
+    @GetMapping("/ticket.gym")
+    public String ticketManagement() { return "gym/gymTicketManagement"; }
+
 }
