@@ -104,7 +104,7 @@
         #{memberName},
         #{memberAddress},
         #{memberPhone},
-        TO_DATE(#{memberBirth}, 'YYYYMMDD'),
+        #{memberBirth},
         #{memberEmail},
         #{trainerLicense},
         #{trainerCareer},
