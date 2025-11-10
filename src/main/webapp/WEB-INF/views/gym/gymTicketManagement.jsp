@@ -285,7 +285,7 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="page-intro">
+        <div class="page-header">
             <h1>이용권 관리</h1>
             <p>헬스장 이용권, PT, 락커를 관리합니다</p>
         </div>

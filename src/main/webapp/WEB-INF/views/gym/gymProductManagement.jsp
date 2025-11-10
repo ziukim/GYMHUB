@@ -18,29 +18,9 @@
         /* Header */
         .page-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            background: transparent;
-            border: none;
-            color: #ff6b00;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            transition: transform 0.2s;
-        }
-
-        .back-button:hover {
-            transform: translateX(-3px);
         }
 
         /* Stats Grid */
@@ -354,8 +334,6 @@
                 <p>헬스장의 회원권과 재고를 등록하고 관리하세요</p>
             </div>
             <div class="page-header">
-                <div class="header-left">
-                </div>
                 <button class="add-button" onclick="openAddModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 재고 추가
                 </button>
@@ -627,15 +605,7 @@
                     </div>
                     <div class="modal-form-group">
                         <label class="modal-label">관리 재고 수량 <span style="color: #ff6b00;">*</span></label>
-                        <select class="modal-select" id="inventoryQuantitySelect" required>
-                            <option value="">수량 선택</option>
-                            <option value="1">1개</option>
-                            <option value="5">5개</option>
-                            <option value="10">10개</option>
-                            <option value="20">20개</option>
-                            <option value="50">50개</option>
-                            <option value="100">100개</option>
-                        </select>
+                        <input type="number" class="modal-input" id="inventoryQuantitySelect" placeholder="수량을 입력하세요" required min="1">
                     </div>
                 </form>
             </div>

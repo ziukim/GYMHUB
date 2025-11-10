@@ -337,7 +337,7 @@
         </a>
 
         <a href="${pageContext.request.contextPath}/product.gym" class="nav-item">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/book.png" alt="물품관리" class="nav-icon">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="물품관리" class="nav-icon">
             <span>물품관리</span>
         </a>
 

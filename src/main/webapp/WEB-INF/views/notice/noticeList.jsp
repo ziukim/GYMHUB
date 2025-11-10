@@ -215,6 +215,42 @@
                 margin-left: 0 !important;
             }
         }
+        /* 고정 아이콘 */
+        .pin-button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .pin-button img {
+            width: 20px;
+            height: 20px;
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+
+        .pin-button:hover img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .pin-button.pinned img {
+            opacity: 1;
+        }
+
+        .notice-card.pinned {
+            border-color: #ffc107;
+            background-color: rgba(255, 193, 7, 0.05);
+        }
+
+        .notice-header {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -370,6 +406,127 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+        });
+        // 고정된 공지사항 ID 저장
+        let pinnedNotices = JSON.parse(localStorage.getItem('pinnedNotices') || '[]');
+
+        // 페이지 로드 시 모든 게시글에 핀 버튼 추가
+        window.addEventListener('load', function() {
+            const noticeCards = document.querySelectorAll('.notice-card');
+
+            noticeCards.forEach((card, index) => {
+                // data-notice-id 자동 추가
+                if (!card.getAttribute('data-notice-id')) {
+                    card.setAttribute('data-notice-id', index + 1);
+                }
+
+                const noticeId = card.getAttribute('data-notice-id');
+                const header = card.querySelector('.notice-header');
+
+                // 핀 버튼이 없으면 추가
+                if (!header.querySelector('.pin-button')) {
+                    const pinButton = document.createElement('button');
+                    pinButton.className = 'pin-button';
+                    pinButton.innerHTML = '<img src="${pageContext.request.contextPath}/resources/images/icon/pin.png" alt="고정">';
+                    pinButton.onclick = function(e) {
+                        e.stopPropagation();
+                        togglePin(this, noticeId);
+                    };
+                    header.appendChild(pinButton);
+                }
+
+                // 고정 상태 복원
+                if (pinnedNotices.includes(noticeId)) {
+                    card.classList.add('pinned');
+                    const pinButton = header.querySelector('.pin-button');
+                    pinButton.classList.add('pinned');
+                    pinButton.querySelector('img').src = '${pageContext.request.contextPath}/resources/images/icon/onpin.png';
+                }
+            });
+
+            sortNotices();
+
+            // 카드 진입 애니메이션
+            const cards = document.querySelectorAll('.notice-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // 고정 토글 함수
+        function togglePin(button, noticeId) {
+            const card = button.closest('.notice-card');
+            const isPinned = card.classList.contains('pinned');
+            const pinImg = button.querySelector('img');
+
+            if (isPinned) {
+                // 고정 해제
+                card.classList.remove('pinned');
+                button.classList.remove('pinned');
+                pinImg.src = '${pageContext.request.contextPath}/resources/images/icon/pin.png';
+                pinnedNotices = pinnedNotices.filter(id => id !== noticeId);
+            } else {
+                // 고정
+                card.classList.add('pinned');
+                button.classList.add('pinned');
+                pinImg.src = '${pageContext.request.contextPath}/resources/images/icon/onpin.png';
+                if (!pinnedNotices.includes(noticeId)) {
+                    pinnedNotices.push(noticeId);
+                }
+            }
+
+            localStorage.setItem('pinnedNotices', JSON.stringify(pinnedNotices));
+            sortNotices();
+        }
+
+        // 공지사항 정렬 (고정된 것이 위로)
+        function sortNotices() {
+            const noticeList = document.getElementById('noticeList');
+            const notices = Array.from(noticeList.querySelectorAll('.notice-card'));
+
+            notices.sort((a, b) => {
+                const aPinned = a.classList.contains('pinned');
+                const bPinned = b.classList.contains('pinned');
+
+                if (aPinned && !bPinned) return -1;
+                if (!aPinned && bPinned) return 1;
+                return 0;
+            });
+
+            notices.forEach(notice => noticeList.appendChild(notice));
+        }
+
+        // 검색 기능
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const noticeCards = document.querySelectorAll('.notice-card');
+            const emptyState = document.getElementById('emptyState');
+            let hasVisibleCard = false;
+
+            noticeCards.forEach(card => {
+                const title = card.querySelector('.notice-title').textContent.toLowerCase();
+                const content = card.querySelector('.notice-content').textContent.toLowerCase();
+                const author = card.querySelector('.notice-meta-item span').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || content.includes(searchTerm) || author.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    hasVisibleCard = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (!hasVisibleCard && searchTerm !== '') {
+                emptyState.classList.add('active');
+            } else {
+                emptyState.classList.remove('active');
+            }
         });
     </script>
 </body>

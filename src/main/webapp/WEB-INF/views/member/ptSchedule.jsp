@@ -365,7 +365,6 @@
             <div class="tab-list">
                 <button class="tab-button active" onclick="changeTab('upcoming')">예정된 PT</button>
                 <button class="tab-button" onclick="changeTab('completed')">완료된 PT</button>
-                <button class="tab-button" onclick="changeTab('workout')">운동 기록</button>
             </div>
         </div>
         <!-- Upcoming Schedules -->
