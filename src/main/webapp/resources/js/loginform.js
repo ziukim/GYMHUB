@@ -392,5 +392,37 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = contextPath + '/booking/booking';
         });
     }
+
+    // 기구 목록 모달 관련
+    const equipmentListModal = document.getElementById('equipmentListModal');
+    const closeEquipmentListModal = document.getElementById('closeEquipmentListModal');
+
+    // 기구 더보기 버튼 클릭 시 모달 열기 (이벤트 위임 사용)
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('more-text')) {
+            e.stopPropagation(); // 이벤트 버블링 방지
+            if (equipmentListModal) {
+                equipmentListModal.classList.add('active');
+            }
+        }
+    });
+
+    // 기구 목록 모달 닫기
+    if (closeEquipmentListModal) {
+        closeEquipmentListModal.addEventListener('click', () => {
+            if (equipmentListModal) {
+                equipmentListModal.classList.remove('active');
+            }
+        });
+    }
+
+    // 기구 목록 모달 외부 클릭 시 닫기
+    if (equipmentListModal) {
+        equipmentListModal.addEventListener('click', (e) => {
+            if (e.target === equipmentListModal) {
+                equipmentListModal.classList.remove('active');
+            }
+        });
+    }
 });
 

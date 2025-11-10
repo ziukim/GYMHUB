@@ -202,7 +202,7 @@
 
         .gym-title {
             font-size: 18px;
-            color: #ff6b00;
+            color: white;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -579,7 +579,7 @@
 
         .gym-detail-modal .section-title {
             font-size: 18px;
-            color: #ff6b00;
+            color: white;
             margin-bottom: 12px;
             font-weight: bold;
         }
