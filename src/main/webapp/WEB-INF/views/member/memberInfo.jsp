@@ -200,17 +200,17 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <label class="info-label">연락처</label>
-                            <p class="info-value">${loginMember.phone}</p>
+                            <p class="info-value">${loginMember.memberPhone}</p>
                         </div>
                         <div class="info-item">
                             <label class="info-label">이메일</label>
-                            <p class="info-value">${loginMember.email}</p>
+                            <p class="info-value">${loginMember.memberEmail}</p>
                         </div>
                     </div>
 
                     <div class="info-item full-width">
                         <label class="info-label">주소</label>
-                        <p class="info-value">${loginMember.address}</p>
+                        <p class="info-value">${loginMember.memberAddress}</p>
                     </div>
 
                     <div class="info-item">
@@ -408,16 +408,16 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">연락처</label>
-                        <input type="text" name="phone" class="modal-input" value="${loginMember.phone}">
+                        <input type="text" name="phone" class="modal-input" value="${loginMember.memberPhone}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">이메일</label>
-                        <input type="email" name="email" class="modal-input" value="${loginMember.email}">
+                        <input type="email" name="email" class="modal-input" value="${loginMember.memberEmail}">
                     </div>
                 </div>
                 <div class="modal-form-group">
                     <label class="modal-label">주소</label>
-                    <input type="text" name="address" class="modal-input" value="${loginMember.address}">
+                    <input type="text" name="address" class="modal-input" value="${loginMember.memberAddress}">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">취소</button>

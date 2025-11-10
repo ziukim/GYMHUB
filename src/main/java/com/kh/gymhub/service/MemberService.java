@@ -6,4 +6,5 @@ public interface MemberService {
     Member getMemberById(String memberId);
     int getMemberCountById(String memberId);
     int addMember(Member member);
+    Member login(String memberId, String memberPwd);
 }

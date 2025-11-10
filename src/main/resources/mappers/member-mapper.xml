@@ -53,6 +53,30 @@
         WHERE MEMBER_ID = #{memberId}
     </select>
 
+    <!-- 로그인용 회원 조회 (아이디와 상태만 확인) -->
+    <select id="getMemberForLogin" parameterType="string" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+        AND STATUS = 'Y'
+    </select>
+
     <insert id="addMember" parameterType="Member">
         <selectKey keyProperty="memberNo" resultType="_int" order="BEFORE">
             SELECT SEQ_MNO.NEXTVAL FROM DUAL
