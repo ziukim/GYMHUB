@@ -844,6 +844,124 @@
             gap: 20px;
         }
 
+        /* ========================================
+           헬스장 운영자 선택 모달 스타일 (원래 adminSelect 디자인)
+           ======================================== */
+        .gym-select-modal .modal-container {
+            background: linear-gradient(145deg, #2D1810 0%, #1a0f0a 100%);
+            border: 3px solid #FF6B00;
+            border-radius: 30px;
+            padding: 60px 50px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .gym-select-modal .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .gym-select-modal .welcome-title {
+            font-size: 32px;
+            color: #FF6B00;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .gym-select-modal .welcome-subtitle {
+            font-size: 18px;
+            color: #FFA366;
+            margin-bottom: 50px;
+            font-weight: 500;
+        }
+
+        .gym-select-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .gym-select-menu-card {
+            background: linear-gradient(145deg, rgba(255, 107, 0, 0.1) 0%, rgba(45, 24, 16, 0.3) 100%);
+            border: 3px solid #FF6B00;
+            border-radius: 20px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gym-select-menu-card:hover {
+            transform: translateY(-10px);
+            background: linear-gradient(145deg, rgba(255, 107, 0, 0.2) 0%, rgba(45, 24, 16, 0.5) 100%);
+        }
+
+        .gym-select-menu-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: rgba(138, 106, 80, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .gym-select-menu-card:hover .gym-select-menu-icon {
+            background: rgba(255, 107, 0, 0.3);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .gym-select-menu-icon svg {
+            color: #8A6A50;
+            transition: all 0.3s ease;
+        }
+
+        .gym-select-menu-card:hover .gym-select-menu-icon svg {
+            color: #FF6B00;
+        }
+
+        .gym-select-menu-title {
+            font-size: 24px;
+            color: #FFA366;
+            margin-bottom: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .gym-select-menu-card:hover .gym-select-menu-title {
+            color: #FF6B00;
+        }
+
+        .gym-select-menu-description {
+            font-size: 15px;
+            color: #8A6A50;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .gym-select-modal .modal-container {
+                padding: 40px 30px;
+            }
+
+            .gym-select-menu-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .gym-select-modal .welcome-title {
+                font-size: 26px;
+            }
+        }
+
         .equipment-card {
             background-color: #1a0f0a;
             border: 1px solid #ff6b00;
@@ -944,13 +1062,20 @@
         <span class="logo-text">GYMHub</span>
     </div>
     <div class="header-buttons">
-        <a href="${pageContext.request.contextPath}/member/dashboard" class="btn btn-secondary" style="margin-right: 10px;">회원 대시보드</a>
-        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary" style="margin-right: 10px;">트레이너 대시보드</a>
-        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary" style="margin-right: 10px;">헬스장 대시보드</a>
         <c:choose>
             <c:when test="${not empty loginMember}">
-                <span class="welcome-message">${loginMember.name}님 환영합니다</span>
-                <button class="btn btn-secondary" id="logoutBtn">로그아웃</button>
+                <span class="welcome-message">${loginMember.memberName}님 환영합니다</span>
+                <c:choose>
+                    <c:when test="${loginMember.memberType == 1}">
+                        <a href="${pageContext.request.contextPath}/member.dashboard" class="btn btn-secondary">마이페이지</a>
+                    </c:when>
+                    <c:when test="${loginMember.memberType == 2}">
+                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">대시보드</a>
+                    </c:when>
+                    <c:when test="${loginMember.memberType == 3}">
+                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>
+                    </c:when>
+                </c:choose>
             </c:when>
             <c:otherwise>
                 <button class="btn btn-secondary" id="loginBtn">로그인</button>
@@ -1475,6 +1600,44 @@
     </div>
 </div>
 
+<!-- 헬스장 운영자 선택 모달 (원래 adminSelect 디자인) -->
+<div class="modal-overlay gym-select-modal" id="gymSelectModal">
+    <div class="modal-container">
+        <button class="modal-close" id="closeGymSelectModal" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #ff6b00; font-size: 24px; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; z-index: 10;">×</button>
+        
+        <div class="logo-section">
+            <span class="logo-text" style="font-size: 42px; color: #FF6B00; font-weight: 900;">GYMHub</span>
+        </div>
+
+        <h1 class="welcome-title">관리자 메뉴</h1>
+        <p class="welcome-subtitle">헬스장 운영자님, 환영합니다!</p>
+
+        <div class="gym-select-menu-grid">
+            <div class="gym-select-menu-card" id="attendanceCard">
+                <div class="gym-select-menu-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 class="gym-select-menu-title">출석 관리</h3>
+                <p class="gym-select-menu-description">회원 출석체크 및<br>퇴실 처리</p>
+            </div>
+
+            <div class="gym-select-menu-card" id="adminDashboardCard">
+                <div class="gym-select-menu-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 class="gym-select-menu-title">관리자 페이지</h3>
+                <p class="gym-select-menu-description">헬스장 운영 관리 및<br>통계 확인</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 기구 목록 모달 -->
 <div class="modal-overlay equipment-list-modal" id="equipmentListModal">
     <div class="modal-container">
@@ -1615,6 +1778,34 @@
                 this.src = 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=550';
             });
         }
+
+        // 로그인 성공/실패 메시지 표시
+        <c:if test="${not empty alertMsg}">
+            alert('${alertMsg}');
+            <c:remove var="alertMsg" scope="session"/>
+        </c:if>
+        <c:if test="${not empty errorMsg}">
+            alert('${errorMsg}');
+            <c:remove var="errorMsg" scope="session"/>
+        </c:if>
+        
+        // 로그아웃 메시지 표시 (URL 파라미터 확인)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('logout') === 'success') {
+            alert('로그아웃되었습니다.');
+            // URL에서 파라미터 제거
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // 헬스장 운영자 선택 모달 표시
+        <c:if test="${not empty showGymSelectModal && showGymSelectModal == true}">
+            const gymSelectModal = document.getElementById('gymSelectModal');
+            if (gymSelectModal) {
+                gymSelectModal.classList.add('active');
+            }
+            // 세션에서 플래그 제거 (한 번만 표시)
+            <c:remove var="showGymSelectModal" scope="session"/>
+        </c:if>
     });
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>
