@@ -676,13 +676,13 @@ INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '일산 피트니스', '윤관장', 
 -- ============================================
 
 -- 5. GYM_DETAIL (헬스장 상세보기) - GYM_DETAIL_NO, GYM_NO만 NOT NULL
-INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '최신 시설과 전문 트레이너가 있는 프리미엄 헬스장', '주차장,샤워실,락커룸,사우나,GX룸', '서울 강남구 테헤란로 123, 3층', '06:00-23:00', '08:00-20:00', 1);
+INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '최신 시설과 전문 트레이너가 있는 프리미엄 헬스장', '주차장,샤워실,락커룸,사우나,GX프로그램,무료wifi,24시간', '서울 강남구 테헤란로 123, 3층', '00:00-24:00', '00:00-24:00', 1);
 INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '젊은 분위기의 감성 헬스클럽', '주차장,샤워실,락커룸,카페테리아', '서울 마포구 홍익로 456, 2층', '07:00-22:00', '09:00-19:00', 2);
-INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '판교 최대 규모 종합 스포츠센터', '주차장,샤워실,락커룸,사우나,수영장,GX룸,농구장', '경기 성남시 분당구 판교로 789, 지하1층-2층', '05:00-24:00', '07:00-22:00', 3);
-INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '올림픽공원 인근 프리미엄 피트니스', '주차장,샤워실,락커룸,사우나,GX룸,PT룸', '서울 송파구 올림픽로 321, 4층', '06:00-23:00', '08:00-21:00', 4);
-INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '대학가 저렴한 헬스장', '샤워실,락커룸', '서울 서대문구 신촌로 654, 지하1층', '00:00-24:00', '00:00-24:00', 5);
-INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '수원 광교 신도시 스포츠클럽', '주차장,샤워실,락커룸,사우나,GX룸,필라테스룸', '경기 수원시 영통구 광교로 987, 1-2층', '06:00-23:00', '08:00-20:00', 6);
-INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '분당 정자동 커뮤니티 헬스장', '주차장,샤워실,락커룸,GX룸', '경기 성남시 분당구 정자로 147, 3층', '07:00-22:00', '09:00-19:00', 7);
+INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '판교 최대 규모 종합 스포츠센터', '주차장,샤워실,락커룸,사우나,수영장,GX프로그램', '경기 성남시 분당구 판교로 789, 지하1층-2층', '05:00-24:00', '07:00-22:00', 3);
+INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '올림픽공원 인근 프리미엄 피트니스', '주차장,샤워실,락커룸,사우나,GX프로그램,PT', '서울 송파구 올림픽로 321, 4층', '06:00-23:00', '08:00-21:00', 4);
+INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '대학가 저렴한 헬스장', '샤워실,락커룸,24시간', '서울 서대문구 신촌로 654, 지하1층', '00:00-24:00', '00:00-24:00', 5);
+INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '수원 광교 신도시 스포츠클럽', '주차장,샤워실,락커룸,사우나,GX프로그램,필라테스', '경기 수원시 영통구 광교로 987, 1-2층', '00:00-23:00', '00:00-24:00', 6);
+INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '분당 정자동 커뮤니티 헬스장', '주차장,샤워실,락커룸,무료wifi,GX프로그램', '경기 성남시 분당구 정자로 147, 3층', '07:00-22:00', '09:00-19:00', 7);
 INSERT INTO GYM_DETAIL VALUES (SEQ_GYM_DETAIL_NO.NEXTVAL, '일산 중심가 프리미엄 피트니스', '주차장,샤워실,락커룸,사우나,카페', '경기 고양시 일산동구 중앙로 258, 5층', '06:00-23:00', '08:00-21:00', 8);
 
 -- 6. YOUTUBE_URL (운동영상목록) - YOUTUBE_URL_NO, GYM_NO만 NOT NULL
