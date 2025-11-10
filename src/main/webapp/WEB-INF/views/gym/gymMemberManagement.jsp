@@ -894,6 +894,184 @@
             color: white;
         }
 
+        /* 달력 팝업 스타일 */
+        .calendar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1100;
+        }
+
+        .calendar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .calendar-popup {
+            background-color: #1a0f0a;
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav-btn {
+            background-color: transparent;
+            border: 1px solid #ff6b00;
+            color: #ff6b00;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .calendar-nav-btn:hover {
+            background-color: #ff6b00;
+            color: white;
+        }
+
+        .calendar-month {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b00;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-size: 14px;
+            color: #ffa366;
+            font-weight: 500;
+            padding: 8px 0;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .calendar-day:hover:not(.disabled):not(.empty) {
+            background-color: rgba(255, 107, 0, 0.2);
+            border-color: #ff6b00;
+        }
+
+        .calendar-day.selected {
+            background-color: #ff6b00;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.disabled {
+            color: #666;
+            cursor: not-allowed;
+            opacity: 0.3;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+        }
+
+        .calendar-close-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #ff6b00;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .calendar-close-btn:hover {
+            background-color: #ff8500;
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+        }
+
+        /* 날짜 입력 필드 공통 스타일 */
+        .date-input-field {
+            flex: 1;
+            background-color: #2d1810;
+            border: 1px solid #ff6b00;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .date-input-field:focus {
+            outline: none;
+            border-color: #ffa366;
+            box-shadow: 0 0 8px rgba(255, 107, 0, 0.3);
+        }
+
+        .date-input-field::placeholder {
+            color: #666;
+        }
+
+        /* ✅ 모달 z-index 우선순위 설정 */
+        .modal-overlay {
+            z-index: 1000;
+        }
+
+        #membershipSelectModal {
+            z-index: 1100;
+        }
+
+        #lockerSelectModal {
+            z-index: 1100;
+        }
+
         /* 반응형 */
         @media (max-width: 768px) {
             .main-content {
@@ -910,10 +1088,6 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <div class="page-intro">
-            <h1>회원 관리</h1>
-            <p>헬스장 회원 정보를 확인하고 관리하세요</p>
-        </div>
         <div class="content-container">
             <!-- Header -->
             <div class="content-header">
@@ -1301,8 +1475,111 @@
     </div>
 </div>
 
+<!-- Modal: 회원 정보 수정 -->
+<div class="modal-overlay" id="editMemberModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title-section">
+                <h2>회원 정보 수정</h2>
+                <p>회원 정보를 수정할 수 있습니다.</p>
+            </div>
+            <button class="modal-close-btn" onclick="closeEditMemberModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <!-- 회원 프로필 카드 -->
+            <div class="member-profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-avatar">
+                        <img id="editProfileAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23ff6b00'/%3E%3Ctext x='30' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E김%3C/text%3E%3C/svg%3E" alt="프로필">
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="editProfileName">김회원</div>
+                        <div class="profile-id" id="editProfileId">010015</div>
+                    </div>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-detail-row">
+                        <span class="profile-label">연락처</span>
+                        <span class="profile-value" id="editProfilePhone">010-1234-5678</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="profile-label">이메일</span>
+                        <span class="profile-value" id="editProfileEmail">hong@example.com</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="profile-label">주소</span>
+                        <span class="profile-value" id="editProfileAddress">서울시 강남구 테헤란로 123</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 이용권 정보 -->
+            <div class="modal-form-group">
+                <label>이용권 정보 <span class="required">*</span></label>
+                <div class="modal-input-group">
+                    <div class="modal-display-field" id="editMembershipDisplay">30일 이용권</div>
+                    <button class="modal-btn modal-btn-secondary" onclick="editMembership()">수정</button>
+                </div>
+            </div>
+
+            <!-- 날짜 입력 -->
+            <div class="modal-date-row">
+                <div class="modal-form-group">
+                    <label>시작일 <span class="required">*</span></label>
+                    <input type="text" class="date-input-field" id="editStartDateInput" placeholder="날짜를 선택하세요" readonly onclick="openEditStartDateCalendar()">
+                </div>
+                <div class="modal-form-group">
+                    <label>만료일 <span class="required">*</span></label>
+                    <input type="text" class="modal-input" id="editEndDateInput" placeholder="자동 계산됩니다" readonly>
+                </div>
+            </div>
+
+            <!-- 락커 번호 -->
+            <div class="modal-form-group">
+                <label>락커 번호</label>
+                <div class="modal-input-group">
+                    <input type="text" class="modal-input" id="editLockerInput" placeholder="락커 조회 버튼을 클릭하세요" readonly>
+                    <button class="modal-btn" onclick="lookupEditLocker()">락커 조회</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-footer-btn modal-footer-btn-cancel" onclick="closeEditMemberModal()">취소</button>
+            <button class="modal-footer-btn modal-footer-btn-submit" onclick="submitEditMember()">수정 완료</button>
+        </div>
+    </div>
+</div>
+
+<!-- 달력 팝업 (회원 수정용) -->
+<div class="calendar-overlay" id="editStartDateCalendarOverlay" onclick="closeCalendarOnOverlay(event, 'editStartDateCalendarOverlay')">
+    <div class="calendar-popup" onclick="event.stopPropagation()">
+        <div class="calendar-header">
+            <button type="button" class="calendar-nav-btn" onclick="prevMonthEditStartDate()">◀</button>
+            <div class="calendar-month" id="editStartDateCalendarMonth"></div>
+            <button type="button" class="calendar-nav-btn" onclick="nextMonthEditStartDate()">▶</button>
+        </div>
+
+        <div class="calendar-weekdays">
+            <div class="calendar-weekday">일</div>
+            <div class="calendar-weekday">월</div>
+            <div class="calendar-weekday">화</div>
+            <div class="calendar-weekday">수</div>
+            <div class="calendar-weekday">목</div>
+            <div class="calendar-weekday">금</div>
+            <div class="calendar-weekday">토</div>
+        </div>
+
+        <div class="calendar-days" id="editStartDateCalendarDays"></div>
+
+        <button type="button" class="calendar-close-btn" onclick="closeEditStartDateCalendar()">확인</button>
+    </div>
+</div>
+
+
 <script>
     // 회원 필터링 함수
+    let currentEditingMember = null;
+
     function filterMembers(status) {
         const rows = document.querySelectorAll('#memberTable tbody tr');
 
@@ -1353,10 +1630,10 @@
             alert('아이디를 입력해주세요.');
             return;
         }
-        
+
         // 실제로는 서버에서 조회
         console.log('아이디 조회:', memberId);
-        
+
         // 더미 데이터로 프로필 카드 표시
         const memberData = {
             name: '홍길동',
@@ -1365,25 +1642,29 @@
             email: 'hong@example.com',
             address: '서울시 강남구 테헤란로 123'
         };
-        
+
         // 프로필 카드에 데이터 설정
         document.getElementById('profileName').textContent = memberData.name;
         document.getElementById('profileId').textContent = memberData.id;
         document.getElementById('profilePhone').textContent = memberData.phone;
         document.getElementById('profileEmail').textContent = memberData.email;
         document.getElementById('profileAddress').textContent = memberData.address;
-        
+
         // 프로필 아바타 업데이트 (이름의 첫 글자로)
         const firstChar = memberData.name.charAt(0);
         const avatarSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23ff6b00'/%3E%3Ctext x='30' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E${firstChar}%3C/text%3E%3C/svg%3E`;
         document.getElementById('profileAvatar').src = avatarSvg;
-        
+
         // 프로필 카드 표시
         document.getElementById('memberProfileCard').style.display = 'block';
     }
 
     // 이용권 등록 함수
     function registerMembership() {
+        // 회원권을 디폴트로 체크
+        document.getElementById('gymMembershipCheck').checked = true;
+        document.getElementById('gymMembershipSelect').disabled = false;
+
         // 이용권 선택 모달 열기
         document.getElementById('membershipSelectModal').classList.add('active');
     }
@@ -1391,12 +1672,12 @@
     // 이용권 선택 모달 닫기
     function closeMembershipSelectModal() {
         document.getElementById('membershipSelectModal').classList.remove('active');
-        
+
         // 모달 폼 초기화
         document.getElementById('gymMembershipCheck').checked = false;
         document.getElementById('lockerMembershipCheck').checked = false;
         document.getElementById('ptMembershipCheck').checked = false;
-        
+
         document.getElementById('gymMembershipSelect').value = '';
         document.getElementById('gymMembershipSelect').disabled = true;
         document.getElementById('lockerMembershipSelect').value = '';
@@ -1409,7 +1690,7 @@
     function toggleMembershipDropdown(type) {
         const checkbox = document.getElementById(type + 'MembershipCheck');
         const select = document.getElementById(type + 'MembershipSelect');
-        
+
         if (checkbox.checked) {
             select.disabled = false;
         } else {
@@ -1448,7 +1729,7 @@
             return;
         }
 
-        // 선택된 이용권 텍스트 생성
+        // ✅ 선택된 이용권 텍스트 생성
         const selectedMemberships = [];
         if (gymCheck && gymValue) {
             selectedMemberships.push(gymValue + ' 회원권');
@@ -1460,14 +1741,19 @@
             selectedMemberships.push('PT ' + ptValue);
         }
 
-        // 이용권 표시 필드에 설정
-        const membershipText = selectedMemberships.join(' + ');
-        document.getElementById('membershipDisplay').textContent = membershipText;
+        const membershipText = selectedMemberships.join(' + ');  // ✅ 이 줄 추가!
 
-        // 모달 닫기
+        // 이용권 표시 필드에 설정
+        if (window.isEditingMembership) {
+            document.getElementById('editMembershipDisplay').textContent = membershipText;
+            window.isEditingMembership = false;
+        } else {
+            document.getElementById('membershipDisplay').textContent = membershipText;
+        }
+
         closeMembershipSelectModal();
         alert('이용권이 선택되었습니다.');
-        
+
         // 시작일이 이미 입력되어 있다면 종료일 자동 계산
         if (document.getElementById('startDateInput').value) {
             calculateEndDate();
@@ -1566,18 +1852,18 @@
         availableLockers.forEach(locker => {
             const lockerItem = document.createElement('div');
             lockerItem.className = 'locker-item';
-            
+
             const lockerNumber = document.createElement('span');
             lockerNumber.className = 'locker-number';
             lockerNumber.textContent = locker;
-            
+
             const assignBtn = document.createElement('button');
             assignBtn.className = 'locker-assign-btn';
             assignBtn.textContent = '배정';
             assignBtn.onclick = function() {
                 assignLocker(locker);
             };
-            
+
             lockerItem.appendChild(lockerNumber);
             lockerItem.appendChild(assignBtn);
             lockerList.appendChild(lockerItem);
@@ -1639,17 +1925,17 @@
         const phone = document.getElementById('profilePhone').textContent;
         const email = document.getElementById('profileEmail').textContent;
         const address = document.getElementById('profileAddress').textContent;
-        
+
         document.getElementById('confirmName').textContent = name;
         document.getElementById('confirmId').textContent = id;
         document.getElementById('confirmPhone').textContent = phone;
         document.getElementById('confirmEmail').textContent = email;
         document.getElementById('confirmAddress').textContent = address;
-        
+
         // 아바타도 복사
         const avatarSrc = document.getElementById('profileAvatar').src;
         document.getElementById('confirmAvatar').src = avatarSrc;
-        
+
         // 등록 확정 모달 표시
         document.getElementById('confirmModal').classList.add('active');
     }
@@ -1658,7 +1944,7 @@
     function closeConfirmModal() {
         document.getElementById('confirmModal').classList.remove('active');
     }
-    
+
     // 최종 등록 확정
     function confirmRegistration() {
         const memberId = document.getElementById('memberIdInput').value;
@@ -1681,7 +1967,7 @@
         alert('회원이 등록되었습니다!');
         closeConfirmModal();
         closeAddMemberModal();
-        
+
         // 페이지 새로고침 또는 테이블 업데이트
         // location.reload();
     }
@@ -1710,9 +1996,39 @@
     // 회원 정보 수정 함수
     function editMember(button) {
         const row = button.closest('tr');
-        const name = row.querySelector('td:first-child').textContent;
-        alert(name + ' 회원의 정보를 수정합니다.');
+        const name = row.querySelector('td:nth-child(1)').textContent;
+        const membership = row.querySelector('td:nth-child(2)').textContent;
+        const startDate = row.querySelector('td:nth-child(3)').textContent;
+        const endDate = row.querySelector('td:nth-child(4)').textContent;
+        const locker = row.querySelector('td:nth-child(5)').textContent;
+
+        currentEditingMember = {
+            row: row,
+            name: name,
+            membership: membership,
+            startDate: startDate,
+            endDate: endDate,
+            locker: locker
+        };
+
+        document.getElementById('editProfileName').textContent = name;
+        document.getElementById('editProfileId').textContent = '010015';
+        document.getElementById('editProfilePhone').textContent = '010-1234-5678';
+        document.getElementById('editProfileEmail').textContent = 'member@example.com';
+        document.getElementById('editProfileAddress').textContent = '서울시 강남구';
+
+        const firstChar = name.charAt(0);
+        const avatarSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23ff6b00'/%3E%3Ctext x='30' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E${firstChar}%3C/text%3E%3C/svg%3E`;
+        document.getElementById('editProfileAvatar').src = avatarSvg;
+
+        document.getElementById('editMembershipDisplay').textContent = membership;
+        document.getElementById('editStartDateInput').value = startDate;
+        document.getElementById('editEndDateInput').value = endDate;
+        document.getElementById('editLockerInput').value = locker === '-' ? '' : locker;
+
+        document.getElementById('editMemberModal').classList.add('active');
     }
+
 
     // 회원 삭제 함수
     function deleteMember(button) {
@@ -1733,7 +2049,7 @@
     // ========================================
     // 달력 관련 함수
     // ========================================
-    
+
     let startDateCurrentMonth = new Date();
     let startDateTempSelected = null;
     let startDateSelected = null;
@@ -1759,6 +2075,8 @@
         if (event.target === event.currentTarget) {
             if (overlayId === 'startDateCalendarOverlay') {
                 closeStartDateCalendar();
+            } else if (overlayId === 'editStartDateCalendarOverlay') {
+                closeEditStartDateCalendar();
             }
         }
     }
@@ -1840,6 +2158,240 @@
             document.getElementById('startDateInput').value = dateString;
         }
     }
+
+
+    // 회원 수정 모달 닫기
+    function closeEditMemberModal() {
+        document.getElementById('editMemberModal').classList.remove('active');
+        currentEditingMember = null;
+        editStartDateSelected = null;
+        editStartDateTempSelected = null;
+        editStartDateCurrentMonth = new Date();
+    }
+
+    // 이용권 수정
+    function editMembership() {
+        window.isEditingMembership = true;
+        document.getElementById('membershipSelectModal').classList.add('active');
+    }
+
+    // 락커 조회 (수정용)
+    // 락커 조회 (수정용)
+    function lookupEditLocker() {
+        // 빈 락커 목록 (실제로는 서버에서 가져와야 함)
+        const availableLockers = [
+            'A-1', 'A-5', 'A-12', 'A-23', 'A-45', 'A-56',
+            'B-68', 'B-72', 'B-89', 'C-15', 'C-34', 'C-67'
+        ];
+
+        // 락커 목록 생성
+        const lockerList = document.getElementById('lockerList');
+        lockerList.innerHTML = '';
+
+        availableLockers.forEach(locker => {
+            const lockerItem = document.createElement('div');
+            lockerItem.className = 'locker-item';
+
+            const lockerNumber = document.createElement('span');
+            lockerNumber.className = 'locker-number';
+            lockerNumber.textContent = locker;
+
+            const assignBtn = document.createElement('button');
+            assignBtn.className = 'locker-assign-btn';
+            assignBtn.textContent = '배정';
+            assignBtn.onclick = function() {
+                assignEditLocker(locker);
+            };
+
+            lockerItem.appendChild(lockerNumber);
+            lockerItem.appendChild(assignBtn);
+            lockerList.appendChild(lockerItem);
+        });
+
+        // 모달 열기
+        document.getElementById('lockerSelectModal').classList.add('active');
+    }
+
+    // 락커 배정 함수 (수정용)
+    function assignEditLocker(lockerNumber) {
+        document.getElementById('editLockerInput').value = lockerNumber;
+        closeLockerSelectModal();
+    }
+
+
+    // 회원 수정 제출
+    function submitEditMember() {
+        const membership = document.getElementById('editMembershipDisplay').textContent;
+        const startDate = document.getElementById('editStartDateInput').value;
+        const endDate = document.getElementById('editEndDateInput').value;
+        const locker = document.getElementById('editLockerInput').value;
+
+        if (!membership) {
+            alert('이용권 정보를 입력해주세요.');
+            return;
+        }
+        if (!startDate) {
+            alert('시작일을 입력해주세요.');
+            return;
+        }
+        if (!endDate) {
+            alert('만료일을 입력해주세요.');
+            return;
+        }
+
+        if (currentEditingMember && currentEditingMember.row) {
+            const row = currentEditingMember.row;
+            row.querySelector('td:nth-child(2)').textContent = membership;
+            row.querySelector('td:nth-child(3)').textContent = startDate;
+            row.querySelector('td:nth-child(4)').textContent = endDate;
+            row.querySelector('td:nth-child(5)').textContent = locker || '-';
+        }
+
+        alert('회원 정보가 수정되었습니다!');
+        closeEditMemberModal();
+    }
+
+    // 수정용 달력 관련
+    let editStartDateCurrentMonth = new Date();
+    let editStartDateTempSelected = null;
+    let editStartDateSelected = null;
+
+    function openEditStartDateCalendar() {
+        document.getElementById('editStartDateCalendarOverlay').classList.add('show');
+        renderEditStartDateCalendar();
+    }
+
+    function closeEditStartDateCalendar() {
+        document.getElementById('editStartDateCalendarOverlay').classList.remove('show');
+        if (editStartDateTempSelected) {
+            editStartDateSelected = editStartDateTempSelected;
+            updateEditStartDateDisplay();
+            calculateEditEndDate();
+        }
+    }
+
+    function prevMonthEditStartDate() {
+        editStartDateCurrentMonth.setMonth(editStartDateCurrentMonth.getMonth() - 1);
+        renderEditStartDateCalendar();
+    }
+
+    function nextMonthEditStartDate() {
+        editStartDateCurrentMonth.setMonth(editStartDateCurrentMonth.getMonth() + 1);
+        renderEditStartDateCalendar();
+    }
+
+    function renderEditStartDateCalendar() {
+        const year = editStartDateCurrentMonth.getFullYear();
+        const month = editStartDateCurrentMonth.getMonth();
+
+        document.getElementById('editStartDateCalendarMonth').textContent =
+            year + '년 ' + (month + 1) + '월';
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        const calendarDays = document.getElementById('editStartDateCalendarDays');
+        calendarDays.innerHTML = '';
+
+        // 빈 칸 채우기
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'calendar-day empty';
+            calendarDays.appendChild(emptyDiv);
+        }
+
+        // 날짜 채우기
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.textContent = day;
+
+            const currentDate = new Date(year, month, day);
+
+            // 과거 날짜는 비활성화
+            if (currentDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                dayDiv.classList.add('disabled');
+            } else {
+                // 선택된 날짜 표시
+                if (editStartDateTempSelected &&
+                    editStartDateTempSelected.getDate() === day &&
+                    editStartDateTempSelected.getMonth() === month &&
+                    editStartDateTempSelected.getFullYear() === year) {
+                    dayDiv.classList.add('selected');
+                }
+
+                dayDiv.onclick = function() {
+                    document.querySelectorAll('#editStartDateCalendarDays .calendar-day.selected').forEach(d => {
+                        d.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    editStartDateTempSelected = new Date(year, month, day);
+                };
+            }
+
+            calendarDays.appendChild(dayDiv);
+        }
+    }
+
+    function updateEditStartDateDisplay() {
+        if (editStartDateSelected) {
+            const year = editStartDateSelected.getFullYear();
+            const month = String(editStartDateSelected.getMonth() + 1).padStart(2, '0');
+            const day = String(editStartDateSelected.getDate()).padStart(2, '0');
+            document.getElementById('editStartDateInput').value = year + '-' + month + '-' + day;
+        }
+    }
+
+    function calculateEditEndDate() {
+        if (!editStartDateSelected) return;
+
+        const editMembershipDisplay = document.getElementById('editMembershipDisplay').textContent;
+        if (!editMembershipDisplay) return;
+
+        // 이용권에서 기간 추출 (회원권과 락커 이용권 중 가장 긴 기간)
+        let maxDays = 0;
+
+        // 회원권 기간 확인
+        if (editMembershipDisplay.includes('회원권')) {
+            const gymMatch = editMembershipDisplay.match(/(\d+)개월\s*회원권/);
+            if (gymMatch) {
+                const months = parseInt(gymMatch[1]);
+                const days = months === 12 ? 365 : months * 30;
+                maxDays = Math.max(maxDays, days);
+            }
+        }
+
+        // 락커 이용권 기간 확인
+        if (editMembershipDisplay.includes('락커 이용권')) {
+            const lockerMatch = editMembershipDisplay.match(/(\d+)개월\s*락커 이용권/);
+            if (lockerMatch) {
+                const months = parseInt(lockerMatch[1]);
+                const days = months === 12 ? 365 : months * 30;
+                maxDays = Math.max(maxDays, days);
+            }
+        }
+
+        if (maxDays === 0) return;
+
+        const endDate = new Date(editStartDateSelected.getTime());
+        endDate.setDate(endDate.getDate() + maxDays);
+
+        const year = endDate.getFullYear();
+        const month = String(endDate.getMonth() + 1).padStart(2, '0');
+        const day = String(endDate.getDate()).padStart(2, '0');
+        document.getElementById('editEndDateInput').value = year + '-' + month + '-' + day;
+    }
+
+
+
+    // 수정 모달 외부 클릭 닫기
+    document.getElementById('editMemberModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditMemberModal();
+        }
+    });
+
 </script>
 </body>
 </html>

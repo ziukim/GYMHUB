@@ -297,342 +297,449 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+<div class="app-container">
+    <!-- Sidebar Include -->
+    <jsp:include page="../common/sidebar/sidebarGym.jsp" />
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="page-intro">
-                <h1>PT 신청 관리</h1>
-                <p>회원들의 PT 신청을 확인하고 관리하세요</p>
-            </div>
-            <!-- Header -->
-            <div class="pt-header">
-                <div class="pt-title-section">
-                </div>
-            </div>
-
-            <!-- Tabs -->
-            <div class="tabs-container">
-                <button class="tab-btn active" data-tab="pending">
-                    대기중 <span class="tab-count">(2)</span>
-                </button>
-                <button class="tab-btn" data-tab="completed">
-                    완성 내역 <span class="tab-count">(2)</span>
-                </button>
-            </div>
-
-            <!-- 대기중 탭 -->
-            <div class="tab-panel active" id="pending-panel">
-                <!-- PT 신청 카드 1 -->
-                <div class="pt-request-card">
-                    <div class="card-header-section">
-                        <div class="user-icon">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
-                        </div>
-                        <div class="card-user-info">
-                            <div class="card-user-name">김영희</div>
-                            <div class="card-user-id">회원 ID: M002</div>
-                        </div>
-                        <span class="card-status status-pending">대기중</span>
-                    </div>
-
-                    <div class="card-details">
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
-                            </span>
-                            <span class="detail-value">2025.10.28</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 트레이너:
-                            </span>
-                            <span class="detail-value">이코치</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
-                            </span>
-                            <span class="detail-value">14:00</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
-                            </span>
-                            <span class="detail-value">2025-11-08</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
-                            </span>
-                            <span class="detail-value">010-1111-2222</span>
-                        </div>
-                    </div>
-
-                    <div class="card-actions">
-                        <button class="action-btn approve-btn" onclick="handleApprove(this)">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="승인" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 승인
-                        </button>
-                        <button class="action-btn reject-btn" onclick="handleReject(this)">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="거절" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 거절
-                        </button>
-                    </div>
-                </div>
-
-                <!-- PT 신청 카드 2 -->
-                <div class="pt-request-card">
-                    <div class="card-header-section">
-                        <div class="user-icon">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
-                        </div>
-                        <div class="card-user-info">
-                            <div class="card-user-name">정수진</div>
-                            <div class="card-user-id">회원 ID: M005</div>
-                        </div>
-                        <span class="card-status status-pending">대기중</span>
-                    </div>
-
-                    <div class="card-details">
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
-                            </span>
-                            <span class="detail-value">2025.10.28</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 트레이너:
-                            </span>
-                            <span class="detail-value">최트레이너</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
-                            </span>
-                            <span class="detail-value">18:00</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
-                            </span>
-                            <span class="detail-value">2025-11-10</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
-                            </span>
-                            <span class="detail-value">010-1111-2222</span>
-                        </div>
-                    </div>
-
-                    <div class="card-actions">
-                        <button class="action-btn approve-btn" onclick="handleApprove(this)">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="승인" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 승인
-                        </button>
-                        <button class="action-btn reject-btn" onclick="handleReject(this)">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="거절" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 거절
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 완성 내역 탭 -->
-            <div class="tab-panel" id="completed-panel">
-                <!-- PT 신청 카드 1 (완료) -->
-                <div class="pt-request-card">
-                    <div class="card-header-section">
-                        <div class="user-icon">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
-                        </div>
-                        <div class="card-user-info">
-                            <div class="card-user-name">홍길동</div>
-                            <div class="card-user-id">회원 ID: M001</div>
-                        </div>
-                        <span class="card-status status-completed">승인됨</span>
-                    </div>
-
-                    <div class="card-details">
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
-                            </span>
-                            <span class="detail-value">2025.10.28</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 배정 트레이너:
-                            </span>
-                            <span class="detail-value">박강사</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
-                            </span>
-                            <span class="detail-value">10:00</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
-                            </span>
-                            <span class="detail-value">2025-11-05</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
-                            </span>
-                            <span class="detail-value">010-1111-2222</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PT 신청 카드 2 (완료) -->
-                <div class="pt-request-card">
-                    <div class="card-header-section">
-                        <div class="user-icon">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자" style="width: 24px; height: 24px;">
-                        </div>
-                        <div class="card-user-info">
-                            <div class="card-user-name">박철수</div>
-                            <div class="card-user-id">회원 ID: M003</div>
-                        </div>
-                        <span class="card-status status-cancelled">거절됨</span>
-                    </div>
-
-                    <div class="card-details">
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="신청일" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 신청일:
-                            </span>
-                            <span class="detail-value">2025.10.25</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 트레이너:
-                            </span>
-                            <span class="detail-value">김트레이너</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시간" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 시간:
-                            </span>
-                            <span class="detail-value">16:00</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="희망 날짜" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 희망 날짜:
-                            </span>
-                            <span class="detail-value">2025-11-03</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 연락처:
-                            </span>
-                            <span class="detail-value">010-1111-2222</span>
-                        </div>
-                    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="pt-header">
+            <div class="pt-title-section">
+                <div class="pt-title">
+                    <h1>PT 신청 관리</h1>
+                    <p>회원들의 PT 신청을 관리하세요</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 트레이너 배정 모달 (common.css의 .modal-overlay 사용) -->
-    <div class="modal-overlay" id="trainerModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">트레이너 배정</h2>
-                <button class="modal-close" onclick="closeModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-description">트레이너를 배정합니다.</p>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="pending">
+                대기중 <span class="tab-count" id="pendingCount">(5)</span>
+            </button>
+            <button class="tab-btn" data-tab="completed">
+                승인/거절 <span class="tab-count" id="completedCount">(5)</span>
+            </button>
+        </div>
 
-                <div class="form-group">
-                    <label class="form-label">트레이너 조회</label>
-                    <select class="form-select" id="trainerSelect">
-                        <option value="">선택하세요</option>
-                        <option value="김트레이너">김트레이너</option>
-                        <option value="이코치">이코치</option>
-                        <option value="박강사">박강사</option>
-                        <option value="최트레이너">최트레이너</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">취소</button>
-                <button class="btn btn-primary" onclick="confirmAssign()">승인</button>
-            </div>
+        <!-- 대기중 탭 -->
+        <div class="tab-panel active" id="pending-panel">
+            <!-- PT 신청 카드들이 동적으로 추가됨 -->
+        </div>
+
+        <!-- 완성 내역 탭 -->
+        <div class="tab-panel" id="completed-panel">
+            <!-- PT 신청 카드들이 동적으로 추가됨 -->
         </div>
     </div>
+</div>
 
-    <script>
-        let currentCard = null;
+<!-- 트레이너 배정 모달 (common.css의 .modal-overlay 사용) -->
+<div class="modal-overlay" id="trainerModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">트레이너 배정</h2>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-description">트레이너를 배정합니다.</p>
 
-        // 탭 전환 기능
+            <div class="form-group">
+                <label class="form-label">트레이너 조회</label>
+                <select class="form-select" id="trainerSelect">
+                    <option value="">선택하세요</option>
+                    <option value="김트레이너">김트레이너</option>
+                    <option value="이코치">이코치</option>
+                    <option value="박강사">박강사</option>
+                    <option value="최트레이너">최트레이너</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+            <button class="btn btn-primary" onclick="confirmAssign()">승인</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 전역 변수
+    let currentCard = null;
+    let currentCardId = null;
+
+    // 더미 데이터
+    const ptRequests = {
+        pending: [
+            {
+                id: 'pt001',
+                userName: '김영희',
+                userId: 'M002',
+                requestDate: '2025.10.28',
+                desiredTrainer: '이코치',
+                desiredTime: '14:00',
+                desiredDate: '2025-11-08',
+                phone: '010-1111-2222'
+            },
+            {
+                id: 'pt002',
+                userName: '정수진',
+                userId: 'M005',
+                requestDate: '2025.10.28',
+                desiredTrainer: '최트레이너',
+                desiredTime: '18:00',
+                desiredDate: '2025-11-10',
+                phone: '010-2222-3333'
+            },
+            {
+                id: 'pt003',
+                userName: '이민수',
+                userId: 'M007',
+                requestDate: '2025.10.29',
+                desiredTrainer: '박강사',
+                desiredTime: '09:00',
+                desiredDate: '2025-11-12',
+                phone: '010-3333-4444'
+            },
+            {
+                id: 'pt004',
+                userName: '최지영',
+                userId: 'M008',
+                requestDate: '2025.10.30',
+                desiredTrainer: '김트레이너',
+                desiredTime: '15:00',
+                desiredDate: '2025-11-15',
+                phone: '010-4444-5555'
+            },
+            {
+                id: 'pt005',
+                userName: '강동원',
+                userId: 'M009',
+                requestDate: '2025.10.31',
+                desiredTrainer: '이코치',
+                desiredTime: '11:00',
+                desiredDate: '2025-11-18',
+                phone: '010-5555-6666'
+            }
+        ],
+        completed: [
+            {
+                id: 'pt101',
+                userName: '홍길동',
+                userId: 'M001',
+                requestDate: '2025.10.28',
+                assignedTrainer: '박강사',
+                desiredTime: '10:00',
+                desiredDate: '2025-11-05',
+                phone: '010-6666-7777',
+                status: 'approved'
+            },
+            {
+                id: 'pt102',
+                userName: '박철수',
+                userId: 'M003',
+                requestDate: '2025.10.25',
+                assignedTrainer: '김트레이너',
+                desiredTime: '16:00',
+                desiredDate: '2025-11-03',
+                phone: '010-7777-8888',
+                status: 'rejected'
+            },
+            {
+                id: 'pt103',
+                userName: '윤서연',
+                userId: 'M004',
+                requestDate: '2025.10.26',
+                assignedTrainer: '최트레이너',
+                desiredTime: '13:00',
+                desiredDate: '2025-11-06',
+                phone: '010-8888-9999',
+                status: 'approved'
+            },
+            {
+                id: 'pt104',
+                userName: '장민호',
+                userId: 'M006',
+                requestDate: '2025.10.27',
+                assignedTrainer: '이코치',
+                desiredTime: '17:00',
+                desiredDate: '2025-11-07',
+                phone: '010-9999-0000',
+                status: 'rejected'
+            },
+            {
+                id: 'pt105',
+                userName: '송혜교',
+                userId: 'M010',
+                requestDate: '2025.10.24',
+                assignedTrainer: '박강사',
+                desiredTime: '12:00',
+                desiredDate: '2025-11-02',
+                phone: '010-0000-1111',
+                status: 'approved'
+            }
+        ]
+    };
+
+    // 카드 생성 함수
+    function createPendingCard(request) {
+        var html = '<div class="pt-request-card" data-id="' + request.id + '">';
+        html += '<div class="card-header-section">';
+        html += '<div class="user-icon">👤</div>';
+        html += '<div class="card-user-info">';
+        html += '<div class="card-user-name">' + request.userName + '</div>';
+        html += '<div class="card-user-id">회원 ID: ' + request.userId + '</div>';
+        html += '</div>';
+        html += '<span class="card-status status-pending">대기중</span>';
+        html += '</div>';
+
+        html += '<div class="card-details">';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">📅 신청일:</span>';
+        html += '<span class="detail-value">' + request.requestDate + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">👨‍🏫 희망 트레이너:</span>';
+        html += '<span class="detail-value">' + request.desiredTrainer + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">🕐 희망 시간:</span>';
+        html += '<span class="detail-value">' + request.desiredTime + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">📆 희망 날짜:</span>';
+        html += '<span class="detail-value">' + request.desiredDate + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">📞 연락처:</span>';
+        html += '<span class="detail-value">' + request.phone + '</span>';
+        html += '</div>';
+        html += '</div>';
+
+        html += '<div class="card-actions">';
+        html += '<button class="action-btn approve-btn" onclick="handleApprove(this)">✓ 승인</button>';
+        html += '<button class="action-btn reject-btn" onclick="handleReject(this)">✕ 거절</button>';
+        html += '</div>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function createCompletedCard(request) {
+        var statusClass = request.status === 'approved' ? 'status-completed' : 'status-cancelled';
+        var statusText = request.status === 'approved' ? '승인됨' : '거절됨';
+        var trainerLabel = request.status === 'approved' ? '배정 트레이너' : '희망 트레이너';
+
+        var html = '<div class="pt-request-card" data-id="' + request.id + '">';
+        html += '<div class="card-header-section">';
+        html += '<div class="user-icon">👤</div>';
+        html += '<div class="card-user-info">';
+        html += '<div class="card-user-name">' + request.userName + '</div>';
+        html += '<div class="card-user-id">회원 ID: ' + request.userId + '</div>';
+        html += '</div>';
+        html += '<span class="card-status ' + statusClass + '">' + statusText + '</span>';
+        html += '</div>';
+
+        html += '<div class="card-details">';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">📅 신청일:</span>';
+        html += '<span class="detail-value">' + request.requestDate + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">👨‍🏫 ' + trainerLabel + ':</span>';
+        html += '<span class="detail-value">' + request.assignedTrainer + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">🕐 희망 시간:</span>';
+        html += '<span class="detail-value">' + request.desiredTime + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">📆 희망 날짜:</span>';
+        html += '<span class="detail-value">' + request.desiredDate + '</span>';
+        html += '</div>';
+        html += '<div class="detail-item">';
+        html += '<span class="detail-label">📞 연락처:</span>';
+        html += '<span class="detail-value">' + request.phone + '</span>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        return html;
+    }
+
+    // 페이지 렌더링
+    function renderPage() {
+        const pendingPanel = document.getElementById('pending-panel');
+        const completedPanel = document.getElementById('completed-panel');
+
+        console.log('렌더링 시작');
+        console.log('대기중 데이터:', ptRequests.pending);
+        console.log('완성 데이터:', ptRequests.completed);
+
+        // 대기중 목록 렌더링
+        if (pendingPanel) {
+            pendingPanel.innerHTML = ptRequests.pending.map(request => createPendingCard(request)).join('');
+            console.log('대기중 패널 렌더링 완료');
+        }
+
+        // 완성 내역 렌더링
+        if (completedPanel) {
+            completedPanel.innerHTML = ptRequests.completed.map(request => createCompletedCard(request)).join('');
+            console.log('완성내역 패널 렌더링 완료');
+        }
+
+        // 카운트 업데이트
+        const pendingCountEl = document.getElementById('pendingCount');
+        const completedCountEl = document.getElementById('completedCount');
+
+        if (pendingCountEl) {
+            pendingCountEl.textContent = `(${ptRequests.pending.length})`;
+        }
+        if (completedCountEl) {
+            completedCountEl.textContent = `(${ptRequests.completed.length})`;
+        }
+    }
+
+    // 탭 전환 기능
+    function initializeTabs() {
         const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabPanels = document.querySelectorAll('.tab-panel');
 
         tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetTab = button.getAttribute('data-tab');
+            button.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
 
-                // 모든 탭 버튼과 패널에서 active 클래스 제거
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabPanels.forEach(panel => panel.classList.remove('active'));
+                console.log('탭 클릭:', targetTab);
 
-                // 클릭된 탭 버튼과 해당 패널에 active 클래스 추가
-                button.classList.add('active');
-                document.getElementById(`${targetTab}-panel`).classList.add('active');
+                // 모든 탭 버튼에서 active 제거
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // 모든 패널에서 active 제거
+                document.querySelectorAll('.tab-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+
+                // 클릭된 탭 버튼에 active 추가
+                this.classList.add('active');
+
+                // 해당 패널에 active 추가
+                const targetPanel = document.getElementById(targetTab + '-panel');
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                    console.log('패널 활성화:', targetTab + '-panel');
+                } else {
+                    console.error('패널을 찾을 수 없음:', targetTab + '-panel');
+                }
             });
         });
+    }
 
-        // 승인 버튼 클릭
-        function handleApprove(btn) {
-            currentCard = btn.closest('.pt-request-card');
-            document.getElementById('trainerModal').classList.add('active');
-        }
+    // 승인 버튼 클릭
+    function handleApprove(btn) {
+        currentCard = btn.closest('.pt-request-card');
+        currentCardId = currentCard.getAttribute('data-id');
+        document.getElementById('trainerModal').classList.add('active');
+    }
 
-        // 거절 버튼 클릭
-        function handleReject(btn) {
-            const card = btn.closest('.pt-request-card');
-            const userName = card.querySelector('.card-user-name').textContent;
+    // 거절 버튼 클릭
+    function handleReject(btn) {
+        const card = btn.closest('.pt-request-card');
+        const cardId = card.getAttribute('data-id');
+        const userName = card.querySelector('.card-user-name').textContent;
 
-            if (confirm(userName + '님의 PT 신청을 거절하시겠습니까?')) {
+        if (confirm(userName + '님의 PT 신청을 거절하시겠습니까?')) {
+            // 대기중 목록에서 해당 요청 찾기
+            const requestIndex = ptRequests.pending.findIndex(req => req.id === cardId);
+            if (requestIndex !== -1) {
+                const request = ptRequests.pending[requestIndex];
+
+                // 완성 내역으로 이동 (거절 상태)
+                ptRequests.completed.unshift({
+                    id: request.id,
+                    userName: request.userName,
+                    userId: request.userId,
+                    requestDate: request.requestDate,
+                    assignedTrainer: request.desiredTrainer,
+                    desiredTime: request.desiredTime,
+                    desiredDate: request.desiredDate,
+                    phone: request.phone,
+                    status: 'rejected'
+                });
+
+                // 대기중 목록에서 제거
+                ptRequests.pending.splice(requestIndex, 1);
+
+                // 페이지 재렌더링
+                renderPage();
+
                 alert('거절되었습니다.');
-                // 여기에 실제 거절 처리 로직 추가
             }
         }
+    }
 
-        // 모달 닫기
-        function closeModal() {
-            document.getElementById('trainerModal').classList.remove('active');
-            document.getElementById('trainerSelect').value = '';
-            currentCard = null;
+    // 모달 닫기
+    function closeModal() {
+        document.getElementById('trainerModal').classList.remove('active');
+        document.getElementById('trainerSelect').value = '';
+        currentCard = null;
+        currentCardId = null;
+    }
+
+    // 트레이너 배정 확인
+    function confirmAssign() {
+        const trainerSelect = document.getElementById('trainerSelect');
+        const selectedTrainer = trainerSelect.value;
+
+        if (!selectedTrainer) {
+            alert('트레이너를 선택해주세요.');
+            return;
         }
 
-        // 트레이너 배정 확인
-        function confirmAssign() {
-            const trainerSelect = document.getElementById('trainerSelect');
-            const selectedTrainer = trainerSelect.value;
+        // 대기중 목록에서 해당 요청 찾기
+        const requestIndex = ptRequests.pending.findIndex(req => req.id === currentCardId);
+        if (requestIndex !== -1) {
+            const request = ptRequests.pending[requestIndex];
+            const userName = request.userName;
 
-            if (!selectedTrainer) {
-                alert('트레이너를 선택해주세요.');
-                return;
-            }
+            // 완성 내역으로 이동 (승인 상태)
+            ptRequests.completed.unshift({
+                id: request.id,
+                userName: request.userName,
+                userId: request.userId,
+                requestDate: request.requestDate,
+                assignedTrainer: selectedTrainer,
+                desiredTime: request.desiredTime,
+                desiredDate: request.desiredDate,
+                phone: request.phone,
+                status: 'approved'
+            });
 
-            const userName = currentCard.querySelector('.card-user-name').textContent;
+            // 대기중 목록에서 제거
+            ptRequests.pending.splice(requestIndex, 1);
+
+            // 페이지 재렌더링
+            renderPage();
+
             alert(userName + '님의 PT 신청이 승인되었습니다.\n배정 트레이너: ' + selectedTrainer);
-
-            closeModal();
-            // 여기에 실제 승인 처리 로직 추가
         }
 
-        // 모달 오버레이 클릭시 닫기
-        document.getElementById('trainerModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-    </script>
+        closeModal();
+    }
+
+    // 모달 오버레이 클릭시 닫기
+    document.getElementById('trainerModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('페이지 로드 완료');
+        renderPage();
+        initializeTabs();
+    });
+</script>
 </body>
 </html>
