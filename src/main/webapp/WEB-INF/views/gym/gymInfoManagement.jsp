@@ -479,7 +479,7 @@
                         </button>
                         <button class="facility-button" data-facility="주차가능">
                             <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차가능" class="facility-icon">
-                            <span>주차가능</span>
+                            <span>주차장</span>
                         </button>
                         <button class="facility-button" data-facility="샤워실">
                             <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" class="facility-icon">
@@ -487,11 +487,11 @@
                         </button>
                         <button class="facility-button" data-facility="락커실">
                             <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커실" class="facility-icon">
-                            <span>락커실</span>
+                            <span>락커룸</span>
                         </button>
                         <button class="facility-button" data-facility="무료 WiFi">
                             <img src="${pageContext.request.contextPath}/resources/images/icon/wifi.png" alt="무료 WiFi" class="facility-icon">
-                            <span>무료 WiFi</span>
+                            <span>무료WiFi</span>
                         </button>
                         <button class="facility-button" data-facility="PT">
                             <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="PT" class="facility-icon">
@@ -500,6 +500,22 @@
                         <button class="facility-button" data-facility="GX 프로그램">
                             <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="GX 프로그램" class="facility-icon">
                             <span>GX 프로그램</span>
+                        </button>
+                        <button class="facility-button" data-facility="카페">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="카페" class="facility-icon">
+                            <span>카페</span>
+                        </button>
+                        <button class="facility-button" data-facility="수영장">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="수영장" class="facility-icon">
+                            <span>수영장</span>
+                        </button>
+                        <button class="facility-button" data-facility="필라테스">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="필라테스" class="facility-icon">
+                            <span>필라테스</span>
+                        </button>
+                        <button class="facility-button" data-facility="사우나">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="사우나" class="facility-icon">
+                            <span>사우나</span>
                         </button>
                     </div>
 
