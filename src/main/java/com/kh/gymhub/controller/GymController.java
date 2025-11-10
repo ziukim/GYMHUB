@@ -64,4 +64,23 @@ public class GymController {
     @GetMapping("/ticket.gym")
     public String ticketManagement() { return "gym/gymTicketManagement"; }
 
+    // 관리자 선택 페이지
+    @GetMapping("/admin/adminSelect")
+    public String adminSelect() {
+        return "admin/adminSelect";
+    }
+
+    // 출석체크 페이지
+    @GetMapping("/admin/attendanceCheck")
+    public String attendance() {
+        return "admin/attendanceCheck";
+    }
+
+    // 관리자 메인 페이지
+    @GetMapping("/admin/adminMain")
+    public String adminMain() {
+        return "admin/adminMain";
+    }
+
+
 }
