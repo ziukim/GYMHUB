@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
@@ -143,7 +144,7 @@ public class MemberController {
 
         int result = memberService.addMember(member);
 
-        if(result > 0) {
+        if (result > 0) {
             session.setAttribute("alertMsg", "헬스장 운영자 회원가입에 성공하였습니다.");
             return "redirect:/";
         } else {
@@ -151,6 +152,4 @@ public class MemberController {
             return "common/error";
         }
     }
-
-
 }
