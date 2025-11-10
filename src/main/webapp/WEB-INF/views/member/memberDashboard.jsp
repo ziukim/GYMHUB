@@ -17,7 +17,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <h1 class="welcome-message">
-            ${loginMember.name}님 환영합니다! 오늘도 힘차게 운동하세요
+            ${loginMember.memberName}님 환영합니다! 오늘도 힘차게 운동하세요
             <img src="${pageContext.request.contextPath}/resources/images/icon/logo.png" alt="GymHub 로고 아이콘">
         </h1>
 

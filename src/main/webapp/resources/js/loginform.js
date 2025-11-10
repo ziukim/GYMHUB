@@ -22,34 +22,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 로그인 모달 열기/닫기
-    loginBtn.addEventListener('click', () => {
+    loginBtn.addEventListener('click', function() {
         loginModal.classList.add('active');
     });
 
     if (closeLoginModal) {
-        closeLoginModal.addEventListener('click', () => {
+        closeLoginModal.addEventListener('click', function() {
             loginModal.classList.remove('active');
         });
     }
 
-    loginModal.addEventListener('click', (e) => {
+    loginModal.addEventListener('click', function(e) {
         if (e.target === loginModal) {
             loginModal.classList.remove('active');
         }
     });
 
     // 회원가입 모달 열기/닫기
-    signupBtn.addEventListener('click', () => {
+    signupBtn.addEventListener('click', function() {
         signupModal.classList.add('active');
     });
 
     if (closeModal) {
-        closeModal.addEventListener('click', () => {
+        closeModal.addEventListener('click', function() {
             signupModal.classList.remove('active');
         });
     }
 
-    signupModal.addEventListener('click', (e) => {
+    signupModal.addEventListener('click', function(e) {
         if (e.target === signupModal) {
             signupModal.classList.remove('active');
         }
@@ -57,49 +57,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 로그인에서 회원가입으로 이동
     if (goToSignup) {
-        goToSignup.addEventListener('click', () => {
+        goToSignup.addEventListener('click', function() {
             loginModal.classList.remove('active');
             signupModal.classList.add('active');
         });
     }
 
-    // 로그인 폼 제출
+    // 로그인 폼 제출 (일반 폼 제출 방식)
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // 기본 제출 막기
-
+        loginForm.addEventListener('submit', function(e) {
             const userId = document.getElementById('loginId').value;
             const userPassword = document.getElementById('loginPassword').value;
 
             if (!userId || !userPassword) {
+                e.preventDefault();
                 alert('아이디와 비밀번호를 입력해주세요.');
                 return;
             }
-
-            // 임시 관리자 계정 체크
-            if (userId === 'admin' && userPassword === 'admin123') {
-                // localStorage에 저장
-                localStorage.setItem('loginUser', JSON.stringify({
-                    id: userId,
-                    name: '어디 센터',
-                    type: 'GYM'
-                }));
-
-                // 관리자 선택 페이지로 이동
-                location.href = 'admin/adminSelect';
-                return;
-            }
-
-            alert('아이디 또는 비밀번호가 올바르지 않습니다.');
+            // 폼 제출 허용 (기본 동작)
         });
     }
 
-    // 로그아웃
+    // 로그아웃 (GET 방식) - 모든 사용자 타입에 대해 작동
+    // 이벤트 위임을 사용하여 동적으로 생성되는 요소에도 작동하도록 함
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'logoutBtn') {
+            e.preventDefault();
+            const contextPath = window.contextPath || '';
+            window.location.href = contextPath + '/logout.do';
+        }
+    });
+    
+    // 기존 방식도 유지 (호환성을 위해)
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            // 서버 측 로그아웃 처리 (JSP에서 처리)
-            // 여기서는 클라이언트 측 UI만 업데이트
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const contextPath = window.contextPath || '';
+            window.location.href = contextPath + '/logout.do';
         });
     }
 
@@ -107,12 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    tabButtons.forEach(tab => {
+    tabButtons.forEach(function(tab) {
         tab.addEventListener('click', function() {
             const targetTab = this.getAttribute('data-tab');
 
-            tabButtons.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
+            tabButtons.forEach(function(t) { t.classList.remove('active'); });
+            tabContents.forEach(function(c) { c.classList.remove('active'); });
 
             this.classList.add('active');
             const targetContent = document.getElementById(targetTab);
@@ -123,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 비밀번호 확인 검증
-    document.querySelectorAll('.registration-form').forEach(form => {
+    document.querySelectorAll('.registration-form').forEach(function(form) {
         const passwordInput = form.querySelector('.password');
         const confirmInput = form.querySelector('.password-confirm');
 
@@ -163,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let visibleCards = [];
 
         // 검색어로 필터링
-        gymCards.forEach(card => {
+        gymCards.forEach(function(card) {
             const titleEl = card.querySelector('.gym-title');
             const locationEl = card.querySelector('.gym-location');
             const descriptionEl = card.querySelector('.gym-description');
@@ -201,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const cardsArray = Array.from(cards);
 
-        cardsArray.sort((a, b) => {
+        cardsArray.sort(function(a, b) {
             try {
                 switch(sortOption) {
                     case 'rating':
@@ -248,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 정렬된 순서대로 DOM에 다시 추가
-        cardsArray.forEach(card => {
+        cardsArray.forEach(function(card) {
             cardsGrid.appendChild(card);
         });
     }
@@ -289,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 엔터키로 검색
     if (searchInput) {
-        searchInput.addEventListener('keypress', (e) => {
+        searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 performSearch();
             }
@@ -307,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const bookingBtn = document.getElementById('bookingBtn');
 
     // gym-card 클릭 이벤트
-    gymCards.forEach(card => {
+    gymCards.forEach(function(card) {
         card.style.cursor = 'pointer';
         card.addEventListener('click', function() {
             // 카드에서 정보 추출
@@ -325,7 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const price = priceEl ? priceEl.textContent : '가격 정보 없음';
 
             // 태그 수집
-            const tags = Array.from(tagsEl).map(tag => tag.textContent);
+            const tags = Array.from(tagsEl).map(function(tag) {
+                return tag.textContent;
+            });
 
             // 모달 내용 업데이트
             const gymDetailTitle = document.getElementById('gymDetailTitle');
@@ -341,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 뱃지 업데이트
             if (gymDetailBadges) {
                 gymDetailBadges.innerHTML = '';
-                tags.forEach(tag => {
+                tags.forEach(function(tag) {
                     const badge = document.createElement('span');
                     badge.className = 'badge';
                     badge.textContent = tag;
@@ -368,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 헬스장 상세 모달 닫기
     if (closeGymDetailModal) {
-        closeGymDetailModal.addEventListener('click', () => {
+        closeGymDetailModal.addEventListener('click', function() {
             if (gymDetailModal) {
                 gymDetailModal.classList.remove('active');
             }
@@ -377,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 모달 외부 클릭 시 닫기
     if (gymDetailModal) {
-        gymDetailModal.addEventListener('click', (e) => {
+        gymDetailModal.addEventListener('click', function(e) {
             if (e.target === gymDetailModal) {
                 gymDetailModal.classList.remove('active');
             }
@@ -409,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기구 목록 모달 닫기
     if (closeEquipmentListModal) {
-        closeEquipmentListModal.addEventListener('click', () => {
+        closeEquipmentListModal.addEventListener('click', function() {
             if (equipmentListModal) {
                 equipmentListModal.classList.remove('active');
             }
@@ -418,10 +415,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기구 목록 모달 외부 클릭 시 닫기
     if (equipmentListModal) {
-        equipmentListModal.addEventListener('click', (e) => {
+        equipmentListModal.addEventListener('click', function(e) {
             if (e.target === equipmentListModal) {
                 equipmentListModal.classList.remove('active');
             }
+        });
+    }
+
+    // 헬스장 운영자 선택 모달 관련
+    const gymSelectModal = document.getElementById('gymSelectModal');
+    const closeGymSelectModal = document.getElementById('closeGymSelectModal');
+    const attendanceCard = document.getElementById('attendanceCard');
+    const adminDashboardCard = document.getElementById('adminDashboardCard');
+
+    // 헬스장 운영자 선택 모달 닫기
+    if (closeGymSelectModal) {
+        closeGymSelectModal.addEventListener('click', function() {
+            if (gymSelectModal) {
+                gymSelectModal.classList.remove('active');
+            }
+        });
+    }
+
+    // 모달 외부 클릭 시 닫기
+    if (gymSelectModal) {
+        gymSelectModal.addEventListener('click', function(e) {
+            if (e.target === gymSelectModal) {
+                gymSelectModal.classList.remove('active');
+            }
+        });
+    }
+
+    // 출석 관리 카드 클릭
+    if (attendanceCard) {
+        attendanceCard.addEventListener('click', function() {
+            const contextPath = window.contextPath || '';
+            window.location.href = contextPath + '/admin/attendanceCheck';
+        });
+    }
+
+    // 관리자 대시보드 카드 클릭
+    if (adminDashboardCard) {
+        adminDashboardCard.addEventListener('click', function() {
+            const contextPath = window.contextPath || '';
+            window.location.href = contextPath + '/dashboard.gym';
         });
     }
 });
