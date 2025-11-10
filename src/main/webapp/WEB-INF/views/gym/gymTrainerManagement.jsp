@@ -424,292 +424,279 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+<div class="app-container">
+    <!-- Sidebar Include -->
+    <jsp:include page="../common/sidebar/sidebarGym.jsp" />
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-wrapper">
-                <!-- Header -->
-                <div class="page-header">
-                    <div class="header-left">
-                        <button class="back-button" onclick="history.back()">
-                            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                                <path d="M8 12.6667L3.33333 8L8 3.33333" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                                <path d="M12.6667 8H3.33333" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                            </svg>
-                        </button>
-                        <h1 class="page-title">트레이너 관리</h1>
-                    </div>
-                    <button class="add-trainer-button" onclick="openAddModal()">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                            <path d="M8 3.33333V12.6667" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M3.33333 8H12.6667" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <span>트레이너 등록</span>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-left">
+                    <button class="back-button" onclick="history.back()">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/arrow.png" alt="뒤로가기" style="width: 16px; height: 16px;">
                     </button>
+                    <h1 class="page-title">트레이너 관리</h1>
                 </div>
+                <button class="add-trainer-button" onclick="openAddModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
+                    <span>트레이너 등록</span>
+                </button>
+            </div>
 
-                <!-- Trainer Grid -->
-                <div class="trainer-grid" id="trainerGrid">
-                    <!-- Trainer cards will be dynamically inserted here -->
-                </div>
+            <!-- Trainer Grid -->
+            <div class="trainer-grid" id="trainerGrid">
+                <!-- Trainer cards will be dynamically inserted here -->
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Add/Edit Trainer Modal -->
-    <div class="modal-overlay" id="trainerModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
+<!-- Add/Edit Trainer Modal -->
+<div class="modal-overlay" id="trainerModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+        </button>
 
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">트레이너 등록</h2>
-                <p class="modal-description">새로운 트레이너를 등록하세요</p>
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">트레이너 등록</h2>
+            <p class="modal-description">새로운 트레이너를 등록하세요</p>
+        </div>
+
+        <div class="modal-body">
+            <!-- 아이디 조회 -->
+            <div class="form-group">
+                <label class="form-label">아이디 조회</label>
+                <div class="id-lookup-group">
+                    <input type="text" class="form-input" id="trainerIdInput" placeholder="예: 김트레이너">
+                    <button class="lookup-btn" onclick="lookupTrainerId()">조회하기</button>
+                </div>
             </div>
 
-            <div class="modal-body">
-                <!-- 아이디 조회 -->
-                <div class="form-group">
-                    <label class="form-label">아이디 조회</label>
-                    <div class="id-lookup-group">
-                        <input type="text" class="form-input" id="trainerIdInput" placeholder="예: 김트레이너">
-                        <button class="lookup-btn" onclick="lookupTrainerId()">조회하기</button>
+            <!-- 트레이너 조회 섹션 -->
+            <div class="trainer-lookup-section" id="trainerLookupSection" style="display: none;">
+                <h3 class="lookup-section-title">트레이너 조회</h3>
+
+                <!-- 트레이너 프로필 카드 -->
+                <div class="trainer-profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="trainerAvatar">
+                            <span id="trainerAvatarText">홍</span>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="trainerProfileName">홍길동</div>
+                            <div class="profile-id" id="trainerProfileId">010915</div>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-row">
+                            <span class="detail-label">이름</span>
+                            <span class="detail-value" id="trainerDetailName">홍길동</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">생년월일</span>
+                            <span class="detail-value" id="trainerDetailBirth">010915</span>
+                        </div>
+                        <div class="detail-row">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" class="detail-icon">
+                            <span class="detail-label">연락처</span>
+                            <span class="detail-value" id="trainerDetailPhone">010-1234-5678</span>
+                        </div>
+                        <div class="detail-row">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="이메일" class="detail-icon">
+                            <span class="detail-label">이메일</span>
+                            <span class="detail-value" id="trainerDetailEmail">hong@example.com</span>
+                        </div>
+                        <div class="detail-row">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" class="detail-icon">
+                            <span class="detail-label">주소</span>
+                            <span class="detail-value" id="trainerDetailAddress">서울시 강남구 테헤란로 123</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 트레이너 조회 섹션 -->
-                <div class="trainer-lookup-section" id="trainerLookupSection" style="display: none;">
-                    <h3 class="lookup-section-title">트레이너 조회</h3>
-                    
-                    <!-- 트레이너 프로필 카드 -->
-                    <div class="trainer-profile-card">
-                        <div class="profile-header">
-                            <div class="profile-avatar" id="trainerAvatar">
-                                <span id="trainerAvatarText">홍</span>
-                            </div>
-                            <div class="profile-info">
-                                <div class="profile-name" id="trainerProfileName">홍길동</div>
-                                <div class="profile-id" id="trainerProfileId">010915</div>
-                            </div>
-                        </div>
-                        <div class="profile-details">
-                            <div class="detail-row">
-                                <span class="detail-label">이름</span>
-                                <span class="detail-value" id="trainerDetailName">홍길동</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">생년월일</span>
-                                <span class="detail-value" id="trainerDetailBirth">010915</span>
-                            </div>
-                            <div class="detail-row">
-                                <svg class="detail-icon" fill="none" viewBox="0 0 16 16">
-                                    <path d="M14.667 11.333V13.333C14.667 13.701 14.368 14 14 14H2C1.632 14 1.333 13.701 1.333 13.333V11.333M14.667 11.333C14.667 10.965 14.368 10.667 14 10.667H2C1.632 10.667 1.333 10.965 1.333 11.333M14.667 11.333V6.667C14.667 4.825 13.175 3.333 11.333 3.333H4.667C2.825 3.333 1.333 4.825 1.333 6.667V11.333M5.333 1.333V4M10.667 1.333V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                </svg>
-                                <span class="detail-label">연락처</span>
-                                <span class="detail-value" id="trainerDetailPhone">010-1234-5678</span>
-                            </div>
-                            <div class="detail-row">
-                                <svg class="detail-icon" fill="none" viewBox="0 0 16 16">
-                                    <path d="M2.667 4L8 8.667L13.333 4M2.667 4H13.333M2.667 4V12C2.667 12.368 2.965 12.667 3.333 12.667H12.667C13.035 12.667 13.333 12.368 13.333 12V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="detail-label">이메일</span>
-                                <span class="detail-value" id="trainerDetailEmail">hong@example.com</span>
-                            </div>
-                            <div class="detail-row">
-                                <svg class="detail-icon" fill="none" viewBox="0 0 16 16">
-                                    <path d="M8 8C9.10457 8 10 7.10457 10 6C10 4.89543 9.10457 4 8 4C6.89543 4 6 4.89543 6 6C6 7.10457 6.89543 8 8 8Z" stroke="currentColor" stroke-width="1.5"/>
-                                    <path d="M8 2C5.79086 2 4 3.79086 4 6C4 8.5 8 14 8 14C8 14 12 8.5 12 6C12 3.79086 10.2091 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
-                                <span class="detail-label">주소</span>
-                                <span class="detail-value" id="trainerDetailAddress">서울시 강남구 테헤란로 123</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 확인 버튼 -->
-                    <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-                        <button class="modal-button btn-confirm" onclick="confirmTrainerRegistration()" style="width: auto; padding: 0 24px;">확인</button>
-                    </div>
+                <!-- 확인 버튼 -->
+                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                    <button class="modal-button btn-confirm" onclick="confirmTrainerRegistration()" style="width: auto; padding: 0 24px;">확인</button>
                 </div>
+            </div>
 
-                <div class="modal-buttons">
-                    <button class="modal-button btn-cancel" onclick="closeModal()">취소</button>
-                    <button class="modal-button btn-confirm" onclick="confirmTrainerRegistration()">등록</button>
-                </div>
+            <div class="modal-buttons">
+                <button class="modal-button btn-cancel" onclick="closeModal()">취소</button>
+                <button class="modal-button btn-confirm" onclick="confirmTrainerRegistration()">등록</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Sample trainer data
-        let trainers = [
-            { id: 1, name: '이트레이너', contact: '010-2345-6789', email: 'kim@gym.com' },
-            { id: 2, name: '김트레이너', contact: '010-3456-7890', email: 'kim@gym.com' },
-            { id: 3, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 4, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 5, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 6, name: '박트레이너', contact: '010-3456-7890', email: 'kim@gym.com' },
-            { id: 7, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 8, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 9, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 10, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' }
-        ];
+<script>
+    // Sample trainer data
+    let trainers = [
+        { id: 1, name: '이트레이너', contact: '010-2345-6789', email: 'kim@gym.com' },
+        { id: 2, name: '김트레이너', contact: '010-3456-7890', email: 'kim@gym.com' },
+        { id: 3, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
+        { id: 4, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
+        { id: 5, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
+        { id: 6, name: '박트레이너', contact: '010-3456-7890', email: 'kim@gym.com' },
+        { id: 7, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
+        { id: 8, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
+        { id: 9, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
+        { id: 10, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' }
+    ];
 
-        let editingId = null;
+    let editingId = null;
 
-        // Render trainers
-        function renderTrainers() {
-            const grid = document.getElementById('trainerGrid');
-            grid.innerHTML = '';
+    // Render trainers
+    function renderTrainers() {
+        const grid = document.getElementById('trainerGrid');
+        grid.innerHTML = '';
 
-            trainers.forEach(trainer => {
-                const card = document.createElement('div');
-                card.className = 'trainer-card';
-                
-                let infoHTML = '<div class="trainer-info-item">' +
-                    '<span class="trainer-info-label">연락처:</span><br>' +
-                    trainer.contact +
+        trainers.forEach(trainer => {
+            const card = document.createElement('div');
+            card.className = 'trainer-card';
+
+            let infoHTML = '<div class="trainer-info-item">' +
+                '<span class="trainer-info-label">연락처:</span><br>' +
+                trainer.contact +
+                '</div>';
+
+            // 이메일이 있는 경우에만 표시
+            if (trainer.email) {
+                infoHTML += '<div class="trainer-info-item">' +
+                    '<span class="trainer-info-label">이메일:</span><br>' +
+                    trainer.email +
                     '</div>';
-                
-                // 이메일이 있는 경우에만 표시
-                if (trainer.email) {
-                    infoHTML += '<div class="trainer-info-item">' +
-                        '<span class="trainer-info-label">이메일:</span><br>' +
-                        trainer.email +
-                        '</div>';
-                }
-                
-                card.innerHTML = '<div class="trainer-name">' + trainer.name + '</div>' +
-                    '<div class="trainer-info">' + infoHTML + '</div>' +
-                    '<div class="trainer-actions">' +
-                        '<button class="delete-button" onclick="deleteTrainer(' + trainer.id + ')">' +
-                            '<svg class="delete-icon" fill="none" viewBox="0 0 20 20">' +
-                                '<path d="M2.5 5h15M6.667 5V3.333A1.667 1.667 0 018.333 1.667h3.334A1.667 1.667 0 0113.333 5v1.667m2.5 0v11.666A1.667 1.667 0 0114.167 20H5.833a1.667 1.667 0 01-1.666-1.667V6.667h10z" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-                            '</svg>' +
-                        '</button>' +
-                    '</div>';
-                grid.appendChild(card);
-            });
-        }
-
-        // Open add modal
-        function openAddModal() {
-            editingId = null;
-            document.getElementById('modalTitle').textContent = '트레이너 등록';
-            document.getElementById('trainerIdInput').value = '';
-            document.getElementById('trainerLookupSection').style.display = 'none';
-            document.getElementById('trainerModal').classList.add('active');
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('trainerModal').classList.remove('active');
-            // 초기화
-            document.getElementById('trainerIdInput').value = '';
-            document.getElementById('trainerLookupSection').style.display = 'none';
-        }
-
-        // 아이디 조회 함수
-        function lookupTrainerId() {
-            const trainerId = document.getElementById('trainerIdInput').value.trim();
-            
-            if (!trainerId) {
-                alert('아이디를 입력해주세요.');
-                return;
             }
-            
-            // 실제로는 서버에서 조회
-            console.log('트레이너 아이디 조회:', trainerId);
-            
-            // 예시 아이디로 프로필 카드 표시
-            const trainerData = {
-                name: '홍길동',
-                id: '010915',
-                birth: '010915',
-                phone: '010-1234-5678',
-                email: 'hong@example.com',
-                address: '서울시 강남구 테헤란로 123'
-            };
-            
-            // 프로필 카드에 데이터 설정
-            document.getElementById('trainerProfileName').textContent = trainerData.name;
-            document.getElementById('trainerProfileId').textContent = trainerData.id;
-            document.getElementById('trainerDetailName').textContent = trainerData.name;
-            document.getElementById('trainerDetailBirth').textContent = trainerData.birth;
-            document.getElementById('trainerDetailPhone').textContent = trainerData.phone;
-            document.getElementById('trainerDetailEmail').textContent = trainerData.email;
-            document.getElementById('trainerDetailAddress').textContent = trainerData.address;
-            
-            // 프로필 아바타 업데이트 (이름 첫 글자로)
-            const firstChar = trainerData.name.charAt(0);
-            document.getElementById('trainerAvatarText').textContent = firstChar;
-            
-            // 트레이너 조회 섹션 표시
-            document.getElementById('trainerLookupSection').style.display = 'block';
-        }
 
-        // 트레이너 등록 확인 함수
-        function confirmTrainerRegistration() {
-            const trainerId = document.getElementById('trainerIdInput').value.trim();
-            
-            if (!trainerId) {
-                alert('아이디를 입력해주세요.');
-                return;
-            }
-            
-            // 트레이너 조회 섹션이 표시되지 않았으면
-            if (document.getElementById('trainerLookupSection').style.display === 'none') {
-                alert('아이디 조회를 먼저 진행해주세요.');
-                return;
-            }
-            
-            // 프로필 정보 가져오기
-            const name = document.getElementById('trainerProfileName').textContent;
-            const phone = document.getElementById('trainerDetailPhone').textContent;
-            const email = document.getElementById('trainerDetailEmail').textContent;
-            
-            // 새 트레이너 추가
-            const newTrainer = {
-                id: trainers.length > 0 ? Math.max(...trainers.map(t => t.id)) + 1 : 1,
-                name,
-                contact: phone,
-                email
-            };
-            
-            trainers.push(newTrainer);
-            renderTrainers();
-            closeModal();
-            alert('트레이너가 등록되었습니다!');
-        }
-
-        // Delete trainer
-        function deleteTrainer(id) {
-            if (confirm('정말 삭제하시겠습니까?')) {
-                trainers = trainers.filter(t => t.id !== id);
-                renderTrainers();
-                alert('트레이너가 삭제되었습니다!');
-            }
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('trainerModal').addEventListener('click', (e) => {
-            if (e.target.id === 'trainerModal') {
-                closeModal();
-            }
+            card.innerHTML = '<div class="trainer-name">' + trainer.name + '</div>' +
+                '<div class="trainer-info">' + infoHTML + '</div>' +
+                '<div class="trainer-actions">' +
+                '<button class="delete-button" onclick="deleteTrainer(' + trainer.id + ')">' +
+                '<img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="delete-icon">' +
+                '</button>' +
+                '</div>';
+            grid.appendChild(card);
         });
+    }
 
-        // Enter 키 입력 시 조회
-        document.getElementById('trainerIdInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                lookupTrainerId();
-            }
-        });
+    // Open add modal
+    function openAddModal() {
+        editingId = null;
+        document.getElementById('modalTitle').textContent = '트레이너 등록';
+        document.getElementById('trainerIdInput').value = '';
+        document.getElementById('trainerLookupSection').style.display = 'none';
+        document.getElementById('trainerModal').classList.add('active');
+    }
 
-        // Initial render
+    // Close modal
+    function closeModal() {
+        document.getElementById('trainerModal').classList.remove('active');
+        // 초기화
+        document.getElementById('trainerIdInput').value = '';
+        document.getElementById('trainerLookupSection').style.display = 'none';
+    }
+
+    // 아이디 조회 함수
+    function lookupTrainerId() {
+        const trainerId = document.getElementById('trainerIdInput').value.trim();
+
+        if (!trainerId) {
+            alert('아이디를 입력해주세요.');
+            return;
+        }
+
+        // 실제로는 서버에서 조회
+        console.log('트레이너 아이디 조회:', trainerId);
+
+        // 예시 아이디로 프로필 카드 표시
+        const trainerData = {
+            name: '홍길동',
+            id: '010915',
+            birth: '010915',
+            phone: '010-1234-5678',
+            email: 'hong@example.com',
+            address: '서울시 강남구 테헤란로 123'
+        };
+
+        // 프로필 카드에 데이터 설정
+        document.getElementById('trainerProfileName').textContent = trainerData.name;
+        document.getElementById('trainerProfileId').textContent = trainerData.id;
+        document.getElementById('trainerDetailName').textContent = trainerData.name;
+        document.getElementById('trainerDetailBirth').textContent = trainerData.birth;
+        document.getElementById('trainerDetailPhone').textContent = trainerData.phone;
+        document.getElementById('trainerDetailEmail').textContent = trainerData.email;
+        document.getElementById('trainerDetailAddress').textContent = trainerData.address;
+
+        // 프로필 아바타 업데이트 (이름 첫 글자로)
+        const firstChar = trainerData.name.charAt(0);
+        document.getElementById('trainerAvatarText').textContent = firstChar;
+
+        // 트레이너 조회 섹션 표시
+        document.getElementById('trainerLookupSection').style.display = 'block';
+    }
+
+    // 트레이너 등록 확인 함수
+    function confirmTrainerRegistration() {
+        const trainerId = document.getElementById('trainerIdInput').value.trim();
+
+        if (!trainerId) {
+            alert('아이디를 입력해주세요.');
+            return;
+        }
+
+        // 트레이너 조회 섹션이 표시되지 않았으면
+        if (document.getElementById('trainerLookupSection').style.display === 'none') {
+            alert('아이디 조회를 먼저 진행해주세요.');
+            return;
+        }
+
+        // 프로필 정보 가져오기
+        const name = document.getElementById('trainerProfileName').textContent;
+        const phone = document.getElementById('trainerDetailPhone').textContent;
+        const email = document.getElementById('trainerDetailEmail').textContent;
+
+        // 새 트레이너 추가
+        const newTrainer = {
+            id: trainers.length > 0 ? Math.max(...trainers.map(t => t.id)) + 1 : 1,
+            name,
+            contact: phone,
+            email
+        };
+
+        trainers.push(newTrainer);
         renderTrainers();
-    </script>
+        closeModal();
+        alert('트레이너가 등록되었습니다!');
+    }
+
+    // Delete trainer
+    function deleteTrainer(id) {
+        if (confirm('정말 삭제하시겠습니까?')) {
+            trainers = trainers.filter(t => t.id !== id);
+            renderTrainers();
+            alert('트레이너가 삭제되었습니다!');
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('trainerModal').addEventListener('click', (e) => {
+        if (e.target.id === 'trainerModal') {
+            closeModal();
+        }
+    });
+
+    // Enter 키 입력 시 조회
+    document.getElementById('trainerIdInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            lookupTrainerId();
+        }
+    });
+
+    // Initial render
+    renderTrainers();
+</script>
 </body>
 </html>
 

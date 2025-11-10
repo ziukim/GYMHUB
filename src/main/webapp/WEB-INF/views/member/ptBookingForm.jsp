@@ -179,7 +179,7 @@
             margin-bottom: 12px;
         }
 
-        .date-input-container input[type="date"] {
+        .date-input-container input {
             background: transparent;
             border: none;
             color: #ffa366;
@@ -189,9 +189,8 @@
             outline: none;
         }
 
-        .date-input-container input[type="date"]::-webkit-calendar-picker-indicator {
-            cursor: pointer;
-            filter: invert(0.6) sepia(1) saturate(5) hue-rotate(355deg);
+        .date-input-container input::placeholder {
+            color: #8a6a50;
         }
 
         .selected-info {
@@ -440,10 +439,10 @@
             font-size: 16px;
             font-weight: 700;
         }
-         .trainer-select-container {
-             position: relative;
-             width: 100%;
-         }
+        .trainer-select-container {
+            position: relative;
+            width: 100%;
+        }
 
         .trainer-select {
             width: 100%;
@@ -573,7 +572,7 @@
                 <span class="info-icon">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="캘린더 아이콘">
                 </span>
-                <input type="date" id="dateInput" value="2025-11-04">
+                <input type="text" id="dateInput" placeholder="날짜를 선택하세요" readonly onclick="openPtDateCalendar()">
             </div>
 
             <div class="selected-info">
@@ -581,7 +580,7 @@
                     <span class="info-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="캘린더 아이콘">
                     </span>
-                    <span id="selectedDateDisplay">2025년 11월 4일</span>
+                    <span id="selectedDateDisplay">날짜를 선택하세요</span>
                 </div>
                 <div class="info-item time" id="selectedTimeDisplay" style="display: none;">
                     <span class="info-icon">
@@ -593,7 +592,7 @@
                     <span class="info-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="시계 아이콘">
                     </span>
-                    <span>김트레이너</span>
+                    <span id="selectedTrainerName">김트레이너</span>
                 </div>
             </div>
         </div>
@@ -624,7 +623,7 @@
                     <span class="info-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사람 아이콘">
                     </span>
-                    <span>김트레이너</span>
+                    <span id="modalTrainerName">김트레이너</span>
                 </div>
             </div>
 
@@ -646,11 +645,38 @@
             </div>
         </div>
     </div>
+
+    <!-- 달력 팝업 -->
+    <div class="calendar-overlay" id="ptDateCalendarOverlay" onclick="closePtCalendarOnOverlay(event)">
+        <div class="calendar-popup" onclick="event.stopPropagation()">
+            <div class="calendar-header">
+                <button type="button" class="calendar-nav-btn" onclick="prevMonthPtDate()">◀</button>
+                <div class="calendar-month" id="ptDateCalendarMonth"></div>
+                <button type="button" class="calendar-nav-btn" onclick="nextMonthPtDate()">▶</button>
+            </div>
+
+            <div class="calendar-weekdays">
+                <div class="calendar-weekday">일</div>
+                <div class="calendar-weekday">월</div>
+                <div class="calendar-weekday">화</div>
+                <div class="calendar-weekday">수</div>
+                <div class="calendar-weekday">목</div>
+                <div class="calendar-weekday">금</div>
+                <div class="calendar-weekday">토</div>
+            </div>
+
+            <div class="calendar-days" id="ptDateCalendarDays"></div>
+
+            <button type="button" class="calendar-close-btn" onclick="closePtDateCalendar()">확인</button>
+        </div>
+    </div>
 </div>
 
 <script>
     let selectedTime = '';
-    let selectedDate = '2025-11-04';
+    let selectedDate = null;
+    let ptDateCurrentMonth = new Date();
+    let ptDateTempSelected = null;
 
     const timeSlots = [
         { time: "10:00 - 11:00", isBooked: true },
@@ -731,6 +757,11 @@
     }
 
     function submitBooking() {
+        if (!selectedDate) {
+            alert('날짜를 먼저 선택해주세요.');
+            return;
+        }
+
         if (!selectedTime) {
             alert('시간을 먼저 선택해주세요.');
             return;
@@ -738,6 +769,7 @@
 
         document.getElementById('modalTimeRange').textContent = selectedTime;
         document.getElementById('modalDateDisplay').textContent = document.getElementById('selectedDateDisplay').textContent;
+        document.getElementById('modalTrainerName').textContent = document.getElementById('selectedTrainerName').textContent;
         document.getElementById('bookingModal').classList.add('show');
     }
 
@@ -756,19 +788,112 @@
         // location.href = '${pageContext.request.contextPath}/pt/list';
     }
 
-    // 날짜 변경 이벤트
-    document.getElementById('dateInput').addEventListener('change', function() {
-        selectedDate = this.value;
-        const date = new Date(this.value);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const dateText = year + '년 ' + month + '월 ' + day + '일';
-        document.getElementById('selectedDateDisplay').textContent = dateText;
+    // ========================================
+    // 달력 관련 함수
+    // ========================================
 
-        // 실제 구현 시에는 여기서 해당 날짜의 예약 가능 시간을 조회
-        // loadAvailableTimeSlots(selectedDate);
-    });
+    // 달력 열기
+    function openPtDateCalendar() {
+        document.getElementById('ptDateCalendarOverlay').classList.add('show');
+        renderPtDateCalendar();
+    }
+
+    // 달력 닫기
+    function closePtDateCalendar() {
+        document.getElementById('ptDateCalendarOverlay').classList.remove('show');
+        if (ptDateTempSelected) {
+            selectedDate = ptDateTempSelected;
+            updatePtDateDisplay();
+            // 실제 구현 시에는 여기서 해당 날짜의 예약 가능 시간을 조회
+            // loadAvailableTimeSlots(selectedDate);
+        }
+    }
+
+    // 오버레이 클릭 시 닫기
+    function closePtCalendarOnOverlay(event) {
+        if (event.target === event.currentTarget) {
+            closePtDateCalendar();
+        }
+    }
+
+    // 이전 달
+    function prevMonthPtDate() {
+        ptDateCurrentMonth.setMonth(ptDateCurrentMonth.getMonth() - 1);
+        renderPtDateCalendar();
+    }
+
+    // 다음 달
+    function nextMonthPtDate() {
+        ptDateCurrentMonth.setMonth(ptDateCurrentMonth.getMonth() + 1);
+        renderPtDateCalendar();
+    }
+
+    // 달력 렌더링
+    function renderPtDateCalendar() {
+        const year = ptDateCurrentMonth.getFullYear();
+        const month = ptDateCurrentMonth.getMonth();
+
+        document.getElementById('ptDateCalendarMonth').textContent =
+            year + '년 ' + (month + 1) + '월';
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        const daysContainer = document.getElementById('ptDateCalendarDays');
+        daysContainer.innerHTML = '';
+
+        // 빈 칸 채우기
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDay = document.createElement('div');
+            daysContainer.appendChild(emptyDay);
+        }
+
+        // 날짜 채우기
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.textContent = day;
+
+            const currentDate = new Date(year, month, day);
+
+            // 과거 날짜는 비활성화
+            if (currentDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                dayElement.classList.add('disabled');
+            } else {
+                // 선택된 날짜 표시
+                if (ptDateTempSelected &&
+                    ptDateTempSelected.getDate() === day &&
+                    ptDateTempSelected.getMonth() === month &&
+                    ptDateTempSelected.getFullYear() === year) {
+                    dayElement.classList.add('selected');
+                }
+
+                dayElement.onclick = function() {
+                    document.querySelectorAll('#ptDateCalendarDays .calendar-day.selected').forEach(d => {
+                        d.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    ptDateTempSelected = new Date(year, month, day);
+                };
+            }
+
+            daysContainer.appendChild(dayElement);
+        }
+    }
+
+    // 날짜 표시 업데이트
+    function updatePtDateDisplay() {
+        if (selectedDate) {
+            const year = selectedDate.getFullYear();
+            const month = selectedDate.getMonth() + 1;
+            const day = selectedDate.getDate();
+            const dateText = year + '년 ' + month + '월 ' + day + '일';
+
+            document.getElementById('selectedDateDisplay').textContent = dateText;
+            document.getElementById('dateInput').value = dateText;
+        }
+    }
 
     // 모달 외부 클릭 시 닫기
     document.getElementById('bookingModal').addEventListener('click', function(e) {

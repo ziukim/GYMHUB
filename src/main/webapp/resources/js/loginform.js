@@ -67,15 +67,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
-            // JSP에서 폼 제출을 처리하므로 기본 동작 허용
-            // 프론트엔드 검증만 수행
+            e.preventDefault(); // 기본 제출 막기
+
             const userId = document.getElementById('loginId').value;
             const userPassword = document.getElementById('loginPassword').value;
-            
+
             if (!userId || !userPassword) {
-                e.preventDefault();
                 alert('아이디와 비밀번호를 입력해주세요.');
+                return;
             }
+
+            // 임시 관리자 계정 체크
+            if (userId === 'admin' && userPassword === 'admin123') {
+                // localStorage에 저장
+                localStorage.setItem('loginUser', JSON.stringify({
+                    id: userId,
+                    name: '어디 센터',
+                    type: 'GYM'
+                }));
+
+                // 관리자 선택 페이지로 이동
+                location.href = 'admin/adminSelect';
+                return;
+            }
+
+            alert('아이디 또는 비밀번호가 올바르지 않습니다.');
         });
     }
 

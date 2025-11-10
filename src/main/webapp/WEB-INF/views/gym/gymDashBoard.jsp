@@ -293,6 +293,22 @@
                 margin-left: 0 !important;
             }
         }
+
+        /* 페이지 헤더 */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: #ff6b00;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: #b0b0b0;
+        }
     </style>
 </head>
 <body>
@@ -302,6 +318,11 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
+        <div class="page-header">
+            <h1>대시보드</h1>
+            <p>헬스장 종합관리</p>
+        </div>
+
         <div class="dashboard-container">
             <!-- Top Stats Cards -->
             <div class="stats-grid">

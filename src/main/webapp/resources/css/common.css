@@ -79,9 +79,9 @@ header .logo-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 4px #e67000) 
-            drop-shadow(0 0 8px #e67000) 
-            drop-shadow(0 0 12px #e68900);
+    filter: drop-shadow(0 0 4px #e67000)
+    drop-shadow(0 0 8px #e67000)
+    drop-shadow(0 0 12px #e68900);
     animation: iconNeonBuzz 3s ease-in-out infinite;
 }
 
@@ -93,22 +93,22 @@ header .logo-icon {
 
 @keyframes iconNeonBuzz {
     0%, 100% {
-        filter: drop-shadow(0 0 4px #e67000) 
-                drop-shadow(0 0 8px #e67000) 
-                drop-shadow(0 0 12px #e68900);
+        filter: drop-shadow(0 0 4px #e67000)
+        drop-shadow(0 0 8px #e67000)
+        drop-shadow(0 0 12px #e68900);
     }
     10% {
-        filter: drop-shadow(0 0 2px #e67000) 
-                drop-shadow(0 0 4px #e67000);
+        filter: drop-shadow(0 0 2px #e67000)
+        drop-shadow(0 0 4px #e67000);
     }
     20% {
-        filter: drop-shadow(0 0 6px #e67000) 
-                drop-shadow(0 0 10px #e67000) 
-                drop-shadow(0 0 14px #e68900);
+        filter: drop-shadow(0 0 6px #e67000)
+        drop-shadow(0 0 10px #e67000)
+        drop-shadow(0 0 14px #e68900);
     }
     30% {
-        filter: drop-shadow(0 0 4px #e67000) 
-                drop-shadow(0 0 8px #e67000);
+        filter: drop-shadow(0 0 4px #e67000)
+        drop-shadow(0 0 8px #e67000);
     }
 }
 
@@ -935,6 +935,150 @@ button {
     .form-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ========================================
+   달력 팝업 (공통)
+   ======================================== */
+
+.calendar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2500;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-overlay.show {
+    display: flex;
+}
+
+.calendar-popup {
+    background-color: #1a0f0a;
+    border: 1px solid #ff6b00;
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-month {
+    color: #ff6b00;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: none;
+    color: #ff6b00;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 12px;
+}
+
+.calendar-nav-btn:hover {
+    color: #ff8533;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.calendar-weekday {
+    text-align: center;
+    color: #8a6a50;
+    font-size: 14px;
+    padding: 8px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #ffa366;
+    transition: all 0.3s;
+}
+
+.calendar-day:hover {
+    background-color: #2d1810;
+}
+
+.calendar-day.selected {
+    background-color: #ff6b00;
+    color: #0a0a0a;
+}
+
+.calendar-day.disabled {
+    color: #4a3020;
+    cursor: not-allowed;
+}
+
+.calendar-day.disabled:hover {
+    background-color: transparent;
+}
+
+.calendar-close-btn {
+    background-color: #ff6b00;
+    border: none;
+    color: #0a0a0a;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.calendar-close-btn:hover {
+    background-color: #ff8533;
+}
+
+/* 날짜 입력 필드 (읽기 전용 - 달력 팝업 트리거용) */
+.date-input-field {
+    background-color: #2d1810;
+    border: 1px solid #ff6b00;
+    border-radius: 6px;
+    padding: 12px;
+    color: #ffa366;
+    font-size: 14px;
+    width: 100%;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.date-input-field:hover {
+    border-color: #ff8533;
+}
+
+.date-input-field:read-only {
+    cursor: pointer;
 }
 
 /* ========================================

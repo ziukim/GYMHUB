@@ -147,6 +147,22 @@
                 margin-left: 0 !important;
             }
         }
+
+        /* 페이지 헤더 */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: #ff6b00;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: #b0b0b0;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +172,11 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <!--Main Content Area-->
+        <div class="page-header">
+            <h1>예약 상담 관리</h1>
+            <p>헬스장 이용권, PT, 락커를 관리합니다</p>
+        </div>
         <div class="section">
             <div class="section-header">
                 <h2 class="section-title">예약 상담 목록</h2>
