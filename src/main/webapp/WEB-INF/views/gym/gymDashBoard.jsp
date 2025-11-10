@@ -302,6 +302,10 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
+        <div class="page-intro">
+            <h1>헬스장 대시보드</h1>
+            <p>헬스장의 전체 현황을 한눈에 확인하세요</p>
+        </div>
         <div class="dashboard-container">
             <!-- Top Stats Cards -->
             <div class="stats-grid">

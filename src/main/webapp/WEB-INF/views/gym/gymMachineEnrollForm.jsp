@@ -116,13 +116,12 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Header -->
+        <div class="page-intro">
+            <h1>운동 기구 등록</h1>
+            <p>헬스장에서 사용할 운동 기구 정보를 등록하세요</p>
+        </div>
         <div class="page-header">
             <div class="header-left">
-                <button class="back-button" onclick="goBack()">←</button>
-                <div class="page-title-group">
-                    <h1>운동 기구 등록</h1>
-                    <p>헬스장에서 사용할 운동 기구 정보를 등록하세요</p>
-                </div>
             </div>
             <button class="save-button" onclick="saveEquipment()">
                 전체 등록하기

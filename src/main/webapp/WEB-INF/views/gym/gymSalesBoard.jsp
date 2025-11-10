@@ -210,6 +210,10 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
+        <div class="page-intro">
+            <h1>매출 현황</h1>
+            <p>헬스장의 매출 통계를 확인하세요</p>
+        </div>
         <div class="dashboard-container">
             <!-- Top Stats Cards -->
             <div class="top-stats">

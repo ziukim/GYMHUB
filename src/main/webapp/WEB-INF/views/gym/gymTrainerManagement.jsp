@@ -432,12 +432,12 @@
         <div class="main-content">
             <div class="content-wrapper">
                 <!-- Header -->
+                <div class="page-intro">
+                    <h1>트레이너 관리</h1>
+                    <p>헬스장의 트레이너를 등록하고 관리하세요</p>
+                </div>
                 <div class="page-header">
                     <div class="header-left">
-                        <button class="back-button" onclick="history.back()">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/arrow.png" alt="뒤로가기" style="width: 16px; height: 16px;">
-                        </button>
-                        <h1 class="page-title">트레이너 관리</h1>
                     </div>
                     <button class="add-trainer-button" onclick="openAddModal()">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">

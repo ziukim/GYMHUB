@@ -16,23 +16,12 @@
 
 <body>
 <!-- 헤더 -->
-<div class="header">
-    <div class="header-content">
-        <a href="${pageContext.request.contextPath}/" class="back-btn">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 12.6667L3.33333 8L8 3.33333" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12.6667 8H3.33333" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            돌아가기
-        </a>
-        <div class="page-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M17.596 12.768C17.9711 13.1431 18.48 13.3539 19.0105 13.3539C19.541 13.3539 20.0499 13.1431 20.425 12.768C20.8001 12.3929 21.0109 11.884 21.0109 11.3535C21.0109 10.823 20.8001 10.3141 20.425 9.939L18.657 8.172C19.0321 8.54702 19.5409 8.75765 20.0714 8.75755C20.334 8.7575 20.5941 8.70573 20.8367 8.60517C21.0794 8.50462 21.2998 8.35726 21.4855 8.1715C21.6712 7.98575 21.8185 7.76524 21.9189 7.52256C22.0194 7.27989 22.0711 7.0198 22.0711 6.75715C22.071 6.4945 22.0192 6.23443 21.9187 5.99179C21.8181 5.74915 21.6708 5.52869 21.485 5.343L18.657 2.515C18.282 2.13985 17.7733 1.92904 17.2429 1.92895C16.7124 1.92885 16.2036 2.13948 15.8285 2.5145C15.4534 2.88952 15.2425 3.3982 15.2424 3.92865C15.2424 4.45909 15.453 4.96785 15.828 5.343L14.061 3.575C13.8752 3.38925 13.6547 3.2419 13.412 3.14137C13.1693 3.04084 12.9092 2.98909 12.6465 2.98909C12.3838 2.98909 12.1237 3.04084 11.881 3.14137C11.6383 3.2419 11.4178 3.38925 11.232 3.575C11.0462 3.76075 10.8989 3.98128 10.7984 4.22398C10.6978 4.46668 10.6461 4.7268 10.6461 4.9895C10.6461 5.2522 10.6978 5.51232 10.7984 5.75502C10.8989 5.99772 11.0462 6.21825 11.232 6.404L17.596 12.768Z" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            방문 예약
-        </div>
+<header>
+    <div class="logo">
+        <img src="${pageContext.request.contextPath}/resources/images/icon/logo.png" class="logo-icon" alt="GYMHub">
+        <span class="logo-text">GYMHub</span>
     </div>
-</div>
+</header>
 
 <!-- 컨테이너 -->
 <div class="container">
@@ -73,12 +62,18 @@
         <div class="form-container">
             <!-- 일정 선택 -->
             <div class="section">
-                <div class="section-title-container">
-                    <div class="section-title">일정 선택</div>
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M5.83333 1.66667V4.16667" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14.1667 1.66667V4.16667" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16.6667 3.33333H3.33333C2.41286 3.33333 1.66667 4.07952 1.66667 5V16.6667C1.66667 17.5871 2.41286 18.3333 3.33333 18.3333H16.6667C17.5871 18.3333 18.3333 17.5871 18.3333 16.6667V5C18.3333 4.07952 17.5871 3.33333 16.6667 3.33333Z" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M1.66667 8.33333H18.3333" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    일정 선택
                 </div>
 
                 <div class="date-input-group">
-                    <div class="date-label">날짜를 입력하세요</div>
+                    <label class="date-label">날짜를 선택하세요</label>
                     <div class="date-input-wrapper">
                         <input type="text" class="date-input" id="dateInput" placeholder="날짜를 선택하세요" readonly onclick="openCalendar()">
                     </div>
@@ -119,8 +114,11 @@
             </div>
         </div>
 
-        <!-- 예약하기 버튼 -->
-        <button type="button" class="submit-btn" onclick="submitBooking()">예약하기</button>
+        <!-- 버튼 영역 -->
+        <div class="button-group">
+            <button type="button" class="cancel-btn" onclick="history.back()">취소</button>
+            <button type="button" class="submit-btn" onclick="submitBooking()">예약하기</button>
+        </div>
         <div style="clear: both; margin-bottom: 40px;"></div>
     </form>
 </div>

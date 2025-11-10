@@ -910,6 +910,10 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
+        <div class="page-intro">
+            <h1>회원 관리</h1>
+            <p>헬스장 회원 정보를 확인하고 관리하세요</p>
+        </div>
         <div class="content-container">
             <!-- Header -->
             <div class="content-header">

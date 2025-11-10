@@ -532,14 +532,9 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="header">
-            <button class="back-button" onclick="history.back()">
-                <img src="${pageContext.request.contextPath}/resources/images/icon/arrow.png" alt="회원권 아이콘">
-            </button>
-            <div class="header-title">
-                <h1>PT 예약</h1>
-                <div class="header-subtitle">나의 퍼스널 트레이닝 일정을 관리하세요</div>
-            </div>
+        <div class="page-intro">
+            <h1>PT 예약</h1>
+            <p>나의 퍼스널 트레이닝 일정을 관리하세요</p>
         </div>
 
         <div class="trainer-card">

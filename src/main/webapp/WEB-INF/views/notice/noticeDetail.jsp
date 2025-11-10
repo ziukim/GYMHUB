@@ -184,7 +184,6 @@
                     <button class="back-button" onclick="history.back()">←</button>
                     <div class="page-title-wrapper">
                         <h1 class="page-title">공지사항</h1>
-                        <p class="page-subtitle">공지사항 상세 내용</p>
                     </div>
                 </div>
             </div>
@@ -215,6 +214,7 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">목록으로</button>
+                    <button class="btn btn-danger" onclick="deleteNotice()">삭제하기</button>
                     <button class="btn btn-primary" onclick="editNotice()">수정하기</button>
                 </div>
             </div>
@@ -288,8 +288,47 @@
         // Edit notice function
         function editNotice() {
             const noticeId = getUrlParameter('id');
-            alert('수정하기 기능은 추후 구현 예정입니다.');
-            // In a real app: window.location.href = '${pageContext.request.contextPath}/notice/updateForm.do?id=' + noticeId;
+            if (noticeId) {
+                window.location.href = '${pageContext.request.contextPath}/noticeUpdateForm.no?id=' + noticeId;
+            } else {
+                alert('공지사항 ID를 찾을 수 없습니다.');
+            }
+        }
+
+        // Delete notice function
+        function deleteNotice() {
+            const noticeId = getUrlParameter('id');
+            if (!noticeId) {
+                alert('공지사항 ID를 찾을 수 없습니다.');
+                return;
+            }
+
+            if (confirm('정말로 이 공지사항을 삭제하시겠습니까?\n삭제된 공지사항은 복구할 수 없습니다.')) {
+                // TODO: 실제 서버 삭제 요청
+                // fetch('${pageContext.request.contextPath}/notice/delete.do?id=' + noticeId, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     }
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     if (data.success) {
+                //         alert('공지사항이 삭제되었습니다.');
+                //         location.href = '${pageContext.request.contextPath}/notice.no';
+                //     } else {
+                //         alert('삭제 중 오류가 발생했습니다.');
+                //     }
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('삭제 중 오류가 발생했습니다.');
+                // });
+
+                // 임시 처리
+                alert('공지사항이 삭제되었습니다.');
+                location.href = '${pageContext.request.contextPath}/notice.no';
+            }
         }
 
         // Initialize page

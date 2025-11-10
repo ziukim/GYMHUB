@@ -296,11 +296,11 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <div class="page-intro">
+            <h1>PT 스케줄</h1>
+            <p>나의 퍼스널 트레이닝 일정을 관리하세요</p>
+        </div>
         <div class="header">
-            <div class="header-title">
-                <h1>PT 스케줄</h1>
-                <p>나의 퍼스널 트레이닝 일정을 관리하세요</p>
-            </div>
             <button class="btn-primary" onclick="location.href='${pageContext.request.contextPath}/schedule/ptbooking'">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
                 <span>PT 예약</span>

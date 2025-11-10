@@ -156,6 +156,10 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <div class="page-intro">
+            <h1>예약 상담 관리</h1>
+            <p>방문 예약 상담을 확인하고 관리하세요</p>
+        </div>
         <div class="section">
             <div class="section-header">
                 <h2 class="section-title">예약 상담 목록</h2>
