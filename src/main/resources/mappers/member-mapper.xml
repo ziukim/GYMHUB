@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.MemberMapper">
+    <resultMap id="memberResultMap" type="Member">
+        <result column="MEMBER_NO" property="memberNo"/>
+        <result column="MEMBER_TYPE" property="memberType"/>
+        <result column="MEMBER_ID" property="memberId"/>
+        <result column="MEMBER_PWD" property="memberPwd"/>
+        <result column="MEMBER_NAME" property="memberName"/>
+        <result column="MEMBER_ADDRESS" property="memberAddress"/>
+        <result column="MEMBER_PHONE" property="memberPhone"/>
+        <result column="MEMBER_BIRTH" property="memberBirth"/>
+        <result column="STATUS" property="status"/>
+        <result column="MEMBER_CREATEAT" property="memberCreateat"/>
+        <result column="MEMBER_UPDATEAT" property="memberUpdateat"/>
+        <result column="MEMBER_EMAIL" property="memberEmail"/>
+        <result column="MEMBER_PHOTO_PATH" property="memberPhotoPath"/>
+        <result column="GYM_NO" property="gymNo"/>
+        <result column="TRAINER_LICENSE" property="trainerLicense"/>
+        <result column="TRAINER_CAREER" property="trainerCareer"/>
+        <result column="TRAINER_AWARD" property="trainerAward"/>
+    </resultMap>
+
+    <select id="getMemberById" parameterType="string" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+        AND STATUS = 'Y'
+    </select>
+
+    <select id="getMemberCountById" resultType="_int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <insert id="addMember" parameterType="Member">
+        <selectKey keyProperty="memberNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_MNO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO MEMBER
+        (
+        MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        MEMBER_EMAIL,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        )
+        VALUES(
+        #{memberNo},
+        #{memberType},
+        #{memberId},
+        #{memberPwd},
+        #{memberName},
+        #{memberAddress},
+        #{memberPhone},
+        TO_DATE(#{memberBirth}, 'YYYYMMDD'),
+        #{memberEmail},
+        #{trainerLicense},
+        #{trainerCareer},
+        #{trainerAward}
+        )
+    </insert>
+</mapper>
