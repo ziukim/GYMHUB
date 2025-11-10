@@ -27,17 +27,6 @@
             margin-bottom: 2rem;
         }
 
-        .page-header h1 {
-            font-size: 28px;
-            color: #ff6b00;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-header p {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-
         /* 3단 그리드 레이아웃 */
         .products-grid {
             display: grid;
