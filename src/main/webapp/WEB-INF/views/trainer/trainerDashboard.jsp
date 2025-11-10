@@ -640,7 +640,10 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <h1 class="page-title">@@ 트레이너님 환영합니다!</h1>
+        <div class="page-intro">
+            <h1>트레이너님 환영합니다!</h1>
+            <p>오늘도 힘차게 운동하세요</p>
+        </div>
 
         <!-- Cards Row 1 -->
         <div class="cards-row">

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymHub - 물품 관리</title>
+    <title>GymHub - 재고 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
         /* main-content 가로로 가득 차게 */
@@ -18,29 +18,9 @@
         /* Header */
         .page-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            background: transparent;
-            border: none;
-            color: #ff6b00;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            transition: transform 0.2s;
-        }
-
-        .back-button:hover {
-            transform: translateX(-3px);
         }
 
         /* Stats Grid */
@@ -349,12 +329,13 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
+            <div class="page-intro">
+                <h1>재고 관리</h1>
+                <p>헬스장의 회원권과 재고를 등록하고 관리하세요</p>
+            </div>
             <div class="page-header">
-                <div class="header-left">
-                    <h1 class="page-title">물품 관리</h1>
-                </div>
                 <button class="add-button" onclick="openAddModal()">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 상품 추가
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 재고 추가
                 </button>
             </div>
 
@@ -433,7 +414,7 @@
             <!-- Inventory Table -->
             <div class="inventory-section">
                 <div class="section-header">
-                    <h2 class="section-title">재고 목록</h2>
+                    <h2 class="section-title">입출고 내역</h2>
                 </div>
 
                 <table>
@@ -446,31 +427,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr onclick="viewItemDetail('수건')">
+                        <tr>
                             <td>수건</td>
                             <td><span class="status-badge status-sufficient">입고</span></td>
                             <td>120 개</td>
                             <td>2025.06.01 14 : 00</td>
                         </tr>
-                        <tr onclick="viewItemDetail('운동복(상의)')">
+                        <tr>
                             <td>운동복(상의)</td>
                             <td><span class="status-badge status-sufficient">입고</span></td>
                             <td>165 개</td>
                             <td>2025.12.15 12 : 00</td>
                         </tr>
-                        <tr onclick="viewItemDetail('운동복(하의)')">
+                        <tr>
                             <td>운동복(하의)</td>
                             <td><span class="status-badge status-low">출고</span></td>
                             <td>80 개</td>
                             <td>2025.10.15 15 : 00</td>
                         </tr>
-                        <tr onclick="viewItemDetail('상수')">
+                        <tr>
                             <td>상수</td>
                             <td><span class="status-badge status-sufficient">입고</span></td>
                             <td>90 개</td>
                             <td>2025.12.03 16 : 00</td>
                         </tr>
-                        <tr onclick="viewItemDetail('바이탈 프로')">
+                        <tr>
                             <td>바이탈 프로</td>
                             <td><span class="status-badge status-sufficient">입고</span></td>
                             <td>20 개</td>
@@ -482,21 +463,21 @@
         </div>
     </div>
 
-    <!-- 상품 추가 모달 -->
+    <!-- 재고 추가 모달 -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-container">
             <div class="modal-header">
                 <button class="modal-close" onclick="closeAddModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
                 </button>
-                <div class="modal-title">상품 추가</div>
-                <div class="modal-subtitle">새로운 상품을 등록합니다</div>
+                <div class="modal-title">재고 추가</div>
+                <div class="modal-subtitle">새로운 재고를 등록합니다</div>
             </div>
             <div class="modal-body">
                 <form id="addProductForm">
                     <div class="modal-form-group">
-                        <label class="modal-label">상품명 <span style="color: #ff6b00;">*</span></label>
-                        <input type="text" class="modal-input" placeholder="상품명을 입력하세요" required>
+                        <label class="modal-label">재고명 <span style="color: #ff6b00;">*</span></label>
+                        <input type="text" class="modal-input" placeholder="재고명을 입력하세요" required>
                     </div>
                     <div class="modal-form-group">
                         <label class="modal-label">수량 <span style="color: #ff6b00;">*</span></label>
@@ -525,20 +506,20 @@
         </div>
     </div>
 
-    <!-- 상품 수정 모달 -->
+    <!-- 재고 수정 모달 -->
     <div class="modal-overlay" id="editModal">
         <div class="modal-container">
             <div class="modal-header">
                 <button class="modal-close" onclick="closeEditModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
                 </button>
-                <div class="modal-title">상품 수정</div>
-                <div class="modal-subtitle">상품 정보를 수정합니다</div>
+                <div class="modal-title">재고 수정</div>
+                <div class="modal-subtitle">재고 정보를 수정합니다</div>
             </div>
             <div class="modal-body">
                 <form id="editProductForm">
                     <div class="modal-form-group">
-                        <label class="modal-label">상품명 <span style="color: #ff6b00;">*</span></label>
+                        <label class="modal-label">재고명 <span style="color: #ff6b00;">*</span></label>
                         <input type="text" class="modal-input" id="editProductName" required>
                     </div>
                     <div class="modal-form-group">
@@ -636,35 +617,35 @@
     </div>
 
     <script>
-        // 상품 추가 모달 열기
+        // 재고 추가 모달 열기
         function openAddModal() {
             document.getElementById('addModal').classList.add('active');
         }
 
-        // 상품 추가 모달 닫기
+        // 재고 추가 모달 닫기
         function closeAddModal() {
             document.getElementById('addModal').classList.remove('active');
             document.getElementById('addProductForm').reset();
         }
 
-        // 상품 수정 모달 열기
+        // 재고 수정 모달 열기
         function openEditModal(productName) {
             document.getElementById('editModal').classList.add('active');
             document.getElementById('editProductName').value = productName;
             // 실제로는 서버에서 데이터를 가져와서 채워야 함
         }
 
-        // 상품 수정 모달 닫기
+        // 재고 수정 모달 닫기
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('active');
             document.getElementById('editProductForm').reset();
         }
 
-        // 상품 추가 폼 제출
+        // 재고 추가 폼 제출
         function submitAddForm() {
             const form = document.getElementById('addProductForm');
             if (form.checkValidity()) {
-                alert('상품이 추가되었습니다.');
+                alert('재고가 추가되었습니다.');
                 closeAddModal();
                 // 실제로는 서버로 데이터 전송
             } else {
@@ -672,11 +653,11 @@
             }
         }
 
-        // 상품 수정 폼 제출
+        // 재고 수정 폼 제출
         function submitEditForm() {
             const form = document.getElementById('editProductForm');
             if (form.checkValidity()) {
-                alert('상품이 수정되었습니다.');
+                alert('재고가 수정되었습니다.');
                 closeEditModal();
                 // 실제로는 서버로 데이터 전송
             } else {
@@ -771,16 +752,11 @@
 
         // 삭제 확인
         function confirmDelete(itemName) {
-            if (confirm((itemName || '이 상품') + '을(를) 삭제하시겠습니까?')) {
-                alert((itemName || '상품') + '이(가) 삭제되었습니다.');
+            if (confirm((itemName || '이 재고') + '을(를) 삭제하시겠습니까?')) {
+                alert((itemName || '재고') + '이(가) 삭제되었습니다.');
                 closeEditModal();
                 // 실제로는 서버로 삭제 요청
             }
-        }
-
-        // 테이블 행 클릭
-        function viewItemDetail(itemName) {
-            alert(itemName + ' 상세 정보\n\n재고 수량 및 입입고 내역을 확인할 수 있습니다.');
         }
 
         // 프로그레스 바 애니메이션
@@ -805,11 +781,6 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
-        });
-
-        // 테이블 행 호버 효과
-        document.querySelectorAll('tbody tr').forEach(row => {
-            row.style.cursor = 'pointer';
         });
 
         // 모달 외부 클릭시 닫기

@@ -237,6 +237,47 @@ header .logo-icon {
 }
 
 /* ========================================
+   페이지 소개 문구 (공통)
+   ======================================== */
+
+.page-intro {
+    margin-bottom: 30px;
+}
+
+.page-intro h1 {
+    font-size: 32px;
+    color: #ff6b00;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-intro h1 img {
+    width: 40px;
+    height: 40px;
+}
+
+.page-intro p {
+    font-size: 16px;
+    color: #8a6a50;
+    margin: 0;
+}
+
+/* 헤더 타이틀 스타일 (PT 스케줄 등에서 사용) */
+.header-title h1 {
+    font-size: 30px;
+    font-weight: 900;
+    color: #ff6b00;
+    margin-bottom: 8px;
+}
+
+.header-title p {
+    font-size: 16px;
+    color: #8a6a50;
+}
+
+/* ========================================
    카드
    ======================================== */
 
@@ -505,6 +546,15 @@ button {
 
 .btn-secondary:hover {
     background-color: rgba(255, 107, 0, 0.1);
+}
+
+.btn-danger {
+    background-color: #ff5252;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #ff6b6b;
 }
 
 .add-button {

@@ -303,14 +303,13 @@
 
         <!-- Main Content -->
         <div class="main-content">
+            <div class="page-intro">
+                <h1>PT 신청 관리</h1>
+                <p>회원들의 PT 신청을 확인하고 관리하세요</p>
+            </div>
             <!-- Header -->
             <div class="pt-header">
                 <div class="pt-title-section">
-                    <button class="back-btn" onclick="history.back()">←</button>
-                    <div class="pt-title">
-                        <h1>PT 신청 관리</h1>
-                        <p>회원들의 PT 신청을 관리하세요</p>
-                    </div>
                 </div>
             </div>
 
