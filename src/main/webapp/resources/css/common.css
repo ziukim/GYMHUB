@@ -112,6 +112,14 @@ header .logo-icon {
     }
 }
 
+.logo-icon {
+    transition: transform 0.2s ease-in-out;
+}
+
+.logo-container:hover .logo-icon {
+    transform: scale(1.05);
+}
+
 .logo-text {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 1.2rem;
@@ -125,6 +133,12 @@ header .logo-icon {
             0 0 10px #e67000,
             0 0 15px #e68900;
     animation: neonBuzz 3s ease-in-out infinite;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.logo-container:hover .logo-text {
+    transform: scale(1.05);
 }
 
 @keyframes neonBuzz {

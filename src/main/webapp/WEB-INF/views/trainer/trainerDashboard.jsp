@@ -27,136 +27,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 255px;
-            height: 100vh;
-            background-color: #1a0f0a;
-            border-right: 1px solid #ff6b00;
-            z-index: 100;
-        }
-
-        .logo-container {
-            padding: 24px 33px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .icon {
-            width: 48px;
-            height: 48px;
-            flex-shrink: 0;
-        }
-
-        .icon svg {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            line-height: 24px;
-            color: #ff6b00;
-            font-weight: 400;
-            text-shadow:
-                    0 0 10px #ff8800,
-                    0 0 20px #ff8800,
-                    0 0 30px #ff8800,
-                    0 0 40px #ffaa00,
-                    0 0 60px #ffdd00;
-            animation: neonBuzz 3s ease-in-out infinite;
-        }
-
-        @keyframes neonBuzz {
-            0%, 100% {
-                text-shadow:
-                        0 0 10px #ff8800,
-                        0 0 20px #ff8800,
-                        0 0 30px #ff8800,
-                        0 0 40px #ffaa00,
-                        0 0 60px #ffdd00;
-            }
-            10% {
-                text-shadow:
-                        0 0 5px #ff8800,
-                        0 0 10px #ff8800;
-            }
-            20% {
-                text-shadow:
-                        0 0 15px #ff8800,
-                        0 0 25px #ff8800,
-                        0 0 40px #ffaa00,
-                        0 0 70px #ffdd00;
-            }
-            30% {
-                text-shadow:
-                        0 0 10px #ff8800,
-                        0 0 20px #ff8800,
-                        0 0 30px #ff8800;
-            }
-        }
-
-        .divider {
-            width: 100%;
-            height: 1px;
-            background-color: #ff6b00;
-        }
-
-        .navigation {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .nav-button {
-            width: 100%;
-            height: 36px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            background: transparent;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 12px;
-        }
-
-        .nav-button:hover {
-            border-color: #ff6b00;
-            background-color: rgba(255, 107, 0, 0.1);
-        }
-
-        .nav-button.active {
-            border-color: #ff6b00;
-        }
-
-        .nav-button svg {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
-
-        .nav-button span {
-            font-size: 14px;
-            line-height: 20px;
-            color: #ffa366;
-            white-space: nowrap;
-        }
-
-        .nav-button.logout {
-            border-radius: 8px;
-        }
-
-        .nav-button.logout span {
-            color: #ff5252;
-        }
 
         /* Main Content - 최대 너비 제한 추가 */
         .main-content {
@@ -276,7 +146,6 @@
             width: 16px;
             height: 16px;
             flex-shrink: 0;
-            vertical-align: middle;
         }
 
         .btn-password span,
@@ -303,9 +172,6 @@
             height: 232px;
         }
 
-        .attendance-card .card-title {
-            /*margin-bottom: 50px;*/
-        }
 
         .attendance-card .card-title span {
             color: #ff6b00;
@@ -617,15 +483,6 @@
         }
 
         @media (max-width: 576px) {
-            .sidebar {
-                width: 60px;
-            }
-
-            .logo-text,
-            .nav-button span {
-                display: none;
-            }
-
             .main-content {
                 margin-left: 60px;
                 width: calc(100% - 60px);
