@@ -178,9 +178,10 @@ public class MemberController {
             // 세션에 로그인 정보 저장
             session.setAttribute("loginMember", loginMember);
             
-            // 멤버 타입 3(헬스장 운영자)이면 선택 모달 표시 플래그 설정
+            // 멤버 타입 3(헬스장 운영자)이면 관리자 선택 페이지로 이동
             if (loginMember.getMemberType() == 3) {
-                session.setAttribute("showGymSelectModal", true);
+                session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
+                return "redirect:/admin/adminSelect";
             }
             
             session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");

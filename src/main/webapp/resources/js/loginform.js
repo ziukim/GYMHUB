@@ -422,44 +422,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 헬스장 운영자 선택 모달 관련
-    const gymSelectModal = document.getElementById('gymSelectModal');
-    const closeGymSelectModal = document.getElementById('closeGymSelectModal');
-    const attendanceCard = document.getElementById('attendanceCard');
-    const adminDashboardCard = document.getElementById('adminDashboardCard');
-
-    // 헬스장 운영자 선택 모달 닫기
-    if (closeGymSelectModal) {
-        closeGymSelectModal.addEventListener('click', function() {
-            if (gymSelectModal) {
-                gymSelectModal.classList.remove('active');
-            }
-        });
-    }
-
-    // 모달 외부 클릭 시 닫기
-    if (gymSelectModal) {
-        gymSelectModal.addEventListener('click', function(e) {
-            if (e.target === gymSelectModal) {
-                gymSelectModal.classList.remove('active');
-            }
-        });
-    }
-
-    // 출석 관리 카드 클릭
-    if (attendanceCard) {
-        attendanceCard.addEventListener('click', function() {
-            const contextPath = window.contextPath || '';
-            window.location.href = contextPath + '/admin/attendanceCheck';
-        });
-    }
-
-    // 관리자 대시보드 카드 클릭
-    if (adminDashboardCard) {
-        adminDashboardCard.addEventListener('click', function() {
-            const contextPath = window.contextPath || '';
-            window.location.href = contextPath + '/dashboard.gym';
-        });
-    }
 });
 

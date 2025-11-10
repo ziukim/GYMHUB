@@ -1,5 +1,7 @@
 package com.kh.gymhub.controller;
 
+import com.kh.gymhub.model.vo.Member;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -66,13 +68,31 @@ public class GymController {
 
     // 관리자 선택 페이지
     @GetMapping("/admin/adminSelect")
-    public String adminSelect() {
+    public String adminSelect(HttpSession session) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        // 로그인하지 않았거나 헬스장 운영자가 아닌 경우 메인 페이지로 리다이렉트
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
         return "admin/adminSelect";
     }
 
     // 출석체크 페이지
     @GetMapping("/admin/attendanceCheck")
-    public String attendance() {
+    public String attendance(HttpSession session) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        // 로그인하지 않았거나 헬스장 운영자가 아닌 경우 메인 페이지로 리다이렉트
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
         return "admin/attendanceCheck";
     }
 

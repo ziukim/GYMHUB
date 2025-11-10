@@ -947,6 +947,25 @@
             line-height: 1.5;
         }
 
+        .gym-select-logout-btn {
+            background: transparent;
+            border: 2px solid #FF6B00;
+            color: #8A6A50;
+            padding: 16px 50px;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .gym-select-logout-btn:hover {
+            background: rgba(255, 107, 0, 0.1);
+            color: #FF6B00;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .gym-select-modal .modal-container {
                 padding: 40px 30px;
@@ -1610,7 +1629,23 @@
         </div>
 
         <h1 class="welcome-title">관리자 메뉴</h1>
-        <p class="welcome-subtitle">헬스장 운영자님, 환영합니다!</p>
+        <p class="welcome-subtitle">
+            <c:choose>
+                <c:when test="${not empty loginMember && loginMember.memberType == 3}">
+                    <c:choose>
+                        <c:when test="${not empty loginMember.memberName}">
+                            ${loginMember.memberName}님, 환영합니다!
+                        </c:when>
+                        <c:otherwise>
+                            헬스장 운영자님, 환영합니다!
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+                <c:otherwise>
+                    헬스장 운영자님, 환영합니다!
+                </c:otherwise>
+            </c:choose>
+        </p>
 
         <div class="gym-select-menu-grid">
             <div class="gym-select-menu-card" id="attendanceCard">
@@ -1635,6 +1670,8 @@
                 <p class="gym-select-menu-description">헬스장 운영 관리 및<br>통계 확인</p>
             </div>
         </div>
+
+        <button class="gym-select-logout-btn" id="gymSelectLogoutBtn">로그아웃</button>
     </div>
 </div>
 
@@ -1797,15 +1834,6 @@
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-        // 헬스장 운영자 선택 모달 표시
-        <c:if test="${not empty showGymSelectModal && showGymSelectModal == true}">
-            const gymSelectModal = document.getElementById('gymSelectModal');
-            if (gymSelectModal) {
-                gymSelectModal.classList.add('active');
-            }
-            // 세션에서 플래그 제거 (한 번만 표시)
-            <c:remove var="showGymSelectModal" scope="session"/>
-        </c:if>
     });
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>
