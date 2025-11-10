@@ -164,12 +164,10 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <header class="header">
-            <div>
-                <h1 class="page-title">내 정보</h1>
-                <p class="page-subtitle" style="color: #8a6a50;">회원 정보를 확인하고 관리하세요</p>
-            </div>
-        </header>
+        <div class="page-intro">
+            <h1>내 정보</h1>
+            <p>회원 정보를 확인하고 관리하세요</p>
+        </div>
 
         <!-- 프로필 카드 -->
         <section class="card">

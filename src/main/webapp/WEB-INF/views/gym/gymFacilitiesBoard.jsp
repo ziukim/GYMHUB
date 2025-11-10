@@ -492,6 +492,10 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <div class="page-intro">
+            <h1>시설 관리</h1>
+            <p>헬스장의 시설과 기구를 관리하세요</p>
+        </div>
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">

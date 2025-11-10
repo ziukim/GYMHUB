@@ -534,18 +534,24 @@
         }
 
         /* 메인 이미지 */
-        .main-image {
+        .gym-detail-modal .main-image {
             width: 100%;
-            height: 251px;
+            max-width: 550px;
+            height: 300px;
+            min-height: 300px;
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 24px;
+            background-color: #2d1810;
+            border: 1px solid #ff6b00;
         }
 
-        .main-image img {
+        .gym-detail-modal .main-image img {
             width: 100%;
             height: 100%;
+            min-height: 300px;
             object-fit: cover;
+            display: block;
         }
 
         /* 뱃지 그룹 */
@@ -795,7 +801,110 @@
             background-color: #e65f00;
         }
 
+        /* ========================================
+           기구 목록 모달 스타일
+           ======================================== */
+        .equipment-list-modal {
+            z-index: 3000;
+        }
+
+        .equipment-list-modal .modal-container {
+            max-width: 1200px;
+            width: 90%;
+            max-height: 90vh;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .equipment-list-modal .modal-title {
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .equipment-list-modal .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .equipment-list-modal .close-btn:hover {
+            opacity: 1;
+        }
+
+        .equipment-list-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .equipment-card {
+            background-color: #1a0f0a;
+            border: 1px solid #ff6b00;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.3);
+            border-color: #ff8533;
+        }
+
+        .equipment-card-image {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            background-color: #2d1810;
+        }
+
+        .equipment-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+        .equipment-card-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .equipment-card-title {
+            font-size: 16px;
+            color: #8a6a50;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+            text-align: center;
+        }
+
         /* 반응형 (모달용) */
+        @media (max-width: 1200px) {
+            .equipment-list-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .equipment-list-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 600px) {
             .facility-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -806,6 +915,10 @@
             }
 
             .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .equipment-list-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -855,11 +968,8 @@
         <div class="filter-wrapper">
             <select class="filter-select">
                 <option value="">정렬 기준</option>
-                <option value="rating">평점 높은 순</option>
                 <option value="price-low">가격 낮은 순</option>
                 <option value="price-high">가격 높은 순</option>
-                <option value="distance">거리 가까운 순</option>
-                <option value="review">리뷰 많은 순</option>
             </select>
         </div>
         <input type="text" class="search-input" placeholder="원하는 헬스장 이름을 검색해보세요">
@@ -904,7 +1014,6 @@
                             <div class="gym-title">파워 헬스 클럽 대교점</div>
                             <div class="gym-location">경기 남양주</div>
                         </div>
-                        <div class="gym-rating">★ 4.8 (324)</div>
                     </div>
                     <div class="gym-tags">
                         <span class="tag">GX</span>
@@ -926,7 +1035,6 @@
                             <div class="gym-title">파워 헬스 클럽 강동점</div>
                             <div class="gym-location">서울 강동</div>
                         </div>
-                        <div class="gym-rating">★ 4.9 (356)</div>
                     </div>
                     <div class="gym-tags">
                         <span class="tag">GX</span>
@@ -948,7 +1056,6 @@
                             <div class="gym-title">운동하는 헬스 클럽 강남점</div>
                             <div class="gym-location">서울 강남구</div>
                         </div>
-                        <div class="gym-rating">★ 4.7 (462)</div>
                     </div>
                     <div class="gym-tags">
                         <span class="tag">GX</span>
@@ -1194,8 +1301,8 @@
         </div>
 
         <!-- 메인 이미지 -->
-        <div class="main-image">
-            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800" alt="헬스장 이미지" id="gymDetailImage">
+        <div class="main-image" style="width: 100%; max-width: 550px; height: 300px; border-radius: 10px; overflow: hidden; margin-bottom: 24px; background-color: #2d1810; border: 1px solid #ff6b00;">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=550" alt="헬스장 이미지" id="gymDetailImage" style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
 
         <!-- 뱃지 -->
@@ -1368,9 +1475,147 @@
     </div>
 </div>
 
+<!-- 기구 목록 모달 -->
+<div class="modal-overlay equipment-list-modal" id="equipmentListModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">기구 목록</h2>
+            <button class="close-btn" id="closeEquipmentListModal">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
+        </div>
+
+        <div class="equipment-list-grid" id="equipmentListGrid">
+            <!-- 기구 카드들이 여기에 동적으로 추가됩니다 -->
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="로우로우">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">로우로우 - 스머트헬스</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 프레스">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">레그 프레스 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="체스트 프레스">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">체스트 프레스 - 스크짐</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="스미스머신">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">스미스머신 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="랫 풀다운">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">랫 풀다운 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 익스텐션">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">레그 익스텐션 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="인클라인 벤치">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">인클라인 벤치 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="케이블 크로스">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">케이블 크로스 - 스크짐</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="시티드 로우">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">시티드 로우 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 컬">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">레그 컬 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="숄더 프레스">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">숄더 프레스 - 스텍</h3>
+                </div>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-card-image">
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="덤벨 플라이">
+                </div>
+                <div class="equipment-card-content">
+                    <h3 class="equipment-card-title">덤벨 플라이 - 스크짐</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // 전역 변수로 contextPath 설정
     window.contextPath = '${pageContext.request.contextPath}';
+    
+    // 이미지 로드 확인 및 디버깅
+    document.addEventListener('DOMContentLoaded', function() {
+        const gymDetailImage = document.getElementById('gymDetailImage');
+        if (gymDetailImage) {
+            gymDetailImage.addEventListener('load', function() {
+                console.log('이미지 로드 성공:', this.src);
+            });
+            gymDetailImage.addEventListener('error', function() {
+                console.error('이미지 로드 실패:', this.src);
+                // 대체 이미지로 변경
+                this.src = 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=550';
+            });
+        }
+    });
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>
 </body>

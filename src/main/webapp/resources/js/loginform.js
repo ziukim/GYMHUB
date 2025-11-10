@@ -376,5 +376,37 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = contextPath + '/booking/booking';
         });
     }
+
+    // 기구 목록 더보기 버튼 클릭 이벤트
+    const equipmentMoreBtn = document.querySelector('.gym-detail-modal .more-text');
+    const equipmentListModal = document.getElementById('equipmentListModal');
+    const closeEquipmentListModal = document.getElementById('closeEquipmentListModal');
+
+    if (equipmentMoreBtn && equipmentListModal) {
+        equipmentMoreBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // 이벤트 버블링 방지
+            if (equipmentListModal) {
+                equipmentListModal.classList.add('active');
+            }
+        });
+    }
+
+    // 기구 목록 모달 닫기
+    if (closeEquipmentListModal) {
+        closeEquipmentListModal.addEventListener('click', () => {
+            if (equipmentListModal) {
+                equipmentListModal.classList.remove('active');
+            }
+        });
+    }
+
+    // 기구 목록 모달 외부 클릭 시 닫기
+    if (equipmentListModal) {
+        equipmentListModal.addEventListener('click', (e) => {
+            if (e.target === equipmentListModal) {
+                equipmentListModal.classList.remove('active');
+            }
+        });
+    }
 });
 

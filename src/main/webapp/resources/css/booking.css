@@ -13,41 +13,20 @@ body {
 }
 
 /* 헤더 */
-.header {
-    background-color: #1a0f0a;
-    border-bottom: 1px solid #ff6b00;
-    padding: 14px 100px;
+header {
+    background: linear-gradient(180deg, #3a2820 0%, #2a1810 100%);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ff6b00;
     margin: -20px -20px 32px -20px;
 }
 
-.header-content {
+header .logo {
     display: flex;
     align-items: center;
-    gap: 16px;
-}
-
-.back-btn {
-    background: none;
-    border: none;
-    color: #ffa366;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0;
-}
-
-.back-btn:hover {
-    color: #ff6b00;
-}
-
-.page-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #ff6b00;
-    font-size: 16px;
+    gap: 10px;
 }
 
 /* 컨테이너 */
@@ -109,17 +88,16 @@ body {
 }
 
 .section-title-container {
-    background-color: #563c30;
-    border-radius: 14px;
-    padding: 8px 16px;
     margin-bottom: 24px;
-    display: inline-block;
 }
 
 .section-title {
-    font-size: 25px;
-    color: #1a0f0a;
-    text-align: center;
+    font-size: 18px;
+    color: #ff6b00;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .section-header {
@@ -134,17 +112,14 @@ body {
 
 /* 일정 선택 */
 .date-input-group {
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .date-label {
-    background-color: #ff6b00;
-    color: white;
-    padding: 3px 9px;
-    border-radius: 8px;
-    font-size: 12px;
-    display: inline-block;
+    font-size: 14px;
+    color: #ffa366;
     margin-bottom: 12px;
+    display: block;
 }
 
 .date-input-wrapper {
@@ -330,6 +305,37 @@ body {
     color: #ff6b00;
 }
 
+/* 버튼 그룹 */
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid #ff6b00;
+    color: #ffa366;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 15px 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cancel-btn:hover {
+    background-color: rgba(255, 107, 0, 0.1);
+    border-color: #ff8533;
+    color: #ff8533;
+}
+
+.cancel-btn:active {
+    background-color: rgba(255, 107, 0, 0.2);
+}
+
 /* 예약하기 버튼 */
 .submit-btn {
     background-color: #ff6b00;
@@ -340,7 +346,6 @@ body {
     padding: 15px 40px;
     border-radius: 8px;
     cursor: pointer;
-    float: right;
     transition: all 0.3s;
 }
 

@@ -190,6 +190,11 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <div class="page-intro">
+            <h1>운동 강의 영상</h1>
+            <p>다양한 운동 강의 영상을 시청하고 학습하세요</p>
+        </div>
+
         <div class="section">
             <div class="section-header">
                 <h2 class="section-title">

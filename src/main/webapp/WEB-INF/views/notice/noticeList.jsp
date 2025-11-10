@@ -225,14 +225,11 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
-            <div class="page-header">
-                <div class="header-left">
-                    <button class="back-button" onclick="history.back()">←</button>
-                    <div class="page-title-wrapper">
-                        <h1 class="page-title">공지사항</h1>
-                        <p class="page-subtitle">헬스장의 최신 소식을 확인하세요</p>
-                    </div>
-                </div>
+            <div class="page-intro">
+                <h1>공지사항</h1>
+                <p>헬스장의 최신 소식을 확인하세요</p>
+            </div>
+            <div class="page-header" style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
                 <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
                 </button>
