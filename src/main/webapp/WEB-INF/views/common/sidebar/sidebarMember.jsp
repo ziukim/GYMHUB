@@ -28,11 +28,6 @@
         cursor: pointer;
     }
 
-    .logo-container:hover {
-        transform: scale(1.02);
-        transition: transform 0.2s ease-in-out;
-    }
-
     .logo-icon {
         width: 48px;
         height: 48px;
@@ -72,18 +67,7 @@
     }
 
     .logo-text {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-size: 1.2rem;
-        font-weight: 800;
-        font-style: italic;
         line-height: 24px;
-        color: #ff6b00;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        text-shadow: 0 0 5px #e67000,
-        0 0 10px #e67000,
-        0 0 15px #e68900;
-        animation: neonBuzz 3s ease-in-out infinite;
     }
 
     @keyframes neonBuzz {
