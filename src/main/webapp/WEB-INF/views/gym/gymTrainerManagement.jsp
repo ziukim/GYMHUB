@@ -516,11 +516,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- 확인 버튼 -->
-                    <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-                        <button class="modal-button btn-confirm" onclick="confirmTrainerRegistration()" style="width: auto; padding: 0 24px;">확인</button>
-                    </div>
                 </div>
 
                 <div class="modal-buttons">

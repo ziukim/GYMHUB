@@ -165,7 +165,6 @@
             width: calc(100% - 255px);
             min-height: 100vh;
             background-color: #0a0a0a;
-            max-width: 1600px;
         }
 
         .page-title {

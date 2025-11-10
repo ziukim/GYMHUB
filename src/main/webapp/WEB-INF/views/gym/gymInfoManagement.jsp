@@ -423,32 +423,6 @@
                     </div>
                 </div>
 
-                <!-- Membership Prices Section -->
-                <div class="section">
-                    <div class="section-title">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/money.png" alt="회원권 가격" class="section-icon">
-                        회원권 가격
-                    </div>
-                    <div class="price-grid">
-                        <div class="price-item">
-                            <label class="price-label">1개월 회원권</label>
-                            <input type="text" class="form-input" placeholder="89000" id="price1Month">
-                        </div>
-                        <div class="price-item">
-                            <label class="price-label">3개월 회원권</label>
-                            <input type="text" class="form-input" placeholder="240000" id="price3Month">
-                        </div>
-                        <div class="price-item">
-                            <label class="price-label">6개월 회원권</label>
-                            <input type="text" class="form-input" placeholder="450000" id="price6Month">
-                        </div>
-                        <div class="price-item">
-                            <label class="price-label">1년 회원권</label>
-                            <input type="text" class="form-input" placeholder="840000" id="price1Year">
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Operating Hours Section -->
                 <div class="section">
                     <div class="section-title">
@@ -516,7 +490,7 @@
                             <span>락커실</span>
                         </button>
                         <button class="facility-button" data-facility="무료 WiFi">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="무료 WiFi" class="facility-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/wifi.png" alt="무료 WiFi" class="facility-icon">
                             <span>무료 WiFi</span>
                         </button>
                         <button class="facility-button" data-facility="PT">

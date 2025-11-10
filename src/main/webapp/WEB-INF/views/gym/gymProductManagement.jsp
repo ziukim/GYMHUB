@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymHub - 상품 관리</title>
+    <title>GymHub - 물품 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
         /* main-content 가로로 가득 차게 */
@@ -351,8 +351,7 @@
             <!-- Header -->
             <div class="page-header">
                 <div class="header-left">
-                    <button class="back-button" onclick="history.back()">←</button>
-                    <h1 class="page-title">상품 관리</h1>
+                    <h1 class="page-title">물품 관리</h1>
                 </div>
                 <button class="add-button" onclick="openAddModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 상품 추가
@@ -625,15 +624,7 @@
                     </div>
                     <div class="modal-form-group">
                         <label class="modal-label">관리 재고 수량 <span style="color: #ff6b00;">*</span></label>
-                        <select class="modal-select" id="inventoryQuantitySelect" required>
-                            <option value="">수량 선택</option>
-                            <option value="1">1개</option>
-                            <option value="5">5개</option>
-                            <option value="10">10개</option>
-                            <option value="20">20개</option>
-                            <option value="50">50개</option>
-                            <option value="100">100개</option>
-                        </select>
+                        <input type="number" class="modal-input" id="inventoryQuantitySelect" placeholder="수량을 입력하세요" required min="1">
                     </div>
                 </form>
             </div>
