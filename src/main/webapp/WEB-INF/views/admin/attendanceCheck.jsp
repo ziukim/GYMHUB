@@ -601,7 +601,7 @@
 
     function goBack() {
         if (confirm('출석 관리를 종료하시겠습니까?')) {
-            window.location.href = '${pageContext.request.contextPath}/admin/adminSelect';
+            window.location.href = '${pageContext.request.contextPath}/';
         }
     }
 </script>
