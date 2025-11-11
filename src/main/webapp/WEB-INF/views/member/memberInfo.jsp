@@ -193,7 +193,7 @@
                         </div>
                         <div class="info-item">
                             <label class="info-label">생년월일</label>
-                            <p class="info-value">1990. 1. 15.</p>
+                            <p class="info-value">${loginMember.memberBirth}</p>
                         </div>
                     </div>
 

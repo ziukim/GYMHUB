@@ -92,6 +92,7 @@
         MEMBER_PHONE,
         MEMBER_BIRTH,
         MEMBER_EMAIL,
+        GYM_NO,
         TRAINER_LICENSE,
         TRAINER_CAREER,
         TRAINER_AWARD
@@ -106,6 +107,7 @@
         #{memberPhone},
         #{memberBirth},
         #{memberEmail},
+        #{gymNo},
         #{trainerLicense},
         #{trainerCareer},
         #{trainerAward}

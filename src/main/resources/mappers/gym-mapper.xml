@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.GymMapper">
+    <resultMap id="gymResultMap" type="Gym">
+        <result column="GYM_NO" property="gymNo"/>
+        <result column="GYM_NAME" property="gymName"/>
+        <result column="GYM_OWNER" property="gymOwner"/>
+        <result column="GYM_PHONE" property="gymPhone"/>
+        <result column="GYM_ADDRESS" property="gymAddress"/>
+        <result column="STATUS" property="status"/>
+        <result column="GYM_CREATEAT" property="gymCreateat"/>
+        <result column="GYM_UPDATEAT" property="gymUpdateat"/>
+        <result column="GYM_PHOTO_PATH" property="gymPhotoPath"/>
+        <result column="ATT_CACHE_NO" property="attCacheNo"/>
+    </resultMap>
+
+    <insert id="insertGym" parameterType="Gym">
+        <selectKey keyProperty="gymNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_GYM_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO GYM (
+        GYM_NO,
+        GYM_NAME,
+        GYM_OWNER,
+        GYM_PHONE,
+        GYM_ADDRESS,
+        ATT_CACHE_NO
+        ) VALUES (
+        #{gymNo},
+        #{gymName},
+        #{gymOwner},
+        #{gymPhone},
+        #{gymAddress},
+        #{attCacheNo}
+        )
+    </insert>
+</mapper>

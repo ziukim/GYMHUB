@@ -1,5 +1,6 @@
 package com.kh.gymhub.controller;
 
+import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.service.MemberService;
 import jakarta.servlet.http.HttpSession;
@@ -75,6 +76,7 @@ public class MemberController {
                                @RequestParam String password,
                                @RequestParam String name,
                                @RequestParam String phone,
+                               @RequestParam(required = false) String email,
                                @RequestParam(required = false) String address,
                                @RequestParam String birthDate,
                                HttpSession session,
@@ -88,6 +90,7 @@ public class MemberController {
             member.setMemberName(name);
             member.setMemberPhone(phone);
             member.setMemberAddress(address);
+            member.setMemberEmail(email);
 
             // 생년월일 변환 (YYYYMMDD -> Date)
             if (birthDate != null && birthDate.length() == 8) {
@@ -182,20 +185,27 @@ public class MemberController {
                             Model model) {
 
         try {
+            // Member 객체 생성
             Member member = new Member();
-            member.setMemberType(3);
+            member.setMemberType(3); // 헬스장 운영자
             member.setMemberId(id);
             member.setMemberPwd(bCryptPasswordEncoder.encode(password));
             member.setMemberName(representative != null ? representative : gymName);
             member.setMemberPhone(phone);
             member.setMemberAddress(address);
             member.setMemberEmail(email);
-
-            // 헬스장 운영자는 생년월일이 필수가 아닐 수 있으므로 임시값 설정
-            // 또는 DB에서 NOT NULL 제약조건 제거 필요
             member.setMemberBirth(Date.valueOf("1900-01-01")); // 임시값
 
-            int result = memberService.addMember(member);
+            // Gym 객체 생성
+            Gym gym = new Gym();
+            gym.setGymName(gymName != null ? gymName : "미등록 헬스장");
+            gym.setGymOwner(representative != null ? representative : "미등록");
+            gym.setGymPhone(phone);
+            gym.setGymAddress(address != null ? address : "미등록");
+            gym.setAttCacheNo(1); // 기본값
+
+            // memberType=3일 때만 addGymOwner 사용 (GYM 테이블 INSERT)
+            int result = memberService.addGymOwner(member, gym);
 
             if(result > 0) {
                 session.setAttribute("alertMsg", "헬스장 운영자 회원가입에 성공하였습니다.");
@@ -204,6 +214,10 @@ public class MemberController {
                 model.addAttribute("errorMsg", "헬스장 운영자 회원가입에 실패하였습니다.");
                 return "common/error";
             }
+        } catch (IllegalArgumentException e) {
+            // memberType 검증 실패 시
+            model.addAttribute("errorMsg", e.getMessage());
+            return "common/error";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("errorMsg", "헬스장 운영자 회원가입 중 오류가 발생했습니다: " + e.getMessage());
