@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
 import java.util.List;
@@ -383,6 +384,33 @@ public class MemberController {
         }
 
         return inbodyService.getLatestInbody(loginMember.getMemberNo());
+    }
+
+    // 프로필 사진 업로드
+    @PostMapping("/uploadProfilePhoto.me")
+    public String uploadProfilePhoto(@RequestParam("profileImage") MultipartFile file,
+                                     HttpSession session,
+                                     Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        int result = memberService.updateProfilePhoto(loginMember.getMemberNo(), file);
+
+        if (result > 0) {
+            // 세션 정보 업데이트
+            Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
+            session.setAttribute("loginMember", updatedMember);
+            session.setAttribute("alertMsg", "프로필 사진이 변경되었습니다.");
+            return "redirect:/member/info";
+        } else {
+            model.addAttribute("errorMsg", "프로필 사진 변경에 실패했습니다.");
+            return "common/error";
+        }
     }
 
 

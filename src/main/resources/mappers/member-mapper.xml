@@ -132,4 +132,12 @@
         MEMBER_UPDATEAT = SYSDATE
         WHERE MEMBER_NO = #{memberNo}
     </update>
+
+    <!-- 프로필 사진 업데이트 -->
+    <update id="updateProfilePhoto">
+        UPDATE MEMBER
+        SET MEMBER_PHOTO_PATH = #{photoPath},
+        MEMBER_UPDATEAT = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+    </update>
 </mapper>

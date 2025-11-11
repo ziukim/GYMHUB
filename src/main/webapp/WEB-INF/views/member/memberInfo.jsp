@@ -174,12 +174,21 @@
             <div class="profile-section">
                 <div class="profile-image-container">
                     <div class="profile-image" id="mainProfileImage">
-                        <svg viewBox="0 0 48 48" fill="none">
-                            <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <c:choose>
+                            <c:when test="${not empty loginMember.memberPhotoPath}">
+                                <img src="${pageContext.request.contextPath}/${loginMember.memberPhotoPath}" alt="프로필 사진">
+                            </c:when>
+                            <c:otherwise>
+                                <svg viewBox="0 0 48 48" fill="none">
+                                    <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                    <form id="profilePhotoForm" action="${pageContext.request.contextPath}/uploadProfilePhoto.me" method="post" enctype="multipart/form-data">
+                        <input type="file" name="profileImage" id="profileImageInput" accept="image/*" style="display: none;">
+                    </form>
                     <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 24px; height: 24px;">
                     </button>
@@ -585,6 +594,7 @@
     // 프로필 이미지 변경
     document.getElementById('profileImageInput').addEventListener('change', function(e) {
         if (e.target.files && e.target.files[0]) {
+            // 미리보기
             var reader = new FileReader();
             reader.onload = function(event) {
                 var img = document.createElement('img');
@@ -598,6 +608,9 @@
                 document.getElementById('mainProfileImage').appendChild(img);
             }
             reader.readAsDataURL(e.target.files[0]);
+
+            // 폼 자동 제출
+            document.getElementById('profilePhotoForm').submit();
         }
     });
     // 비밀번호 변경 폼 검증
