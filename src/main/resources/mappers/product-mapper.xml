@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.ProductMapper">
+    <resultMap id="productResultMap" type="Product">
+        <result column="PRODUCT_NO" property="productNo"/>
+        <result column="GYM_NO" property="gymNo"/>
+        <result column="DURATION_MONTHS" property="durationMonths"/>
+        <result column="PRODUCT_TYPE" property="productType"/>
+        <result column="PRODUCT_START_DATE" property="productStartDate"/>
+        <result column="PRODUCT_PRICE" property="productPrice"/>
+        <result column="PRODUCT_STATUS" property="productStatus"/>
+    </resultMap>
+
+    <!-- 헬스장의 모든 상품 조회 -->
+    <select id="getProductsByGymNo" parameterType="int" resultMap="productResultMap">
+        SELECT PRODUCT_NO,
+               GYM_NO,
+               DURATION_MONTHS,
+               PRODUCT_TYPE,
+               PRODUCT_START_DATE,
+               PRODUCT_PRICE,
+               PRODUCT_STATUS
+        FROM PRODUCT
+        WHERE GYM_NO = #{gymNo}
+        AND PRODUCT_STATUS = 'Y'
+        ORDER BY PRODUCT_TYPE, PRODUCT_PRICE
+    </select>
+
+    <!-- 헬스장의 특정 타입 상품 조회 -->
+    <select id="getProductsByGymNoAndType" resultMap="productResultMap">
+        SELECT PRODUCT_NO,
+               GYM_NO,
+               DURATION_MONTHS,
+               PRODUCT_TYPE,
+               PRODUCT_START_DATE,
+               PRODUCT_PRICE,
+               PRODUCT_STATUS
+        FROM PRODUCT
+        WHERE GYM_NO = #{gymNo}
+        AND PRODUCT_TYPE = #{productType}
+        AND PRODUCT_STATUS = 'Y'
+        ORDER BY PRODUCT_PRICE
+    </select>
+
+    <!-- 상품 추가 -->
+    <insert id="addProduct" parameterType="Product">
+        INSERT INTO PRODUCT (
+            PRODUCT_NO,
+            GYM_NO,
+            DURATION_MONTHS,
+            PRODUCT_TYPE,
+            PRODUCT_START_DATE,
+            PRODUCT_PRICE,
+            PRODUCT_STATUS
+        ) VALUES (
+            SEQ_PRODUCT_NO.NEXTVAL,
+            #{gymNo},
+            #{durationMonths},
+            #{productType},
+            #{productStartDate},
+            #{productPrice},
+            'Y'
+        )
+    </insert>
+
+    <!-- 상품 수정 -->
+    <update id="updateProduct" parameterType="Product">
+        UPDATE PRODUCT
+        SET DURATION_MONTHS = #{durationMonths},
+            PRODUCT_TYPE = #{productType},
+            PRODUCT_START_DATE = #{productStartDate},
+            PRODUCT_PRICE = #{productPrice}
+        WHERE PRODUCT_NO = #{productNo}
+        AND GYM_NO = #{gymNo}
+    </update>
+
+    <!-- 상품 삭제 (상태 변경) -->
+    <update id="deleteProduct" parameterType="int">
+        UPDATE PRODUCT
+        SET PRODUCT_STATUS = 'N'
+        WHERE PRODUCT_NO = #{productNo}
+    </update>
+</mapper>
+

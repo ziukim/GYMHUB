@@ -23,16 +23,16 @@ public class MemberController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @GetMapping("/member/dashboard")
+    @GetMapping("/dashboard.me")
     public String memberDashboardPage(HttpSession session) {
         // 로그인 체크 (선택사항 - 필요시 추가)
         return "member/memberDashboard";
     }
 
-    @GetMapping("/member/violist")
+    @GetMapping("/videoList.me")
     public String memberVideoList() { return "member/memberVideoList"; }
 
-    @GetMapping("/member/info")
+    @GetMapping("/info.me")
     public String memberInfo(HttpSession session, Model model) {
         // 세션에서 로그인 정보 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");
@@ -48,17 +48,16 @@ public class MemberController {
         return "member/memberInfo";
     }
 
-    @GetMapping("/notice")
+    @GetMapping("/notice.me")
     public String memberNotice() { return "notice/noticeList"; }
 
-    @GetMapping("/schedule")
+    @GetMapping("/schedule.me")
     public String memberPtSchedule() { return "member/ptSchedule"; }
 
-    @GetMapping("/schedule/ptbooking")
+    @GetMapping("/ptBooking.me")
     public String memberptBookingForm() { return "member/ptBookingForm"; }
 
-    // 수정 요함
-    @GetMapping("/booking/booking")
+    @GetMapping("/booking.me")
     public String Booking() { return "booking/booking"; }
 
     // ====================================== 회원가입 ======================================================
@@ -181,7 +180,7 @@ public class MemberController {
             // 멤버 타입 3(헬스장 운영자)이면 관리자 선택 페이지로 이동
             if (loginMember.getMemberType() == 3) {
                 session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
-                return "redirect:/admin/adminSelect";
+                return "redirect:/adminSelect.gym";
             }
             
             session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
@@ -223,9 +222,4 @@ public class MemberController {
         return "redirect:/?logout=success";
     }
 
-    @GetMapping("/member.dashboard")
-    public String memberDashboard(HttpSession session) {
-        // 로그인 체크 (선택사항 - 필요시 추가)
-        return "member/memberDashboard";
-    }
 }

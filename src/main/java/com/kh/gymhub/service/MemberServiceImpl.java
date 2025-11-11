@@ -41,7 +41,9 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberMapper.getMemberForLogin(memberId);
         
         // 회원이 존재하고 비밀번호가 일치하는지 확인
-        if (member != null && bCryptPasswordEncoder.matches(memberPwd, member.getMemberPwd())) {
+        // TODO: 더미 데이터 테스트용 - BCrypt 검증 주석처리 (평문 비교로 변경)
+        // 원래 코드: if (member != null && bCryptPasswordEncoder.matches(memberPwd, member.getMemberPwd())) {
+        if (member != null && memberPwd.equals(member.getMemberPwd())) {
             return member;
         }
         

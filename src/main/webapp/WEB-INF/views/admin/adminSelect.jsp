@@ -229,7 +229,7 @@
 
 <script>
     function openAttendanceModal() {
-        window.location.href = '${pageContext.request.contextPath}/admin/attendanceCheck';
+        window.location.href = '${pageContext.request.contextPath}/attendanceCheck.gym';
     }
 
     function goToAdminPage() {
