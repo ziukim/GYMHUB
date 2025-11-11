@@ -1092,7 +1092,7 @@
                         <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 3}">
-                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">마이페이지</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">관리자 페이지</a>
                     </c:when>
                 </c:choose>
             </c:when>
