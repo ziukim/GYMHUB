@@ -50,6 +50,12 @@
             margin-bottom: 40px;
         }
 
+        .logo-text {
+            font-size: 42px;
+            color: #FF6B00;
+            font-weight: 900;
+        }
+
         .welcome-title {
             font-size: 32px;
             color: #FF6B00;
@@ -178,8 +184,15 @@
     <h1 class="welcome-title">관리자 메뉴</h1>
     <p class="welcome-subtitle">
         <c:choose>
-            <c:when test="${not empty loginMember.gymName}">
-                ${loginMember.gymName} 관리자님, 환영합니다!
+            <c:when test="${not empty loginMember && loginMember.memberType == 3}">
+                <c:choose>
+                    <c:when test="${not empty loginMember.memberName}">
+                        ${loginMember.memberName}님, 환영합니다!
+                    </c:when>
+                    <c:otherwise>
+                        헬스장 운영자님, 환영합니다!
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:otherwise>
                 관리자님, 환영합니다!
@@ -216,7 +229,7 @@
 
 <script>
     function openAttendanceModal() {
-        window.location.href = '${pageContext.request.contextPath}/admin/attendanceCheck';
+        window.location.href = '${pageContext.request.contextPath}/attendanceCheck.gym';
     }
 
     function goToAdminPage() {
@@ -231,3 +244,4 @@
 </script>
 </body>
 </html>
+

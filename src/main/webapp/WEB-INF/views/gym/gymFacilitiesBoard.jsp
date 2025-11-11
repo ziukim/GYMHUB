@@ -543,7 +543,7 @@
                 <thead>
                 <tr>
                     <th>기구명</th>
-                    <th>분류명</th>
+                    <th>브랜드명</th>
                     <th>수량</th>
                     <th>최근 점검일</th>
                     <th>다음 점검일</th>
@@ -553,7 +553,7 @@
                 <tbody>
                 <tr>
                     <td>트레드밀 #1</td>
-                    <td>유산소운동</td>
+                    <td>뉴텍</td>
                     <td>15 대</td>
                     <td>2025.10.20</td>
                     <td>2025.11.20</td>
@@ -561,7 +561,7 @@
                 </tr>
                 <tr>
                     <td>레그프레스 #2</td>
-                    <td>웨이트룸</td>
+                    <td>해머스트렝스</td>
                     <td>10 대</td>
                     <td>2025.10.05</td>
                     <td>2025.11.05</td>
@@ -569,7 +569,7 @@
                 </tr>
                 <tr>
                     <td>바이크 #3</td>
-                    <td>유산소</td>
+                    <td>DRAX</td>
                     <td>8 대</td>
                     <td>2025.10.15</td>
                     <td>2025.11.01</td>
@@ -577,7 +577,7 @@
                 </tr>
                 <tr>
                     <td>덤벨세트 #3</td>
-                    <td>웨이트룸장</td>
+                    <td>life fitness</td>
                     <td>5 세트</td>
                     <td>2025.10.22</td>
                     <td>2025.11.22</td>
@@ -722,7 +722,7 @@
 <script>
     // 기구 추가
     function addEquipment() {
-        location.href = '${pageContext.request.contextPath}/facility/machine/enroll.gym';
+        location.href = '${pageContext.request.contextPath}/machineEnroll.gym';
     }
 
     // 기구 수정

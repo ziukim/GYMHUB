@@ -4,7 +4,7 @@ let currentUser = '';
 
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
-    // 모달 요소들
+    // 모달 요소들 (로그인하지 않은 경우에만 존재)
     const loginBtn = document.getElementById('loginBtn');
     const signupBtn = document.getElementById('signupBtn');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -15,91 +15,88 @@ document.addEventListener('DOMContentLoaded', function() {
     const welcomeMessage = document.getElementById('welcomeMessage');
     const goToSignup = document.getElementById('goToSignup');
 
-    // 요소가 존재하는지 확인
-    if (!loginBtn || !signupBtn || !loginModal || !signupModal) {
-        console.warn('일부 모달 요소를 찾을 수 없습니다.');
-        return;
+    // 로그인 모달 열기/닫기 (로그인하지 않은 경우에만)
+    if (loginBtn && loginModal) {
+        loginBtn.addEventListener('click', function() {
+            loginModal.classList.add('active');
+        });
     }
 
-    // 로그인 모달 열기/닫기
-    loginBtn.addEventListener('click', () => {
-        loginModal.classList.add('active');
-    });
-
-    if (closeLoginModal) {
-        closeLoginModal.addEventListener('click', () => {
+    if (closeLoginModal && loginModal) {
+        closeLoginModal.addEventListener('click', function() {
             loginModal.classList.remove('active');
         });
     }
 
-    loginModal.addEventListener('click', (e) => {
-        if (e.target === loginModal) {
-            loginModal.classList.remove('active');
-        }
-    });
+    if (loginModal) {
+        loginModal.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                loginModal.classList.remove('active');
+            }
+        });
+    }
 
-    // 회원가입 모달 열기/닫기
-    signupBtn.addEventListener('click', () => {
-        signupModal.classList.add('active');
-    });
+    // 회원가입 모달 열기/닫기 (로그인하지 않은 경우에만)
+    if (signupBtn && signupModal) {
+        signupBtn.addEventListener('click', function() {
+            signupModal.classList.add('active');
+        });
+    }
 
-    if (closeModal) {
-        closeModal.addEventListener('click', () => {
+    if (closeModal && signupModal) {
+        closeModal.addEventListener('click', function() {
             signupModal.classList.remove('active');
         });
     }
 
-    signupModal.addEventListener('click', (e) => {
-        if (e.target === signupModal) {
-            signupModal.classList.remove('active');
-        }
-    });
+    if (signupModal) {
+        signupModal.addEventListener('click', function(e) {
+            if (e.target === signupModal) {
+                signupModal.classList.remove('active');
+            }
+        });
+    }
 
     // 로그인에서 회원가입으로 이동
-    if (goToSignup) {
-        goToSignup.addEventListener('click', () => {
+    if (goToSignup && loginModal && signupModal) {
+        goToSignup.addEventListener('click', function() {
             loginModal.classList.remove('active');
             signupModal.classList.add('active');
         });
     }
 
-    // 로그인 폼 제출
+    // 로그인 폼 제출 (일반 폼 제출 방식)
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // 기본 제출 막기
-
+        loginForm.addEventListener('submit', function(e) {
             const userId = document.getElementById('loginId').value;
             const userPassword = document.getElementById('loginPassword').value;
 
             if (!userId || !userPassword) {
+                e.preventDefault();
                 alert('아이디와 비밀번호를 입력해주세요.');
                 return;
             }
-
-            // 임시 관리자 계정 체크
-            if (userId === 'admin' && userPassword === 'admin123') {
-                // localStorage에 저장
-                localStorage.setItem('loginUser', JSON.stringify({
-                    id: userId,
-                    name: '어디 센터',
-                    type: 'GYM'
-                }));
-
-                // 관리자 선택 페이지로 이동
-                location.href = 'admin/adminSelect';
-                return;
-            }
-
-            alert('아이디 또는 비밀번호가 올바르지 않습니다.');
+            // 폼 제출 허용 (기본 동작)
         });
     }
 
-    // 로그아웃
+    // 로그아웃 (GET 방식) - 모든 사용자 타입에 대해 작동
+    // 이벤트 위임을 사용하여 동적으로 생성되는 요소에도 작동하도록 함
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'logoutBtn') {
+            e.preventDefault();
+            const contextPath = window.contextPath || '';
+            window.location.href = contextPath + '/logout.do';
+        }
+    });
+    
+    // 기존 방식도 유지 (호환성을 위해)
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            // 서버 측 로그아웃 처리 (JSP에서 처리)
-            // 여기서는 클라이언트 측 UI만 업데이트
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const contextPath = window.contextPath || '';
+            window.location.href = contextPath + '/logout.do';
         });
     }
 
@@ -107,12 +104,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    tabButtons.forEach(tab => {
+    tabButtons.forEach(function(tab) {
         tab.addEventListener('click', function() {
             const targetTab = this.getAttribute('data-tab');
 
-            tabButtons.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
+            tabButtons.forEach(function(t) { t.classList.remove('active'); });
+            tabContents.forEach(function(c) { c.classList.remove('active'); });
 
             this.classList.add('active');
             const targetContent = document.getElementById(targetTab);
@@ -123,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 비밀번호 확인 검증
-    document.querySelectorAll('.registration-form').forEach(form => {
+    document.querySelectorAll('.registration-form').forEach(function(form) {
         const passwordInput = form.querySelector('.password');
         const confirmInput = form.querySelector('.password-confirm');
 
@@ -151,11 +148,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('.search-input');
     const searchBtn = document.querySelector('.search-btn');
     const filterSelect = document.querySelector('.filter-select');
-    const gymCards = document.querySelectorAll('.gym-card');
 
     // 검색 실행 함수
     function performSearch() {
-        if (!searchInput || !gymCards.length) return;
+        if (!searchInput) return;
+        
+        // 매번 현재 DOM에서 카드를 다시 찾음 (동적 변경 대응)
+        const gymCards = document.querySelectorAll('.gym-card');
+        if (!gymCards.length) return;
 
         const searchTerm = searchInput.value.toLowerCase().trim();
         const sortOption = filterSelect ? filterSelect.value : '';
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let visibleCards = [];
 
         // 검색어로 필터링
-        gymCards.forEach(card => {
+        gymCards.forEach(function(card) {
             const titleEl = card.querySelector('.gym-title');
             const locationEl = card.querySelector('.gym-location');
             const descriptionEl = card.querySelector('.gym-description');
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const cardsArray = Array.from(cards);
 
-        cardsArray.sort((a, b) => {
+        cardsArray.sort(function(a, b) {
             try {
                 switch(sortOption) {
                     case 'rating':
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 정렬된 순서대로 DOM에 다시 추가
-        cardsArray.forEach(card => {
+        cardsArray.forEach(function(card) {
             cardsGrid.appendChild(card);
         });
     }
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 엔터키로 검색
     if (searchInput) {
-        searchInput.addEventListener('keypress', (e) => {
+        searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 performSearch();
             }
@@ -306,69 +306,79 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeGymDetailModal = document.getElementById('closeGymDetailModal');
     const bookingBtn = document.getElementById('bookingBtn');
 
-    // gym-card 클릭 이벤트
-    gymCards.forEach(card => {
+    // gym-card 클릭 이벤트 (이벤트 위임 사용)
+    // 기존 카드에 스타일 적용
+    const initialGymCards = document.querySelectorAll('.gym-card');
+    initialGymCards.forEach(function(card) {
         card.style.cursor = 'pointer';
-        card.addEventListener('click', function() {
-            // 카드에서 정보 추출
-            const titleEl = card.querySelector('.gym-title');
-            const locationEl = card.querySelector('.gym-location');
-            const descriptionEl = card.querySelector('.gym-description');
-            const priceEl = card.querySelector('.gym-price');
-            const tagsEl = card.querySelectorAll('.tag');
+    });
 
-            if (!titleEl || !locationEl) return;
+    // 이벤트 위임을 사용하여 동적으로 추가되는 카드에도 작동하도록 함
+    document.addEventListener('click', function(e) {
+        // 클릭된 요소가 .gym-card이거나 그 자식 요소인지 확인
+        const card = e.target.closest('.gym-card');
+        if (!card) return;
 
-            const title = titleEl.textContent;
-            const location = locationEl.textContent;
-            const description = descriptionEl ? descriptionEl.textContent : '설명이 없습니다.';
-            const price = priceEl ? priceEl.textContent : '가격 정보 없음';
+        // 카드에서 정보 추출
+        const titleEl = card.querySelector('.gym-title');
+        const locationEl = card.querySelector('.gym-location');
+        const descriptionEl = card.querySelector('.gym-description');
+        const priceEl = card.querySelector('.gym-price');
+        const tagsEl = card.querySelectorAll('.tag');
 
-            // 태그 수집
-            const tags = Array.from(tagsEl).map(tag => tag.textContent);
+        if (!titleEl || !locationEl) return;
 
-            // 모달 내용 업데이트
-            const gymDetailTitle = document.getElementById('gymDetailTitle');
-            const gymDetailAddress = document.getElementById('gymDetailAddress');
-            const gymDetailDescription = document.getElementById('gymDetailDescription');
-            const gymDetailBadges = document.getElementById('gymDetailBadges');
-            const gymDetailPrice = document.getElementById('gymDetailPrice');
+        const title = titleEl.textContent;
+        const location = locationEl.textContent;
+        const description = descriptionEl ? descriptionEl.textContent : '설명이 없습니다.';
+        const price = priceEl ? priceEl.textContent : '가격 정보 없음';
 
-            if (gymDetailTitle) gymDetailTitle.textContent = title;
-            if (gymDetailAddress) gymDetailAddress.textContent = location;
-            if (gymDetailDescription) gymDetailDescription.textContent = description;
-
-            // 뱃지 업데이트
-            if (gymDetailBadges) {
-                gymDetailBadges.innerHTML = '';
-                tags.forEach(tag => {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge';
-                    badge.textContent = tag;
-                    gymDetailBadges.appendChild(badge);
-                });
-            }
-
-            // 가격 정보 업데이트
-            if (gymDetailPrice) {
-                const priceText = price.replace('월 ', '').replace('원', '');
-                gymDetailPrice.innerHTML = `
-                    <p>월 ${priceText}</p>
-                    <p>3개월: ₩79,000</p>
-                    <p>6개월: ₩69,000</p>
-                `;
-            }
-
-            // 모달 열기
-            if (gymDetailModal) {
-                gymDetailModal.classList.add('active');
-            }
+        // 태그 수집
+        const tags = Array.from(tagsEl).map(function(tag) {
+            return tag.textContent;
         });
+
+        // 모달 내용 업데이트
+        const gymDetailTitle = document.getElementById('gymDetailTitle');
+        const gymDetailAddress = document.getElementById('gymDetailAddress');
+        const gymDetailDescription = document.getElementById('gymDetailDescription');
+        const gymDetailBadges = document.getElementById('gymDetailBadges');
+        const gymDetailPrice = document.getElementById('gymDetailPrice');
+
+        if (gymDetailTitle) gymDetailTitle.textContent = title;
+        if (gymDetailAddress) gymDetailAddress.textContent = location;
+        if (gymDetailDescription) gymDetailDescription.textContent = description;
+
+        // 뱃지 업데이트
+        if (gymDetailBadges) {
+            gymDetailBadges.innerHTML = '';
+            tags.forEach(function(tag) {
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = tag;
+                gymDetailBadges.appendChild(badge);
+            });
+        }
+
+        // 가격 정보 업데이트
+        if (gymDetailPrice) {
+            const priceText = price.replace('월 ', '').replace('원', '');
+            gymDetailPrice.innerHTML = `
+                <p>월 ${priceText}</p>
+                <p>3개월: ₩79,000</p>
+                <p>6개월: ₩69,000</p>
+            `;
+        }
+
+        // 모달 열기
+        if (gymDetailModal) {
+            gymDetailModal.classList.add('active');
+        }
     });
 
     // 헬스장 상세 모달 닫기
     if (closeGymDetailModal) {
-        closeGymDetailModal.addEventListener('click', () => {
+        closeGymDetailModal.addEventListener('click', function() {
             if (gymDetailModal) {
                 gymDetailModal.classList.remove('active');
             }
@@ -377,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 모달 외부 클릭 시 닫기
     if (gymDetailModal) {
-        gymDetailModal.addEventListener('click', (e) => {
+        gymDetailModal.addEventListener('click', function(e) {
             if (e.target === gymDetailModal) {
                 gymDetailModal.classList.remove('active');
             }
@@ -409,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기구 목록 모달 닫기
     if (closeEquipmentListModal) {
-        closeEquipmentListModal.addEventListener('click', () => {
+        closeEquipmentListModal.addEventListener('click', function() {
             if (equipmentListModal) {
                 equipmentListModal.classList.remove('active');
             }
@@ -418,11 +428,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기구 목록 모달 외부 클릭 시 닫기
     if (equipmentListModal) {
-        equipmentListModal.addEventListener('click', (e) => {
+        equipmentListModal.addEventListener('click', function(e) {
             if (e.target === equipmentListModal) {
                 equipmentListModal.classList.remove('active');
             }
         });
     }
+
 });
 
