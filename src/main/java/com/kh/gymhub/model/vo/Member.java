@@ -27,3 +27,4 @@ public class Member {
     private String trainerCareer;
     private String trainerAward;
 }
+
