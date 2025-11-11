@@ -285,6 +285,7 @@
         </div>
 
         <!-- 인바디 기록 탭 -->
+        <!-- 인바디 기록 탭 - 수정된 부분 -->
         <section id="inbodyTab" class="tab-content active">
             <div class="section">
                 <div class="section-header">
@@ -302,27 +303,26 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>2025. 10. 20.</td>
-                        <td style="color: #ffa366;">72.5</td>
-                        <td style="color: #4caf50;">32.1</td>
-                        <td style="color: #ff4444;">18.2</td>
-                        <td>23.1</td>
-                    </tr>
-                    <tr>
-                        <td>2025. 9. 20.</td>
-                        <td style="color: #ffa366;">74.2</td>
-                        <td style="color: #4caf50;">31.5</td>
-                        <td style="color: #ff4444;">19.8</td>
-                        <td>23.7</td>
-                    </tr>
-                    <tr>
-                        <td>2025. 8. 20.</td>
-                        <td style="color: #ffa366;">75.8</td>
-                        <td style="color: #4caf50;">31</td>
-                        <td style="color: #ff4444;">21.2</td>
-                        <td>24.2</td>
-                    </tr>
+                    <c:choose>
+                        <c:when test="${not empty inbodyList}">
+                            <c:forEach var="inbody" items="${inbodyList}">
+                                <tr>
+                                    <td>${inbody.inbodyDate}</td>
+                                    <td style="color: #ffa366;">${inbody.weight}</td>
+                                    <td style="color: #4caf50;">${inbody.smm}</td>
+                                    <td style="color: #ff4444;">${inbody.pbf}</td>
+                                    <td>${inbody.bmi}</td>
+                                </tr>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #8a6a50; padding: 40px;">
+                                    등록된 인바디 기록이 없습니다.
+                                </td>
+                            </tr>
+                        </c:otherwise>
+                    </c:choose>
                     </tbody>
                 </table>
             </div>
