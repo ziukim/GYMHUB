@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -498,7 +499,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="page-intro">
-            <h1>트레이너님 환영합니다!</h1>
+            <h1>${loginMember.memberName} 트레이너님 환영합니다!</h1>
             <p>오늘도 힘차게 운동하세요</p>
         </div>
 
@@ -523,20 +524,23 @@
                 <div style="padding: 0 24px; margin-top: 20px;">
                     <div class="info-row">
                         <span class="info-label">경력</span>
-                        <span class="info-value">3년</span>
+                        <span class="info-value">${loginMember.trainerCareer}</span>
                     </div>
                     <div style="margin-bottom: 8px; margin-top: 12px;">
                         <p class="info-label">자격정보</p>
                     </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-                        <span class="badge">헬스트레이너지도사</span>
-                        <span class="badge">물리치료사 자격증</span>
+                        <c:forEach var="license" items="${loginMember.trainerLicense.split(',')}">
+                            <span class="badge">${license}</span>
+                        </c:forEach>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <p class="info-label">수상이력</p>
                     </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <span class="badge">OLYMPIA 1위</span>
+                        <c:forEach var="award" items="${loginMember.trainerAward.split(',')}">
+                            <span class="badge">${award}</span>
+                        </c:forEach>
                     </div>
                 </div>
             </div>
@@ -608,126 +612,129 @@
 <!-- 비밀번호 변경 Modal -->
 <div id="passwordModal" class="modal-overlay">
     <div class="modal-content" style="width: 512px;">
-        <button class="modal-close" onclick="closePasswordModal()">
-            <svg fill="none" viewBox="0 0 16 16">
-                <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-                <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-            </svg>
-        </button>
+        <form id="passwordForm" action="${pageContext.request.contextPath}/trainer/updatePassword" method="POST">
+            <button class="modal-close" type="button" onclick="closePasswordModal()">
+                <svg fill="none" viewBox="0 0 16 16">
+                    <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
+                    <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
+                </svg>
+            </button>
 
-        <h2 class="modal-title">비밀번호 변경</h2>
+            <h2 class="modal-title">비밀번호 변경</h2>
 
-        <div class="form-group">
-            <label class="form-label">현재 비밀번호</label>
-            <input type="password" id="currentPassword" class="form-input">
-        </div>
+            <div class="form-group">
+                <label class="form-label">현재 비밀번호</label>
+                <input type="password" id="currentPassword" name="currentPassword" class="form-input" required>
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">새 비밀번호</label>
-            <input type="password" id="newPassword" class="form-input">
-        </div>
+            <div class="form-group">
+                <label class="form-label">새 비밀번호</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-input" required>
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">새 비밀번호 확인</label>
-            <input type="password" id="confirmPassword" class="form-input">
-        </div>
+            <div class="form-group">
+                <label class="form-label">새 비밀번호 확인</label>
+                <input type="password" id="confirmPassword" class="form-input" required>
+            </div>
 
-        <div class="form-buttons">
-            <button class="btn-cancel" onclick="closePasswordModal()">취소</button>
-            <button class="btn-submit" id="passwordSubmit" disabled onclick="submitPassword()">변경</button>
-        </div>
+            <div class="form-buttons">
+                <button type="button" class="btn-cancel" onclick="closePasswordModal()">취소</button>
+                <button type="button" class="btn-submit" id="passwordSubmit" disabled onclick="submitPassword()">변경</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- 정보 수정 Modal -->
 <div id="infoModal" class="modal-overlay info-modal">
     <div class="modal-content">
-        <button class="modal-close" onclick="closeInfoModal()">
-            <svg fill="none" viewBox="0 0 16 16">
-                <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-                <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-            </svg>
-        </button>
-
-        <h2 class="modal-title">정보 수정</h2>
-
-        <div class="form-grid">
-            <div class="form-group">
-                <label class="form-label secondary">이름</label>
-                <input type="text" class="form-input" value="홍길동">
-            </div>
-            <div class="form-group">
-                <label class="form-label secondary">생년월일</label>
-                <input type="text" class="form-input" placeholder="YYYY-MM-DD">
-            </div>
-        </div>
-
-        <div class="form-grid">
-            <div class="form-group">
-                <label class="form-label secondary">
-                    <svg fill="none" viewBox="0 0 12 12">
-                        <path d="M6.916 8.284C7.01926 8.33142 7.1356 8.34226 7.24585 8.31472C7.35609 8.28718 7.45367 8.22291 7.5225 8.1325L7.7 7.9C7.79315 7.7758 7.91393 7.675 8.05279 7.60557C8.19164 7.53614 8.34475 7.5 8.5 7.5H10C10.2652 7.5 10.5196 7.60536 10.7071 7.79289C10.8946 7.98043 11 8.23478 11 8.5V10C11 10.2652 10.8946 10.5196 10.7071 10.7071C10.5196 10.8946 10.2652 11 10 11C7.61305 11 5.32387 10.0518 3.63604 8.36396C1.94821 6.67613 1 4.38695 1 2C1 1.73478 1.10536 1.48043 1.29289 1.29289C1.48043 1.10536 1.73478 1 2 1H3.5C3.76522 1 4.01957 1.10536 4.20711 1.29289C4.39464 1.48043 4.5 1.73478 4.5 2V3.5C4.5 3.65525 4.46386 3.80836 4.39443 3.94721C4.325 4.08607 4.2242 4.20685 4.1 4.3L3.866 4.4755C3.77421 4.54559 3.70951 4.64529 3.6829 4.75768C3.65628 4.87006 3.66939 4.98819 3.72 5.092C4.40334 6.47993 5.52721 7.6024 6.916 8.284Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    연락처
-                </label>
-                <input type="text" class="form-input" value="010-1234-5678">
-            </div>
-            <div class="form-group">
-                <label class="form-label secondary">
-                    <svg fill="none" viewBox="0 0 12 12">
-                        <path d="M11 3.5L6.5045 6.3635C6.35195 6.45211 6.17867 6.49878 6.00225 6.49878C5.82583 6.49878 5.65255 6.45211 5.5 6.3635L1 3.5" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 2H2C1.44772 2 1 2.44772 1 3V9C1 9.55228 1.44772 10 2 10H10C10.5523 10 11 9.55228 11 9V3C11 2.44772 10.5523 2 10 2Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    이메일
-                </label>
-                <input type="email" class="form-input" value="hong@example.com">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label secondary">
-                <svg fill="none" viewBox="0 0 12 12">
-                    <path d="M10 5C10 7.4965 7.2305 10.0965 6.3005 10.8995C6.21386 10.9646 6.1084 10.9999 6 10.9999C5.8916 10.9999 5.78614 10.9646 5.6995 10.8995C4.7695 10.0965 2 7.4965 2 5C2 3.93913 2.42143 2.92172 3.17157 2.17157C3.92172 1.42143 4.93913 1 6 1C7.06087 1 8.07828 1.42143 8.82843 2.17157C9.57857 2.92172 10 3.93913 10 5Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M6 6.5C6.82843 6.5 7.5 5.82843 7.5 5C7.5 4.17157 6.82843 3.5 6 3.5C5.17157 3.5 4.5 4.17157 4.5 5C4.5 5.82843 5.17157 6.5 6 6.5Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/>
+        <form id="infoForm" action="${pageContext.request.contextPath}/trainer/updateInfo" method="POST">
+            <button class="modal-close" type="button" onclick="closeInfoModal()">
+                <svg fill="none" viewBox="0 0 16 16">
+                    <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
+                    <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
                 </svg>
-                주소
-            </label>
-            <input type="text" class="form-input" value="서울시 강남구 테헤란로 123">
-        </div>
+            </button>
 
-        <div class="form-group">
-            <label class="form-label">경력</label>
-            <input type="text" class="form-input" placeholder="경력을 입력하세요.">
-        </div>
+            <h2 class="modal-title">정보 수정</h2>
 
-        <div class="form-group">
-            <label class="form-label">자격정보</label>
-            <input type="text" class="form-input" placeholder="자격정보를 입력하세요.">
-        </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label secondary">이름</label>
+                    <input type="text" name="memberName" class="form-input" value="${loginMember.memberName}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label secondary">생년월일</label>
+                    <input type="date" name="memberBirth" class="form-input" value="<fmt:formatDate value="${loginMember.memberBirth}" pattern="yyyy-MM-dd" />">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">수상이력</label>
-            <input type="text" class="form-input" placeholder="수상이력을 입력하세요.">
-        </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label secondary">
+                        <svg fill="none" viewBox="0 0 12 12"><path d="M6.916 8.284C7.01926 8.33142 7.1356 8.34226 7.24585 8.31472C7.35609 8.28718 7.45367 8.22291 7.5225 8.1325L7.7 7.9C7.79315 7.7758 7.91393 7.675 8.05279 7.60557C8.19164 7.53614 8.34475 7.5 8.5 7.5H10C10.2652 7.5 10.5196 7.60536 10.7071 7.79289C10.8946 7.98043 11 8.23478 11 8.5V10C11 10.2652 10.8946 10.5196 10.7071 10.7071C10.5196 10.8946 10.2652 11 10 11C7.61305 11 5.32387 10.0518 3.63604 8.36396C1.94821 6.67613 1 4.38695 1 2C1 1.73478 1.10536 1.48043 1.29289 1.29289C1.48043 1.10536 1.73478 1 2 1H3.5C3.76522 1 4.01957 1.10536 4.20711 1.29289C4.39464 1.48043 4.5 1.73478 4.5 2V3.5C4.5 3.65525 4.46386 3.80836 4.39443 3.94721C4.325 4.08607 4.2242 4.20685 4.1 4.3L3.866 4.4755C3.77421 4.54559 3.70951 4.64529 3.6829 4.75768C3.65628 4.87006 3.66939 4.98819 3.72 5.092C4.40334 6.47993 5.52721 7.6024 6.916 8.284Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        연락처
+                    </label>
+                    <input type="text" name="memberPhone" class="form-input" value="${loginMember.memberPhone}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label secondary">
+                        <svg fill="none" viewBox="0 0 12 12"><path d="M11 3.5L6.5045 6.3635C6.35195 6.45211 6.17867 6.49878 6.00225 6.49878C5.82583 6.49878 5.65255 6.45211 5.5 6.3635L1 3.5" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2H2C1.44772 2 1 2.44772 1 3V9C1 9.55228 1.44772 10 2 10H10C10.5523 10 11 9.55228 11 9V3C11 2.44772 10.5523 2 10 2Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        이메일
+                    </label>
+                    <input type="email" name="memberEmail" class="form-input" value="${loginMember.memberEmail}">
+                </div>
+            </div>
 
-        <div class="form-buttons">
-            <button class="btn-cancel" onclick="closeInfoModal()">취소</button>
-            <button class="btn-submit" onclick="submitInfo()">저장</button>
-        </div>
+            <div class="form-group">
+                <label class="form-label secondary">
+                    <svg fill="none" viewBox="0 0 12 12"><path d="M10 5C10 7.4965 7.2305 10.0965 6.3005 10.8995C6.21386 10.9646 6.1084 10.9999 6 10.9999C5.8916 10.9999 5.78614 10.9646 5.6995 10.8995C4.7695 10.0965 2 7.4965 2 5C2 3.93913 2.42143 2.92172 3.17157 2.17157C3.92172 1.42143 4.93913 1 6 1C7.06087 1 8.07828 1.42143 8.82843 2.17157C9.57857 2.92172 10 3.93913 10 5Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 6.5C6.82843 6.5 7.5 5.82843 7.5 5C7.5 4.17157 6.82843 3.5 6 3.5C5.17157 3.5 4.5 4.17157 4.5 5C4.5 5.82843 5.17157 6.5 6 6.5Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    주소
+                </label>
+                <input type="text" name="memberAddress" class="form-input" value="${loginMember.memberAddress}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">경력</label>
+                <input type="text" name="trainerCareer" class="form-input" placeholder="경력을 입력하세요." value="${loginMember.trainerCareer}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">자격정보 (쉼표(,)로 구분하여 입력)</label>
+                <input type="text" name="trainerLicense" class="form-input" placeholder="자격정보를 입력하세요." value="${loginMember.trainerLicense}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">수상이력 (쉼표(,)로 구분하여 입력)</label>
+                <input type="text" name="trainerAward" class="form-input" placeholder="수상이력을 입력하세요." value="${loginMember.trainerAward}">
+            </div>
+
+            <div class="form-buttons">
+                <button type="button" class="btn-cancel" onclick="closeInfoModal()">취소</button>
+                <button type="button" class="btn-submit" onclick="submitInfo()">저장</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
+    // 페이지 로드 시 서버로부터 받은 메시지 출력
+    document.addEventListener("DOMContentLoaded", function() {
+        const message = "${message}";
+        if (message) {
+            alert(message);
+        }
+    });
+
     // 비밀번호 변경 모달
     function openPasswordModal() {
         document.getElementById('passwordModal').classList.add('active');
     }
 
     function closePasswordModal() {
+        const form = document.getElementById('passwordForm');
+        form.reset();
         document.getElementById('passwordModal').classList.remove('active');
-        document.getElementById('currentPassword').value = '';
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmPassword').value = '';
         document.getElementById('passwordSubmit').disabled = true;
     }
 
@@ -747,7 +754,7 @@
         const confirm = document.getElementById('confirmPassword').value;
         const submitBtn = document.getElementById('passwordSubmit');
 
-        if (current && newPass && confirm && newPass === confirm) {
+        if (current && newPass && confirm && newPass.length >= 4 && newPass === confirm) {
             submitBtn.disabled = false;
         } else {
             submitBtn.disabled = true;
@@ -761,21 +768,21 @@
 
     // 비밀번호 변경 제출
     function submitPassword() {
-        alert('비밀번호가 변경되었습니다.');
-        closePasswordModal();
+        const newPass = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        if (newPass !== confirm) {
+            alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+            return;
+        }
+        if(confirm("정말로 비밀번호를 변경하시겠습니까?")) {
+            document.getElementById('passwordForm').submit();
+        }
     }
 
     // 정보 수정 제출
     function submitInfo() {
-        alert('정보가 저장되었습니다.');
-        closeInfoModal();
-    }
-
-    // 로그아웃
-    function handleLogout() {
-        if (confirm('로그아웃 하시겠습니까?')) {
-            alert('로그아웃되었습니다.');
-            // 실제로는 로그인 페이지로 리다이렉트
+        if(confirm("입력한 정보로 수정하시겠습니까?")) {
+            document.getElementById('infoForm').submit();
         }
     }
 
@@ -789,6 +796,12 @@
     document.getElementById('infoModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeInfoModal();
+        }
+    });
+</script>
+</body>
+</html>
+odal();
         }
     });
 

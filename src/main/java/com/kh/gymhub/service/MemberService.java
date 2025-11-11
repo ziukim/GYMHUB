@@ -9,5 +9,6 @@ public interface MemberService {
     int addMember(Member member);
     int addGymOwner(Member member, Gym gym);
     Member login(String memberId, String memberPwd);
-
+    int updateMember(Member member);
+    int updatePassword(String memberId, String currentPwd, String newPwd);
 }
