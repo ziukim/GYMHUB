@@ -1305,6 +1305,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="form-label">이메일</label>
+                            <input type="email" name="email" placeholder="이메일을 입력하세요">
+                        </div>
+
+                        <div class="form-group">
                             <label class="form-label">생년월일 <span class="required">*</span></label>
                             <div class="icon-input">
                                 <input type="text" name="birthDate" placeholder="생년월일 8자리를 입력하세요(- 제외 숫자만 입력)" required>
