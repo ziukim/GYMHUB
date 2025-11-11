@@ -301,7 +301,7 @@
             <p>나의 퍼스널 트레이닝 일정을 관리하세요</p>
         </div>
         <div class="header">
-            <button class="btn-primary" onclick="location.href='${pageContext.request.contextPath}/schedule/ptbooking'">
+            <button class="btn-primary" onclick="location.href='${pageContext.request.contextPath}/ptBooking.me'">
                 <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
                 <span>PT 예약</span>
             </button>

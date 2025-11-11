@@ -351,66 +351,8 @@
                     <button class="upload-button" onclick="uploadVideo()">영상 업로드</button>
                 </div>
 
-                <div class="video-grid">
-                    <!-- Video Card 1 -->
-                    <div class="video-card" onclick="playVideo('랭킹다운 상세')">
-                        <div class="video-thumbnail">
-                            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop" alt="랭킹다운 상세">
-                            <div class="play-button">▶</div>
-                        </div>
-                        <div class="video-info">
-                            <div class="video-title">랭킹다운 상세</div>
-                            <div class="video-date">2025.10.20</div>
-                            <button class="video-delete-button" onclick="event.stopPropagation(); deleteVideo('랭킹다운 상세', 1)">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="video-delete-icon">
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 2 -->
-                    <div class="video-card" onclick="playVideo('데드리프트 완벽 가이드')">
-                        <div class="video-thumbnail">
-                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop" alt="데드리프트 완벽 가이드">
-                            <div class="play-button">▶</div>
-                        </div>
-                        <div class="video-info">
-                            <div class="video-title">데드리프트 완벽 가이드</div>
-                            <div class="video-date">2025.10.18</div>
-                            <button class="video-delete-button" onclick="event.stopPropagation(); deleteVideo('데드리프트 완벽 가이드', 2)">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="video-delete-icon">
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 3 -->
-                    <div class="video-card" onclick="playVideo('벤치프레스 마스터')">
-                        <div class="video-thumbnail">
-                            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop" alt="벤치프레스 마스터">
-                            <div class="play-button">▶</div>
-                        </div>
-                        <div class="video-info">
-                            <div class="video-title">벤치프레스 마스터</div>
-                            <div class="video-date">2025.10.15</div>
-                            <button class="video-delete-button" onclick="event.stopPropagation(); deleteVideo('벤치프레스 마스터', 3)">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="video-delete-icon">
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 4 -->
-                    <div class="video-card" onclick="playVideo('아침 운동 루틴')">
-                        <div class="video-thumbnail">
-                            <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop" alt="아침 운동 루틴">
-                            <div class="play-button">▶</div>
-                        </div>
-                        <div class="video-info">
-                            <div class="video-title">아침 운동 루틴</div>
-                            <div class="video-date">2025.10.12</div>
-                            <button class="video-delete-button" onclick="event.stopPropagation(); deleteVideo('아침 운동 루틴', 4)">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="video-delete-icon">
-                            </button>
-                        </div>
-                    </div>
+                <div class="video-grid" id="videoGrid">
+                    <!-- 영상 카드들이 여기에 동적으로 추가됩니다 -->
                 </div>
             </div>
         </div>
@@ -424,8 +366,9 @@
                 <button class="close-button" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
-                <p>영상 플레이어가 곧 업데이트 될 예정입니다.</p>
-                <p style="color: #b0b0b0; margin-top: 20px;">현재 구현은 YouTube 또는 외부 비디오 플레이어가 들어갑니다</p>
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background-color: #1a0f0a; border-radius: 8px;">
+                    <iframe id="videoPlayer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -461,14 +404,161 @@
     </div>
 
     <script>
+        // 영상 데이터
+        let videos = [];
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVideosFromServer();
+        });
+
+        // 서버에서 영상 리스트 가져오기
+        function loadVideosFromServer() {
+            fetch('${pageContext.request.contextPath}/video/list.ajax', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    videos = data.videos || [];
+                    renderVideos();
+                } else {
+                    console.error('데이터 로드 실패:', data.message);
+                    alert('영상 데이터를 불러오는데 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(function(error) {
+                console.error('AJAX 오류:', error);
+                alert('영상 데이터를 불러오는데 실패했습니다.');
+            });
+        }
+
+        // 영상 카드 렌더링
+        function renderVideos() {
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = '';
+
+            for (let i = 0; i < videos.length; i++) {
+                const video = videos[i];
+                const card = createVideoCard(video);
+                videoGrid.appendChild(card);
+            }
+
+            // 카드 진입 애니메이션
+            setTimeout(function() {
+                const cards = document.querySelectorAll('.video-card');
+                for (let i = 0; i < cards.length; i++) {
+                    const card = cards[i];
+                    const index = i;
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(function() {
+                        card.style.transition = 'all 0.5s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 50);
+                }
+            }, 100);
+        }
+
+        // 영상 카드 생성
+        function createVideoCard(video) {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.onclick = function() {
+                playVideo(video);
+            };
+
+            // YouTube URL에서 썸네일 추출
+            const thumbnailUrl = getYouTubeThumbnail(video.youtubeUrl);
+            const videoDate = getVideoDate(video);
+            const escapedTitle = video.youtubeUrlTitle.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const contextPath = '${pageContext.request.contextPath}';
+
+            card.innerHTML = 
+                '<div class="video-thumbnail">' +
+                    '<img src="' + thumbnailUrl + '" alt="' + escapedTitle + '" onerror="this.src=\'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop\'">' +
+                    '<div class="play-button">▶</div>' +
+                '</div>' +
+                '<div class="video-info">' +
+                    '<div class="video-title">' + video.youtubeUrlTitle + '</div>' +
+                    '<div class="video-date">' + videoDate + '</div>' +
+                    '<button class="video-delete-button" onclick="event.stopPropagation(); deleteVideo(' + video.youtubeUrlNo + ', \'' + escapedTitle + '\')">' +
+                        '<img src="' + contextPath + '/resources/images/icon/delete.png" alt="삭제" class="video-delete-icon">' +
+                    '</button>' +
+                '</div>';
+
+            return card;
+        }
+
+        // YouTube URL에서 썸네일 URL 추출
+        function getYouTubeThumbnail(url) {
+            if (!url) return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
+            
+            let videoId = '';
+            if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            }
+            
+            if (videoId) {
+                return 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
+            }
+            return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
+        }
+
+        // 영상 날짜 포맷팅 (현재는 기본값 반환, 필요시 수정)
+        function getVideoDate(video) {
+            // DB에 날짜 필드가 없으므로 기본값 반환
+            return '등록됨';
+        }
+
+        // YouTube URL을 embed URL로 변환
+        function convertToEmbedUrl(url) {
+            if (!url) return '';
+            
+            let videoId = '';
+            if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('youtube.com/embed/')) {
+                // 이미 embed URL인 경우
+                return url;
+            }
+            
+            if (videoId) {
+                return 'https://www.youtube.com/embed/' + videoId;
+            }
+            return '';
+        }
+
         // 영상 재생
-        function playVideo(title) {
-            document.getElementById('modalTitle').textContent = title;
+        function playVideo(video) {
+            document.getElementById('modalTitle').textContent = video.youtubeUrlTitle;
+            const embedUrl = convertToEmbedUrl(video.youtubeUrl);
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            if (embedUrl) {
+                videoPlayer.src = embedUrl;
+            } else {
+                alert('유효하지 않은 YouTube URL입니다.');
+                return;
+            }
+            
             document.getElementById('videoModal').classList.add('active');
         }
 
         // 모달 닫기
         function closeModal() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.src = ''; // iframe 비워서 영상 중지
             document.getElementById('videoModal').classList.remove('active');
         }
 
@@ -518,64 +608,80 @@
                 return;
             }
             
-            // TODO: 실제 서버로 데이터 전송
-            alert('영상이 업로드되었습니다.');
-            closeUploadModal();
-            
-            // 실제로는 서버로 데이터 전송
-            // fetch('/api/video/upload', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ youtubeUrl, videoTitle, videoAuthor })
-            // })
-            // .then(response => response.json())
-            // .then(data => {
-            //     alert('영상이 업로드되었습니다.');
-            //     closeUploadModal();
-            //     location.reload();
-            // })
-            // .catch(error => {
-            //     alert('업로드 중 오류가 발생했습니다.');
-            // });
+            // AJAX로 서버에 업로드 요청
+            const requestData = {
+                youtubeUrl: youtubeUrl,
+                videoTitle: videoTitle,
+                videoAuthor: videoAuthor
+            };
+
+            fetch('${pageContext.request.contextPath}/video/add.ajax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    alert('영상이 업로드되었습니다.');
+                    closeUploadModal();
+                    // 서버에서 다시 전체 리스트 가져오기
+                    loadVideosFromServer();
+                } else {
+                    alert('영상 업로드에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(function(error) {
+                console.error('AJAX 오류:', error);
+                alert('영상 업로드 중 오류가 발생했습니다.');
+            });
         });
 
         // 영상 삭제
-        function deleteVideo(title, id) {
+        function deleteVideo(youtubeUrlNo, title) {
             if (confirm('정말로 "' + title + '" 영상을 삭제하시겠습니까?')) {
-                // TODO: 실제 서버로 삭제 요청
-                // fetch('/api/video/delete', {
-                //     method: 'DELETE',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ videoId: id })
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     alert('영상이 삭제되었습니다.');
-                //     location.reload();
-                // })
-                // .catch(error => {
-                //     alert('삭제 중 오류가 발생했습니다.');
-                // });
-                
-                alert('영상이 삭제되었습니다.');
-                // 실제로는 카드 제거 또는 페이지 새로고침
-                // location.reload();
+                // AJAX로 서버에 삭제 요청
+                const requestData = {
+                    youtubeUrlNo: youtubeUrlNo
+                };
+
+                fetch('${pageContext.request.contextPath}/video/delete.ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        // videos 배열에서 제거
+                        const newVideos = [];
+                        for (let i = 0; i < videos.length; i++) {
+                            if (videos[i].youtubeUrlNo !== youtubeUrlNo) {
+                                newVideos.push(videos[i]);
+                            }
+                        }
+                        videos = newVideos;
+                        
+                        renderVideos();
+                        alert('영상이 삭제되었습니다.');
+                    } else {
+                        alert('영상 삭제에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                    }
+                })
+                .catch(function(error) {
+                    console.error('AJAX 오류:', error);
+                    alert('영상 삭제 중 오류가 발생했습니다.');
+                });
             }
         }
-
-        // 카드 진입 애니메이션
-        window.addEventListener('load', function() {
-            const cards = document.querySelectorAll('.video-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    card.style.transition = 'all 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 50);
-            });
-        });
     </script>
 </body>
 </html>

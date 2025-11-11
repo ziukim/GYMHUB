@@ -335,7 +335,7 @@
             <span>영상관리</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/gym/info.gym" class="nav-item">
+        <a href="${pageContext.request.contextPath}/info.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 정보 관리" class="nav-icon">
             <span>헬스장 정보 관리</span>
         </a>
@@ -434,7 +434,7 @@
                 if (currentPath.endsWith(hrefPath)) {
                     item.classList.add('active');
                 }
-                else if (hrefPath === '/facility.gym' && currentPath.includes('/facility/machine/enroll.gym')) {
+                else if (hrefPath === '/facility.gym' && currentPath.includes('/machineEnroll.gym')) {
                     item.classList.add('active');
                 }
             }

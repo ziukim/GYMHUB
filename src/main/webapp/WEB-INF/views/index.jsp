@@ -1086,13 +1086,13 @@
                 <span class="welcome-message">${loginMember.memberName}님 환영합니다</span>
                 <c:choose>
                     <c:when test="${loginMember.memberType == 1}">
-                        <a href="${pageContext.request.contextPath}/member.dashboard" class="btn btn-secondary">마이페이지</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.me" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 2}">
-                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">대시보드</a>
+                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 3}">
-                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">관리자 페이지</a>
                     </c:when>
                 </c:choose>
             </c:when>
@@ -1302,6 +1302,11 @@
                         <div class="form-group">
                             <label class="form-label">전화번호 <span class="required">*</span></label>
                             <input type="tel" name="phone" placeholder="전화번호를 입력하세요(- 제외 숫자만 입력)" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">이메일</label>
+                            <input type="email" name="email" placeholder="이메일을 입력하세요">
                         </div>
 
                         <div class="form-group">
