@@ -8,3 +8,8 @@ public interface MemberService {
     int addMember(Member member);
     Member login(String memberId, String memberPwd);
 }
+import com.kh.spring.model.vo.Member;
+
+public interface MemberService {
+    
+}
