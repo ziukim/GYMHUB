@@ -11,5 +11,9 @@ public interface MemberService {
     int updateMemberInfo(Member member);
     int updatePassword(int memberNo, String newPassword);
     Member login(String memberId, String memberPwd);
+}
+import com.kh.spring.model.vo.Member;
 
+public interface MemberService {
+    
 }
