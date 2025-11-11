@@ -8,21 +8,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Service("memberService")
 public class MemberServiceImpl implements MemberService {
 
-    private final MemberMapper memberMapper;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final GymService gymService;
+    @Autowired
+    private MemberMapper memberMapper;
 
     @Autowired
-    public MemberServiceImpl(MemberMapper memberMapper,
-                             BCryptPasswordEncoder bCryptPasswordEncoder,
-                             GymService gymService) {
-        this.memberMapper = memberMapper;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.gymService = gymService;
-    }
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Member getMemberById(String memberId) {
@@ -37,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public int addMember(Member member) {
+        // 컨트롤러에서 이미 암호화된 비밀번호를 전달하므로, 여기서는 암호화 로직을 제거합니다.
         return memberMapper.addMember(member);
     }
 
@@ -68,7 +62,6 @@ public class MemberServiceImpl implements MemberService {
         if (member != null && bCryptPasswordEncoder.matches(memberPwd, member.getMemberPwd())) {
             return member;
         }
-
         return null;
     }
 

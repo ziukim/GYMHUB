@@ -1089,10 +1089,10 @@
                         <a href="${pageContext.request.contextPath}/dashboard.me" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 2}">
-                        <a href="${pageContext.request.contextPath}/dashboard.tr" class="btn btn-secondary">대시보드</a>
+                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 3}">
-                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">관리자 페이지</a>
                     </c:when>
                 </c:choose>
             </c:when>
