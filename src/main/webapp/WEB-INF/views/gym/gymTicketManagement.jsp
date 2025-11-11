@@ -297,17 +297,12 @@
                 <div class="category-section">
                     <div class="category-header">
                         <h2 class="category-title">이용권</h2>
-                        <p class="category-count"><span id="membership-count">3</span>개 상품</p>
                     </div>
                     <div class="products-list" id="membership-list">
                         <!-- 이용권 상품들이 여기에 동적으로 추가됩니다 -->
                     </div>
                     <button class="add-product-btn" onclick="showAddForm('membership')">
-                        <svg class="icon-plus" viewBox="0 0 24 24" fill="none">
-                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        이용권 추가
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="이용권 추가" class="icon-plus" style="width: 24px; height: 24px; vertical-align: middle;">
                     </button>
                 </div>
 
@@ -315,17 +310,12 @@
                 <div class="category-section">
                     <div class="category-header">
                         <h2 class="category-title">PT (Personal Training)</h2>
-                        <p class="category-count"><span id="pt-count">2</span>개 상품</p>
                     </div>
                     <div class="products-list" id="pt-list">
                         <!-- PT 상품들이 여기에 동적으로 추가됩니다 -->
                     </div>
                     <button class="add-product-btn" onclick="showAddForm('pt')">
-                        <svg class="icon-plus" viewBox="0 0 24 24" fill="none">
-                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        PT 추가
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="PT 추가" class="icon-plus" style="width: 24px; height: 24px; vertical-align: middle;">
                     </button>
                 </div>
 
@@ -333,17 +323,12 @@
                 <div class="category-section">
                     <div class="category-header">
                         <h2 class="category-title">락커</h2>
-                        <p class="category-count"><span id="locker-count">2</span>개 상품</p>
                     </div>
                     <div class="products-list" id="locker-list">
                         <!-- 락커 상품들이 여기에 동적으로 추가됩니다 -->
                     </div>
                     <button class="add-product-btn" onclick="showAddForm('locker')">
-                        <svg class="icon-plus" viewBox="0 0 24 24" fill="none">
-                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        락커 추가
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="락커 추가" class="icon-plus" style="width: 24px; height: 24px; vertical-align: middle;">
                     </button>
                 </div>
             </div>
@@ -352,25 +337,118 @@
 </div>
 
 <script>
-    // 초기 데이터
-    let products = [
-        { id: 1, name: '1개월 회원권', category: 'membership', price: 120000, duration: '1개월' },
-        { id: 2, name: '3개월 회원권', category: 'membership', price: 330000, duration: '3개월' },
-        { id: 3, name: '6개월 회원권', category: 'membership', price: 600000, duration: '6개월' },
-        { id: 4, name: 'PT 10회권', category: 'pt', price: 500000, duration: '10회' },
-        { id: 5, name: 'PT 20회권', category: 'pt', price: 950000, duration: '20회' },
-        { id: 6, name: '락커 (1개월)', category: 'locker', price: 10000, duration: '1개월' },
-        { id: 7, name: '락커 (3개월)', category: 'locker', price: 30000, duration: '3개월' }
-    ];
-
-    let nextId = 8;
+    // 상품 데이터
+    let products = [];
+    let nextId = 1;
     let editingId = null;
     let addingCategory = null;
 
     // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
-        renderAllProducts();
+        loadProductsFromServer();
     });
+
+    // 일(day) 단위를 표시 형식으로 변환
+    // 365의 배수면 "N년", 30의 배수면 "N개월", 그 외는 "N일"
+    function formatDuration(days) {
+        if (days % 365 === 0) {
+            return (days / 365) + '년';
+        } else if (days % 30 === 0) {
+            return (days / 30) + '개월';
+        } else {
+            return days + '일';
+        }
+    }
+
+    // 서버에서 상품 리스트 가져오기
+    function loadProductsFromServer() {
+        fetch('${pageContext.request.contextPath}/ticket/list.ajax', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                // 서버에서 받은 데이터를 products 배열로 변환
+                products = [];
+                
+                // 이용권 데이터 변환
+                if (data.membership && Array.isArray(data.membership)) {
+                    for (let i = 0; i < data.membership.length; i++) {
+                        const product = data.membership[i];
+                        const durationText = formatDuration(product.durationMonths);
+                        products.push({
+                            id: product.productNo,
+                            name: product.productType + ' ' + durationText,
+                            category: 'membership',
+                            price: product.productPrice,
+                            duration: durationText,
+                            durationDays: product.durationMonths, // 원본 일 단위 값 저장
+                            productNo: product.productNo
+                        });
+                    }
+                }
+                
+                // PT 데이터 변환
+                if (data.pt && Array.isArray(data.pt)) {
+                    for (let i = 0; i < data.pt.length; i++) {
+                        const product = data.pt[i];
+                        products.push({
+                            id: product.productNo,
+                            name: product.productType + ' ' + product.durationMonths + '회',
+                            category: 'pt',
+                            price: product.productPrice,
+                            duration: product.durationMonths + '회',
+                            durationDays: product.durationMonths, // 원본 횟수 값 저장
+                            productNo: product.productNo
+                        });
+                    }
+                }
+                
+                // 락커 데이터 변환
+                if (data.locker && Array.isArray(data.locker)) {
+                    for (let i = 0; i < data.locker.length; i++) {
+                        const product = data.locker[i];
+                        const durationText = formatDuration(product.durationMonths);
+                        products.push({
+                            id: product.productNo,
+                            name: product.productType + ' ' + durationText,
+                            category: 'locker',
+                            price: product.productPrice,
+                            duration: durationText,
+                            durationDays: product.durationMonths, // 원본 일 단위 값 저장
+                            productNo: product.productNo
+                        });
+                    }
+                }
+                
+                // 다음 ID 설정
+                if (products.length > 0) {
+                    let maxId = 0;
+                    for (let i = 0; i < products.length; i++) {
+                        if (products[i].id > maxId) {
+                            maxId = products[i].id;
+                        }
+                    }
+                    nextId = maxId + 1;
+                }
+                
+                // 화면 렌더링
+                renderAllProducts();
+            } else {
+                console.error('데이터 로드 실패:', data.message);
+                alert('상품 데이터를 불러오는데 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(function(error) {
+            console.error('AJAX 오류:', error);
+            alert('상품 데이터를 불러오는데 실패했습니다.');
+        });
+    }
 
     // 모든 상품 렌더링
     function renderAllProducts() {
@@ -382,21 +460,24 @@
     // 카테고리별 상품 렌더링
     function renderProducts(category) {
         const listId = category + '-list';
-        const countId = category + '-count';
         const list = document.getElementById(listId);
-        const categoryProducts = products.filter(p => p.category === category);
-
-        // 개수 업데이트
-        document.getElementById(countId).textContent = categoryProducts.length;
+        
+        // 카테고리별 상품 필터링
+        const categoryProducts = [];
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].category === category) {
+                categoryProducts.push(products[i]);
+            }
+        }
 
         // 리스트 초기화
         list.innerHTML = '';
 
         // 상품 카드 생성
-        categoryProducts.forEach(product => {
-            const card = createProductCard(product);
+        for (let i = 0; i < categoryProducts.length; i++) {
+            const card = createProductCard(categoryProducts[i]);
             list.appendChild(card);
-        });
+        }
     }
 
     // 상품 카드 생성
@@ -432,6 +513,9 @@
 
     // 수정 폼 생성
     function createEditForm(product) {
+        // 수정 폼에는 일 단위 값 표시 (PT는 회 단위)
+        const durationValue = product.category === 'pt' ? product.durationDays : product.durationDays + '일';
+        const durationLabel = product.category === 'pt' ? '횟수' : '유효기간';
         return `
             <form class="edit-form" onsubmit="saveEdit(event, \${product.id})">
                 <div class="form-field">
@@ -443,21 +527,16 @@
                     <input type="number" class="form-input" id="price-\${product.id}" value="\${product.price}" required>
                 </div>
                 <div class="form-field">
-                    <label class="form-label">유효기간</label>
-                    <input type="text" class="form-input" id="duration-\${product.id}" value="\${product.duration}" required>
+                    <label class="form-label">\${durationLabel}</label>
+                    <input type="text" class="form-input" id="duration-\${product.id}" value="\${durationValue}" placeholder="\${product.category === 'pt' ? '예: 10회, 20회' : '예: 30일, 60일, 365일'}" required>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn-save">
-                        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="white">
-                            <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/check.png" alt="저장" class="icon-check" style="width: 24px; height: 24px; vertical-align: middle;">
                         저장
                     </button>
                     <button type="button" class="btn-cancel" onclick="cancelEdit()">
-                        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/cancel.png" alt="취소" class="icon-x" style="width: 24px; height: 24px; vertical-align: middle;">
                         취소
                     </button>
                 </div>
@@ -468,6 +547,8 @@
     // 추가 폼 생성
     function createAddForm(category) {
         const categoryName = category === 'membership' ? '이용권' : category === 'pt' ? 'PT' : '락커';
+        const durationLabel = category === 'pt' ? '횟수' : '유효기간';
+        const durationPlaceholder = category === 'pt' ? '예: 10회, 20회' : '예: 30일, 60일, 365일';
         return `
             <form class="edit-form" onsubmit="saveAdd(event, '\${category}')">
                 <div class="form-field">
@@ -479,21 +560,14 @@
                     <input type="number" class="form-input" id="add-price" required>
                 </div>
                 <div class="form-field">
-                    <label class="form-label">유효기간</label>
-                    <input type="text" class="form-input" id="add-duration" placeholder="예: 1개월, 10회" required>
+                    <label class="form-label">\${durationLabel}</label>
+                    <input type="text" class="form-input" id="add-duration" placeholder="\${durationPlaceholder}" required>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn-save">
-                        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="white">
-                            <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
                         추가
                     </button>
                     <button type="button" class="btn-cancel" onclick="cancelAdd()">
-                        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
                         취소
                     </button>
                 </div>
@@ -501,10 +575,30 @@
         `;
     }
 
+    // 상품 찾기 헬퍼 함수
+    function findProductById(id) {
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].id === id) {
+                return products[i];
+            }
+        }
+        return null;
+    }
+
+    // 상품 인덱스 찾기 헬퍼 함수
+    function findProductIndexById(id) {
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].id === id) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // 수정 시작
     function startEdit(id) {
         editingId = id;
-        const product = products.find(p => p.id === id);
+        const product = findProductById(id);
         if (product) {
             renderProducts(product.category);
         }
@@ -518,20 +612,67 @@
         const price = parseInt(document.getElementById('price-' + id).value);
         const duration = document.getElementById('duration-' + id).value;
 
-        const productIndex = products.findIndex(p => p.id === id);
-        if (productIndex !== -1) {
-            products[productIndex].name = name;
-            products[productIndex].price = price;
-            products[productIndex].duration = duration;
-
-            editingId = null;
-            renderProducts(products[productIndex].category);
+        const product = findProductById(id);
+        if (!product) {
+            alert('상품을 찾을 수 없습니다.');
+            return;
         }
+
+        // AJAX로 서버에 수정 요청
+        const requestData = {
+            productNo: id,
+            name: name,
+            price: price,
+            duration: duration,
+            category: product.category
+        };
+
+        fetch('${pageContext.request.contextPath}/ticket/update.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                // 서버에서 수정된 상품 정보로 업데이트
+                if (data.product) {
+                    const updatedProduct = data.product;
+                    const categoryName = product.category;
+                    const durationText = categoryName === 'pt' ? updatedProduct.durationMonths + '회' : formatDuration(updatedProduct.durationMonths);
+                    
+                    const productIndex = findProductIndexById(id);
+                    if (productIndex !== -1) {
+                        products[productIndex].name = updatedProduct.productType + ' ' + durationText;
+                        products[productIndex].price = updatedProduct.productPrice;
+                        products[productIndex].duration = durationText;
+                        products[productIndex].durationDays = updatedProduct.durationMonths;
+                    }
+                } else {
+                    // 상품 정보가 없으면 서버에서 다시 전체 리스트 가져오기
+                    loadProductsFromServer();
+                }
+                
+                editingId = null;
+                renderProducts(product.category);
+                alert('상품이 수정되었습니다.');
+            } else {
+                alert('상품 수정에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(function(error) {
+            console.error('AJAX 오류:', error);
+            alert('상품 수정 중 오류가 발생했습니다.');
+        });
     }
 
     // 수정 취소
     function cancelEdit() {
-        const product = products.find(p => p.id === editingId);
+        const product = findProductById(editingId);
         editingId = null;
         if (product) {
             renderProducts(product.category);
@@ -540,13 +681,46 @@
 
     // 상품 삭제
     function deleteProduct(id) {
-        const product = products.find(p => p.id === id);
+        const product = findProductById(id);
         if (!product) return;
 
-        if (confirm(`"${product.name}"을(를) 삭제하시겠습니까?`)) {
-            const category = product.category;
-            products = products.filter(p => p.id !== id);
-            renderProducts(category);
+        if (confirm('"' + product.name + '"을(를) 삭제하시겠습니까?')) {
+            // AJAX로 서버에 삭제 요청
+            const requestData = {
+                productNo: id
+            };
+
+            fetch('${pageContext.request.contextPath}/ticket/delete.ajax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    // products 배열에서 제거
+                    const newProducts = [];
+                    for (let i = 0; i < products.length; i++) {
+                        if (products[i].id !== id) {
+                            newProducts.push(products[i]);
+                        }
+                    }
+                    products = newProducts;
+                    
+                    renderProducts(product.category);
+                    alert('상품이 삭제되었습니다.');
+                } else {
+                    alert('상품 삭제에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(function(error) {
+                console.error('AJAX 오류:', error);
+                alert('상품 삭제 중 오류가 발생했습니다.');
+            });
         }
     }
 
@@ -571,22 +745,79 @@
         const price = parseInt(document.getElementById('add-price').value);
         const duration = document.getElementById('add-duration').value;
 
-        if (!name || !price) {
+        if (!name || !price || !duration) {
             alert('모든 필수 항목을 입력해주세요.');
             return;
         }
 
-        const newProduct = {
-            id: nextId++,
-            name: name,
+        // AJAX로 서버에 추가 요청
+        const requestData = {
             category: category,
+            name: name,
             price: price,
             duration: duration
         };
 
-        products.push(newProduct);
-        addingCategory = null;
-        renderProducts(category);
+        fetch('${pageContext.request.contextPath}/ticket/add.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                // 추가 폼 제거
+                const addFormCard = document.getElementById('add-form-card');
+                if (addFormCard) {
+                    addFormCard.remove();
+                }
+                addingCategory = null;
+
+                // 서버에서 추가된 상품 정보로 새 상품 객체 생성
+                if (data.product) {
+                    const product = data.product;
+                    const categoryName = category === 'membership' ? 'membership' : category === 'pt' ? 'pt' : 'locker';
+                    const durationText = category === 'pt' ? product.durationMonths + '회' : formatDuration(product.durationMonths);
+                    
+                    const newProduct = {
+                        id: product.productNo,
+                        name: product.productType + ' ' + durationText,
+                        category: categoryName,
+                        price: product.productPrice,
+                        duration: durationText,
+                        durationDays: product.durationMonths, // 원본 일 단위 값 저장
+                        productNo: product.productNo
+                    };
+
+                    // products 배열에 추가
+                    products.push(newProduct);
+                    
+                    // 다음 ID 업데이트
+                    if (product.productNo >= nextId) {
+                        nextId = product.productNo + 1;
+                    }
+                    
+                    // 화면에 반영
+                    renderProducts(category);
+                    
+                    alert('상품이 추가되었습니다.');
+                } else {
+                    // 상품 정보가 없으면 서버에서 다시 전체 리스트 가져오기
+                    loadProductsFromServer();
+                    alert('상품이 추가되었습니다.');
+                }
+            } else {
+                alert('상품 추가에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(function(error) {
+            console.error('AJAX 오류:', error);
+            alert('상품 추가 중 오류가 발생했습니다.');
+        });
     }
 
     // 추가 취소

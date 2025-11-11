@@ -32,7 +32,7 @@ public class TrainerController {
     }
 
     // 트레이너 공지사항
-    @GetMapping("/trainer/noticeList")
+    @GetMapping("/noticeList.tr")
     public String trainerNoticeList() {
         return "notice/noticeList";
     }

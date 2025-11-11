@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.YoutubeUrlMapper">
+    <resultMap id="youtubeUrlResultMap" type="YoutubeUrl">
+        <result column="YOUTUBE_URL_NO" property="youtubeUrlNo"/>
+        <result column="YOUTUBE_URL_WRITER" property="youtubeUrlWriter"/>
+        <result column="YOUTUBE_URL_TITLE" property="youtubeUrlTitle"/>
+        <result column="YOUTUBE_URL" property="youtubeUrl"/>
+        <result column="GYM_NO" property="gymNo"/>
+    </resultMap>
+
+    <!-- 헬스장의 모든 영상 조회 -->
+    <select id="getYoutubeUrlsByGymNo" parameterType="int" resultMap="youtubeUrlResultMap">
+        SELECT YOUTUBE_URL_NO,
+               YOUTUBE_URL_WRITER,
+               YOUTUBE_URL_TITLE,
+               YOUTUBE_URL,
+               GYM_NO
+        FROM YOUTUBE_URL
+        WHERE GYM_NO = #{gymNo}
+        ORDER BY YOUTUBE_URL_NO DESC
+    </select>
+
+    <!-- 영상 추가 -->
+    <insert id="addYoutubeUrl" parameterType="YoutubeUrl">
+        INSERT INTO YOUTUBE_URL (
+            YOUTUBE_URL_NO,
+            YOUTUBE_URL_WRITER,
+            YOUTUBE_URL_TITLE,
+            YOUTUBE_URL,
+            GYM_NO
+        ) VALUES (
+            SEQ_YOUTUBE_URL_NO.NEXTVAL,
+            #{youtubeUrlWriter},
+            #{youtubeUrlTitle},
+            #{youtubeUrl},
+            #{gymNo}
+        )
+    </insert>
+
+    <!-- 영상 삭제 -->
+    <delete id="deleteYoutubeUrl" parameterType="int">
+        DELETE FROM YOUTUBE_URL
+        WHERE YOUTUBE_URL_NO = #{youtubeUrlNo}
+    </delete>
+</mapper>
+
