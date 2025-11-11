@@ -30,7 +30,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public int addMember(Member member) {
-        member.setMemberPwd(bCryptPasswordEncoder.encode(member.getMemberPwd()));
+        // 컨트롤러에서 이미 암호화된 비밀번호를 전달하므로, 여기서는 암호화 로직을 제거합니다.
         return memberMapper.addMember(member);
     }
 
@@ -39,7 +39,9 @@ public class MemberServiceImpl implements MemberService {
     public int addGymOwner(Member member, Gym gym) {
         // This method seems to require more complex logic involving the Gym table,
         // which is outside the current scope. Providing a placeholder implementation.
-        return 0;
+        // 컨트롤러에서 암호화된 비밀번호를 전달하므로, 여기서는 암호화 로직이 필요 없습니다.
+        // TODO: GymMapper를 사용하여 gym 정보도 함께 저장하는 로직 구현 필요
+        return memberMapper.addMember(member);
     }
 
     @Override
