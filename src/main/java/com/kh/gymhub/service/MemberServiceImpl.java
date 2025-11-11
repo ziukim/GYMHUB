@@ -43,11 +43,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public int addGymOwner(Member member, Gym gym) {
-        // memberType=3(헬스장 운영자)인지 검증
-        if (member.getMemberType() != 3) {
-            throw new IllegalArgumentException("헬스장 운영자만 GYM 테이블에 등록할 수 있습니다.");
-        }
-
         // 1. GYM 테이블에 먼저 INSERT (GYM_NO 생성)
         int gymResult = gymService.addGym(gym);
 
@@ -66,12 +61,26 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member login(String memberId, String memberPwd) {
+        // 로그인 전용 쿼리로 회원 정보 조회
         Member member = memberMapper.getMemberForLogin(memberId);
 
+        // 회원이 존재하고 비밀번호가 일치하는지 확인
         if (member != null && bCryptPasswordEncoder.matches(memberPwd, member.getMemberPwd())) {
             return member;
         }
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    public int updateMemberInfo(Member member) {
+        return memberMapper.updateMemberInfo(member);
+    }
+
+    @Override
+    @Transactional
+    public int updatePassword(int memberNo, String newPassword) {
+        return memberMapper.updatePassword(memberNo, newPassword);
     }
 }

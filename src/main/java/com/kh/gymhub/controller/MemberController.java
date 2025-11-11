@@ -224,6 +224,90 @@ public class MemberController {
             return "common/error";
         }
     }
+    // 회원정보 수정
+    @PostMapping("/updateMemberInfo.me")
+    public String updateMemberInfo(@RequestParam String memberName,
+                                   @RequestParam String birthDate,
+                                   @RequestParam String phone,
+                                   @RequestParam String email,
+                                   @RequestParam String address,
+                                   HttpSession session,
+                                   Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // Member 객체에 수정할 정보 설정
+        Member updateMember = new Member();
+        updateMember.setMemberNo(loginMember.getMemberNo());
+        updateMember.setMemberName(memberName);
+        updateMember.setMemberPhone(phone);
+        updateMember.setMemberEmail(email);
+        updateMember.setMemberAddress(address);
+
+        // 생년월일 변환 (YYYY. MM. DD. 형식 처리)
+        if (birthDate != null && !birthDate.isEmpty()) {
+            String cleanDate = birthDate.replaceAll("[^0-9]", "");
+            if (cleanDate.length() == 8) {
+                String formattedDate = cleanDate.substring(0, 4) + "-"
+                        + cleanDate.substring(4, 6) + "-"
+                        + cleanDate.substring(6, 8);
+                updateMember.setMemberBirth(Date.valueOf(formattedDate));
+            }
+        }
+
+        int result = memberService.updateMemberInfo(updateMember);
+
+        if (result > 0) {
+            // 세션 정보 업데이트
+            Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
+            session.setAttribute("loginMember", updatedMember);
+            session.setAttribute("alertMsg", "회원정보가 수정되었습니다.");
+            return "redirect:/member/info";
+        } else {
+            model.addAttribute("errorMsg", "회원정보 수정에 실패했습니다.");
+            return "common/error";
+        }
+    }
+
+    // 비밀번호 변경
+    @PostMapping("/updatePassword.me")
+    public String updatePassword(@RequestParam String currentPassword,
+                                 @RequestParam String newPassword,
+                                 HttpSession session,
+                                 Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // 현재 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(currentPassword, loginMember.getMemberPwd())) {
+            session.setAttribute("errorMsg", "현재 비밀번호가 일치하지 않습니다.");
+            return "redirect:/member/info";
+        }
+
+        // 새 비밀번호 암호화
+        String encodedNewPassword = bCryptPasswordEncoder.encode(newPassword);
+
+        int result = memberService.updatePassword(loginMember.getMemberNo(), encodedNewPassword);
+
+        if (result > 0) {
+            session.setAttribute("alertMsg", "비밀번호가 변경되었습니다.");
+            return "redirect:/member/info";
+        } else {
+            model.addAttribute("errorMsg", "비밀번호 변경에 실패했습니다.");
+            return "common/error";
+        }
+    }
+
 
     // ====================================== 로그인 ======================================================
     @PostMapping("/login.do")

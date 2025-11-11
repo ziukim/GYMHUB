@@ -402,7 +402,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">생년월일</label>
-                        <input type="text" name="birthDate" class="modal-input" placeholder="1990. 1. 15.">
+                        <input type="text" name="birthDate" class="modal-input" value="${loginMember.memberBirth}">
                     </div>
                 </div>
                 <div class="form-grid">
@@ -598,6 +598,23 @@
                 document.getElementById('mainProfileImage').appendChild(img);
             }
             reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+    // 비밀번호 변경 폼 검증
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('새 비밀번호가 일치하지 않습니다.');
+            return false;
+        }
+
+        if (newPassword.length < 3) {
+            e.preventDefault();
+            alert('비밀번호는 최소 3자 이상이어야 합니다.');
+            return false;
         }
     });
 </script>
