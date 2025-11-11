@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.MachineMapper">
+
+    <!-- Machine resultMap -->
+    <resultMap id="machineResultMap" type="com.kh.gymhub.model.vo.Machine">
+        <id property="machineNo" column="MACHINE_NO"/>
+        <result property="machineName" column="MACHINE_NAME"/>
+        <result property="brand" column="BRAND"/>
+        <result property="machinePhotoPath" column="MACHINE_PHOTO_PATH"/>
+    </resultMap>
+
+    <!-- MachineManage resultMap -->
+    <resultMap id="machineManageResultMap" type="com.kh.gymhub.model.vo.MachineManage">
+        <id property="machineManageNo" column="MACHINE_MANAGE_NO"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="machineNo" column="MACHINE_NO"/>
+        <result property="machineCheckedDate" column="MACHINE_CHECKED_DATE"/>
+        <result property="machineNextCheck" column="MACHINE_NEXT_CHECK"/>
+        <result property="machineStatus" column="MACHINE_STATUS"/>
+        <!-- JOIN 필드 -->
+        <result property="machineName" column="MACHINE_NAME"/>
+        <result property="brand" column="BRAND"/>
+        <result property="machinePhotoPath" column="MACHINE_PHOTO_PATH"/>
+    </resultMap>
+
+    <!-- 1. 기구 정보 등록 -->
+    <insert id="insertMachine" parameterType="com.kh.gymhub.model.vo.Machine">
+        <selectKey keyProperty="machineNo" resultType="int" order="BEFORE">
+            SELECT SEQ_MACHINE_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO MACHINE (
+        MACHINE_NO,
+        MACHINE_NAME,
+        BRAND,
+        MACHINE_PHOTO_PATH
+        ) VALUES (
+        #{machineNo},
+        #{machineName},
+        #{brand},
+        #{machinePhotoPath}
+        )
+    </insert>
+
+    <!-- 2. 헬스장에 기구 추가 (관리 정보) -->
+    <insert id="insertMachineManage" parameterType="com.kh.gymhub.model.vo.MachineManage">
+        INSERT INTO MACHINE_MANAGE (
+            MACHINE_MANAGE_NO,
+            GYM_NO,
+            MACHINE_NO,
+            MACHINE_CHECKED_DATE,
+            MACHINE_NEXT_CHECK,
+            MACHINE_STATUS
+        ) VALUES (
+                     SEQ_MACHINE_MANAGE_NO.NEXTVAL,
+                     #{gymNo},
+                     #{machineNo},
+                     #{machineCheckedDate},
+                     #{machineNextCheck},
+                     #{machineStatus, jdbcType=VARCHAR}
+                 )
+    </insert>
+
+    <!-- 3. 특정 헬스장의 기구 목록 조회 -->
+    <select id="selectMachineListByGymNo" resultMap="machineManageResultMap">
+        SELECT
+            MM.MACHINE_MANAGE_NO,
+            MM.GYM_NO,
+            MM.MACHINE_NO,
+            MM.MACHINE_CHECKED_DATE,
+            MM.MACHINE_NEXT_CHECK,
+            MM.MACHINE_STATUS,
+            M.MACHINE_NAME,
+            M.BRAND,
+            M.MACHINE_PHOTO_PATH
+        FROM MACHINE_MANAGE MM
+                 JOIN MACHINE M ON MM.MACHINE_NO = M.MACHINE_NO
+        WHERE MM.GYM_NO = #{gymNo}
+        ORDER BY MM.MACHINE_MANAGE_NO DESC
+    </select>
+
+    <!-- 4. 기구 관리 정보 상세 조회 -->
+    <select id="selectMachineManageByNo" resultMap="machineManageResultMap">
+        SELECT
+            MM.MACHINE_MANAGE_NO,
+            MM.GYM_NO,
+            MM.MACHINE_NO,
+            MM.MACHINE_CHECKED_DATE,
+            MM.MACHINE_NEXT_CHECK,
+            MM.MACHINE_STATUS,
+            M.MACHINE_NAME,
+            M.BRAND,
+            M.MACHINE_PHOTO_PATH
+        FROM MACHINE_MANAGE MM
+                 JOIN MACHINE M ON MM.MACHINE_NO = M.MACHINE_NO
+        WHERE MM.MACHINE_MANAGE_NO = #{machineManageNo}
+    </select>
+
+    <!-- 5. 기구 관리 정보 수정 -->
+    <update id="updateMachineManage" parameterType="com.kh.gymhub.model.vo.MachineManage">
+        UPDATE MACHINE_MANAGE
+        SET
+            MACHINE_CHECKED_DATE = #{machineCheckedDate},
+            MACHINE_NEXT_CHECK = #{machineNextCheck},
+            MACHINE_STATUS = #{machineStatus}
+        WHERE MACHINE_MANAGE_NO = #{machineManageNo}
+    </update>
+
+    <!-- 6. 기구 삭제 -->
+    <delete id="deleteMachineManage">
+        DELETE FROM MACHINE_MANAGE
+        WHERE MACHINE_MANAGE_NO = #{machineManageNo}
+    </delete>
+
+</mapper>

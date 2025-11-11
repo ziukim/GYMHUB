@@ -310,7 +310,7 @@
             <span>매출 현황</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/facility.gym" class="nav-item">
+        <a href="${pageContext.request.contextPath}/machineList.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="시설 관리" class="nav-icon">
             <span>시설 관리</span>
         </a>

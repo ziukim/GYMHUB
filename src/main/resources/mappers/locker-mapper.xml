@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.LockerMapper">
+
+    <resultMap id="lockerPassResultMap" type="com.kh.gymhub.model.vo.LockerPass">
+        <id property="lockerPassNo" column="LOCKER_PASS_NO"/>
+        <result property="purchaseNo" column="PURCHASE_NO"/>
+        <result property="lockerNo" column="LOCKER_NO"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="lockerPassStart" column="LOCKER_PASS_START"/>
+        <result property="lockerEnd" column="LOCKER_END"/>
+        <result property="lockerPassStatus" column="LOCKER_PASS_STATUS"/>
+        <result property="lockerRealNum" column="LOCKER_REAL_NUM"/>
+        <result property="lockerStatus" column="LOCKER_STATUS"/>
+        <result property="memberName" column="MEMBER_NAME"/>
+    </resultMap>
+
+    <select id="selectLockerPassListByGymNo" resultMap="lockerPassResultMap">
+        SELECT
+            L.LOCKER_NO,
+            L.LOCKER_REAL_NUM,
+            L.LOCKER_STATUS,
+            LP.LOCKER_PASS_NO,
+            LP.PURCHASE_NO,
+            LP.MEMBER_NO,
+            LP.LOCKER_PASS_START,
+            LP.LOCKER_END,
+            LP.LOCKER_PASS_STATUS,
+            M.MEMBER_NAME
+        FROM LOCKER L
+        LEFT JOIN LOCKER_PASS LP ON L.LOCKER_NO = LP.LOCKER_NO AND LP.LOCKER_PASS_STATUS = '정상'
+        LEFT JOIN MEMBER M ON LP.MEMBER_NO = M.MEMBER_NO
+        WHERE L.GYM_NO = #{gymNo}
+        ORDER BY L.LOCKER_REAL_NUM ASC
+    </select>
+
+    <insert id="insertLocker" parameterType="com.kh.gymhub.model.vo.Locker">
+        INSERT INTO LOCKER (
+            LOCKER_NO,
+            GYM_NO,
+            LOCKER_REAL_NUM,
+            LOCKER_STATUS
+        ) VALUES (
+            SEQ_LOCKER_NO.NEXTVAL,
+            #{gymNo},
+            #{lockerRealNum},
+            #{lockerStatus}
+        )
+    </insert>
+
+    <update id="updateExpiredLockerPassStatus">
+        UPDATE LOCKER_PASS
+        SET LOCKER_PASS_STATUS = '만료'
+        WHERE LOCKER_END &lt; TRUNC(SYSDATE)
+        AND LOCKER_PASS_STATUS != '만료'
+    </update>
+
+    <update id="updateLockerStatusForExpiredPasses">
+        UPDATE LOCKER L
+        SET L.LOCKER_STATUS = '빈'
+        WHERE L.LOCKER_NO IN (
+            SELECT LP.LOCKER_NO
+            FROM LOCKER_PASS LP
+            WHERE LP.LOCKER_PASS_STATUS = '만료'
+        )
+        AND L.LOCKER_STATUS != '빈'
+    </update>
+
+</mapper>
