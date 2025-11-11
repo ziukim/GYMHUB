@@ -1086,10 +1086,10 @@
                 <span class="welcome-message">${loginMember.memberName}님 환영합니다</span>
                 <c:choose>
                     <c:when test="${loginMember.memberType == 1}">
-                        <a href="${pageContext.request.contextPath}/member.dashboard" class="btn btn-secondary">마이페이지</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.me" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 2}">
-                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">대시보드</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.tr" class="btn btn-secondary">대시보드</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 3}">
                         <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>

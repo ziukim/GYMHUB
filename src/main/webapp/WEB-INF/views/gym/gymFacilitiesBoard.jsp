@@ -722,7 +722,7 @@
 <script>
     // 기구 추가
     function addEquipment() {
-        location.href = '${pageContext.request.contextPath}/facility/machine/enroll.gym';
+        location.href = '${pageContext.request.contextPath}/machineEnroll.gym';
     }
 
     // 기구 수정
