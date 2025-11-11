@@ -1,6 +1,9 @@
 package com.kh.gymhub.controller;
 
+import com.kh.gymhub.model.vo.Gym;
+import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -11,15 +14,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.sql.Date;
+import java.util.List;
+
+
 
 @Controller
 public class MemberController {
 
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final InbodyService inbodyService;
 
-    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
         this.memberService = memberService;
+        this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -36,15 +45,20 @@ public class MemberController {
     public String memberInfo(HttpSession session, Model model) {
         // 세션에서 로그인 정보 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");
-        
+
         if (loginMember == null) {
             // 로그인하지 않은 경우 메인 페이지로 리다이렉트
             session.setAttribute("errorMsg", "로그인이 필요합니다.");
             return "redirect:/";
         }
-        
-        // Model에 추가 (JSP에서 사용하기 위해)
+
+        // 인바디 기록 목록 조회
+        List<InbodyRecord> inbodyList = inbodyService.getInbodyList(loginMember.getMemberNo());
+
+        // Model에 추가
         model.addAttribute("loginMember", loginMember);
+        model.addAttribute("inbodyList", inbodyList);
+
         return "member/memberInfo";
     }
 
@@ -73,26 +87,45 @@ public class MemberController {
                                @RequestParam String password,
                                @RequestParam String name,
                                @RequestParam String phone,
+                               @RequestParam(required = false) String email,
                                @RequestParam(required = false) String address,
                                @RequestParam String birthDate,
                                HttpSession session,
                                Model model) {
 
-        Member member = new Member();
-        member.setMemberType(1);
-        member.setMemberId(id);
-        member.setMemberPwd(bCryptPasswordEncoder.encode(password));
-        member.setMemberName(name);
-        member.setMemberPhone(phone);
-        member.setMemberAddress(address);
+        try {
+            Member member = new Member();
+            member.setMemberType(1);
+            member.setMemberId(id);
+            member.setMemberPwd(bCryptPasswordEncoder.encode(password));
+            member.setMemberName(name);
+            member.setMemberPhone(phone);
+            member.setMemberAddress(address);
+            member.setMemberEmail(email);
 
-        int result = memberService.addMember(member);
+            // 생년월일 변환 (YYYYMMDD -> Date)
+            if (birthDate != null && birthDate.length() == 8) {
+                String formattedDate = birthDate.substring(0, 4) + "-"
+                        + birthDate.substring(4, 6) + "-"
+                        + birthDate.substring(6, 8);
+                member.setMemberBirth(Date.valueOf(formattedDate));
+            } else {
+                model.addAttribute("errorMsg", "생년월일 형식이 올바르지 않습니다.");
+                return "common/error";
+            }
 
-        if(result > 0) {
-            session.setAttribute("alertMsg", "회원가입에 성공하였습니다.");
-            return "redirect:/";
-        } else {
-            model.addAttribute("errorMsg", "회원가입에 실패하였습니다.");
+            int result = memberService.addMember(member);
+
+            if(result > 0) {
+                session.setAttribute("alertMsg", "회원가입에 성공하였습니다.");
+                return "redirect:/";
+            } else {
+                model.addAttribute("errorMsg", "회원가입에 실패하였습니다.");
+                return "common/error";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMsg", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
             return "common/error";
         }
     }
@@ -111,25 +144,42 @@ public class MemberController {
                                 HttpSession session,
                                 Model model) {
 
-        Member member = new Member();
-        member.setMemberType(2);
-        member.setMemberId(id);
-        member.setMemberPwd(bCryptPasswordEncoder.encode(password));
-        member.setMemberName(name);
-        member.setMemberPhone(phone);
-        member.setMemberAddress(address);
-        member.setMemberEmail(email);
-        member.setTrainerLicense(certification);
-        member.setTrainerCareer(career);
-        member.setTrainerAward(detailCareer);
+        try {
+            Member member = new Member();
+            member.setMemberType(2);
+            member.setMemberId(id);
+            member.setMemberPwd(bCryptPasswordEncoder.encode(password));
+            member.setMemberName(name);
+            member.setMemberPhone(phone);
+            member.setMemberAddress(address);
+            member.setMemberEmail(email);
+            member.setTrainerLicense(certification);
+            member.setTrainerCareer(career);
+            member.setTrainerAward(detailCareer);
 
-        int result = memberService.addMember(member);
+            // 생년월일 변환 (YYYYMMDD -> Date)
+            if (birthDate != null && birthDate.length() == 8) {
+                String formattedDate = birthDate.substring(0, 4) + "-"
+                        + birthDate.substring(4, 6) + "-"
+                        + birthDate.substring(6, 8);
+                member.setMemberBirth(Date.valueOf(formattedDate));
+            } else {
+                model.addAttribute("errorMsg", "생년월일 형식이 올바르지 않습니다.");
+                return "common/error";
+            }
 
-        if(result > 0) {
-            session.setAttribute("alertMsg", "트레이너 회원가입에 성공하였습니다.");
-            return "redirect:/";
-        } else {
-            model.addAttribute("errorMsg", "트레이너 회원가입에 실패하였습니다.");
+            int result = memberService.addMember(member);
+
+            if(result > 0) {
+                session.setAttribute("alertMsg", "트레이너 회원가입에 성공하였습니다.");
+                return "redirect:/";
+            } else {
+                model.addAttribute("errorMsg", "트레이너 회원가입에 실패하였습니다.");
+                return "common/error";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMsg", "트레이너 회원가입 중 오류가 발생했습니다: " + e.getMessage());
             return "common/error";
         }
     }
@@ -145,25 +195,196 @@ public class MemberController {
                             HttpSession session,
                             Model model) {
 
-        Member member = new Member();
-        member.setMemberType(3);
-        member.setMemberId(id);
-        member.setMemberPwd(bCryptPasswordEncoder.encode(password));
-        member.setMemberName(representative != null ? representative : gymName);
-        member.setMemberPhone(phone);
-        member.setMemberAddress(address);
-        member.setMemberEmail(email);
+        try {
+            // Member 객체 생성
+            Member member = new Member();
+            member.setMemberType(3); // 헬스장 운영자
+            member.setMemberId(id);
+            member.setMemberPwd(bCryptPasswordEncoder.encode(password));
+            member.setMemberName(representative != null ? representative : gymName);
+            member.setMemberPhone(phone);
+            member.setMemberAddress(address);
+            member.setMemberEmail(email);
+            member.setMemberBirth(Date.valueOf("1900-01-01")); // 임시값
 
-        int result = memberService.addMember(member);
+            // Gym 객체 생성
+            Gym gym = new Gym();
+            gym.setGymName(gymName != null ? gymName : "미등록 헬스장");
+            gym.setGymOwner(representative != null ? representative : "미등록");
+            gym.setGymPhone(phone);
+            gym.setGymAddress(address != null ? address : "미등록");
+            gym.setAttCacheNo(1); // 기본값
 
-        if(result > 0) {
-            session.setAttribute("alertMsg", "헬스장 운영자 회원가입에 성공하였습니다.");
-            return "redirect:/";
-        } else {
-            model.addAttribute("errorMsg", "헬스장 운영자 회원가입에 실패하였습니다.");
+            // memberType=3일 때만 addGymOwner 사용 (GYM 테이블 INSERT)
+            int result = memberService.addGymOwner(member, gym);
+
+            if(result > 0) {
+                session.setAttribute("alertMsg", "헬스장 운영자 회원가입에 성공하였습니다.");
+                return "redirect:/";
+            } else {
+                model.addAttribute("errorMsg", "헬스장 운영자 회원가입에 실패하였습니다.");
+                return "common/error";
+            }
+        } catch (IllegalArgumentException e) {
+            // memberType 검증 실패 시
+            model.addAttribute("errorMsg", e.getMessage());
+            return "common/error";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMsg", "헬스장 운영자 회원가입 중 오류가 발생했습니다: " + e.getMessage());
             return "common/error";
         }
     }
+    // 회원정보 수정
+    @PostMapping("/updateMemberInfo.me")
+    public String updateMemberInfo(@RequestParam String memberName,
+                                   @RequestParam String birthDate,
+                                   @RequestParam String phone,
+                                   @RequestParam String email,
+                                   @RequestParam String address,
+                                   HttpSession session,
+                                   Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // Member 객체에 수정할 정보 설정
+        Member updateMember = new Member();
+        updateMember.setMemberNo(loginMember.getMemberNo());
+        updateMember.setMemberName(memberName);
+        updateMember.setMemberPhone(phone);
+        updateMember.setMemberEmail(email);
+        updateMember.setMemberAddress(address);
+
+        // 생년월일 변환 (YYYY. MM. DD. 형식 처리)
+        if (birthDate != null && !birthDate.isEmpty()) {
+            String cleanDate = birthDate.replaceAll("[^0-9]", "");
+            if (cleanDate.length() == 8) {
+                String formattedDate = cleanDate.substring(0, 4) + "-"
+                        + cleanDate.substring(4, 6) + "-"
+                        + cleanDate.substring(6, 8);
+                updateMember.setMemberBirth(Date.valueOf(formattedDate));
+            }
+        }
+
+        int result = memberService.updateMemberInfo(updateMember);
+
+        if (result > 0) {
+            // 세션 정보 업데이트
+            Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
+            session.setAttribute("loginMember", updatedMember);
+            session.setAttribute("alertMsg", "회원정보가 수정되었습니다.");
+            return "redirect:/member/info";
+        } else {
+            model.addAttribute("errorMsg", "회원정보 수정에 실패했습니다.");
+            return "common/error";
+        }
+    }
+
+    // 비밀번호 변경
+    @PostMapping("/updatePassword.me")
+    public String updatePassword(@RequestParam String currentPassword,
+                                 @RequestParam String newPassword,
+                                 HttpSession session,
+                                 Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // 현재 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(currentPassword, loginMember.getMemberPwd())) {
+            session.setAttribute("errorMsg", "현재 비밀번호가 일치하지 않습니다.");
+            return "redirect:/member/info";
+        }
+
+        // 새 비밀번호 암호화
+        String encodedNewPassword = bCryptPasswordEncoder.encode(newPassword);
+
+        int result = memberService.updatePassword(loginMember.getMemberNo(), encodedNewPassword);
+
+        if (result > 0) {
+            session.setAttribute("alertMsg", "비밀번호가 변경되었습니다.");
+            return "redirect:/member/info";
+        } else {
+            model.addAttribute("errorMsg", "비밀번호 변경에 실패했습니다.");
+            return "common/error";
+        }
+    }
+
+    // ====================================== 인바디 기록 ======================================================
+
+    // 인바디 기록 등록
+    @PostMapping("/insertInbody.me")
+    public String insertInbody(@RequestParam double weight,
+                               @RequestParam double muscle,
+                               @RequestParam double bodyFat,
+                               @RequestParam double bmi,
+                               HttpSession session,
+                               Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        InbodyRecord inbody = new InbodyRecord();
+        inbody.setMemberNo(loginMember.getMemberNo());
+        inbody.setWeight(weight);
+        inbody.setSmm(muscle);
+        inbody.setPbf(bodyFat);
+        inbody.setBmi(bmi);
+
+        int result = inbodyService.insertInbody(inbody);
+
+        if (result > 0) {
+            session.setAttribute("alertMsg", "인바디 기록이 등록되었습니다.");
+            return "redirect:/member/info";
+        } else {
+            model.addAttribute("errorMsg", "인바디 기록 등록에 실패했습니다.");
+            return "common/error";
+        }
+    }
+
+    // 인바디 기록 목록 조회
+    @GetMapping("/inbodyList.me")
+    public String getInbodyList(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        List<InbodyRecord> inbodyList = inbodyService.getInbodyList(loginMember.getMemberNo());
+        model.addAttribute("inbodyList", inbodyList);
+
+        return "member/inbodyList";
+    }
+
+    // 최근 인바디 기록 조회 (Ajax용)
+    @GetMapping("/latestInbody.me")
+    @ResponseBody
+    public InbodyRecord getLatestInbody(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            return null;
+        }
+
+        return inbodyService.getLatestInbody(loginMember.getMemberNo());
+    }
+
+
 
     // ====================================== 로그인 ======================================================
     @PostMapping("/login.do")

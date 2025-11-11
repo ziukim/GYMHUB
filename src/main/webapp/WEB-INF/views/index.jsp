@@ -1305,6 +1305,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="form-label">이메일</label>
+                            <input type="email" name="email" placeholder="이메일을 입력하세요">
+                        </div>
+
+                        <div class="form-group">
                             <label class="form-label">생년월일 <span class="required">*</span></label>
                             <div class="icon-input">
                                 <input type="text" name="birthDate" placeholder="생년월일 8자리를 입력하세요(- 제외 숫자만 입력)" required>
@@ -1834,6 +1839,102 @@
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
+    });
+
+    // ============================= 아이디 중복 체크 (AJAX) =============================
+    document.querySelectorAll('input[name="id"]').forEach(function(input) {
+        let typingTimer;
+        const doneTypingInterval = 500; // 0.5초 대기 후 체크
+
+        input.addEventListener('input', function() {
+            clearTimeout(typingTimer);
+            const helperText = this.nextElementSibling;
+            const idValue = this.value.trim();
+
+            // 아이디가 4자 미만이면 메시지 숨기기
+            if (idValue.length < 4) {
+                helperText.classList.add('hidden');
+                helperText.textContent = '';
+                return;
+            }
+
+            // 입력 멈춘 후 0.5초 뒤 중복 체크 실행
+            typingTimer = setTimeout(function() {
+                fetch('${pageContext.request.contextPath}/signup/checkId?checkId=' + encodeURIComponent(idValue))
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log('아이디 중복 체크 결과:', data);
+
+                        if (data === 'NNNNY') {
+                            // 사용 가능한 아이디
+                            helperText.classList.remove('error');
+                            helperText.classList.add('success');
+                            helperText.textContent = '사용 가능한 아이디입니다';
+                            helperText.classList.remove('hidden');
+                        } else {
+                            // 이미 사용중인 아이디
+                            helperText.classList.remove('success');
+                            helperText.classList.add('error');
+                            helperText.textContent = '사용 불가능한 아이디입니다';
+                            helperText.classList.remove('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('아이디 중복 체크 오류:', error);
+                    });
+            }, doneTypingInterval);
+        });
+    });
+
+    // ============================= 비밀번호 확인 검증 =============================
+    document.querySelectorAll('.password-confirm').forEach(function(input) {
+        input.addEventListener('input', function() {
+            const form = this.closest('form');
+            const password = form.querySelector('.password').value;
+            const confirmPassword = this.value;
+            const helperText = this.nextElementSibling;
+
+            if (confirmPassword === '') {
+                helperText.classList.add('hidden');
+            } else if (password === confirmPassword) {
+                helperText.classList.remove('error');
+                helperText.classList.add('success');
+                helperText.textContent = '비밀번호가 일치합니다';
+                helperText.classList.remove('hidden');
+            } else {
+                helperText.classList.remove('success');
+                helperText.classList.add('error');
+                helperText.textContent = '비밀번호가 일치하지 않습니다';
+                helperText.classList.remove('hidden');
+            }
+        });
+    });
+
+    // ============================= 폼 제출 전 최종 검증 =============================
+    document.querySelectorAll('.registration-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            // 비밀번호 확인
+            const password = this.querySelector('.password').value;
+            const confirmPassword = this.querySelector('.password-confirm').value;
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('비밀번호가 일치하지 않습니다.');
+                return false;
+            }
+
+            // 아이디 중복 체크 확인
+            const idInput = this.querySelector('input[name="id"]');
+            const idHelperText = idInput.nextElementSibling;
+            if (!idHelperText.classList.contains('success')) {
+                e.preventDefault();
+                alert('사용 가능한 아이디로 입력해주세요.');
+                idInput.focus();
+                return false;
+            }
+
+            return true;
+        });
     });
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>
