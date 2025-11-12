@@ -288,12 +288,12 @@
 
     <!-- Navigation -->
     <nav class="sidebar-nav">
-        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="nav-item ${currentPage == 'dashboard' ? 'active' : ''}">
+        <a href="${pageContext.request.contextPath}/dashboard.tr" class="nav-item ${currentPage == 'dashboard' ? 'active' : ''}">
             <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="대시보드" class="nav-icon">
             <span>대시보드</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/trainer/noticeList" class="nav-item ${currentPage == 'notice' ? 'active' : ''}">
+        <a href="${pageContext.request.contextPath}/noticeList.tr" class="nav-item ${currentPage == 'notice' ? 'active' : ''}">
             <img src="${pageContext.request.contextPath}/resources/images/icon/campaign.png" alt="공지사항" class="nav-icon">
             <span>공지사항</span>
         </a>
@@ -357,7 +357,7 @@
 
     // 확인 버튼 클릭 시 로그아웃
     confirmBtn?.addEventListener('click', () => {
-        location.href = ctx + '/logout.do';
+        location.href = ctx + '/logout.me';
     });
 
     // 현재 페이지에 맞는 메뉴 활성화

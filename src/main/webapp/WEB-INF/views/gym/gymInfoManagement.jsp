@@ -350,253 +350,253 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+<div class="app-container">
+    <!-- Sidebar Include -->
+    <jsp:include page="../common/sidebar/sidebarGym.jsp" />
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-wrapper">
-                <!-- Header -->
-                <div class="page-intro">
-                    <h1>헬스장 정보 관리</h1>
-                    <p>헬스장의 기본 정보를 수정하고 관리하세요</p>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-intro">
+                <h1>헬스장 정보 관리</h1>
+                <p>헬스장의 기본 정보를 수정하고 관리하세요</p>
+            </div>
+            <div class="page-header">
+                <div class="header-left">
                 </div>
-                <div class="page-header">
-                    <div class="header-left">
+                <button class="save-button" onclick="saveGymInfo()">
+                    <span>저장</span>
+                </button>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="section">
+                <div class="section-title">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="대표 이미지" class="section-icon">
+                    대표 이미지
+                </div>
+                <div class="image-upload-area">
+                    <button class="upload-button" onclick="uploadImage()">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
+                        <span>이미지 업로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Basic Information Section -->
+            <div class="section">
+                <div class="section-title">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/book.png" alt="기본 정보" class="section-icon">
+                    기본 정보
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="헬스장 이름" class="label-icon">
+                            헬스장 이름
+                        </label>
+                        <input type="text" class="form-input" placeholder="피트니스 센터 강남점" id="gymName">
                     </div>
-                    <button class="save-button" onclick="saveGymInfo()">
-                        <span>저장</span>
+                    <div class="form-group full-width">
+                        <label class="form-label">헬스장 소개</label>
+                        <textarea class="form-textarea" placeholder="헬스장에 대한 간단한 소개를 입력해주세요" id="gymDescription"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화번호" class="label-icon">
+                            전화번호
+                        </label>
+                        <input type="text" class="form-input" placeholder="02-1234-5678" id="gymPhone">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" class="label-icon">
+                            주소
+                        </label>
+                        <input type="text" class="form-input" placeholder="서울 강남구 테헤란로 123" id="gymAddress">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">상세 주소 / 위치 안내</label>
+                        <input type="text" class="form-input" placeholder="3층 (해성빌딩 2번 출구 기준 5분)" id="gymDetailAddress">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operating Hours Section -->
+            <div class="section">
+                <div class="section-title">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="운영 시간" class="section-icon">
+                    운영 시간
+                </div>
+
+                <!-- Weekday -->
+                <div class="hours-section">
+                    <div class="day-title">평일 (월~금)</div>
+                    <div class="time-grid">
+                        <div class="time-group">
+                            <label class="time-label">시작 시간</label>
+                            <input type="text" class="form-input" placeholder="06:00" id="weekdayStart">
+                        </div>
+                        <div class="time-group">
+                            <label class="time-label">종료 시간</label>
+                            <input type="text" class="form-input" placeholder="23:00" id="weekdayEnd">
+                        </div>
+                    </div>
+                    <div class="time-note">예시: 평일 00:00 ~ 23:59</div>
+                </div>
+
+                <!-- Weekend -->
+                <div class="hours-section">
+                    <div class="day-title">주말 (토~일)</div>
+                    <div class="time-grid">
+                        <div class="time-group">
+                            <label class="time-label">시작 시간</label>
+                            <input type="text" class="form-input" placeholder="08:00" id="weekendStart">
+                        </div>
+                        <div class="time-group">
+                            <label class="time-label">종료 시간</label>
+                            <input type="text" class="form-input" placeholder="20:00" id="weekendEnd">
+                        </div>
+                    </div>
+                    <div class="time-note">예시: 주말 00:00 ~ 23:59</div>
+                </div>
+            </div>
+
+            <!-- Facilities Section -->
+            <div class="section">
+                <div class="section-title">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="시설 정보" class="section-icon">
+                    시설 정보
+                </div>
+                <div class="facilities-label">제공하는 시설을 선택해주세요</div>
+                <div class="facilities-subtitle">(클릭하여 헬스장 피트니스 센터)</div>
+
+                <div class="facilities-grid">
+                    <button class="facility-button" data-facility="24시간">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="24시간" class="facility-icon">
+                        <span>24시간</span>
+                    </button>
+                    <button class="facility-button" data-facility="주차가능">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차가능" class="facility-icon">
+                        <span>주차장</span>
+                    </button>
+                    <button class="facility-button" data-facility="샤워실">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" class="facility-icon">
+                        <span>샤워실</span>
+                    </button>
+                    <button class="facility-button" data-facility="락커실">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커실" class="facility-icon">
+                        <span>락커룸</span>
+                    </button>
+                    <button class="facility-button" data-facility="무료 WiFi">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/wifi.png" alt="무료 WiFi" class="facility-icon">
+                        <span>무료WiFi</span>
+                    </button>
+                    <button class="facility-button" data-facility="PT">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="PT" class="facility-icon">
+                        <span>PT</span>
+                    </button>
+                    <button class="facility-button" data-facility="GX 프로그램">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="GX 프로그램" class="facility-icon">
+                        <span>GX 프로그램</span>
+                    </button>
+                    <button class="facility-button" data-facility="카페">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="카페" class="facility-icon">
+                        <span>카페</span>
+                    </button>
+                    <button class="facility-button" data-facility="수영장">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="수영장" class="facility-icon">
+                        <span>수영장</span>
+                    </button>
+                    <button class="facility-button" data-facility="필라테스">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="필라테스" class="facility-icon">
+                        <span>필라테스</span>
+                    </button>
+                    <button class="facility-button" data-facility="사우나">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="사우나" class="facility-icon">
+                        <span>사우나</span>
                     </button>
                 </div>
 
-                <!-- Image Upload Section -->
-                <div class="section">
-                    <div class="section-title">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="대표 이미지" class="section-icon">
-                        대표 이미지
-                    </div>
-                    <div class="image-upload-area">
-                        <button class="upload-button" onclick="uploadImage()">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
-                            <span>이미지 업로드</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Basic Information Section -->
-                <div class="section">
-                    <div class="section-title">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/book.png" alt="기본 정보" class="section-icon">
-                        기본 정보
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="헬스장 이름" class="label-icon">
-                                헬스장 이름
-                            </label>
-                            <input type="text" class="form-input" placeholder="피트니스 센터 강남점" id="gymName">
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label">헬스장 소개</label>
-                            <textarea class="form-textarea" placeholder="헬스장에 대한 간단한 소개를 입력해주세요" id="gymDescription"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화번호" class="label-icon">
-                                전화번호
-                            </label>
-                            <input type="text" class="form-input" placeholder="02-1234-5678" id="gymPhone">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" class="label-icon">
-                                주소
-                            </label>
-                            <input type="text" class="form-input" placeholder="서울 강남구 테헤란로 123" id="gymAddress">
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label">상세 주소 / 위치 안내</label>
-                            <input type="text" class="form-input" placeholder="3층 (해성빌딩 2번 출구 기준 5분)" id="gymDetailAddress">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Operating Hours Section -->
-                <div class="section">
-                    <div class="section-title">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="운영 시간" class="section-icon">
-                        운영 시간
-                    </div>
-
-                    <!-- Weekday -->
-                    <div class="hours-section">
-                        <div class="day-title">평일 (월~금)</div>
-                        <div class="time-grid">
-                            <div class="time-group">
-                                <label class="time-label">시작 시간</label>
-                                <input type="text" class="form-input" placeholder="06:00" id="weekdayStart">
-                            </div>
-                            <div class="time-group">
-                                <label class="time-label">종료 시간</label>
-                                <input type="text" class="form-input" placeholder="23:00" id="weekdayEnd">
-                            </div>
-                        </div>
-                        <div class="time-note">예시: 평일 00:00 ~ 23:59</div>
-                    </div>
-
-                    <!-- Weekend -->
-                    <div class="hours-section">
-                        <div class="day-title">주말 (토~일)</div>
-                        <div class="time-grid">
-                            <div class="time-group">
-                                <label class="time-label">시작 시간</label>
-                                <input type="text" class="form-input" placeholder="08:00" id="weekendStart">
-                            </div>
-                            <div class="time-group">
-                                <label class="time-label">종료 시간</label>
-                                <input type="text" class="form-input" placeholder="20:00" id="weekendEnd">
-                            </div>
-                        </div>
-                        <div class="time-note">예시: 주말 00:00 ~ 23:59</div>
-                    </div>
-                </div>
-
-                <!-- Facilities Section -->
-                <div class="section">
-                    <div class="section-title">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="시설 정보" class="section-icon">
-                        시설 정보
-                    </div>
-                    <div class="facilities-label">제공하는 시설을 선택해주세요</div>
-                    <div class="facilities-subtitle">(클릭하여 헬스장 피트니스 센터)</div>
-                    
-                    <div class="facilities-grid">
-                        <button class="facility-button" data-facility="24시간">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="24시간" class="facility-icon">
-                            <span>24시간</span>
-                        </button>
-                        <button class="facility-button" data-facility="주차가능">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차가능" class="facility-icon">
-                            <span>주차장</span>
-                        </button>
-                        <button class="facility-button" data-facility="샤워실">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" class="facility-icon">
-                            <span>샤워실</span>
-                        </button>
-                        <button class="facility-button" data-facility="락커실">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커실" class="facility-icon">
-                            <span>락커룸</span>
-                        </button>
-                        <button class="facility-button" data-facility="무료 WiFi">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/wifi.png" alt="무료 WiFi" class="facility-icon">
-                            <span>무료WiFi</span>
-                        </button>
-                        <button class="facility-button" data-facility="PT">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="PT" class="facility-icon">
-                            <span>PT</span>
-                        </button>
-                        <button class="facility-button" data-facility="GX 프로그램">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="GX 프로그램" class="facility-icon">
-                            <span>GX 프로그램</span>
-                        </button>
-                        <button class="facility-button" data-facility="카페">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="카페" class="facility-icon">
-                            <span>카페</span>
-                        </button>
-                        <button class="facility-button" data-facility="수영장">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="수영장" class="facility-icon">
-                            <span>수영장</span>
-                        </button>
-                        <button class="facility-button" data-facility="필라테스">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="필라테스" class="facility-icon">
-                            <span>필라테스</span>
-                        </button>
-                        <button class="facility-button" data-facility="사우나">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="사우나" class="facility-icon">
-                            <span>사우나</span>
-                        </button>
-                    </div>
-
-                    <div class="time-tags-label">선택된 시설 미리보기:</div>
-                    <div class="time-tags" id="selectedFacilities">
-                        <!-- 선택된 시설이 여기에 표시됩니다 -->
-                    </div>
+                <div class="time-tags-label">선택된 시설 미리보기:</div>
+                <div class="time-tags" id="selectedFacilities">
+                    <!-- 선택된 시설이 여기에 표시됩니다 -->
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Facility buttons toggle
-        const facilityButtons = document.querySelectorAll('.facility-button');
-        const selectedFacilities = [];
-        
-        facilityButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                button.classList.toggle('selected');
-                const facility = button.getAttribute('data-facility');
-                
-                if (button.classList.contains('selected')) {
-                    if (!selectedFacilities.includes(facility)) {
-                        selectedFacilities.push(facility);
-                    }
-                } else {
+<script>
+    // Facility buttons toggle
+    const facilityButtons = document.querySelectorAll('.facility-button');
+    const selectedFacilities = [];
+
+    facilityButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            button.classList.toggle('selected');
+            const facility = button.getAttribute('data-facility');
+
+            if (button.classList.contains('selected')) {
+                if (!selectedFacilities.includes(facility)) {
+                    selectedFacilities.push(facility);
+                }
+            } else {
+                const index = selectedFacilities.indexOf(facility);
+                if (index > -1) {
+                    selectedFacilities.splice(index, 1);
+                }
+            }
+
+            updateFacilityTags();
+        });
+    });
+
+    // 선택된 시설 태그 업데이트
+    function updateFacilityTags() {
+        const tagsContainer = document.getElementById('selectedFacilities');
+        tagsContainer.innerHTML = '';
+
+        selectedFacilities.forEach(facility => {
+            const tag = document.createElement('button');
+            tag.className = 'time-tag selected';
+            tag.textContent = facility;
+            tag.addEventListener('click', () => {
+                const button = Array.from(facilityButtons).find(btn => btn.getAttribute('data-facility') === facility);
+                if (button) {
+                    button.classList.remove('selected');
                     const index = selectedFacilities.indexOf(facility);
                     if (index > -1) {
                         selectedFacilities.splice(index, 1);
                     }
+                    updateFacilityTags();
                 }
-                
-                updateFacilityTags();
             });
+            tagsContainer.appendChild(tag);
         });
+    }
 
-        // 선택된 시설 태그 업데이트
-        function updateFacilityTags() {
-            const tagsContainer = document.getElementById('selectedFacilities');
-            tagsContainer.innerHTML = '';
-            
-            selectedFacilities.forEach(facility => {
-                const tag = document.createElement('button');
-                tag.className = 'time-tag selected';
-                tag.textContent = facility;
-                tag.addEventListener('click', () => {
-                    const button = Array.from(facilityButtons).find(btn => btn.getAttribute('data-facility') === facility);
-                    if (button) {
-                        button.classList.remove('selected');
-                        const index = selectedFacilities.indexOf(facility);
-                        if (index > -1) {
-                            selectedFacilities.splice(index, 1);
-                        }
-                        updateFacilityTags();
-                    }
-                });
-                tagsContainer.appendChild(tag);
-            });
-        }
+    // Save button
+    function saveGymInfo() {
+        alert('정보가 저장되었습니다!');
+        // 실제 저장 로직은 여기에 추가
+    }
 
-        // Save button
-        function saveGymInfo() {
-            alert('정보가 저장되었습니다!');
-            // 실제 저장 로직은 여기에 추가
-        }
-
-        // Image upload
-        function uploadImage() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.multiple = true;
-            input.onchange = (e) => {
-                const files = Array.from(e.target.files);
-                console.log('Uploaded files:', files);
-                alert(`${files.length}개의 이미지가 업로드되었습니다.`);
-            };
-            input.click();
-        }
-    </script>
+    // Image upload
+    function uploadImage() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.multiple = true;
+        input.onchange = (e) => {
+            const files = Array.from(e.target.files);
+            console.log('Uploaded files:', files);
+            alert(`${files.length}개의 이미지가 업로드되었습니다.`);
+        };
+        input.click();
+    }
+</script>
 </body>
 </html>
 

@@ -310,7 +310,7 @@
             <span>매출 현황</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/facility.gym" class="nav-item">
+        <a href="${pageContext.request.contextPath}/machineList.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="시설 관리" class="nav-icon">
             <span>시설 관리</span>
         </a>
@@ -320,22 +320,22 @@
             <span>예약 상담 관리</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/product.gym" class="nav-item">
+        <a href="${pageContext.request.contextPath}/stock.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="물품관리" class="nav-icon">
-            <span>물품관리</span>
+            <span>재고 관리</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/ticket.gym" class="nav-item">
+        <a href="${pageContext.request.contextPath}/product.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="이용권 관리" class="nav-icon">
             <span>이용권 관리</span>
         </a>
 
         <a href="${pageContext.request.contextPath}/video.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="영상관리" class="nav-icon">
-            <span>영상관리</span>
+            <span>영상 관리</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/gym/info.gym" class="nav-item">
+        <a href="${pageContext.request.contextPath}/info.gym" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 정보 관리" class="nav-icon">
             <span>헬스장 정보 관리</span>
         </a>
@@ -414,7 +414,7 @@
 
     // 확인 버튼 클릭 시 로그아웃
     confirmBtn?.addEventListener('click', () => {
-        location.href = ctx + '/logout.do';
+        location.href = ctx + '/logout.me';
     });
 
     // 현재 페이지에 맞는 메뉴 활성화
@@ -434,7 +434,7 @@
                 if (currentPath.endsWith(hrefPath)) {
                     item.classList.add('active');
                 }
-                else if (hrefPath === '/facility.gym' && currentPath.includes('/facility/machine/enroll.gym')) {
+                else if (hrefPath === '/machineList.gym' && (currentPath.includes('/machineEnrollForm.gym') || currentPath.includes('/machineEnroll.gym'))) {
                     item.classList.add('active');
                 }
             }

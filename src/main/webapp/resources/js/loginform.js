@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모달 요소들 (로그인하지 않은 경우에만 존재)
     const loginBtn = document.getElementById('loginBtn');
     const signupBtn = document.getElementById('signupBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
     const loginModal = document.getElementById('loginModal');
     const signupModal = document.getElementById('signupModal');
     const closeLoginModal = document.getElementById('closeLoginModal');
@@ -78,25 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             // 폼 제출 허용 (기본 동작)
-        });
-    }
-
-    // 로그아웃 (GET 방식) - 모든 사용자 타입에 대해 작동
-    // 이벤트 위임을 사용하여 동적으로 생성되는 요소에도 작동하도록 함
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.id === 'logoutBtn') {
-            e.preventDefault();
-            const contextPath = window.contextPath || '';
-            window.location.href = contextPath + '/logout.do';
-        }
-    });
-    
-    // 기존 방식도 유지 (호환성을 위해)
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const contextPath = window.contextPath || '';
-            window.location.href = contextPath + '/logout.do';
         });
     }
 
@@ -397,9 +377,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // 방문 예약 버튼 클릭
     if (bookingBtn) {
         bookingBtn.addEventListener('click', function() {
-            // booking 페이지로 이동
-            const contextPath = window.contextPath || '';
-            window.location.href = contextPath + '/booking/booking';
+            // 로그인 상태 확인
+            const isLoggedIn = window.isLoggedIn || false;
+            
+            if (!isLoggedIn) {
+                // 비로그인 상태: 로그인 필요 모달 표시
+                const loginRequiredModal = document.getElementById('loginRequiredModal');
+                if (loginRequiredModal) {
+                    // 헬스장 상세 모달 닫기
+                    const gymDetailModal = document.getElementById('gymDetailModal');
+                    if (gymDetailModal) {
+                        gymDetailModal.classList.remove('active');
+                    }
+                    // 로그인 필요 모달 열기
+                    setTimeout(function() {
+                        loginRequiredModal.classList.add('active');
+                    }, 100);
+                }
+            } else {
+                // 로그인 상태: 컨트롤러를 통해 booking 페이지로 이동
+                const contextPath = window.contextPath || '';
+                window.location.href = contextPath + '/booking.me';
+            }
         });
     }
 

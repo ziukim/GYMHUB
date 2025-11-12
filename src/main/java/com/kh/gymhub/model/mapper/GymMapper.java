@@ -2,8 +2,12 @@ package com.kh.gymhub.model.mapper;
 
 import com.kh.gymhub.model.vo.Gym;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
 
 @Mapper
 public interface GymMapper {
     int insertGym(Gym gym);
+    Gym selectGymWithDetailByNo(@Param("gymNo") int gymNo);
+    List<Gym> selectAllGyms();
 }

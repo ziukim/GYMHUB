@@ -5,6 +5,7 @@ import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
-
-
+import java.util.Map;
 
 @Controller
 public class MemberController {
@@ -27,22 +30,23 @@ public class MemberController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
 
+    @Autowired
     public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @GetMapping("/member/dashboard")
+    @GetMapping("/dashboard.me")
     public String memberDashboardPage(HttpSession session) {
         // 로그인 체크 (선택사항 - 필요시 추가)
         return "member/memberDashboard";
     }
 
-    @GetMapping("/member/violist")
+    @GetMapping("/videoList.me")
     public String memberVideoList() { return "member/memberVideoList"; }
 
-    @GetMapping("/member/info")
+    @GetMapping("/info.me")
     public String memberInfo(HttpSession session, Model model) {
         // 세션에서 로그인 정보 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");
@@ -63,17 +67,16 @@ public class MemberController {
         return "member/memberInfo";
     }
 
-    @GetMapping("/notice")
+    @GetMapping("/notice.me")
     public String memberNotice() { return "notice/noticeList"; }
 
-    @GetMapping("/schedule")
+    @GetMapping("/schedule.me")
     public String memberPtSchedule() { return "member/ptSchedule"; }
 
-    @GetMapping("/schedule/ptbooking")
+    @GetMapping("/ptBooking.me")
     public String memberptBookingForm() { return "member/ptBookingForm"; }
 
-    // 수정 요함
-    @GetMapping("/booking/booking")
+    @GetMapping("/booking.me")
     public String Booking() { return "booking/booking"; }
 
     // ====================================== 회원가입 ======================================================
@@ -244,6 +247,9 @@ public class MemberController {
                                    @RequestParam String phone,
                                    @RequestParam String email,
                                    @RequestParam String address,
+                                   @RequestParam(required = false) String trainerCareer,
+                                   @RequestParam(required = false) String trainerLicense,
+                                   @RequestParam(required = false) String trainerAward,
                                    HttpSession session,
                                    Model model) {
 
@@ -261,6 +267,13 @@ public class MemberController {
         updateMember.setMemberPhone(phone);
         updateMember.setMemberEmail(email);
         updateMember.setMemberAddress(address);
+
+        // 트레이너 정보 설정 (memberType이 2인 경우만 해당)
+        if (loginMember.getMemberType() == 2) {
+            updateMember.setTrainerCareer(trainerCareer);
+            updateMember.setTrainerLicense(trainerLicense);
+            updateMember.setTrainerAward(trainerAward);
+        }
 
         // 생년월일 변환 (YYYY. MM. DD. 형식 처리)
         if (birthDate != null && !birthDate.isEmpty()) {
@@ -280,7 +293,18 @@ public class MemberController {
             Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
             session.setAttribute("loginMember", updatedMember);
             session.setAttribute("alertMsg", "회원정보가 수정되었습니다.");
-            return "redirect:/member/info";
+
+            // 회원 타입별 리다이렉트 처리
+            if (loginMember.getMemberType() == 2) {
+                // 트레이너는 대시보드로
+                return "redirect:/dashboard.tr";
+            } else if (loginMember.getMemberType() == 3) {
+                // 헬스장 운영자는 대시보드로
+                return "redirect:/dashboard.gym";
+            } else {
+                // 일반 회원 및 기타 회원은 마이페이지로
+                return "redirect:/info.me";
+            }
         } else {
             model.addAttribute("errorMsg", "회원정보 수정에 실패했습니다.");
             return "common/error";
@@ -304,7 +328,7 @@ public class MemberController {
         // 현재 비밀번호 확인
         if (!bCryptPasswordEncoder.matches(currentPassword, loginMember.getMemberPwd())) {
             session.setAttribute("errorMsg", "현재 비밀번호가 일치하지 않습니다.");
-            return "redirect:/member/info";
+            return "redirect:/info.me";
         }
 
         // 새 비밀번호 암호화
@@ -314,7 +338,7 @@ public class MemberController {
 
         if (result > 0) {
             session.setAttribute("alertMsg", "비밀번호가 변경되었습니다.");
-            return "redirect:/member/info";
+            return "redirect:/info.me";
         } else {
             model.addAttribute("errorMsg", "비밀번호 변경에 실패했습니다.");
             return "common/error";
@@ -350,7 +374,7 @@ public class MemberController {
 
         if (result > 0) {
             session.setAttribute("alertMsg", "인바디 기록이 등록되었습니다.");
-            return "redirect:/member/info";
+            return "redirect:/info.me";
         } else {
             model.addAttribute("errorMsg", "인바디 기록 등록에 실패했습니다.");
             return "common/error";
@@ -386,37 +410,10 @@ public class MemberController {
         return inbodyService.getLatestInbody(loginMember.getMemberNo());
     }
 
-    // 프로필 사진 업로드
-    @PostMapping("/uploadProfilePhoto.me")
-    public String uploadProfilePhoto(@RequestParam("profileImage") MultipartFile file,
-                                     HttpSession session,
-                                     Model model) {
-
-        Member loginMember = (Member) session.getAttribute("loginMember");
-
-        if (loginMember == null) {
-            model.addAttribute("errorMsg", "로그인이 필요합니다.");
-            return "common/error";
-        }
-
-        int result = memberService.updateProfilePhoto(loginMember.getMemberNo(), file);
-
-        if (result > 0) {
-            // 세션 정보 업데이트
-            Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
-            session.setAttribute("loginMember", updatedMember);
-            session.setAttribute("alertMsg", "프로필 사진이 변경되었습니다.");
-            return "redirect:/member/info";
-        } else {
-            model.addAttribute("errorMsg", "프로필 사진 변경에 실패했습니다.");
-            return "common/error";
-        }
-    }
-
 
 
     // ====================================== 로그인 ======================================================
-    @PostMapping("/login.do")
+    @PostMapping("/login.me")
     public String login(@RequestParam String id,
                        @RequestParam String password,
                        HttpSession session) {
@@ -430,7 +427,7 @@ public class MemberController {
             // 멤버 타입 3(헬스장 운영자)이면 관리자 선택 페이지로 이동
             if (loginMember.getMemberType() == 3) {
                 session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
-                return "redirect:/admin/adminSelect";
+                return "redirect:/adminSelect.gym";
             }
             
             session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
@@ -441,40 +438,88 @@ public class MemberController {
         }
     }
 
+    // ============================================== 로그 아웃 ========================================================
     @GetMapping("/logout.me")
-    public String logout(HttpSession httpSession) {
-        // 세션 완전 무효화
-        httpSession.invalidate();
-        return "redirect:/?logout=success";
-    }
-    
-    // GET 방식 로그아웃
-    @GetMapping("/logout.do")
-    public String logoutGet(HttpSession session) {
-        // 세션 완전 무효화
-        session.invalidate();
-        return "redirect:/?logout=success";
-    }
-    
-    // POST 방식 로그아웃 (호환성을 위해 유지)
-    @PostMapping("/logout.do")
-    public String logoutPost(HttpSession session) {
-        // 세션 완전 무효화
-        session.invalidate();
-        return "redirect:/?logout=success";
-    }
-    
-    // /logout 엔드포인트 추가 (호환성을 위해)
-    @GetMapping("/logout")
-    public String logoutSimple(HttpSession session) {
+    public String logout(HttpSession session) {
         // 세션 완전 무효화
         session.invalidate();
         return "redirect:/?logout=success";
     }
 
-    @GetMapping("/member.dashboard")
-    public String memberDashboard(HttpSession session) {
-        // 로그인 체크 (선택사항 - 필요시 추가)
-        return "member/memberDashboard";
+    // ============================================== 이미지 업로드 =======================================================
+    @PostMapping("/uploadProfileImage.me")
+    @ResponseBody
+    public Map<String, Object> uploadProfileImage(@RequestParam("profileImage") MultipartFile file,
+                                                  HttpSession session,
+                                                  HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return result;
+        }
+
+        if (file.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "파일이 선택되지 않았습니다.");
+            return result;
+        }
+
+        try {
+            // 파일 저장 경로 설정
+            String uploadPath = session.getServletContext().getRealPath("/resources/uploadfiles/Member");
+            File uploadDir = new File(uploadPath);
+
+            // 디렉토리가 없으면 생성
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // 원본 파일명
+            String originalFilename = file.getOriginalFilename();
+
+            // 확장자 추출
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 고유한 파일명 생성 (회원번호_타임스탬프.확장자)
+            String savedFilename = loginMember.getMemberNo() + "_" + System.currentTimeMillis() + extension;
+
+            // 파일 저장
+            File destFile = new File(uploadDir, savedFilename);
+            file.transferTo(destFile);
+
+            // DB에 저장할 경로 (상대 경로)
+            String dbPath = "/resources/uploadfiles/Member/" + savedFilename;
+
+            // DB 업데이트
+            int updateResult = memberService.updateProfileImage(loginMember.getMemberNo(), dbPath);
+
+            if (updateResult > 0) {
+                // 세션 정보 업데이트
+                Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
+                session.setAttribute("loginMember", updatedMember);
+
+                result.put("success", true);
+                result.put("message", "프로필 이미지가 업데이트되었습니다.");
+                result.put("imagePath", request.getContextPath() + dbPath);
+            } else {
+                result.put("success", false);
+                result.put("message", "DB 업데이트에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return result;
     }
+
 }

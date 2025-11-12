@@ -1086,10 +1086,10 @@
                 <span class="welcome-message">${loginMember.memberName}님 환영합니다</span>
                 <c:choose>
                     <c:when test="${loginMember.memberType == 1}">
-                        <a href="${pageContext.request.contextPath}/member.dashboard" class="btn btn-secondary">마이페이지</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.me" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 2}">
-                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">대시보드</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.tr" class="btn btn-secondary">대시보드</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 3}">
                         <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>
@@ -1124,95 +1124,67 @@
 <!-- 카드 섹션 -->
 <section class="cards-section">
     <div class="cards-grid">
-        <c:forEach var="gym" items="${gymList}" varStatus="status">
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">${gym.name}</div>
-                            <div class="gym-location">${gym.location}</div>
+        <c:choose>
+            <c:when test="${not empty gymList}">
+                <c:forEach var="gym" items="${gymList}" varStatus="status">
+                    <div class="gym-card" onclick="openGymDetailModal(${gym.gymNo})">
+                        <div class="gym-image">
+                            <c:choose>
+                                <c:when test="${not empty gym.gymPhotoPath}">
+                                    <img src="${pageContext.request.contextPath}/${gym.gymPhotoPath}"
+                                         alt="${gym.gymName}"
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                </c:when>
+                                <c:otherwise>
+                                    헬스장 썸네일 이미지
+                                </c:otherwise>
+                            </c:choose>
                         </div>
-                        <div class="gym-rating">★ ${gym.rating} (${gym.reviewCount})</div>
-                    </div>
-                    <div class="gym-tags">
-                        <c:forEach var="tag" items="${gym.tags}">
-                            <span class="tag">${tag}</span>
-                        </c:forEach>
-                    </div>
-                    <div class="gym-description">
-                            ${gym.description}
-                    </div>
-                    <div class="gym-price">월 ${gym.price}원</div>
-                </div>
-            </div>
-        </c:forEach>
-
-        <!-- 테스트용 샘플 데이터 (실제 데이터가 없을 때) -->
-        <c:if test="${empty gymList}">
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">파워 헬스 클럽 대교점</div>
-                            <div class="gym-location">경기 남양주</div>
-                        </div>
-                    </div>
-                    <div class="gym-tags">
-                        <span class="tag">GX</span>
-                        <span class="tag">파워</span>
-                        <span class="tag">주차</span>
-                    </div>
-                    <div class="gym-description">
-                        최신 시설을 갖춘 파워 헬스 클럽입니다
-                    </div>
-                    <div class="gym-price">월 85,000원</div>
-                </div>
-            </div>
-
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">파워 헬스 클럽 강동점</div>
-                            <div class="gym-location">서울 강동</div>
+                        <div class="gym-info">
+                            <div class="gym-header">
+                                <div>
+                                    <div class="gym-title">${gym.gymName}</div>
+                                    <div class="gym-location">
+                                        <c:choose>
+                                            <c:when test="${not empty gym.detailAddress}">
+                                                ${gym.detailAddress}
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${gym.gymAddress}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gym-tags">
+                                <c:if test="${not empty gym.facilitiesInfo}">
+                                    <c:forTokens var="tag" items="${gym.facilitiesInfo}" delims=",">
+                                        <span class="tag">${tag}</span>
+                                    </c:forTokens>
+                                </c:if>
+                            </div>
+                            <div class="gym-description">
+                                <c:choose>
+                                    <c:when test="${not empty gym.intro}">
+                                        ${gym.intro}
+                                    </c:when>
+                                    <c:otherwise>
+                                        소개 정보가 없습니다.
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
                         </div>
                     </div>
-                    <div class="gym-tags">
-                        <span class="tag">GX</span>
-                        <span class="tag">파워</span>
-                        <span class="tag">주차</span>
-                    </div>
-                    <div class="gym-description">
-                        깨끗한 헬스 클럽입니다
-                    </div>
-                    <div class="gym-price">월 75,000원</div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <!-- 데이터가 없을 때 표시할 메시지 -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <h3 style="color: #8a6a50; font-size: 24px; margin-bottom: 10px;">등록된 헬스장이 없습니다.</h3>
+                    <p style="color: #8a6a50; font-size: 16px;">곧 새로운 헬스장이 추가될 예정입니다.</p>
                 </div>
-            </div>
-
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">운동하는 헬스 클럽 강남점</div>
-                            <div class="gym-location">서울 강남구</div>
-                        </div>
-                    </div>
-                    <div class="gym-tags">
-                        <span class="tag">GX</span>
-                        <span class="tag">파워</span>
-                        <span class="tag">주차</span>
-                    </div>
-                    <div class="gym-description">
-                        깔끔한 헬스 클럽입니다
-                    </div>
-                    <div class="gym-price">월 90,000원</div>
-                </div>
-            </div>
-        </c:if>
+            </c:otherwise>
+        </c:choose>
     </div>
 </section>
 
@@ -1228,7 +1200,7 @@
         </div>
 
         <div class="modal-body">
-            <form class="login-form" id="loginForm" action="${pageContext.request.contextPath}/login.do" method="post">
+            <form class="login-form" id="loginForm" action="${pageContext.request.contextPath}/login.me" method="post">
                 <div class="form-group">
                     <label class="form-label">아이디</label>
                     <input type="text" id="loginId" name="id" placeholder="아이디" required>
@@ -1454,12 +1426,9 @@
             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=550" alt="헬스장 이미지" id="gymDetailImage" style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
 
-        <!-- 뱃지 -->
+        <!-- 뱃지 (facilitiesInfo에서 동적으로 생성) -->
         <div class="badges" id="gymDetailBadges">
-            <span class="badge">24시간</span>
-            <span class="badge">주차가능</span>
-            <span class="badge">샤워실</span>
-            <span class="badge">PT</span>
+            <!-- JavaScript로 동적 생성 -->
         </div>
 
         <!-- 소개 -->
@@ -1493,27 +1462,11 @@
             </div>
         </div>
 
-        <!-- 시설 정보 -->
+        <!-- 시설 정보 (facilitiesInfo에서 동적으로 생성) -->
         <div class="section">
             <h3 class="section-title">시설 정보</h3>
-
-            <div class="facility-grid">
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차" style="width: 24px; height: 24px;">
-                    <span>주차</span>
-                </div>
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" style="width: 24px; height: 24px;">
-                    <span>샤워실</span>
-                </div>
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커" style="width: 24px; height: 24px;">
-                    <span>락커</span>
-                </div>
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/machine.png" alt="최신기구" style="width: 24px; height: 24px;">
-                    <span>최신기구</span>
-                </div>
+            <div class="facility-grid" id="facilityGrid">
+                <!-- JavaScript로 동적 생성 -->
             </div>
         </div>
 
@@ -1566,9 +1519,7 @@
                     <span>가격 정보</span>
                 </div>
                 <div class="card-content" id="gymDetailPrice">
-                    <p>1개월: ₩89,000</p>
-                    <p>3개월: ₩79,000</p>
-                    <p>6개월: ₩69,000</p>
+                    <p>가격 정보가 없습니다.</p>
                 </div>
             </div>
 
@@ -1578,8 +1529,8 @@
                     <span>운영시간</span>
                 </div>
                 <div class="card-content" id="gymDetailHours">
-                    <p>평일: 00:00 - 23:59</p>
-                    <p>주말: 00:00 - 23:59</p>
+                    <p>평일: 정보 없음</p>
+                    <p>주말: 정보 없음</p>
                 </div>
             </div>
         </div>
@@ -1803,9 +1754,22 @@
     </div>
 </div>
 
+<!-- 로그인 필요 모달 -->
+<%@ include file="/WEB-INF/views/common/LoginRequiredModal.jsp" %>
+
 <script>
     // 전역 변수로 contextPath 설정
     window.contextPath = '${pageContext.request.contextPath}';
+    
+    // 로그인 상태 확인 (서버에서 전달)
+    <c:choose>
+        <c:when test="${not empty loginMember}">
+            window.isLoggedIn = true;
+        </c:when>
+        <c:otherwise>
+            window.isLoggedIn = false;
+        </c:otherwise>
+    </c:choose>
     
     // 이미지 로드 확인 및 디버깅
     document.addEventListener('DOMContentLoaded', function() {
@@ -1821,16 +1785,6 @@
             });
         }
 
-        // 로그인 성공/실패 메시지 표시
-        <c:if test="${not empty alertMsg}">
-            alert('${alertMsg}');
-            <c:remove var="alertMsg" scope="session"/>
-        </c:if>
-        <c:if test="${not empty errorMsg}">
-            alert('${errorMsg}');
-            <c:remove var="errorMsg" scope="session"/>
-        </c:if>
-        
         // 로그아웃 메시지 표시 (URL 파라미터 확인)
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('logout') === 'success') {
@@ -1841,8 +1795,8 @@
 
     });
 
-    // ============================= 아이디 중복 체크 (AJAX) =============================
-    document.querySelectorAll('input[name="id"]').forEach(function(input) {
+    // ============================= 아이디 중복 체크 (AJAX) - 회원가입 폼에만 적용 =============================
+    document.querySelectorAll('.registration-form input[name="id"]').forEach(function(input) {
         let typingTimer;
         const doneTypingInterval = 500; // 0.5초 대기 후 체크
 
@@ -1850,6 +1804,11 @@
             clearTimeout(typingTimer);
             const helperText = this.nextElementSibling;
             const idValue = this.value.trim();
+
+            // helperText가 없거나 helper-text 클래스가 없으면 중단
+            if (!helperText || !helperText.classList.contains('helper-text')) {
+                return;
+            }
 
             // 아이디가 4자 미만이면 메시지 숨기기
             if (idValue.length < 4) {
@@ -1861,26 +1820,46 @@
             // 입력 멈춘 후 0.5초 뒤 중복 체크 실행
             typingTimer = setTimeout(function() {
                 fetch('${pageContext.request.contextPath}/signup/checkId?checkId=' + encodeURIComponent(idValue))
-                    .then(response => response.text())
+                    .then(response => {
+                        // HTTP 응답 상태 확인
+                        if (!response.ok) {
+                            throw new Error('서버 응답 오류: ' + response.status);
+                        }
+                        return response.text();
+                    })
                     .then(data => {
-                        console.log('아이디 중복 체크 결과:', data);
+                        // 응답 데이터 trim 처리 (공백/줄바꿈 제거)
+                        const trimmedData = data.trim();
+                        console.log('아이디 중복 체크 결과:', trimmedData);
 
-                        if (data === 'NNNNY') {
+                        // 응답 형식 검증
+                        if (trimmedData === 'NNNNY') {
                             // 사용 가능한 아이디
                             helperText.classList.remove('error');
                             helperText.classList.add('success');
                             helperText.textContent = '사용 가능한 아이디입니다';
                             helperText.classList.remove('hidden');
-                        } else {
+                        } else if (trimmedData === 'NNNNN') {
                             // 이미 사용중인 아이디
                             helperText.classList.remove('success');
                             helperText.classList.add('error');
                             helperText.textContent = '사용 불가능한 아이디입니다';
                             helperText.classList.remove('hidden');
+                        } else {
+                            // 예상하지 못한 응답 형식
+                            console.error('예상하지 못한 응답 형식:', trimmedData);
+                            helperText.classList.remove('success');
+                            helperText.classList.add('error');
+                            helperText.textContent = '아이디 확인 중 오류가 발생했습니다';
+                            helperText.classList.remove('hidden');
                         }
                     })
                     .catch(error => {
                         console.error('아이디 중복 체크 오류:', error);
+                        helperText.classList.remove('success');
+                        helperText.classList.add('error');
+                        helperText.textContent = '아이디 확인 중 오류가 발생했습니다';
+                        helperText.classList.remove('hidden');
                     });
             }, doneTypingInterval);
         });
@@ -1925,18 +1904,165 @@
 
             // 아이디 중복 체크 확인
             const idInput = this.querySelector('input[name="id"]');
-            const idHelperText = idInput.nextElementSibling;
-            if (!idHelperText.classList.contains('success')) {
-                e.preventDefault();
-                alert('사용 가능한 아이디로 입력해주세요.');
-                idInput.focus();
-                return false;
+            if (idInput) {
+                const idValue = idInput.value.trim();
+                
+                // 아이디가 입력되었는지 확인
+                if (!idValue) {
+                    e.preventDefault();
+                    alert('아이디를 입력해주세요.');
+                    idInput.focus();
+                    return false;
+                }
+                
+                // 아이디 최소 길이 확인
+                if (idValue.length < 4) {
+                    e.preventDefault();
+                    alert('아이디는 최소 4자 이상 입력해주세요.');
+                    idInput.focus();
+                    return false;
+                }
+                
+                // 중복 체크 완료 여부 확인
+                const idHelperText = idInput.nextElementSibling;
+                if (idHelperText && idHelperText.classList.contains('helper-text')) {
+                    // 중복 체크가 완료되지 않았거나, 사용 불가능한 경우
+                    if (idHelperText.classList.contains('hidden') || 
+                        !idHelperText.classList.contains('success')) {
+                        e.preventDefault();
+                        if (idHelperText.classList.contains('error')) {
+                            alert('사용 불가능한 아이디입니다. 다른 아이디를 입력해주세요.');
+                        } else {
+                            alert('아이디 중복 체크를 완료해주세요.');
+                        }
+                        idInput.focus();
+                        return false;
+                    }
+                }
             }
 
             return true;
         });
     });
+    // 헬스장 상세 모달 열기
+    function openGymDetailModal(gymNo) {
+        // AJAX로 헬스장 상세 정보 조회
+        fetch('${pageContext.request.contextPath}/gym/detail.ajax?gymNo=' + gymNo)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const gym = data.gym;
+
+                    // 모달에 데이터 설정
+                    document.getElementById('gymDetailTitle').textContent = gym.gymName || '헬스장';
+                    document.getElementById('gymDetailDescription').textContent = gym.intro || '소개 정보가 없습니다.';
+
+                    // 주소 설정 (detailAddress가 있으면 우선, 없으면 gymAddress)
+                    const address = gym.detailAddress || gym.gymAddress || '주소 정보 없음';
+                    document.getElementById('gymDetailAddress').textContent = address;
+
+                    // 전화번호 설정
+                    const phone = gym.gymPhone || '전화번호 없음';
+                    document.getElementById('gymDetailPhone').textContent = phone;
+                    document.getElementById('gymDetailPhone').href = 'tel:' + phone;
+
+                    // 운영시간 설정
+                    const weekHour = gym.weekBusinessHour || '정보 없음';
+                    const weekendHour = gym.weekendBusinessHour || '정보 없음';
+                    document.getElementById('gymDetailHours').innerHTML =
+                        '<p>평일: ' + weekHour + '</p>' +
+                        '<p>주말: ' + weekendHour + '</p>';
+
+                    // 이미지 설정
+                    const gymImage = document.getElementById('gymDetailImage');
+                    if (gym.gymPhotoPath) {
+                        gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
+                    } else {
+                        gymImage.src = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=550';
+                    }
+
+                    // 시설 정보를 뱃지와 시설 아이콘으로 표시
+                    const badgesContainer = document.getElementById('gymDetailBadges');
+                    const facilityGrid = document.getElementById('facilityGrid');
+                    badgesContainer.innerHTML = ''; // 기존 뱃지 초기화
+                    facilityGrid.innerHTML = ''; // 기존 시설 아이콘 초기화
+
+                    // 시설 아이콘 매핑 (facilitiesInfo의 값에 따라 아이콘 선택)
+                    const facilityIcons = {
+                        '주차': 'parking.png',
+                        '샤워실': 'shower.png',
+                        '락커': 'locker.png',
+                        '최신기구': 'machine.png',
+                        'GX': 'machine.png',
+                        'PT': 'machine.png',
+                        '24시간': 'clock.png',
+                        '와이파이': 'machine.png',
+                        '운동복': 'locker.png',
+                        '수건': 'shower.png'
+                    };
+
+                    if (gym.facilitiesInfo) {
+                        const facilities = gym.facilitiesInfo.split(',');
+
+                        facilities.forEach(facility => {
+                            const trimmedFacility = facility.trim();
+
+                            // 뱃지 생성
+                            const badge = document.createElement('span');
+                            badge.className = 'badge';
+                            badge.textContent = trimmedFacility;
+                            badgesContainer.appendChild(badge);
+
+                            // 시설 아이콘 생성
+                            const facilityItem = document.createElement('div');
+                            facilityItem.className = 'facility-item';
+
+                            const iconName = facilityIcons[trimmedFacility] || 'machine.png'; // 기본 아이콘
+
+                            facilityItem.innerHTML = `
+                            <img src="${'${pageContext.request.contextPath}'}/resources/images/icon/${iconName}"
+                                 alt="${trimmedFacility}" style="width: 24px; height: 24px;">
+                            <span>${trimmedFacility}</span>
+                        `;
+
+                            facilityGrid.appendChild(facilityItem);
+                        });
+                    } else {
+                        // 시설 정보가 없는 경우
+                        badgesContainer.innerHTML = '<span class="badge">정보 없음</span>';
+                        facilityGrid.innerHTML = '<p style="color: #8a6a50; text-align: center; grid-column: 1 / -1;">시설 정보가 없습니다.</p>';
+                    }
+
+                    // 모달 열기
+                    document.getElementById('gymDetailModal').style.display = 'flex';
+                } else {
+                    alert(data.message || '헬스장 정보를 불러올 수 없습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('헬스장 상세 정보 조회 오류:', error);
+                alert('헬스장 정보를 불러오는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 모달 닫기
+    document.getElementById('closeGymDetailModal').addEventListener('click', function() {
+        document.getElementById('gymDetailModal').style.display = 'none';
+    });
 </script>
+
+<!-- 로그인 성공/실패 메시지 표시 -->
+<script>
+    <c:if test="${not empty alertMsg}">
+        alert('${alertMsg}');
+        <c:remove var="alertMsg" scope="session"/>
+    </c:if>
+    <c:if test="${not empty errorMsg}">
+        alert('${errorMsg}');
+        <c:remove var="errorMsg" scope="session"/>
+    </c:if>
+</script>
+
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>
 </body>
 </html>

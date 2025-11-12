@@ -1,11 +1,11 @@
 package com.kh.gymhub.model.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.sql.Date;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Gym {
@@ -19,4 +19,11 @@ public class Gym {
     private Date gymUpdateat;
     private String gymPhotoPath;
     private int attCacheNo;
+
+    // GYM_DETAIL 테이블과 JOIN용 추가 필드
+    private String intro;              // 소개
+    private String facilitiesInfo;     // 시설 정보
+    private String detailAddress;      // 상세 주소
+    private String weekBusinessHour;   // 평일 운영시간
+    private String weekendBusinessHour; // 주말 운영시간
 }

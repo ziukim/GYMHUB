@@ -176,7 +176,9 @@
                     <div class="profile-image" id="mainProfileImage">
                         <c:choose>
                             <c:when test="${not empty loginMember.memberPhotoPath}">
-                                <img src="${pageContext.request.contextPath}/${loginMember.memberPhotoPath}" alt="프로필 사진">
+                                <img src="${pageContext.request.contextPath}${loginMember.memberPhotoPath}"
+                                     alt="프로필 이미지"
+                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             </c:when>
                             <c:otherwise>
                                 <svg viewBox="0 0 48 48" fill="none">
@@ -186,9 +188,7 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
-                    <form id="profilePhotoForm" action="${pageContext.request.contextPath}/uploadProfilePhoto.me" method="post" enctype="multipart/form-data">
-                        <input type="file" name="profileImage" id="profileImageInput" accept="image/*" style="display: none;">
-                    </form>
+                    <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
                     <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 24px; height: 24px;">
                     </button>
@@ -594,7 +594,21 @@
     // 프로필 이미지 변경
     document.getElementById('profileImageInput').addEventListener('change', function(e) {
         if (e.target.files && e.target.files[0]) {
-            // 미리보기
+            var file = e.target.files[0];
+
+            // 파일 크기 체크 (5MB 제한)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                return;
+            }
+
+            // 이미지 파일 형식 체크
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드 가능합니다.');
+                return;
+            }
+
+            // 미리보기 표시
             var reader = new FileReader();
             reader.onload = function(event) {
                 var img = document.createElement('img');
@@ -607,10 +621,31 @@
                 document.getElementById('mainProfileImage').innerHTML = '';
                 document.getElementById('mainProfileImage').appendChild(img);
             }
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
 
-            // 폼 자동 제출
-            document.getElementById('profilePhotoForm').submit();
+            // 서버에 업로드
+            var formData = new FormData();
+            formData.append('profileImage', file);
+
+            fetch('${pageContext.request.contextPath}/uploadProfileImage.me', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert(data.message);
+                        // 실패 시 원래 이미지로 복구
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('이미지 업로드 중 오류가 발생했습니다.');
+                    location.reload();
+                });
         }
     });
     // 비밀번호 변경 폼 검증

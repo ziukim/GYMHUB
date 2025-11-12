@@ -1061,7 +1061,20 @@
 
         /* ✅ 모달 z-index 우선순위 설정 */
         .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
         }
 
         #membershipSelectModal {
@@ -1346,10 +1359,6 @@
                 <div class="membership-dropdown-wrapper">
                     <select class="membership-dropdown" id="gymMembershipSelect" disabled>
                         <option value="">선택하세요</option>
-                        <option value="1개월">1개월</option>
-                        <option value="3개월">3개월</option>
-                        <option value="6개월">6개월</option>
-                        <option value="12개월">12개월</option>
                     </select>
                 </div>
             </div>
@@ -1363,10 +1372,6 @@
                 <div class="membership-dropdown-wrapper">
                     <select class="membership-dropdown" id="lockerMembershipSelect" disabled>
                         <option value="">선택하세요</option>
-                        <option value="1개월">1개월</option>
-                        <option value="3개월">3개월</option>
-                        <option value="6개월">6개월</option>
-                        <option value="12개월">12개월</option>
                     </select>
                 </div>
             </div>
@@ -1380,10 +1385,6 @@
                 <div class="membership-dropdown-wrapper">
                     <select class="membership-dropdown" id="ptMembershipSelect" disabled>
                         <option value="">선택하세요</option>
-                        <option value="10회">10회</option>
-                        <option value="20회">20회</option>
-                        <option value="30회">30회</option>
-                        <option value="50회">50회</option>
                     </select>
                 </div>
             </div>
@@ -1629,48 +1630,115 @@
 
     // 아이디 조회 함수
     function lookupMemberId() {
-        const memberId = document.getElementById('memberIdInput').value;
+        const memberId = document.getElementById('memberIdInput').value.trim();
         if (!memberId) {
             alert('아이디를 입력해주세요.');
             return;
         }
 
-        // 실제로는 서버에서 조회
-        console.log('아이디 조회:', memberId);
+        // 서버에서 회원 조회
+        fetch('/member/lookup.ajax?memberId=' + encodeURIComponent(memberId))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const member = data.member;
+                    
+                    // 프로필 카드에 데이터 설정
+                    document.getElementById('profileName').textContent = member.memberName || '';
+                    document.getElementById('profileId').textContent = member.memberId || '';
+                    document.getElementById('profilePhone').textContent = member.memberPhone || '';
+                    document.getElementById('profileEmail').textContent = member.memberEmail || '없음';
+                    document.getElementById('profileAddress').textContent = member.memberAddress || '없음';
 
-        // 더미 데이터로 프로필 카드 표시
-        const memberData = {
-            name: '홍길동',
-            id: '010015',
-            phone: '010-1234-5678',
-            email: 'hong@example.com',
-            address: '서울시 강남구 테헤란로 123'
-        };
+                    // 프로필 아바타 업데이트 (이름의 첫 글자로)
+                    const firstChar = member.memberName ? member.memberName.charAt(0) : '?';
+                    const avatarSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23ff6b00\'/%3E%3Ctext x=\'30\' y=\'40\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-weight=\'bold\'%3E' + encodeURIComponent(firstChar) + '%3C/text%3E%3C/svg%3E';
+                    document.getElementById('profileAvatar').src = avatarSvg;
 
-        // 프로필 카드에 데이터 설정
-        document.getElementById('profileName').textContent = memberData.name;
-        document.getElementById('profileId').textContent = memberData.id;
-        document.getElementById('profilePhone').textContent = memberData.phone;
-        document.getElementById('profileEmail').textContent = memberData.email;
-        document.getElementById('profileAddress').textContent = memberData.address;
-
-        // 프로필 아바타 업데이트 (이름의 첫 글자로)
-        const firstChar = memberData.name.charAt(0);
-        const avatarSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23ff6b00'/%3E%3Ctext x='30' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E${firstChar}%3C/text%3E%3C/svg%3E`;
-        document.getElementById('profileAvatar').src = avatarSvg;
-
-        // 프로필 카드 표시
-        document.getElementById('memberProfileCard').style.display = 'block';
+                    // 프로필 카드 표시
+                    document.getElementById('memberProfileCard').style.display = 'block';
+                    
+                    // 회원 번호를 숨겨진 필드에 저장 (나중에 등록 시 사용)
+                    document.getElementById('memberProfileCard').setAttribute('data-member-no', member.memberNo);
+                } else {
+                    alert(data.message || '회원 조회에 실패했습니다.');
+                    // 프로필 카드 숨기기
+                    document.getElementById('memberProfileCard').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('회원 조회 오류:', error);
+                alert('회원 조회 중 오류가 발생했습니다.');
+                // 프로필 카드 숨기기
+                document.getElementById('memberProfileCard').style.display = 'none';
+            });
     }
 
     // 이용권 등록 함수
     function registerMembership() {
-        // 회원권을 디폴트로 체크
-        document.getElementById('gymMembershipCheck').checked = true;
-        document.getElementById('gymMembershipSelect').disabled = false;
+        // AJAX로 상품 목록 가져오기
+        fetch('/member/products.ajax')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 회원권 select 옵션 생성
+                    populateMembershipSelect('gymMembershipSelect', data.membership, 'month');
+                    // 락커 이용권 select 옵션 생성
+                    populateMembershipSelect('lockerMembershipSelect', data.locker, 'month');
+                    // PT 이용권 select 옵션 생성
+                    populateMembershipSelect('ptMembershipSelect', data.pt, 'count');
+                    
+                    // 회원권을 디폴트로 체크
+                    document.getElementById('gymMembershipCheck').checked = true;
+                    document.getElementById('gymMembershipSelect').disabled = false;
 
-        // 이용권 선택 모달 열기
-        document.getElementById('membershipSelectModal').classList.add('active');
+                    // 이용권 선택 모달 열기
+                    document.getElementById('membershipSelectModal').classList.add('active');
+                } else {
+                    alert(data.message || '상품 목록을 불러오는데 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('상품 목록 조회 오류:', error);
+                alert('상품 목록을 불러오는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 이용권 select 옵션 생성 함수
+    function populateMembershipSelect(selectId, products, type) {
+        const select = document.getElementById(selectId);
+        // 기존 옵션 제거 (첫 번째 "선택하세요" 옵션 제외)
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        if (!products || products.length === 0) {
+            return;
+        }
+        
+        products.forEach(product => {
+            const option = document.createElement('option');
+            let displayText = '';
+            
+            if (type === 'month') {
+                // 회원권/락커: 일 단위를 개월로 변환
+                const months = Math.floor(product.durationMonths / 30);
+                if (months === 12) {
+                    displayText = '12개월';
+                } else {
+                    displayText = months + '개월';
+                }
+            } else if (type === 'count') {
+                // PT: 횟수 그대로 표시
+                displayText = product.durationMonths + '회';
+            }
+            
+            option.value = displayText;
+            option.textContent = displayText;
+            // productNo를 data 속성에 저장 (나중에 필요할 수 있음)
+            option.setAttribute('data-product-no', product.productNo);
+            select.appendChild(option);
+        });
     }
 
     // 이용권 선택 모달 닫기
@@ -1829,10 +1897,12 @@
     }
 
     // 이용권 선택 모달 외부 클릭 시 닫기
-    document.getElementById('membershipSelectModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeMembershipSelectModal();
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('membershipSelectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMembershipSelectModal();
+            }
+        });
     });
 
     // 락커 조회 함수
@@ -1976,25 +2046,31 @@
         // location.reload();
     }
 
-    // 모달 외부 클릭 시 닫기
-    document.getElementById('addMemberModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeAddMemberModal();
-        }
-    });
+    // 모달 외부 클릭 시 닫기 (DOMContentLoaded 안에서 실행)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('addMemberModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddMemberModal();
+            }
+        });
 
-    // 확정 모달 외부 클릭 시 닫기
-    document.getElementById('confirmModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeConfirmModal();
-        }
-    });
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
 
-    // 락커 선택 모달 외부 클릭 시 닫기
-    document.getElementById('lockerSelectModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeLockerSelectModal();
-        }
+        document.getElementById('lockerSelectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLockerSelectModal();
+            }
+        });
+
+        document.getElementById('editMemberModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditMemberModal();
+            }
+        });
     });
 
     // 회원 정보 수정 함수
@@ -2022,7 +2098,7 @@
         document.getElementById('editProfileAddress').textContent = '서울시 강남구';
 
         const firstChar = name.charAt(0);
-        const avatarSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23ff6b00'/%3E%3Ctext x='30' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E${firstChar}%3C/text%3E%3C/svg%3E`;
+        const avatarSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23ff6b00\'/%3E%3Ctext x=\'30\' y=\'40\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-weight=\'bold\'%3E' + encodeURIComponent(firstChar) + '%3C/text%3E%3C/svg%3E';
         document.getElementById('editProfileAvatar').src = avatarSvg;
 
         document.getElementById('editMembershipDisplay').textContent = membership;
@@ -2176,7 +2252,29 @@
     // 이용권 수정
     function editMembership() {
         window.isEditingMembership = true;
-        document.getElementById('membershipSelectModal').classList.add('active');
+        
+        // AJAX로 상품 목록 가져오기
+        fetch('/member/products.ajax')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 회원권 select 옵션 생성
+                    populateMembershipSelect('gymMembershipSelect', data.membership, 'month');
+                    // 락커 이용권 select 옵션 생성
+                    populateMembershipSelect('lockerMembershipSelect', data.locker, 'month');
+                    // PT 이용권 select 옵션 생성
+                    populateMembershipSelect('ptMembershipSelect', data.pt, 'count');
+                    
+                    // 이용권 선택 모달 열기
+                    document.getElementById('membershipSelectModal').classList.add('active');
+                } else {
+                    alert(data.message || '상품 목록을 불러오는데 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('상품 목록 조회 오류:', error);
+                alert('상품 목록을 불러오는 중 오류가 발생했습니다.');
+            });
     }
 
     // 락커 조회 (수정용)
@@ -2388,13 +2486,6 @@
     }
 
 
-
-    // 수정 모달 외부 클릭 닫기
-    document.getElementById('editMemberModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeEditMemberModal();
-        }
-    });
 
 </script>
 </body>

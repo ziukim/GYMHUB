@@ -284,22 +284,22 @@
 
     <!-- Navigation -->
     <nav class="sidebar-nav">
-        <a href="${pageContext.request.contextPath}/member/dashboard" class="nav-item">
+        <a href="${pageContext.request.contextPath}/dashboard.me" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="대시보드" class="nav-icon">
             <span>대시보드</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/member/info" class="nav-item">
+        <a href="${pageContext.request.contextPath}/info.me" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="내 정보" class="nav-icon">
             <span>내 정보</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/notice" class="nav-item">
+        <a href="${pageContext.request.contextPath}/notice.me" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/campaign.png" alt="공지사항" class="nav-icon">
             <span>공지사항</span>
         </a>
 
-        <a href="${pageContext.request.contextPath}/schedule" class="nav-item">
+        <a href="${pageContext.request.contextPath}/schedule.me" class="nav-item">
             <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 스케줄" class="nav-icon">
             <span>PT 스케줄</span>
         </a>
@@ -363,7 +363,7 @@
 
     // 확인 버튼 클릭 시 로그아웃
     confirmBtn?.addEventListener('click', () => {
-        location.href = ctx + '/logout.do';
+        location.href = ctx + '/logout.me';
     });
 
     // 현재 페이지에 맞는 메뉴 활성화
