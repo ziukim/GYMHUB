@@ -7,6 +7,7 @@ import com.kh.gymhub.model.vo.YoutubeUrl;
 import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.ProductService;
 import com.kh.gymhub.service.YoutubeUrlService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import com.kh.gymhub.service.GymService;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -67,7 +70,33 @@ public class GymController {
     }
 
     @GetMapping("/info.gym")
-    public String gymInfoManagement() {
+    public String gymInfoManagement(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        // 로그인하지 않았거나 헬스장 운영자가 아닌 경우 메인 페이지로 리다이렉트
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+
+        // 헬스장 정보 조회 및 Model에 추가
+        try {
+            Gym gym = gymService.getGymWithDetailByNo(gymNo);
+            System.out.println("=== Gym Info ===");
+            System.out.println("Gym Photo Path: " + gym.getGymPhotoPath());
+            model.addAttribute("gym", gym);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "gym/gymInfoManagement";
     }
 
@@ -815,6 +844,85 @@ public class GymController {
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "데이터 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+
+    @PostMapping("/uploadGymImage.gym")
+    @ResponseBody
+    public Map<String, Object> uploadGymImage(@RequestParam("gymImage") MultipartFile file,
+                                              HttpSession session,
+                                              HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+
+        if (file.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "파일이 선택되지 않았습니다.");
+            return result;
+        }
+
+        try {
+            // 파일 저장 경로 설정
+            String uploadPath = session.getServletContext().getRealPath("/resources/uploadfiles/Gym");
+            File uploadDir = new File(uploadPath);
+
+            // 디렉토리가 없으면 생성
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // 원본 파일명
+            String originalFilename = file.getOriginalFilename();
+
+            // 확장자 추출
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 고유한 파일명 생성 (gym_헬스장번호_타임스탬프.확장자)
+            String savedFilename = "gym_" + gymNo + "_" + System.currentTimeMillis() + extension;
+
+            // 파일 저장
+            File destFile = new File(uploadDir, savedFilename);
+            file.transferTo(destFile);
+
+            // DB에 저장할 경로 (상대 경로)
+            String dbPath = "/resources/uploadfiles/Gym/" + savedFilename;
+
+            // DB 업데이트 (GYM 테이블의 GYM_PHOTO_PATH 업데이트)
+            int updateResult = gymService.updateProfileImage(gymNo, dbPath);
+
+            if (updateResult > 0) {
+                result.put("success", true);
+                result.put("message", "헬스장 이미지가 업데이트되었습니다.");
+                result.put("imagePath", request.getContextPath() + dbPath);
+            } else {
+                result.put("success", false);
+                result.put("message", "DB 업데이트에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         }
 
         return result;

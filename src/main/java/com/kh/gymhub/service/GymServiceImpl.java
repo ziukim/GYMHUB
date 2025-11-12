@@ -32,4 +32,9 @@ public class GymServiceImpl implements GymService {
     public List<Gym> getAllGyms() {
         return gymMapper.selectAllGyms();
     }
+    @Override
+    @Transactional
+    public int updateProfileImage(int gymNo, String photoPath) {
+        return gymMapper.updateProfileImage(gymNo, photoPath);
+    }
 }

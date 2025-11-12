@@ -82,4 +82,10 @@
         WHERE G.STATUS = 'Y'
         ORDER BY G.GYM_NO DESC
     </select>
+    <update id="updateProfileImage">
+        UPDATE GYM
+        SET GYM_PHOTO_PATH = #{photoPath},
+        GYM_UPDATEAT = SYSDATE
+        WHERE GYM_NO = #{gymNo}
+    </update>
 </mapper>

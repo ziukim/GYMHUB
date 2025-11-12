@@ -10,4 +10,5 @@ public interface GymMapper {
     int insertGym(Gym gym);
     Gym selectGymWithDetailByNo(@Param("gymNo") int gymNo);
     List<Gym> selectAllGyms();
+    int updateProfileImage(@Param("gymNo") int gymNo, @Param("photoPath") String photoPath);
 }

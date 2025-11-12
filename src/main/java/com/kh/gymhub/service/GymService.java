@@ -7,4 +7,5 @@ public interface GymService {
     int addGym(Gym gym);
     Gym getGymWithDetailByNo(int gymNo);
     List<Gym> getAllGyms();
+    int updateProfileImage(int gymNo, String photoPath);
 }

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -377,10 +378,32 @@
                     대표 이미지
                 </div>
                 <div class="image-upload-area">
-                    <button class="upload-button" onclick="uploadImage()">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
-                        <span>이미지 업로드</span>
-                    </button>
+                    <!-- 이미지 미리보기 및 업로드 영역 -->
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                        <div class="profile-image-container" style="position: relative; width: 200px; height: 200px;">
+                            <div class="profile-image" id="mainGymImage" style="width: 200px; height: 200px; background-color: #2d1810; border: 2px solid #ff6b00; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                <c:choose>
+                                    <c:when test="${not empty gym.gymPhotoPath}">
+                                        <img src="${pageContext.request.contextPath}${gym.gymPhotoPath}"
+                                             alt="헬스장 이미지"
+                                             style="width: 100%; height: 100%; object-fit: cover;">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <svg viewBox="0 0 48 48" fill="none" style="width: 80px; height: 80px;">
+                                            <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <input type="file" id="gymImageInput" accept="image/*" style="display: none;">
+                        </div>
+
+                        <button class="upload-button" onclick="document.getElementById('gymImageInput').click()">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
+                            <span>이미지 업로드</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -583,19 +606,62 @@
         // 실제 저장 로직은 여기에 추가
     }
 
-    // Image upload
-    function uploadImage() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.multiple = true;
-        input.onchange = (e) => {
-            const files = Array.from(e.target.files);
-            console.log('Uploaded files:', files);
-            alert(`${files.length}개의 이미지가 업로드되었습니다.`);
-        };
-        input.click();
-    }
+    // 헬스장 이미지
+    document.getElementById('gymImageInput').addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            var file = e.target.files[0];
+
+            // 파일 크기 체크 (5MB 제한)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                return;
+            }
+
+            // 이미지 파일 형식 체크
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드 가능합니다.');
+                return;
+            }
+
+            // 미리보기 표시
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var img = document.createElement('img');
+                img.src = event.target.result;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+
+                document.getElementById('mainGymImage').innerHTML = '';
+                document.getElementById('mainGymImage').appendChild(img);
+            }
+            reader.readAsDataURL(file);
+
+            // 서버에 업로드
+            var formData = new FormData();
+            formData.append('gymImage', file);
+
+            fetch('${pageContext.request.contextPath}/uploadGymImage.gym', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert(data.message);
+                        // 실패 시 원래 이미지로 복구
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('이미지 업로드 중 오류가 발생했습니다.');
+                    location.reload();
+                });
+        }
+    });
 </script>
 </body>
 </html>
