@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.PtPassMapper">
+
+    <resultMap id="ptPassResultMap" type="com.kh.gymhub.model.vo.PtPass">
+        <id property="ptPassNo" column="PT_PASS_NO"/>
+        <result property="purchaseNo" column="PURCHASE_NO"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="ptStart" column="PT_START"/>
+        <result property="ptEnd" column="PT_END"/>
+        <result property="ptUsedCount" column="PT_USED_COUNT"/>
+        <result property="ptTotalCount" column="PT_TOTAL_COUNT"/>
+    </resultMap>
+
+    <insert id="insertPtPass" parameterType="com.kh.gymhub.model.vo.PtPass">
+        <selectKey keyProperty="ptPassNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_PT_PASS_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO PT_PASS (
+            PT_PASS_NO,
+            PURCHASE_NO,
+            MEMBER_NO,
+            GYM_NO,
+            PT_START,
+            PT_END,
+            PT_USED_COUNT,
+            PT_TOTAL_COUNT
+        ) VALUES (
+            #{ptPassNo},
+            #{purchaseNo},
+            #{memberNo},
+            #{gymNo},
+            #{ptStart},
+            #{ptEnd},
+            #{ptUsedCount},
+            #{ptTotalCount}
+        )
+    </insert>
+
+</mapper>
+

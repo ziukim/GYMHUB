@@ -699,17 +699,35 @@
                         <div class="locker-grid">
                             <c:forEach items="${lockerPassList}" var="locker">
                                 <c:choose>
-                                    <c:when test="${not empty locker.memberName}">
-                                        <div class="locker-item occupied">
-                                            <div class="locker-number">${locker.lockerRealNum}</div>
-                                            <div class="locker-name">${locker.memberName}</div>
-                                            <div class="locker-date">
-                                                <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
-                                            </div>
-                                            <div class="locker-date">
-                                                <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
-                                            </div>
-                                        </div>
+                                    <c:when test="${not empty locker.memberName and not empty locker.lockerEnd}">
+                                        <c:set var="now" value="<%=new java.util.Date()%>" />
+                                        <c:set var="daysUntilExpiry" value="${(locker.lockerEnd.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                        <c:choose>
+                                            <c:when test="${daysUntilExpiry <= 7 and daysUntilExpiry > 0}">
+                                                <div class="locker-item expiring">
+                                                    <div class="locker-number">${locker.lockerRealNum}</div>
+                                                    <div class="locker-name">${locker.memberName}</div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="locker-item occupied">
+                                                    <div class="locker-number">${locker.lockerRealNum}</div>
+                                                    <div class="locker-name">${locker.memberName}</div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:when>
                                     <c:otherwise>
                                         <div class="locker-item available">
@@ -755,11 +773,14 @@
                         <div class="status-item">
                             <div class="status-label">만료예정</div>
                             <div class="status-value expiring">
-                                 <c:set var="expiringCount" value="0" />
+                                <c:set var="expiringCount" value="0" />
+                                <c:set var="now" value="<%=new java.util.Date()%>" />
                                 <c:forEach items="${lockerPassList}" var="l">
-                                    <c:set var="now" value="<%=new java.util.Date()%>" />
-                                    <c:if test="${l.lockerEnd.time > now.time && (l.lockerEnd.time - now.time) < (7 * 24 * 60 * 60 * 1000)}">
-                                        <c:set var="expiringCount" value="${expiringCount + 1}" />
+                                    <c:if test="${not empty l.memberName and not empty l.lockerEnd}">
+                                        <c:set var="daysUntilExpiry" value="${(l.lockerEnd.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                        <c:if test="${daysUntilExpiry <= 7 and daysUntilExpiry > 0}">
+                                            <c:set var="expiringCount" value="${expiringCount + 1}" />
+                                        </c:if>
                                     </c:if>
                                 </c:forEach>
                                 ${expiringCount}개

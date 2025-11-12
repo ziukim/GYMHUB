@@ -217,7 +217,7 @@
 
             <!-- Form Container -->
             <div class="notice-form-container">
-                <form id="noticeEnrollForm" method="post" enctype="multipart/form-data">
+                <form id="noticeEnrollForm" method="post" action="${pageContext.request.contextPath}/noticeEnroll.no" enctype="multipart/form-data">
                     <!-- Notice Type Checkboxes -->
                     <div class="notice-type-group">
                         <div class="checkbox-item">
@@ -247,7 +247,8 @@
                     <!-- Author -->
                     <div class="form-group">
                         <label class="form-label" for="noticeAuthor">작성자</label>
-                        <input type="text" id="noticeAuthor" name="noticeAuthor" class="form-input" placeholder="작성자 입력" required>
+                        <input type="text" id="noticeAuthor" name="noticeAuthor" class="form-input" 
+                               value="${loginMember.memberName}" placeholder="작성자 입력" required>
                     </div>
 
                     <!-- Content -->
@@ -293,54 +294,53 @@
 
         // 폼 제출 처리
         document.getElementById('noticeEnrollForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             // 체크박스 유효성 검사
             const checkboxes = document.querySelectorAll('input[name="noticeType"]:checked');
             if (checkboxes.length === 0) {
+                e.preventDefault();
                 alert('공지사항 유형을 최소 1개 선택해주세요.');
-                return;
+                return false;
             }
             
             // 제목 유효성 검사
             const title = document.getElementById('noticeTitle').value.trim();
             if (title === '') {
+                e.preventDefault();
                 alert('제목을 입력해주세요.');
                 document.getElementById('noticeTitle').focus();
-                return;
+                return false;
             }
             
             // 작성자 유효성 검사
             const author = document.getElementById('noticeAuthor').value.trim();
             if (author === '') {
+                e.preventDefault();
                 alert('작성자를 입력해주세요.');
                 document.getElementById('noticeAuthor').focus();
-                return;
+                return false;
             }
             
             // 내용 유효성 검사
             const content = document.getElementById('noticeContent').value.trim();
             if (content === '') {
+                e.preventDefault();
                 alert('내용을 입력해주세요.');
                 document.getElementById('noticeContent').focus();
-                return;
+                return false;
             }
             
-            // 실제로는 서버로 폼 데이터 전송
-            alert('공지사항이 등록되었습니다.');
-            location.href = '${pageContext.request.contextPath}/notice.no';
-            
-            // TODO: 실제 서버 전송 코드
-            // this.submit();
+            // 유효성 검사 통과 시 폼 제출 (서버로 전송)
+            return true;
         });
 
         // 체크박스 상호 배타적 처리 (하나만 선택 가능하도록)
         const checkboxes = document.querySelectorAll('input[name="noticeType"]');
-        checkboxes.forEach(checkbox => {
+        checkboxes.forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
-                if (this.checked) {
-                    checkboxes.forEach(cb => {
-                        if (cb !== this) {
+                const currentCheckbox = this;
+                if (currentCheckbox.checked) {
+                    checkboxes.forEach(function(cb) {
+                        if (cb !== currentCheckbox) {
                             cb.checked = false;
                         }
                     });
