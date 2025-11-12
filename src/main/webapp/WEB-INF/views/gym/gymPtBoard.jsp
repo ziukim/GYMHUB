@@ -169,7 +169,18 @@
             height: 40px;
             background-color: rgba(255, 107, 0, 0.1);
             border-radius: 50%;
-            font-size: 24px;
+        }
+
+        .user-icon img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .detail-icon {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+            margin-right: 4px;
         }
 
         .card-user-info {
@@ -365,6 +376,7 @@
 
 <script>
     // 전역 변수
+    const contextPath = '${pageContext.request.contextPath}';
     let currentCard = null;
     let currentCardId = null;
 
@@ -485,7 +497,7 @@
     function createPendingCard(request) {
         var html = '<div class="pt-request-card" data-id="' + request.id + '">';
         html += '<div class="card-header-section">';
-        html += '<div class="user-icon">👤</div>';
+        html += '<div class="user-icon"><img src="' + contextPath + '/resources/images/icon/person.png" alt="사용자"></div>';
         html += '<div class="card-user-info">';
         html += '<div class="card-user-name">' + request.userName + '</div>';
         html += '<div class="card-user-id">회원 ID: ' + request.userId + '</div>';
@@ -495,23 +507,23 @@
 
         html += '<div class="card-details">';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">📅 신청일:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="신청일" class="detail-icon"> 신청일:</span>';
         html += '<span class="detail-value">' + request.requestDate + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">👨‍🏫 희망 트레이너:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:</span>';
         html += '<span class="detail-value">' + request.desiredTrainer + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">🕐 희망 시간:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/clock.png" alt="시간" class="detail-icon"> 희망 시간:</span>';
         html += '<span class="detail-value">' + request.desiredTime + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">📆 희망 날짜:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="날짜" class="detail-icon"> 희망 날짜:</span>';
         html += '<span class="detail-value">' + request.desiredDate + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">📞 연락처:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:</span>';
         html += '<span class="detail-value">' + request.phone + '</span>';
         html += '</div>';
         html += '</div>';
@@ -532,7 +544,7 @@
 
         var html = '<div class="pt-request-card" data-id="' + request.id + '">';
         html += '<div class="card-header-section">';
-        html += '<div class="user-icon">👤</div>';
+        html += '<div class="user-icon"><img src="' + contextPath + '/resources/images/icon/person.png" alt="사용자"></div>';
         html += '<div class="card-user-info">';
         html += '<div class="card-user-name">' + request.userName + '</div>';
         html += '<div class="card-user-id">회원 ID: ' + request.userId + '</div>';
@@ -542,23 +554,23 @@
 
         html += '<div class="card-details">';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">📅 신청일:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="신청일" class="detail-icon"> 신청일:</span>';
         html += '<span class="detail-value">' + request.requestDate + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">👨‍🏫 ' + trainerLabel + ':</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> ' + trainerLabel + ':</span>';
         html += '<span class="detail-value">' + request.assignedTrainer + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">🕐 희망 시간:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/clock.png" alt="시간" class="detail-icon"> 희망 시간:</span>';
         html += '<span class="detail-value">' + request.desiredTime + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">📆 희망 날짜:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="날짜" class="detail-icon"> 희망 날짜:</span>';
         html += '<span class="detail-value">' + request.desiredDate + '</span>';
         html += '</div>';
         html += '<div class="detail-item">';
-        html += '<span class="detail-label">📞 연락처:</span>';
+        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:</span>';
         html += '<span class="detail-value">' + request.phone + '</span>';
         html += '</div>';
         html += '</div>';

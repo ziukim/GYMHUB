@@ -363,7 +363,7 @@
 
     // 확인 버튼 클릭 시 로그아웃
     confirmBtn?.addEventListener('click', () => {
-        location.href = ctx + '/logout.do';
+        location.href = ctx + '/logout.me';
     });
 
     // 현재 페이지에 맞는 메뉴 활성화

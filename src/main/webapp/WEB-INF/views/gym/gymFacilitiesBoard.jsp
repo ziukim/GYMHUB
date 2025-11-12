@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -253,7 +254,7 @@
         }
 
         .status-value.used {
-            color: #fa5546;
+            color: #00c950; /* Green, matching occupied locker-item border */
         }
 
         .status-value.expiring {
@@ -261,7 +262,32 @@
         }
 
         .status-value.available {
-            color: #05df72;
+            color: #b0b0b0; /* Grey, matching other labels */
+        }
+
+        .machine-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ff6b00;
+        }
+
+        .delete-btn {
+            border-color: #f44336;
+            color: #ff6666;
+        }
+
+        .delete-btn:hover {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b0b0b0;
+            font-size: 16px;
         }
 
         /* Modal Styles */
@@ -496,6 +522,19 @@
             <h1>시설 관리</h1>
             <p>헬스장의 시설과 기구를 관리하세요</p>
         </div>
+
+        <!-- 알림 메시지 -->
+        <c:if test="${not empty alertMsg}">
+            <script>
+                alert("${alertMsg}");
+            </script>
+        </c:if>
+        <c:if test="${not empty errorMsg}">
+            <script>
+                alert("${errorMsg}");
+            </script>
+        </c:if>
+
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -503,28 +542,52 @@
                     <img src="${pageContext.request.contextPath}/resources/images/icon/machine.png" alt="운동 기구" style="width: 24px; height: 24px;">
                 </div>
                 <div class="stat-card-label">운동 기구</div>
-                <div class="stat-card-value">43개</div>
+                <div class="stat-card-value">${not empty machineList ? machineList.size() : 0}개</div>
                 <div class="stat-card-sub">전체 기구수</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-icon">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="정상" style="width: 24px; height: 24px;">
                 </div>
-                <div class="stat-card-value">42개</div>
+                <div class="stat-card-value">
+                    <c:set var="activeCount" value="0"/>
+                    <c:forEach items="${machineList}" var="m">
+                        <c:if test="${m.machineStatus == 'Y'}">
+                            <c:set var="activeCount" value="${activeCount + 1}"/>
+                        </c:if>
+                    </c:forEach>
+                    ${activeCount}개
+                </div>
                 <div class="stat-card-sub">정상</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-icon">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/inspection.png" alt="수리" style="width: 24px; height: 24px;">
                 </div>
-                <div class="stat-card-value">2개</div>
+                <div class="stat-card-value">
+                    <c:set var="inspectionCount" value="0"/>
+                    <c:forEach items="${machineList}" var="m">
+                        <c:if test="${m.machineStatus == 'I'}">
+                            <c:set var="inspectionCount" value="${inspectionCount + 1}"/>
+                        </c:if>
+                    </c:forEach>
+                    ${inspectionCount}개
+                </div>
                 <div class="stat-card-sub">점검</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-icon">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="경고" style="width: 24px; height: 24px;">
                 </div>
-                <div class="stat-card-value">1개</div>
+                <div class="stat-card-value">
+                    <c:set var="brokenCount" value="0"/>
+                    <c:forEach items="${machineList}" var="m">
+                        <c:if test="${m.machineStatus == 'N'}">
+                            <c:set var="brokenCount" value="${brokenCount + 1}"/>
+                        </c:if>
+                    </c:forEach>
+                    ${brokenCount}개
+                </div>
                 <div class="stat-card-sub">고장</div>
             </div>
         </div>
@@ -534,57 +597,84 @@
             <div class="section-header">
                 <div class="section-title-group">
                     <h2>기구 관리</h2>
-                    <p>전체 4개 기구</p>
+                    <p>전체 ${not empty machineList ? machineList.size() : 0}개 기구</p>
                 </div>
                 <button class="add-button" onclick="addEquipment()">+ 기구 추가</button>
             </div>
 
-            <table>
-                <thead>
-                <tr>
-                    <th>기구명</th>
-                    <th>브랜드명</th>
-                    <th>수량</th>
-                    <th>최근 점검일</th>
-                    <th>다음 점검일</th>
-                    <th>관리</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>트레드밀 #1</td>
-                    <td>뉴텍</td>
-                    <td>15 대</td>
-                    <td>2025.10.20</td>
-                    <td>2025.11.20</td>
-                    <td><button class="action-btn" onclick="editEquipment(this)">수정</button></td>
-                </tr>
-                <tr>
-                    <td>레그프레스 #2</td>
-                    <td>해머스트렝스</td>
-                    <td>10 대</td>
-                    <td>2025.10.05</td>
-                    <td>2025.11.05</td>
-                    <td><button class="action-btn" onclick="editEquipment(this)">수정</button></td>
-                </tr>
-                <tr>
-                    <td>바이크 #3</td>
-                    <td>DRAX</td>
-                    <td>8 대</td>
-                    <td>2025.10.15</td>
-                    <td>2025.11.01</td>
-                    <td><button class="action-btn" onclick="editEquipment(this)">수정</button></td>
-                </tr>
-                <tr>
-                    <td>덤벨세트 #3</td>
-                    <td>life fitness</td>
-                    <td>5 세트</td>
-                    <td>2025.10.22</td>
-                    <td>2025.11.22</td>
-                    <td><button class="action-btn" onclick="editEquipment(this)">수정</button></td>
-                </tr>
-                </tbody>
-            </table>
+            <c:choose>
+                <c:when test="${empty machineList}">
+                    <div class="empty-message">
+                        등록된 기구가 없습니다. 기구를 추가해주세요.
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>이미지</th>
+                            <th>기구명</th>
+                            <th>브랜드명</th>
+                            <th>상태</th>
+                            <th>최근 점검일</th>
+                            <th>다음 점검일</th>
+                            <th>관리</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${machineList}" var="machine">
+                            <tr>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty machine.machinePhotoPath}">
+                                            <img src="${pageContext.request.contextPath}${machine.machinePhotoPath}"
+                                                 alt="${machine.machineName}"
+                                                 class="machine-image"
+                                                 onerror="this.src='${pageContext.request.contextPath}/resources/images/icon/machine.png'">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/machine.png"
+                                                 alt="기본 이미지"
+                                                 class="machine-image">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>${machine.machineName}</td>
+                                <td>${machine.brand}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${machine.machineStatus == 'Y'}">정상</c:when>
+                                        <c:when test="${machine.machineStatus == 'I'}">점검중</c:when>
+                                        <c:when test="${machine.machineStatus == 'N'}">고장</c:when>
+                                        <c:otherwise>-</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty machine.machineCheckedDate}">
+                                            <fmt:formatDate value="${machine.machineCheckedDate}" pattern="yyyy.MM.dd" />
+                                        </c:when>
+                                        <c:otherwise>-</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty machine.machineNextCheck}">
+                                            <fmt:formatDate value="${machine.machineNextCheck}" pattern="yyyy.MM.dd" />
+                                        </c:when>
+                                        <c:otherwise>-</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <button class="action-btn" onclick="editEquipment(${machine.machineManageNo})">수정</button>
+                                    <button class="action-btn delete-btn" onclick="deleteMachine(${machine.machineManageNo}, '${machine.machineName}')">삭제</button>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Bottom Grid -->
@@ -594,55 +684,46 @@
                 <div class="section-header">
                     <div class="section-title-group">
                         <h2>락커 관리</h2>
-                        <p>전체 30개 락커</p>
+                        <p>전체 ${not empty lockerPassList ? lockerPassList.size() : 0}개 락커</p>
                     </div>
                     <button class="add-button" onclick="addLocker()">+ 락커 추가</button>
                 </div>
 
-                <div class="locker-grid">
-                    <div class="locker-item occupied">
-                        <div class="locker-number">A-127</div>
-                        <div class="locker-name">김회원</div>
-                        <div class="locker-date">2024.04.01</div>
-                        <div class="locker-date">2025.04.01</div>
-                    </div>
-                    <div class="locker-item occupied">
-                        <div class="locker-number">A-45</div>
-                        <div class="locker-name">이회원</div>
-                        <div class="locker-date">2024.09.15</div>
-                        <div class="locker-date">2024.12.15</div>
-                    </div>
-                    <div class="locker-item occupied">
-                        <div class="locker-number">A-34</div>
-                        <div class="locker-name">강민지</div>
-                        <div class="locker-date">2024.03.13</div>
-                        <div class="locker-date">2025.05.15</div>
-                    </div>
-                    <div class="locker-item occupied">
-                        <div class="locker-number">B-78</div>
-                        <div class="locker-name">박소희</div>
-                        <div class="locker-date">2024.06.01</div>
-                        <div class="locker-date">2024.09.01</div>
-                    </div>
-                    <div class="locker-item occupied">
-                        <div class="locker-number">C-12</div>
-                        <div class="locker-name">한소희</div>
-                        <div class="locker-date">2024.10.01</div>
-                        <div class="locker-date">2025.01.01</div>
-                    </div>
-                    <div class="locker-item available">
-                        <div class="locker-number">A-15</div>
-                        <div class="locker-name">-</div>
-                        <div class="locker-date">-</div>
-                        <div class="locker-date">-</div>
-                    </div>
-                    <div class="locker-item available">
-                        <div class="locker-number">B-23</div>
-                        <div class="locker-name">-</div>
-                        <div class="locker-date">-</div>
-                        <div class="locker-date">-</div>
-                    </div>
-                </div>
+                <c:choose>
+                    <c:when test="${empty lockerPassList}">
+                        <div class="empty-message">
+                            등록된 락커가 없습니다.
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="locker-grid">
+                            <c:forEach items="${lockerPassList}" var="locker">
+                                <c:choose>
+                                    <c:when test="${not empty locker.memberName}">
+                                        <div class="locker-item occupied">
+                                            <div class="locker-number">${locker.lockerRealNum}</div>
+                                            <div class="locker-name">${locker.memberName}</div>
+                                            <div class="locker-date">
+                                                <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                            </div>
+                                            <div class="locker-date">
+                                                <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="locker-item available">
+                                            <div class="locker-number">${locker.lockerRealNum}</div>
+                                            <div class="locker-name">-</div>
+                                            <div class="locker-date">-</div>
+                                            <div class="locker-date">-</div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <!-- 락커 현황 -->
@@ -656,24 +737,86 @@
                 <div class="locker-status">
                     <div class="status-item">
                         <div class="status-label">전체 락커</div>
-                        <div class="status-value">30개</div>
+                        <div class="status-value">${not empty lockerPassList ? lockerPassList.size() : 0}개</div>
                     </div>
                     <div class="status-sub-grid">
                         <div class="status-item">
                             <div class="status-label">사용중</div>
-                            <div class="status-value used">17개</div>
+                            <div class="status-value used">
+                                <c:set var="usedCount" value="0" />
+                                <c:forEach items="${lockerPassList}" var="l">
+                                    <c:if test="${not empty l.memberName}">
+                                        <c:set var="usedCount" value="${usedCount + 1}" />
+                                    </c:if>
+                                </c:forEach>
+                                ${usedCount}개
+                            </div>
                         </div>
                         <div class="status-item">
                             <div class="status-label">만료예정</div>
-                            <div class="status-value expiring">6개</div>
+                            <div class="status-value expiring">
+                                 <c:set var="expiringCount" value="0" />
+                                <c:forEach items="${lockerPassList}" var="l">
+                                    <c:set var="now" value="<%=new java.util.Date()%>" />
+                                    <c:if test="${l.lockerEnd.time > now.time && (l.lockerEnd.time - now.time) < (7 * 24 * 60 * 60 * 1000)}">
+                                        <c:set var="expiringCount" value="${expiringCount + 1}" />
+                                    </c:if>
+                                </c:forEach>
+                                ${expiringCount}개
+                            </div>
                         </div>
                     </div>
                     <div class="status-item">
                         <div class="status-label">사용 가능한 락커 수</div>
-                        <div class="status-value available">13개</div>
+                        <div class="status-value available">
+                            ${(not empty lockerPassList ? lockerPassList.size() : 0) - usedCount}개
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- 기구 수정 모달 -->
+<div class="modal-overlay" id="editMachineModal" onclick="closeModalOnOverlay(event, 'editMachineModal')">
+    <div class="modal-container" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeModal('editMachineModal')">×</button>
+            <h2 class="modal-title">기구 정보 수정</h2>
+            <p class="modal-subtitle" id="modalMachineName"></p>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editMachineManageNo">
+
+            <div class="modal-form-group">
+                <label class="modal-label" for="editMachineStatus">
+                    상태<span class="required">*</span>
+                </label>
+                <select id="editMachineStatus" class="modal-select">
+                    <option value="Y">정상</option>
+                    <option value="I">점검중</option>
+                    <option value="N">고장</option>
+                </select>
+            </div>
+
+            <div class="modal-form-group">
+                <label class="modal-label" for="editMachineCheckedDate">
+                    최근 점검일<span class="required">*</span>
+                </label>
+                <input type="date" id="editMachineCheckedDate" class="modal-date-input" required>
+            </div>
+
+            <div class="modal-form-group">
+                <label class="modal-label" for="editMachineNextCheck">
+                    다음 점검일<span class="required">*</span>
+                </label>
+                <input type="date" id="editMachineNextCheck" class="modal-date-input" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button modal-button-cancel" onclick="closeModal('editMachineModal')">취소</button>
+            <button class="modal-button modal-button-submit" onclick="submitMachineUpdate()">수정</button>
         </div>
     </div>
 </div>
@@ -683,33 +826,15 @@
     <div class="modal-container" onclick="event.stopPropagation()">
         <div class="modal-header">
             <button class="modal-close" onclick="closeModal('addLockerModal')">×</button>
-            <h2 class="modal-title">락커 추가</h2>
-            <p class="modal-subtitle">새로운 락커를 등록합니다</p>
+            <h2 class="modal-title">신규 락커 추가</h2>
+            <p class="modal-subtitle">새로운 빈 락커를 시스템에 등록합니다.</p>
         </div>
         <div class="modal-body">
             <div class="modal-form-group">
-                <label class="modal-label" for="lockerNumber">
+                <label class="modal-label" for="lockerRealNum">
                     락커 번호<span class="required">*</span>
                 </label>
-                <input type="text" id="lockerNumber" class="modal-input" placeholder="예: A-150">
-            </div>
-            <div class="modal-form-group">
-                <label class="modal-label" for="memberName">회원명</label>
-                <select id="memberName" class="modal-select">
-                    <option value="">회원을 선택하세요</option>
-                    <option value="김회원">김회원</option>
-                    <option value="이회원">이회원</option>
-                    <option value="박서준">박서준</option>
-                    <option value="최유진">최유진</option>
-                    <option value="정수연">정수연</option>
-                    <option value="강민지">강민지</option>
-                    <option value="윤태민">윤태민</option>
-                    <option value="한소희">한소희</option>
-                </select>
-            </div>
-            <div class="modal-form-group">
-                <label class="modal-label" for="expirationDate">시작일</label>
-                <input type="date" id="expirationDate" class="modal-date-input">
+                <input type="text" id="lockerRealNum" class="modal-input" placeholder="예: A-151">
             </div>
         </div>
         <div class="modal-footer">
@@ -722,19 +847,118 @@
 <script>
     // 기구 추가
     function addEquipment() {
-        location.href = '${pageContext.request.contextPath}/machineEnroll.gym';
+        location.href = '${pageContext.request.contextPath}/machineEnrollForm.gym';
     }
 
-    // 기구 수정
-    function editEquipment(button) {
-        const row = button.closest('tr');
-        const name = row.querySelector('td:first-child').textContent;
-        alert(name + ' 기구 정보를 수정합니다.');
+    // 기구 수정 모달 열기
+    function editEquipment(machineManageNo) {
+        fetch('${pageContext.request.contextPath}/machineDetail.gym?machineManageNo=' + machineManageNo)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                document.getElementById('editMachineManageNo').value = data.machineManageNo;
+                document.getElementById('modalMachineName').textContent = data.machineName + ' - ' + data.brand;
+                document.getElementById('editMachineStatus').value = data.machineStatus || 'Y';
+
+                if (data.machineCheckedDate) {
+                    var checkedDate = new Date(data.machineCheckedDate);
+                    document.getElementById('editMachineCheckedDate').value = formatDateForInput(checkedDate);
+                }
+
+                if (data.machineNextCheck) {
+                    var nextCheck = new Date(data.machineNextCheck);
+                    document.getElementById('editMachineNextCheck').value = formatDateForInput(nextCheck);
+                }
+
+                openModal('editMachineModal');
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('기구 정보를 불러오는데 실패했습니다.');
+            });
+    }
+
+    // 날짜 형식 변환
+    function formatDateForInput(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    // 기구 정보 수정
+    function submitMachineUpdate() {
+        var machineManageNo = document.getElementById('editMachineManageNo').value;
+        var machineStatus = document.getElementById('editMachineStatus').value;
+        var machineCheckedDate = document.getElementById('editMachineCheckedDate').value;
+        var machineNextCheck = document.getElementById('editMachineNextCheck').value;
+
+        if (!machineCheckedDate || !machineNextCheck) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        var data = {
+            machineManageNo: machineManageNo,
+            machineStatus: machineStatus,
+            machineCheckedDate: machineCheckedDate,
+            machineNextCheck: machineNextCheck
+        };
+
+        fetch('${pageContext.request.contextPath}/machineUpdate.gym', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(result) {
+                if (result === 'success') {
+                    alert('기구 정보가 수정되었습니다.');
+                    location.reload();
+                } else {
+                    alert('기구 정보 수정에 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('기구 정보 수정 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 기구 삭제
+    function deleteMachine(machineManageNo, machineName) {
+        if (!confirm(machineName + ' 기구를 삭제하시겠습니까?')) {
+            return;
+        }
+
+        fetch('${pageContext.request.contextPath}/machineDelete.gym?machineManageNo=' + machineManageNo, {
+            method: 'POST'
+        })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(result) {
+                if (result === 'success') {
+                    alert('기구가 삭제되었습니다.');
+                    location.reload();
+                } else {
+                    alert('기구 삭제에 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('기구 삭제 중 오류가 발생했습니다.');
+            });
     }
 
     // 모달 열기
     function openModal(modalId) {
-        const modal = document.getElementById(modalId);
+        var modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -743,7 +967,7 @@
 
     // 모달 닫기
     function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
+        var modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.remove('active');
             document.body.style.overflow = '';
@@ -759,39 +983,51 @@
 
     // 락커 추가 모달 열기
     function addLocker() {
-        // 입력 필드 초기화
-        document.getElementById('lockerNumber').value = '';
-        document.getElementById('memberName').value = '';
-        document.getElementById('expirationDate').value = '';
+        document.getElementById('lockerRealNum').value = '';
         openModal('addLockerModal');
     }
 
-    // 락커 등록 제출
+    // 락커 등록
     function submitLockerRegistration() {
-        const lockerNumber = document.getElementById('lockerNumber').value.trim();
-        const memberName = document.getElementById('memberName').value;
-        const expirationDate = document.getElementById('expirationDate').value;
+        var lockerRealNum = document.getElementById('lockerRealNum').value.trim();
 
-        if (!lockerNumber) {
+        if (!lockerRealNum) {
             alert('락커 번호를 입력해주세요.');
             return;
         }
 
-        // 실제로는 서버에 데이터 전송
-        console.log('락커 등록:', {
-            lockerNumber,
-            memberName,
-            expirationDate
-        });
+        var formData = new FormData();
+        formData.append('lockerRealNum', lockerRealNum);
 
-        alert(`락커가 등록되었습니다!\n락커 번호: ${lockerNumber}\n회원명: ${memberName || '미정'}\n만료일: ${expirationDate || '미정'}`);
-        closeModal('addLockerModal');
+        fetch('${pageContext.request.contextPath}/locker/add.gym', {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        })
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(result) {
+            if (result === 'success') {
+                alert('새로운 락커가 등록되었습니다.');
+                location.reload();
+            } else if (result === 'fail_duplicate') {
+                alert('이미 등록된 락커 번호입니다.');
+            } else if (result === 'fail_auth') {
+                alert('인증에 실패했습니다. 다시 로그인해주세요.');
+            } else {
+                alert('락커 등록에 실패했습니다.');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('락커 등록 중 오류가 발생했습니다.');
+        });
     }
 
     // ESC 키로 모달 닫기
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
-            const activeModal = document.querySelector('.modal-overlay.active');
+            var activeModal = document.querySelector('.modal-overlay.active');
             if (activeModal) {
                 closeModal(activeModal.id);
             }
@@ -799,28 +1035,18 @@
     });
 
     // 락커 클릭
-    document.querySelectorAll('.locker-item').forEach(locker => {
-        locker.addEventListener('click', function() {
-            const number = this.querySelector('.locker-number').textContent;
-            const name = this.querySelector('.locker-name').textContent;
+    var lockerItems = document.querySelectorAll('.locker-item');
+    for (var i = 0; i < lockerItems.length; i++) {
+        lockerItems[i].addEventListener('click', function() {
+            var number = this.querySelector('.locker-number').textContent;
+            var name = this.querySelector('.locker-name').textContent;
             if (name === '-') {
                 alert(number + ' 락커는 사용 가능합니다.');
             } else {
                 alert(number + ' 락커 정보\n사용자: ' + name);
             }
         });
-    });
-
-    // 카드 호버 효과
-    document.querySelectorAll('.stat-card').forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-            this.style.transition = 'transform 0.3s';
-        });
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
+    }
 
 
 </script>

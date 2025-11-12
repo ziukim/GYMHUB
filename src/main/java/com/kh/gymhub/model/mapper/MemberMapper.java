@@ -12,8 +12,6 @@ public interface MemberMapper {
     int updateMemberInfo(Member member);
     int updatePassword(@Param("memberNo") int memberNo, @Param("memberPwd") String memberPwd);
     Member getMemberForLogin(@Param("memberId") String memberId);
-    int updateMember(Member member);
-    int updatePassword(@Param("memberId") String memberId, @Param("newPwd") String newPwd);
+    Member getMemberByIdForGymRegistration(@Param("memberId") String memberId);
 }
-
 

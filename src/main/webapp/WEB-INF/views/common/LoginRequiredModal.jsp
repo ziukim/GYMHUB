@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!-- 로그인 필요 모달 -->
-<div class="modal-overlay" id="loginRequiredModal" style="display: none;">
-    <div class="modal-container" style="max-width: 440px;">
+<div class="modal-overlay" id="loginRequiredModal">
+    <div class="modal-container" style="max-width: 440px;" onclick="event.stopPropagation();">
         <button class="modal-close" onclick="closeLoginRequiredModal()">×</button>
 
         <div style="text-align: center; padding: 20px 0;">
@@ -64,15 +64,17 @@
             <!-- 버튼 그룹 -->
             <div style="display: flex; gap: 12px;">
                 <button
-                        onclick="closeLoginRequiredModal()"
+                        type="button"
+                        onclick="closeLoginRequiredModal(); event.stopPropagation();"
                         class="btn btn-secondary"
-                        style="flex: 1; padding: 14px; font-size: 15px;">
+                        style="flex: 1; padding: 14px; font-size: 15px; cursor: pointer;">
                     취소
                 </button>
                 <button
-                        onclick="goToLogin()"
+                        type="button"
+                        onclick="goToLogin(); event.stopPropagation();"
                         class="btn btn-primary"
-                        style="flex: 1; padding: 14px; font-size: 15px;">
+                        style="flex: 1; padding: 14px; font-size: 15px; cursor: pointer;">
                     로그인하기
                 </button>
             </div>
@@ -81,31 +83,44 @@
 </div>
 
 <script>
-    // 로그인 필요 모달 닫기
-    function closeLoginRequiredModal() {
-        const modal = document.getElementById('loginRequiredModal');
-        if (modal) {
-            modal.style.display = 'none';
+    (function() {
+        // 로그인 필요 모달 닫기
+        function closeLoginRequiredModal() {
+            const modal = document.getElementById('loginRequiredModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
         }
-    }
 
-    // 로그인 페이지로 이동
-    function goToLogin() {
-        closeLoginRequiredModal();
-        // 로그인 모달 열기
-        const loginModal = document.getElementById('loginModal');
-        if (loginModal) {
-            loginModal.classList.add('active');
+        // 로그인 페이지로 이동
+        function goToLogin() {
+            const loginRequiredModal = document.getElementById('loginRequiredModal');
+            if (loginRequiredModal) {
+                loginRequiredModal.classList.remove('active');
+            }
+            
+            // 약간의 지연 후 로그인 모달 열기 (모달 전환 애니메이션을 위해)
+            setTimeout(function() {
+                const loginModal = document.getElementById('loginModal');
+                if (loginModal) {
+                    loginModal.classList.add('active');
+                }
+            }, 100);
         }
-    }
 
-    // 모달 외부 클릭 시 닫기
-    const loginRequiredModalOverlay = document.getElementById('loginRequiredModal');
-    if (loginRequiredModalOverlay) {
-        loginRequiredModalOverlay.addEventListener('click', function(e) {
-            if (e.target === loginRequiredModalOverlay) {
-                closeLoginRequiredModal();
+        // 전역 함수로 등록
+        window.closeLoginRequiredModal = closeLoginRequiredModal;
+        window.goToLogin = goToLogin;
+
+        // 모달 외부 클릭 시 닫기 (이벤트 위임 사용)
+        document.addEventListener('click', function(e) {
+            const loginRequiredModal = document.getElementById('loginRequiredModal');
+            if (loginRequiredModal && loginRequiredModal.classList.contains('active')) {
+                // 모달 오버레이를 직접 클릭한 경우에만 닫기
+                if (e.target === loginRequiredModal) {
+                    closeLoginRequiredModal();
+                }
             }
         });
-    }
+    })();
 </script>

@@ -1089,10 +1089,10 @@
                         <a href="${pageContext.request.contextPath}/dashboard.me" class="btn btn-secondary">마이페이지</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 2}">
-                        <a href="${pageContext.request.contextPath}/trainer/dashboard" class="btn btn-secondary">마이페이지</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.tr" class="btn btn-secondary">대시보드</a>
                     </c:when>
                     <c:when test="${loginMember.memberType == 3}">
-                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">관리자 페이지</a>
+                        <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>
                     </c:when>
                 </c:choose>
             </c:when>
@@ -1228,7 +1228,7 @@
         </div>
 
         <div class="modal-body">
-            <form class="login-form" id="loginForm" action="${pageContext.request.contextPath}/login.do" method="post">
+            <form class="login-form" id="loginForm" action="${pageContext.request.contextPath}/login.me" method="post">
                 <div class="form-group">
                     <label class="form-label">아이디</label>
                     <input type="text" id="loginId" name="id" placeholder="아이디" required>
@@ -1803,9 +1803,22 @@
     </div>
 </div>
 
+<!-- 로그인 필요 모달 -->
+<%@ include file="/WEB-INF/views/common/LoginRequiredModal.jsp" %>
+
 <script>
     // 전역 변수로 contextPath 설정
     window.contextPath = '${pageContext.request.contextPath}';
+    
+    // 로그인 상태 확인 (서버에서 전달)
+    <c:choose>
+        <c:when test="${not empty loginMember}">
+            window.isLoggedIn = true;
+        </c:when>
+        <c:otherwise>
+            window.isLoggedIn = false;
+        </c:otherwise>
+    </c:choose>
     
     // 이미지 로드 확인 및 디버깅
     document.addEventListener('DOMContentLoaded', function() {
@@ -1821,16 +1834,6 @@
             });
         }
 
-        // 로그인 성공/실패 메시지 표시
-        <c:if test="${not empty alertMsg}">
-            alert('${alertMsg}');
-            <c:remove var="alertMsg" scope="session"/>
-        </c:if>
-        <c:if test="${not empty errorMsg}">
-            alert('${errorMsg}');
-            <c:remove var="errorMsg" scope="session"/>
-        </c:if>
-        
         // 로그아웃 메시지 표시 (URL 파라미터 확인)
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('logout') === 'success') {
@@ -1841,8 +1844,8 @@
 
     });
 
-    // ============================= 아이디 중복 체크 (AJAX) =============================
-    document.querySelectorAll('input[name="id"]').forEach(function(input) {
+    // ============================= 아이디 중복 체크 (AJAX) - 회원가입 폼에만 적용 =============================
+    document.querySelectorAll('.registration-form input[name="id"]').forEach(function(input) {
         let typingTimer;
         const doneTypingInterval = 500; // 0.5초 대기 후 체크
 
@@ -1850,6 +1853,11 @@
             clearTimeout(typingTimer);
             const helperText = this.nextElementSibling;
             const idValue = this.value.trim();
+
+            // helperText가 없거나 helper-text 클래스가 없으면 중단
+            if (!helperText || !helperText.classList.contains('helper-text')) {
+                return;
+            }
 
             // 아이디가 4자 미만이면 메시지 숨기기
             if (idValue.length < 4) {
@@ -1861,26 +1869,46 @@
             // 입력 멈춘 후 0.5초 뒤 중복 체크 실행
             typingTimer = setTimeout(function() {
                 fetch('${pageContext.request.contextPath}/signup/checkId?checkId=' + encodeURIComponent(idValue))
-                    .then(response => response.text())
+                    .then(response => {
+                        // HTTP 응답 상태 확인
+                        if (!response.ok) {
+                            throw new Error('서버 응답 오류: ' + response.status);
+                        }
+                        return response.text();
+                    })
                     .then(data => {
-                        console.log('아이디 중복 체크 결과:', data);
+                        // 응답 데이터 trim 처리 (공백/줄바꿈 제거)
+                        const trimmedData = data.trim();
+                        console.log('아이디 중복 체크 결과:', trimmedData);
 
-                        if (data === 'NNNNY') {
+                        // 응답 형식 검증
+                        if (trimmedData === 'NNNNY') {
                             // 사용 가능한 아이디
                             helperText.classList.remove('error');
                             helperText.classList.add('success');
                             helperText.textContent = '사용 가능한 아이디입니다';
                             helperText.classList.remove('hidden');
-                        } else {
+                        } else if (trimmedData === 'NNNNN') {
                             // 이미 사용중인 아이디
                             helperText.classList.remove('success');
                             helperText.classList.add('error');
                             helperText.textContent = '사용 불가능한 아이디입니다';
                             helperText.classList.remove('hidden');
+                        } else {
+                            // 예상하지 못한 응답 형식
+                            console.error('예상하지 못한 응답 형식:', trimmedData);
+                            helperText.classList.remove('success');
+                            helperText.classList.add('error');
+                            helperText.textContent = '아이디 확인 중 오류가 발생했습니다';
+                            helperText.classList.remove('hidden');
                         }
                     })
                     .catch(error => {
                         console.error('아이디 중복 체크 오류:', error);
+                        helperText.classList.remove('success');
+                        helperText.classList.add('error');
+                        helperText.textContent = '아이디 확인 중 오류가 발생했습니다';
+                        helperText.classList.remove('hidden');
                     });
             }, doneTypingInterval);
         });
@@ -1925,18 +1953,60 @@
 
             // 아이디 중복 체크 확인
             const idInput = this.querySelector('input[name="id"]');
-            const idHelperText = idInput.nextElementSibling;
-            if (!idHelperText.classList.contains('success')) {
-                e.preventDefault();
-                alert('사용 가능한 아이디로 입력해주세요.');
-                idInput.focus();
-                return false;
+            if (idInput) {
+                const idValue = idInput.value.trim();
+                
+                // 아이디가 입력되었는지 확인
+                if (!idValue) {
+                    e.preventDefault();
+                    alert('아이디를 입력해주세요.');
+                    idInput.focus();
+                    return false;
+                }
+                
+                // 아이디 최소 길이 확인
+                if (idValue.length < 4) {
+                    e.preventDefault();
+                    alert('아이디는 최소 4자 이상 입력해주세요.');
+                    idInput.focus();
+                    return false;
+                }
+                
+                // 중복 체크 완료 여부 확인
+                const idHelperText = idInput.nextElementSibling;
+                if (idHelperText && idHelperText.classList.contains('helper-text')) {
+                    // 중복 체크가 완료되지 않았거나, 사용 불가능한 경우
+                    if (idHelperText.classList.contains('hidden') || 
+                        !idHelperText.classList.contains('success')) {
+                        e.preventDefault();
+                        if (idHelperText.classList.contains('error')) {
+                            alert('사용 불가능한 아이디입니다. 다른 아이디를 입력해주세요.');
+                        } else {
+                            alert('아이디 중복 체크를 완료해주세요.');
+                        }
+                        idInput.focus();
+                        return false;
+                    }
+                }
             }
 
             return true;
         });
     });
 </script>
+
+<!-- 로그인 성공/실패 메시지 표시 -->
+<script>
+    <c:if test="${not empty alertMsg}">
+        alert('${alertMsg}');
+        <c:remove var="alertMsg" scope="session"/>
+    </c:if>
+    <c:if test="${not empty errorMsg}">
+        alert('${errorMsg}');
+        <c:remove var="errorMsg" scope="session"/>
+    </c:if>
+</script>
+
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>
 </body>
 </html>

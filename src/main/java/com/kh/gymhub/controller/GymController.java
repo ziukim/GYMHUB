@@ -3,6 +3,7 @@ package com.kh.gymhub.controller;
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.model.vo.Product;
 import com.kh.gymhub.model.vo.YoutubeUrl;
+import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.ProductService;
 import com.kh.gymhub.service.YoutubeUrlService;
 import jakarta.servlet.http.HttpSession;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,10 +25,13 @@ public class GymController {
     
     private final ProductService productService;
     private final YoutubeUrlService youtubeUrlService;
+    private final MemberService memberService;
     
-    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService) {
+    @Autowired
+    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService) {
         this.productService = productService;
         this.youtubeUrlService = youtubeUrlService;
+        this.memberService = memberService;
     }
     
     @GetMapping("/dashboard.gym")
@@ -49,15 +54,6 @@ public class GymController {
         return "gym/gymSalesBoard";
     }
 
-    @GetMapping("/facility.gym")
-    public String facilitiesBoard() {
-        return "gym/gymFacilitiesBoard";
-    }
-
-    @GetMapping("/machineEnroll.gym")
-    public String machineEnrollForm() {
-        return "gym/gymMachineEnrollForm";
-    }
 
     @GetMapping("/reservation.gym")
     public String reservationManagement() {
@@ -279,13 +275,13 @@ public class GymController {
         return result;
     }
 
-    @GetMapping("/product.gym")
-    public String productManagement() {
-        return "gym/gymProductManagement";
+    @GetMapping("/stock.gym")
+    public String stockManagement() {
+        return "gym/gymStockManagement";
     }
 
-    @GetMapping("/ticket.gym")
-    public String ticketManagement(HttpSession session, Model model) {
+    @GetMapping("/product.gym")
+    public String productManagement(HttpSession session, Model model) {
         // 세션에서 로그인 정보 확인
         Member loginMember = (Member) session.getAttribute("loginMember");
         
@@ -304,13 +300,13 @@ public class GymController {
         
         model.addAttribute("gymNo", gymNo);
         
-        return "gym/gymTicketManagement";
+        return "gym/gymProductManagement";
     }
 
     // AJAX: 헬스장 상품 리스트 조회
-    @GetMapping("/ticket/list.ajax")
+    @GetMapping("/product/list.ajax")
     @ResponseBody
-    public java.util.Map<String, Object> getTicketList(HttpSession session) {
+    public java.util.Map<String, Object> getProductList(HttpSession session) {
         java.util.Map<String, Object> result = new java.util.HashMap<>();
         
         // 세션에서 로그인 정보 확인
@@ -362,9 +358,9 @@ public class GymController {
     }
 
     // AJAX: 상품 추가
-    @PostMapping("/ticket/add.ajax")
+    @PostMapping("/product/add.ajax")
     @ResponseBody
-    public java.util.Map<String, Object> addTicketAjax(@RequestBody java.util.Map<String, Object> requestData,
+    public java.util.Map<String, Object> addProductAjax(@RequestBody java.util.Map<String, Object> requestData,
                                                         HttpSession session) {
         java.util.Map<String, Object> result = new java.util.HashMap<>();
         
@@ -490,9 +486,9 @@ public class GymController {
     }
 
     // AJAX: 상품 수정
-    @PostMapping("/ticket/update.ajax")
+    @PostMapping("/product/update.ajax")
     @ResponseBody
-    public java.util.Map<String, Object> updateTicketAjax(@RequestBody java.util.Map<String, Object> requestData,
+    public java.util.Map<String, Object> updateProductAjax(@RequestBody java.util.Map<String, Object> requestData,
                                                            HttpSession session) {
         java.util.Map<String, Object> result = new java.util.HashMap<>();
         
@@ -621,9 +617,9 @@ public class GymController {
     }
 
     // AJAX: 상품 삭제
-    @PostMapping("/ticket/delete.ajax")
+    @PostMapping("/product/delete.ajax")
     @ResponseBody
-    public java.util.Map<String, Object> deleteTicketAjax(@RequestBody java.util.Map<String, Object> requestData,
+    public java.util.Map<String, Object> deleteProductAjax(@RequestBody java.util.Map<String, Object> requestData,
                                                             HttpSession session) {
         java.util.Map<String, Object> result = new java.util.HashMap<>();
         
@@ -717,6 +713,81 @@ public class GymController {
     @GetMapping("/adminMain.gym")
     public String adminMain() {
         return "admin/adminMain";
+    }
+
+    // AJAX: 회원 아이디 조회 (헬스장 등록용 - gym_no가 null인 회원만)
+    @GetMapping("/member/lookup.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> lookupMember(@RequestParam String memberId) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        try {
+            if (memberId == null || memberId.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "아이디를 입력해주세요.");
+                return result;
+            }
+            
+            // gym_no가 null인 회원 조회
+            Member member = memberService.getMemberByIdForGymRegistration(memberId.trim());
+            
+            if (member == null) {
+                result.put("success", false);
+                result.put("message", "등록 가능한 회원을 찾을 수 없습니다. (이미 다른 헬스장에 등록되었거나 존재하지 않는 회원입니다.)");
+                return result;
+            }
+            
+            // 회원 정보 반환
+            result.put("success", true);
+            result.put("member", member);
+            result.put("message", "회원 정보를 조회했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "회원 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    // AJAX: 이용권 목록 조회 (회원 등록용)
+    @GetMapping("/member/products.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> getProductsForMemberRegistration(HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 타입별로 상품 조회
+            List<Product> membershipProducts = productService.getProductsByGymNoAndType(gymNo, "회원권");
+            List<Product> lockerProducts = productService.getProductsByGymNoAndType(gymNo, "락커");
+            List<Product> ptProducts = productService.getProductsByGymNoAndType(gymNo, "PT");
+            
+            result.put("success", true);
+            result.put("membership", membershipProducts);
+            result.put("locker", lockerProducts);
+            result.put("pt", ptProducts);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "상품 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
     }
 
 }

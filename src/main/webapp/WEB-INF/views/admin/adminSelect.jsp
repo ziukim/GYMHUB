@@ -238,7 +238,7 @@
 
     function logout() {
         if (confirm('로그아웃 하시겠습니까?')) {
-            window.location.href = '${pageContext.request.contextPath}/logout.do';
+            window.location.href = '${pageContext.request.contextPath}/logout.me';
         }
     }
 </script>

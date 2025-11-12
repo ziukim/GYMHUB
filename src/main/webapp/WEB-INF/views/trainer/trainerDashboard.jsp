@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -89,7 +88,6 @@
         .trainer-card {
             flex: 1;
             min-width: 0;
-            min-height: 232px;
         }
 
         .trainer-buttons {
@@ -118,13 +116,14 @@
         }
 
         .info-label {
-            color: #8a6a50;
             font-size: 14px;
+            color: #8a6a50;
         }
 
         .info-value {
+            font-size: 16px;
             color: #ffa366;
-            font-size: 14px;
+            margin: 0;
         }
 
         .btn-edit {
@@ -147,6 +146,114 @@
             width: 16px;
             height: 16px;
             flex-shrink: 0;
+        }
+
+        /* 프로필 섹션 스타일 (회원 프로필과 동일) */
+        .profile-section {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            flex-shrink: 0;
+        }
+
+        .profile-image {
+            width: 96px;
+            height: 96px;
+            background-color: #2d1810;
+            border: 1px solid #ff6b00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-image svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .camera-button {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            width: auto;
+            height: auto;
+            transform: none;
+            line-height: 1;
+        }
+
+        .camera-button:hover {
+            transform: scale(1.2);
+            filter: brightness(1.2);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .edit-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge-container .badge {
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            color: #ffa366;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .btn-password span,
@@ -321,42 +428,150 @@
             display: flex;
         }
 
-        .modal-content {
+        .modal-container {
             background-color: #1a0f0a;
-            border: 1px solid #ff6b00;
-            border-radius: 14px;
-            padding: 25px;
-            position: relative;
-            max-width: 90vw;
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 2px solid #ff6b00;
+            position: relative;
         }
 
         .modal-close {
             position: absolute;
-            right: 25px;
-            top: 25px;
-            background: none;
+            top: 20px;
+            right: 20px;
+            background: transparent;
             border: none;
+            color: white;
+            font-size: 24px;
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
 
         .modal-close:hover {
-            opacity: 1;
-        }
-
-        .modal-close svg {
-            width: 16px;
-            height: 16px;
+            background-color: rgba(255, 107, 0, 0.2);
+            transform: rotate(90deg);
         }
 
         .modal-title {
+            font-size: 20px;
             color: #ff6b00;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 34px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-label {
+            display: block;
+            font-size: 14px;
+            color: white;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .modal-label .required {
+            color: #ff6b00;
+            margin-left: 4px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #2d1810;
+            border: 2px solid #ff6b00;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+            border-color: #ff8800;
+        }
+
+        .modal-input::placeholder {
+            color: #666;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 2px solid #ff6b00;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .btn-primary {
+            background-color: #ff6b00;
+            color: white;
+            border-color: #ff6b00;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff8800;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border-color: #ff6b00;
+            color: #ff6b00;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 107, 0, 0.1);
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
         }
 
         .form-group {
@@ -439,8 +654,8 @@
             gap: 16px;
         }
 
-        .info-modal .modal-content {
-            width: 1220px;
+        #editModal .modal-container {
+            max-width: 800px;
         }
 
         /* Responsive */
@@ -503,44 +718,106 @@
             <p>오늘도 힘차게 운동하세요</p>
         </div>
 
+        <!-- 알림 메시지 -->
+        <c:if test="${not empty alertMsg}">
+            <script>
+                alert("${alertMsg}");
+            </script>
+        </c:if>
+        <c:if test="${not empty errorMsg}">
+            <script>
+                alert("${errorMsg}");
+            </script>
+        </c:if>
+
         <!-- Cards Row 1 -->
         <div class="cards-row">
             <!-- 트레이너 정보 Card -->
             <div class="card trainer-card">
-                <div class="card-title">
-                    <div class="card-title-left">
-                        <svg fill="none" viewBox="0 0 20 20">
-                            <path d="M15.8333 17.5V15.8333C15.8333 14.9493 15.4821 14.1014 14.857 13.4763C14.2319 12.8512 13.3841 12.5 12.5 12.5H7.5C6.61594 12.5 5.7681 12.8512 5.14298 13.4763C4.51786 14.1014 4.16667 14.9493 4.16667 15.8333V17.5" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path d="M10 9.16667C11.8409 9.16667 13.3333 7.67428 13.3333 5.83333C13.3333 3.99238 11.8409 2.5 10 2.5C8.15905 2.5 6.66667 3.99238 6.66667 5.83333C6.66667 7.67428 8.15905 9.16667 10 9.16667Z" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                        </svg>
-                        <span>트레이너 정보</span>
+                <div class="profile-section">
+                    <div class="profile-image-container">
+                        <div class="profile-image" id="mainProfileImage">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                        <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 24px; height: 24px;">
+                        </button>
                     </div>
-                    <div class="trainer-buttons">
-                        <button class="btn-password" onclick="openPasswordModal()">비밀번호 변경</button>
-                        <button class="btn-edit" onclick="openInfoModal()">수정하기</button>
-                    </div>
-                </div>
 
-                <div style="padding: 0 24px; margin-top: 20px;">
-                    <div class="info-row">
-                        <span class="info-label">경력</span>
-                        <span class="info-value">${loginMember.trainerCareer}</span>
-                    </div>
-                    <div style="margin-bottom: 8px; margin-top: 12px;">
-                        <p class="info-label">자격정보</p>
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-                        <c:forEach var="license" items="${loginMember.trainerLicense.split(',')}">
-                            <span class="badge">${license}</span>
-                        </c:forEach>
-                    </div>
-                    <div style="margin-bottom: 8px;">
-                        <p class="info-label">수상이력</p>
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <c:forEach var="award" items="${loginMember.trainerAward.split(',')}">
-                            <span class="badge">${award}</span>
-                        </c:forEach>
+                    <div class="profile-info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">이름</label>
+                                <p class="info-value">${loginMember.memberName}</p>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">생년월일</label>
+                                <p class="info-value">${loginMember.memberBirth}</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">연락처</label>
+                                <p class="info-value">${loginMember.memberPhone}</p>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">이메일</label>
+                                <p class="info-value">${loginMember.memberEmail}</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item full-width">
+                            <label class="info-label">주소</label>
+                            <p class="info-value">${loginMember.memberAddress}</p>
+                        </div>
+                        <br>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">경력</label>
+                                <p class="info-value">${loginMember.trainerCareer}</p>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">자격정보</label>
+                                <div class="badge-container">
+                                    <c:choose>
+                                        <c:when test="${not empty loginMember.trainerLicense}">
+                                            <c:forEach var="license" items="${loginMember.trainerLicense.split(',')}">
+                                                <span class="badge">${license}</span>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="info-value" style="color: #8a6a50; font-size: 14px;">등록된 자격정보가 없습니다</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-item full-width">
+                            <label class="info-label">수상이력</label>
+                            <div class="badge-container">
+                                <c:choose>
+                                    <c:when test="${not empty loginMember.trainerAward}">
+                                        <c:forEach var="award" items="${loginMember.trainerAward.split(',')}">
+                                            <span class="badge">${award}</span>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="info-value" style="color: #8a6a50; font-size: 14px;">등록된 수상이력이 없습니다</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+
+                        <div class="edit-buttons">
+                            <button class="btn btn-primary" onclick="openInfoModal()">정보 수정</button>
+                            <button class="btn btn-secondary" onclick="openPasswordModal()">비밀번호 변경</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -609,111 +886,95 @@
     </div>
 </div>
 
-<!-- 비밀번호 변경 Modal -->
+<!-- 비밀번호 변경 모달 -->
 <div id="passwordModal" class="modal-overlay">
-    <div class="modal-content" style="width: 512px;">
-        <form id="passwordForm" action="${pageContext.request.contextPath}/trainer/updatePassword" method="POST">
-            <button class="modal-close" type="button" onclick="closePasswordModal()">
-                <svg fill="none" viewBox="0 0 16 16">
-                    <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-                    <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-                </svg>
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">비밀번호 변경</h3>
+            <button class="modal-close" onclick="closeModal('passwordModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
             </button>
-
-            <h2 class="modal-title">비밀번호 변경</h2>
-
-            <div class="form-group">
-                <label class="form-label">현재 비밀번호</label>
-                <input type="password" id="currentPassword" name="currentPassword" class="form-input" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">새 비밀번호</label>
-                <input type="password" id="newPassword" name="newPassword" class="form-input" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">새 비밀번호 확인</label>
-                <input type="password" id="confirmPassword" class="form-input" required>
-            </div>
-
-            <div class="form-buttons">
-                <button type="button" class="btn-cancel" onclick="closePasswordModal()">취소</button>
-                <button type="button" class="btn-submit" id="passwordSubmit" disabled onclick="submitPassword()">변경</button>
-            </div>
-        </form>
+        </div>
+        <div class="modal-body">
+            <form id="passwordForm" action="${pageContext.request.contextPath}/updatePassword.tr" method="post">
+                <div class="modal-form-group">
+                    <label class="modal-label">현재 비밀번호</label>
+                    <input type="password" name="currentPassword" id="currentPassword" class="modal-input" required>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label">새 비밀번호</label>
+                    <input type="password" name="newPassword" id="newPassword" class="modal-input" required>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label">새 비밀번호 확인</label>
+                    <input type="password" id="confirmPassword" class="modal-input" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('passwordModal')">취소</button>
+                    <button type="submit" class="btn btn-primary">변경</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- 정보 수정 Modal -->
-<div id="infoModal" class="modal-overlay info-modal">
-    <div class="modal-content">
-        <form id="infoForm" action="${pageContext.request.contextPath}/trainer/updateInfo" method="POST">
-            <button class="modal-close" type="button" onclick="closeInfoModal()">
-                <svg fill="none" viewBox="0 0 16 16">
-                    <path d="M12 4L4 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-                    <path d="M4 4L12 12" stroke="#FFA366" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333"/>
-                </svg>
+<!-- 정보 수정 모달 -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">정보 수정</h3>
+            <button class="modal-close" onclick="closeModal('editModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
             </button>
-
-            <h2 class="modal-title">정보 수정</h2>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label secondary">이름</label>
-                    <input type="text" name="memberName" class="form-input" value="${loginMember.memberName}">
+        </div>
+        <div class="modal-body">
+            <form action="${pageContext.request.contextPath}/updateMemberInfo.tr" method="post">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">이름</label>
+                        <input type="text" name="memberName" class="modal-input" value="${loginMember.memberName}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">생년월일</label>
+                        <input type="text" name="birthDate" class="modal-input" value="${loginMember.memberBirth}">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label secondary">생년월일</label>
-                    <input type="date" name="memberBirth" class="form-input" value="<fmt:formatDate value="${loginMember.memberBirth}" pattern="yyyy-MM-dd" />">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">연락처</label>
+                        <input type="text" name="phone" class="modal-input" value="${loginMember.memberPhone}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">이메일</label>
+                        <input type="email" name="email" class="modal-input" value="${loginMember.memberEmail}">
+                    </div>
                 </div>
-            </div>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label secondary">
-                        <svg fill="none" viewBox="0 0 12 12"><path d="M6.916 8.284C7.01926 8.33142 7.1356 8.34226 7.24585 8.31472C7.35609 8.28718 7.45367 8.22291 7.5225 8.1325L7.7 7.9C7.79315 7.7758 7.91393 7.675 8.05279 7.60557C8.19164 7.53614 8.34475 7.5 8.5 7.5H10C10.2652 7.5 10.5196 7.60536 10.7071 7.79289C10.8946 7.98043 11 8.23478 11 8.5V10C11 10.2652 10.8946 10.5196 10.7071 10.7071C10.5196 10.8946 10.2652 11 10 11C7.61305 11 5.32387 10.0518 3.63604 8.36396C1.94821 6.67613 1 4.38695 1 2C1 1.73478 1.10536 1.48043 1.29289 1.29289C1.48043 1.10536 1.73478 1 2 1H3.5C3.76522 1 4.01957 1.10536 4.20711 1.29289C4.39464 1.48043 4.5 1.73478 4.5 2V3.5C4.5 3.65525 4.46386 3.80836 4.39443 3.94721C4.325 4.08607 4.2242 4.20685 4.1 4.3L3.866 4.4755C3.77421 4.54559 3.70951 4.64529 3.6829 4.75768C3.65628 4.87006 3.66939 4.98819 3.72 5.092C4.40334 6.47993 5.52721 7.6024 6.916 8.284Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        연락처
-                    </label>
-                    <input type="text" name="memberPhone" class="form-input" value="${loginMember.memberPhone}">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="modal-label">주소</label>
+                        <input type="text" name="address" class="modal-input" value="${loginMember.memberAddress}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">경력</label>
+                        <input type="text" name="trainerCareer" class="form-input" placeholder="경력을 입력하세요." value="${loginMember.trainerCareer}">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label secondary">
-                        <svg fill="none" viewBox="0 0 12 12"><path d="M11 3.5L6.5045 6.3635C6.35195 6.45211 6.17867 6.49878 6.00225 6.49878C5.82583 6.49878 5.65255 6.45211 5.5 6.3635L1 3.5" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2H2C1.44772 2 1 2.44772 1 3V9C1 9.55228 1.44772 10 2 10H10C10.5523 10 11 9.55228 11 9V3C11 2.44772 10.5523 2 10 2Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        이메일
-                    </label>
-                    <input type="email" name="memberEmail" class="form-input" value="${loginMember.memberEmail}">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">자격정보 (쉼표(,)로 구분하여 입력)</label>
+                        <input type="text" name="trainerLicense" class="form-input" placeholder="자격정보를 입력하세요." value="${loginMember.trainerLicense}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">수상이력 (쉼표(,)로 구분하여 입력)</label>
+                        <input type="text" name="trainerAward" class="form-input" placeholder="수상이력을 입력하세요." value="${loginMember.trainerAward}">
+                    </div>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label secondary">
-                    <svg fill="none" viewBox="0 0 12 12"><path d="M10 5C10 7.4965 7.2305 10.0965 6.3005 10.8995C6.21386 10.9646 6.1084 10.9999 6 10.9999C5.8916 10.9999 5.78614 10.9646 5.6995 10.8995C4.7695 10.0965 2 7.4965 2 5C2 3.93913 2.42143 2.92172 3.17157 2.17157C3.92172 1.42143 4.93913 1 6 1C7.06087 1 8.07828 1.42143 8.82843 2.17157C9.57857 2.92172 10 3.93913 10 5Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 6.5C6.82843 6.5 7.5 5.82843 7.5 5C7.5 4.17157 6.82843 3.5 6 3.5C5.17157 3.5 4.5 4.17157 4.5 5C4.5 5.82843 5.17157 6.5 6 6.5Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    주소
-                </label>
-                <input type="text" name="memberAddress" class="form-input" value="${loginMember.memberAddress}">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">경력</label>
-                <input type="text" name="trainerCareer" class="form-input" placeholder="경력을 입력하세요." value="${loginMember.trainerCareer}">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">자격정보 (쉼표(,)로 구분하여 입력)</label>
-                <input type="text" name="trainerLicense" class="form-input" placeholder="자격정보를 입력하세요." value="${loginMember.trainerLicense}">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">수상이력 (쉼표(,)로 구분하여 입력)</label>
-                <input type="text" name="trainerAward" class="form-input" placeholder="수상이력을 입력하세요." value="${loginMember.trainerAward}">
-            </div>
-
-            <div class="form-buttons">
-                <button type="button" class="btn-cancel" onclick="closeInfoModal()">취소</button>
-                <button type="button" class="btn-submit" onclick="submitInfo()">저장</button>
-            </div>
-        </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">취소</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -726,25 +987,26 @@
         }
     });
 
-    // 비밀번호 변경 모달
+    // 비밀번호 변경 모달 열기
     function openPasswordModal() {
         document.getElementById('passwordModal').classList.add('active');
     }
 
-    function closePasswordModal() {
-        const form = document.getElementById('passwordForm');
-        form.reset();
-        document.getElementById('passwordModal').classList.remove('active');
-        document.getElementById('passwordSubmit').disabled = true;
-    }
-
-    // 정보 수정 모달
+    // 정보 수정 모달 열기
     function openInfoModal() {
-        document.getElementById('infoModal').classList.add('active');
+        document.getElementById('editModal').classList.add('active');
     }
 
-    function closeInfoModal() {
-        document.getElementById('infoModal').classList.remove('active');
+    // 모달 닫기
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.classList.remove('active');
+        }
     }
 
     // 비밀번호 유효성 검사
@@ -752,67 +1014,38 @@
         const current = document.getElementById('currentPassword').value;
         const newPass = document.getElementById('newPassword').value;
         const confirm = document.getElementById('confirmPassword').value;
-        const submitBtn = document.getElementById('passwordSubmit');
 
         if (current && newPass && confirm && newPass.length >= 4 && newPass === confirm) {
-            submitBtn.disabled = false;
-        } else {
-            submitBtn.disabled = true;
+            return true;
         }
+        return false;
     }
 
-    // 비밀번호 입력 이벤트
-    document.getElementById('currentPassword').addEventListener('input', validatePassword);
-    document.getElementById('newPassword').addEventListener('input', validatePassword);
-    document.getElementById('confirmPassword').addEventListener('input', validatePassword);
+    // 비밀번호 폼 제출 이벤트
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordForm = document.getElementById('passwordForm');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-    // 비밀번호 변경 제출
-    function submitPassword() {
-        const newPass = document.getElementById('newPassword').value;
-        const confirm = document.getElementById('confirmPassword').value;
-        if (newPass !== confirm) {
-            alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
-            return;
-        }
-        if(confirm("정말로 비밀번호를 변경하시겠습니까?")) {
-            document.getElementById('passwordForm').submit();
-        }
-    }
+                const newPass = document.getElementById('newPassword').value;
+                const confirm = document.getElementById('confirmPassword').value;
 
-    // 정보 수정 제출
-    function submitInfo() {
-        if(confirm("입력한 정보로 수정하시겠습니까?")) {
-            document.getElementById('infoForm').submit();
-        }
-    }
+                if (newPass !== confirm) {
+                    alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+                    return;
+                }
 
-    // 모달 외부 클릭시 닫기
-    document.getElementById('passwordModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closePasswordModal();
-        }
-    });
+                if (newPass.length < 4) {
+                    alert('비밀번호는 최소 4자 이상이어야 합니다.');
+                    return;
+                }
 
-    document.getElementById('infoModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeInfoModal();
-        }
-    });
-</script>
-</body>
-</html>
-odal();
-        }
-    });
-
-    // 네비게이션 활성화
-    document.querySelectorAll('.nav-button:not(.logout)').forEach(button => {
-        button.addEventListener('click', function() {
-            document.querySelectorAll('.nav-button').forEach(btn => {
-                btn.classList.remove('active');
+                if (confirm("정말로 비밀번호를 변경하시겠습니까?")) {
+                    this.submit();
+                }
             });
-            this.classList.add('active');
-        });
+        }
     });
 </script>
 </body>

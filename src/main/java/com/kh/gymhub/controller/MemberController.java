@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
 import java.util.List;
@@ -26,6 +27,7 @@ public class MemberController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
 
+    @Autowired
     public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
@@ -242,6 +244,9 @@ public class MemberController {
                                    @RequestParam String phone,
                                    @RequestParam String email,
                                    @RequestParam String address,
+                                   @RequestParam(required = false) String trainerCareer,
+                                   @RequestParam(required = false) String trainerLicense,
+                                   @RequestParam(required = false) String trainerAward,
                                    HttpSession session,
                                    Model model) {
 
@@ -259,6 +264,13 @@ public class MemberController {
         updateMember.setMemberPhone(phone);
         updateMember.setMemberEmail(email);
         updateMember.setMemberAddress(address);
+
+        // 트레이너 정보 설정 (memberType이 2인 경우만 해당)
+        if (loginMember.getMemberType() == 2) {
+            updateMember.setTrainerCareer(trainerCareer);
+            updateMember.setTrainerLicense(trainerLicense);
+            updateMember.setTrainerAward(trainerAward);
+        }
 
         // 생년월일 변환 (YYYY. MM. DD. 형식 처리)
         if (birthDate != null && !birthDate.isEmpty()) {
@@ -278,7 +290,18 @@ public class MemberController {
             Member updatedMember = memberService.getMemberById(loginMember.getMemberId());
             session.setAttribute("loginMember", updatedMember);
             session.setAttribute("alertMsg", "회원정보가 수정되었습니다.");
-            return "redirect:/member/info";
+
+            // 회원 타입별 리다이렉트 처리
+            if (loginMember.getMemberType() == 2) {
+                // 트레이너는 대시보드로
+                return "redirect:/dashboard.tr";
+            } else if (loginMember.getMemberType() == 3) {
+                // 헬스장 운영자는 대시보드로
+                return "redirect:/dashboard.gym";
+            } else {
+                // 일반 회원 및 기타 회원은 마이페이지로
+                return "redirect:/info.me";
+            }
         } else {
             model.addAttribute("errorMsg", "회원정보 수정에 실패했습니다.");
             return "common/error";
@@ -302,7 +325,7 @@ public class MemberController {
         // 현재 비밀번호 확인
         if (!bCryptPasswordEncoder.matches(currentPassword, loginMember.getMemberPwd())) {
             session.setAttribute("errorMsg", "현재 비밀번호가 일치하지 않습니다.");
-            return "redirect:/member/info";
+            return "redirect:/info.me";
         }
 
         // 새 비밀번호 암호화
@@ -312,7 +335,7 @@ public class MemberController {
 
         if (result > 0) {
             session.setAttribute("alertMsg", "비밀번호가 변경되었습니다.");
-            return "redirect:/member/info";
+            return "redirect:/info.me";
         } else {
             model.addAttribute("errorMsg", "비밀번호 변경에 실패했습니다.");
             return "common/error";
@@ -348,7 +371,7 @@ public class MemberController {
 
         if (result > 0) {
             session.setAttribute("alertMsg", "인바디 기록이 등록되었습니다.");
-            return "redirect:/member/info";
+            return "redirect:/info.me";
         } else {
             model.addAttribute("errorMsg", "인바디 기록 등록에 실패했습니다.");
             return "common/error";
@@ -387,7 +410,7 @@ public class MemberController {
 
 
     // ====================================== 로그인 ======================================================
-    @PostMapping("/login.do")
+    @PostMapping("/login.me")
     public String login(@RequestParam String id,
                        @RequestParam String password,
                        HttpSession session) {
@@ -412,32 +435,9 @@ public class MemberController {
         }
     }
 
+    // 로그아웃
     @GetMapping("/logout.me")
-    public String logout(HttpSession httpSession) {
-        // 세션 완전 무효화
-        httpSession.invalidate();
-        return "redirect:/?logout=success";
-    }
-    
-    // GET 방식 로그아웃
-    @GetMapping("/logout.do")
-    public String logoutGet(HttpSession session) {
-        // 세션 완전 무효화
-        session.invalidate();
-        return "redirect:/?logout=success";
-    }
-    
-    // POST 방식 로그아웃 (호환성을 위해 유지)
-    @PostMapping("/logout.do")
-    public String logoutPost(HttpSession session) {
-        // 세션 완전 무효화
-        session.invalidate();
-        return "redirect:/?logout=success";
-    }
-    
-    // /logout 엔드포인트 추가 (호환성을 위해)
-    @GetMapping("/logout")
-    public String logoutSimple(HttpSession session) {
+    public String logout(HttpSession session) {
         // 세션 완전 무효화
         session.invalidate();
         return "redirect:/?logout=success";
