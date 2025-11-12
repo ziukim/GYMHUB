@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.PurchaseItemMapper">
+
+    <resultMap id="purchaseItemResultMap" type="com.kh.gymhub.model.vo.PurchaseItem">
+        <id property="purchaseItemNo" column="PURCHASE_ITEM_NO"/>
+        <result property="membershipPeriod" column="MEMBERSHIP_PERIOD"/>
+        <result property="lockerPeriod" column="LOCKER_PERIOD"/>
+        <result property="ptCount" column="PT_COUNT"/>
+        <result property="membershipStartDate" column="MEMBERSHIP_START_DATE"/>
+        <result property="membershipEndDate" column="MEMBERSHIP_END_DATE"/>
+        <result property="purchaseNo" column="PURCHASE_NO"/>
+    </resultMap>
+
+    <insert id="insertPurchaseItem" parameterType="com.kh.gymhub.model.vo.PurchaseItem">
+        <selectKey keyProperty="purchaseItemNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_PURCHASE_ITEM_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO PURCHASE_ITEM (
+            PURCHASE_ITEM_NO,
+            MEMBERSHIP_PERIOD,
+            LOCKER_PERIOD,
+            PT_COUNT,
+            MEMBERSHIP_START_DATE,
+            MEMBERSHIP_END_DATE,
+            PURCHASE_NO
+        ) VALUES (
+            #{purchaseItemNo},
+            #{membershipPeriod},
+            #{lockerPeriod},
+            #{ptCount},
+            #{membershipStartDate},
+            #{membershipEndDate},
+            #{purchaseNo}
+        )
+    </insert>
+
+</mapper>
+

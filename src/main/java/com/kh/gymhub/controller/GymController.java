@@ -1,10 +1,17 @@
 package com.kh.gymhub.controller;
 
+import com.kh.gymhub.model.mapper.MemberMapper;
+import com.kh.gymhub.model.mapper.MembershipMapper;
+import com.kh.gymhub.model.vo.LockerPass;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.model.vo.MemberWithMembership;
 import com.kh.gymhub.model.vo.Product;
 import com.kh.gymhub.model.vo.YoutubeUrl;
+import com.kh.gymhub.service.LockerService;
 import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.ProductService;
+import com.kh.gymhub.service.PurchaseService;
+import com.kh.gymhub.service.SalesService;
 import com.kh.gymhub.service.YoutubeUrlService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -26,12 +33,22 @@ public class GymController {
     private final ProductService productService;
     private final YoutubeUrlService youtubeUrlService;
     private final MemberService memberService;
+    private final LockerService lockerService;
+    private final PurchaseService purchaseService;
+    private final MembershipMapper membershipMapper;
+    private final SalesService salesService;
+    private final MemberMapper memberMapper;
     
     @Autowired
-    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService) {
+    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper) {
         this.productService = productService;
         this.youtubeUrlService = youtubeUrlService;
         this.memberService = memberService;
+        this.lockerService = lockerService;
+        this.purchaseService = purchaseService;
+        this.membershipMapper = membershipMapper;
+        this.salesService = salesService;
+        this.memberMapper = memberMapper;
     }
     
     @GetMapping("/dashboard.gym")
@@ -45,12 +62,82 @@ public class GymController {
     }
 
     @GetMapping("/member.gym")
-    public String memberManagement() {
+    public String memberManagement(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            // 해당 헬스장의 회원 목록 조회
+            List<MemberWithMembership> members = membershipMapper.selectMembersWithMembershipByGymNo(gymNo);
+            model.addAttribute("members", members);
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("members", new java.util.ArrayList<>());
+        }
+        
         return "gym/gymMemberManagement";
     }
 
     @GetMapping("/sales.gym")
-    public String salesBoard() {
+    public String salesBoard(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            // 현재 날짜 기준으로 연도와 월 가져오기
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            int year = cal.get(java.util.Calendar.YEAR);
+            int month = cal.get(java.util.Calendar.MONTH) + 1; // Calendar.MONTH는 0부터 시작
+            
+            // 매출 데이터 조회
+            int membershipSales = salesService.getMembershipSalesByGymNoAndMonth(gymNo, year, month);
+            int stockSales = salesService.getStockSalesByGymNoAndMonth(gymNo, year, month);
+            int totalSales = salesService.getTotalSalesByGymNoAndMonth(gymNo, year, month);
+            
+            // 전체 회원 수 조회
+            List<MemberWithMembership> members = membershipMapper.selectMembersWithMembershipByGymNo(gymNo);
+            int totalMembers = members != null ? members.size() : 0;
+            
+            // 모델에 데이터 추가
+            model.addAttribute("membershipSales", membershipSales);
+            model.addAttribute("stockSales", stockSales);
+            model.addAttribute("totalSales", totalSales);
+            model.addAttribute("totalMembers", totalMembers);
+            model.addAttribute("year", year);
+            model.addAttribute("month", month);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 에러 발생 시 기본값 설정
+            model.addAttribute("membershipSales", 0);
+            model.addAttribute("stockSales", 0);
+            model.addAttribute("totalSales", 0);
+            model.addAttribute("totalMembers", 0);
+        }
+        
         return "gym/gymSalesBoard";
     }
 
@@ -66,8 +153,156 @@ public class GymController {
     }
 
     @GetMapping("/trainer.gym")
-    public String trainerManagement() {
+    public String trainerManagement(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            // 해당 헬스장의 트레이너 목록 조회 (memberType=2, gymNo=해당 헬스장)
+            List<Member> trainers = memberMapper.selectTrainersByGymNo(gymNo);
+            model.addAttribute("trainers", trainers != null ? trainers : new java.util.ArrayList<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("trainers", new java.util.ArrayList<>());
+        }
+        
         return "gym/gymTrainerManagement";
+    }
+    
+    @PostMapping("/trainer/register.gym")
+    public String registerTrainer(@RequestParam("memberId") String memberId, HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/trainer.gym";
+        }
+        
+        try {
+            // 트레이너 조회 (memberType=2, gymNo=null)
+            Member trainer = memberMapper.getTrainerByIdForRegistration(memberId);
+            
+            if (trainer == null) {
+                session.setAttribute("errorMsg", "등록 가능한 트레이너를 찾을 수 없습니다. (이미 다른 헬스장에 등록되었거나 트레이너가 아닌 회원입니다.)");
+                return "redirect:/trainer.gym";
+            }
+            
+            // 트레이너의 gymNo 업데이트
+            int updateResult = memberMapper.updateMemberGymNo(trainer.getMemberNo(), gymNo);
+            
+            if (updateResult > 0) {
+                session.setAttribute("successMsg", "트레이너가 성공적으로 등록되었습니다.");
+            } else {
+                session.setAttribute("errorMsg", "트레이너 등록에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("errorMsg", "트레이너 등록 중 오류가 발생했습니다.");
+        }
+        
+        return "redirect:/trainer.gym";
+    }
+    
+    @PostMapping("/trainer/delete.gym")
+    public String deleteTrainer(@RequestParam("memberNo") int memberNo, HttpSession session) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/trainer.gym";
+        }
+        
+        try {
+            // 트레이너가 해당 헬스장 소속인지 확인
+            List<Member> trainers = memberMapper.selectTrainersByGymNo(gymNo);
+            Member trainer = null;
+            for (Member t : trainers) {
+                if (t.getMemberNo() == memberNo) {
+                    trainer = t;
+                    break;
+                }
+            }
+            
+            if (trainer != null) {
+                // gymNo를 null로 업데이트 (삭제 대신 헬스장 연결 해제)
+                int updateResult = memberMapper.updateMemberGymNo(memberNo, null);
+                
+                if (updateResult > 0) {
+                    session.setAttribute("successMsg", "트레이너가 삭제되었습니다.");
+                } else {
+                    session.setAttribute("errorMsg", "트레이너 삭제에 실패했습니다.");
+                }
+            } else {
+                session.setAttribute("errorMsg", "해당 트레이너를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("errorMsg", "트레이너 삭제 중 오류가 발생했습니다.");
+        }
+        
+        return "redirect:/trainer.gym";
+    }
+    
+    // AJAX: 트레이너 아이디 조회 (memberType=2, gymNo=null)
+    @GetMapping("/trainer/lookup.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> lookupTrainer(@RequestParam String memberId) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        try {
+            if (memberId == null || memberId.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "아이디를 입력해주세요.");
+                return result;
+            }
+            
+            // 트레이너 조회 (memberType=2, gymNo=null)
+            Member trainer = memberMapper.getTrainerByIdForRegistration(memberId.trim());
+            
+            if (trainer == null) {
+                result.put("success", false);
+                result.put("message", "등록 가능한 트레이너를 찾을 수 없습니다. (이미 다른 헬스장에 등록되었거나 트레이너가 아닌 회원입니다.)");
+                return result;
+            }
+            
+            result.put("success", true);
+            result.put("trainer", trainer);
+            result.put("message", "트레이너 정보를 조회했습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "트레이너 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
     }
 
     @GetMapping("/video.gym")
@@ -352,6 +587,150 @@ public class GymController {
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "데이터 조회 중 오류가 발생했습니다.");
+        }
+        
+        return result;
+    }
+
+    // AJAX: 빈 락커 목록 조회
+    @GetMapping("/locker/available.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> getAvailableLockers(HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 모든 락커 조회 (현재 유효한 기간의 락커만 조회됨)
+            List<LockerPass> allLockers = lockerService.selectLockerPassListByGymNo(gymNo);
+            
+            // 빈 락커만 필터링
+            // 1. memberName이 null이거나 빈 문자열인 경우 (락커권이 없는 경우)
+            // 2. lockerPassStatus가 null인 경우 (락커권이 없는 경우)
+            List<LockerPass> availableLockers = new java.util.ArrayList<>();
+            for (LockerPass locker : allLockers) {
+                if (locker.getMemberName() == null || locker.getMemberName().trim().isEmpty()) {
+                    if (locker.getLockerPassStatus() == null || locker.getLockerPassStatus().trim().isEmpty()) {
+                        availableLockers.add(locker);
+                    }
+                }
+            }
+            
+            result.put("success", true);
+            result.put("lockers", availableLockers);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "락커 목록 조회 중 오류가 발생했습니다.");
+        }
+        
+        return result;
+    }
+
+    // AJAX: 회원 등록 (구매 등록)
+    @PostMapping("/member/register.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> registerMember(@RequestBody java.util.Map<String, Object> requestData,
+                                                         HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 요청 데이터 파싱
+            String memberId = (String) requestData.get("memberId");
+            java.util.List<Integer> productNos = (java.util.List<Integer>) requestData.get("productNos");
+            String startDateStr = (String) requestData.get("startDate");
+            String endDateStr = (String) requestData.get("endDate");
+            String lockerRealNum = (String) requestData.get("lockerRealNum");
+            
+            if (memberId == null || memberId.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "회원 아이디가 필요합니다.");
+                return result;
+            }
+            
+            if (productNos == null || productNos.isEmpty()) {
+                result.put("success", false);
+                result.put("message", "상품을 선택해주세요.");
+                return result;
+            }
+            
+            // 회원 조회
+            Member member = memberService.getMemberById(memberId);
+            if (member == null) {
+                result.put("success", false);
+                result.put("message", "회원을 찾을 수 없습니다.");
+                return result;
+            }
+            
+            // 선택한 상품들 조회
+            java.util.List<Product> selectedProducts = new java.util.ArrayList<>();
+            java.util.List<Product> allProducts = productService.getProductsByGymNo(gymNo);
+            for (Integer productNo : productNos) {
+                for (Product product : allProducts) {
+                    if (product.getProductNo() == productNo) {
+                        selectedProducts.add(product);
+                        break;
+                    }
+                }
+            }
+            
+            if (selectedProducts.isEmpty()) {
+                result.put("success", false);
+                result.put("message", "선택한 상품을 찾을 수 없습니다.");
+                return result;
+            }
+            
+            // 날짜 파싱
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date startDate = sdf.parse(startDateStr);
+            java.util.Date endDate = sdf.parse(endDateStr);
+            
+            // 회원 등록 (구매 등록)
+            int purchaseNo = purchaseService.registerMemberPurchase(member, gymNo, selectedProducts, startDate, endDate, lockerRealNum);
+            
+            if (purchaseNo > 0) {
+                result.put("success", true);
+                result.put("message", "회원이 성공적으로 등록되었습니다.");
+                result.put("purchaseNo", purchaseNo);
+            } else {
+                result.put("success", false);
+                result.put("message", "회원 등록에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "회원 등록 중 오류가 발생했습니다: " + e.getMessage());
         }
         
         return result;
@@ -785,6 +1164,45 @@ public class GymController {
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "상품 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    // AJAX: 회원 목록 조회 (Membership 테이블에 정보가 있는 회원만)
+    @GetMapping("/member/list.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> getMemberList(HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 해당 헬스장의 회원 목록 조회
+            List<MemberWithMembership> members = membershipMapper.selectMembersWithMembershipByGymNo(gymNo);
+            
+            result.put("success", true);
+            result.put("members", members);
+            result.put("count", members.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "회원 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
         
         return result;

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -192,91 +193,117 @@
             </div>
 
             <!-- Form Container -->
-            <div class="notice-form-container">
-                <form id="noticeUpdateForm" method="post" enctype="multipart/form-data">
-                    <!-- 공지사항 ID (hidden) -->
-                    <input type="hidden" id="noticeId" name="noticeId" value="${notice.noticeNo}">
-                    
-                    <!-- Notice Type Checkboxes -->
-                    <div class="notice-type-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="typeImportant" name="noticeType" value="important" 
-                                   <c:if test="${notice.noticeType == 'important'}">checked</c:if>>
-                            <label for="typeImportant">중요 공지로 표시</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="typeEvent" name="noticeType" value="event"
-                                   <c:if test="${notice.noticeType == 'event'}">checked</c:if>>
-                            <label for="typeEvent">이벤트 공지로 표시</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="typeUrgent" name="noticeType" value="urgent"
-                                   <c:if test="${notice.noticeType == 'urgent'}">checked</c:if>>
-                            <label for="typeUrgent">점검 공지로 표시</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="typeGeneral" name="noticeType" value="general"
-                                   <c:if test="${notice.noticeType == 'general' || empty notice.noticeType}">checked</c:if>>
-                            <label for="typeGeneral">일반 공지로 표시</label>
-                        </div>
-                    </div>
-
-                    <!-- Title -->
-                    <div class="form-group">
-                        <label class="form-label" for="noticeTitle">제목</label>
-                        <input type="text" id="noticeTitle" name="noticeTitle" class="form-input" 
-                               placeholder="공지사항 제목을 입력하세요" 
-                               value="<c:out value='${notice.noticeTitle}'/>" required>
-                    </div>
-
-                    <!-- Author -->
-                    <div class="form-group">
-                        <label class="form-label" for="noticeAuthor">작성자</label>
-                        <input type="text" id="noticeAuthor" name="noticeAuthor" class="form-input" 
-                               placeholder="작성자 입력" 
-                               value="<c:out value='${notice.noticeWriter}'/>" required>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="form-group">
-                        <label class="form-label" for="noticeContent">내용</label>
-                        <textarea id="noticeContent" name="noticeContent" class="form-textarea" 
-                                  placeholder="공지 내용을 입력하세요" required><c:out value='${notice.noticeContent}'/></textarea>
-                    </div>
-
-                    <!-- File Upload -->
-                    <div class="file-upload-section">
-                        <label class="form-label">첨부파일</label>
-                        <c:if test="${not empty notice.noticeFile}">
-                            <div class="existing-file">
-                                기존 파일: <c:out value='${notice.noticeFile}'/>
+            <c:choose>
+                <c:when test="${not empty notice}">
+                    <div class="notice-form-container">
+                        <form id="noticeUpdateForm" method="post" action="${pageContext.request.contextPath}/noticeUpdate.no" enctype="multipart/form-data">
+                            <!-- 공지사항 ID (hidden) -->
+                            <input type="hidden" id="noticeId" name="noticeId" value="${notice.noticeNo}">
+                            
+                            <!-- Notice Type Checkboxes -->
+                            <div class="notice-type-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="typeImportant" name="noticeType" value="important" 
+                                           <c:if test="${notice.noticeCategory == 'important' or notice.noticeCategory == '중요'}">checked</c:if>>
+                                    <label for="typeImportant">중요 공지로 표시</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="typeEvent" name="noticeType" value="event"
+                                           <c:if test="${notice.noticeCategory == 'event' or notice.noticeCategory == '이벤트'}">checked</c:if>>
+                                    <label for="typeEvent">이벤트 공지로 표시</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="typeUrgent" name="noticeType" value="urgent"
+                                           <c:if test="${notice.noticeCategory == 'urgent' or notice.noticeCategory == '긴급'}">checked</c:if>>
+                                    <label for="typeUrgent">점검 공지로 표시</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="typeGeneral" name="noticeType" value="general"
+                                           <c:if test="${notice.noticeCategory == 'general' or notice.noticeCategory == '일반' or empty notice.noticeCategory}">checked</c:if>>
+                                    <label for="typeGeneral">일반 공지로 표시</label>
+                                </div>
                             </div>
-                        </c:if>
-                        <div class="file-upload-wrapper">
-                            <input type="file" id="noticeFile" name="noticeFile" accept="image/*" onchange="updateFileName()">
-                            <button type="button" class="file-upload-button" onclick="document.getElementById('noticeFile').click()">
-                                📎 이미지
-                            </button>
-                            <span class="file-name" id="fileName">
-                                <c:choose>
-                                    <c:when test="${not empty notice.noticeFile}">
-                                        <c:out value='${notice.noticeFile}'/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        선택된 파일 없음
-                                    </c:otherwise>
-                                </c:choose>
-                            </span>
+
+                            <!-- Title -->
+                            <div class="form-group">
+                                <label class="form-label" for="noticeTitle">제목</label>
+                                <input type="text" id="noticeTitle" name="noticeTitle" class="form-input" 
+                                       placeholder="공지사항 제목을 입력하세요" 
+                                       value="<c:out value='${notice.noticeTitle}'/>" required>
+                            </div>
+
+                            <!-- Author -->
+                            <div class="form-group">
+                                <label class="form-label" for="noticeAuthor">작성자</label>
+                                <input type="text" id="noticeAuthor" name="noticeAuthor" class="form-input" 
+                                       placeholder="작성자 입력" 
+                                       value="<c:out value='${notice.noticeWriter}'/>" required>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="form-group">
+                                <label class="form-label" for="noticeContent">내용</label>
+                                <textarea id="noticeContent" name="noticeContent" class="form-textarea" 
+                                          placeholder="공지 내용을 입력하세요" required><c:out value='${notice.noticeContent}'/></textarea>
+                            </div>
+
+                            <!-- File Upload -->
+                            <div class="file-upload-section">
+                                <label class="form-label">첨부파일</label>
+                                <c:if test="${not empty notice.filePath}">
+                                    <div class="existing-file" style="margin-bottom: 12px;">
+                                        <div style="color: #ffa366; font-weight: 500; margin-bottom: 8px;">기존 첨부파일</div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <img src="${pageContext.request.contextPath}${notice.filePath}" 
+                                                 alt="기존 이미지" 
+                                                 style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 1px solid #ff6b00;">
+                                            <a href="${pageContext.request.contextPath}${notice.filePath}" 
+                                               target="_blank" 
+                                               style="color: #ff6b00; text-decoration: none;">
+                                                이미지 보기
+                                            </a>
+                                        </div>
+                                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                                            새 파일을 선택하면 기존 파일이 교체됩니다.
+                                        </div>
+                                    </div>
+                                </c:if>
+                                <div class="file-upload-wrapper">
+                                    <input type="file" id="noticeFile" name="noticeFile" accept="image/*" onchange="updateFileName()">
+                                    <button type="button" class="file-upload-button" onclick="document.getElementById('noticeFile').click()">
+                                        📎 이미지
+                                    </button>
+                                    <span class="file-name" id="fileName">
+                                        <c:choose>
+                                            <c:when test="${not empty notice.filePath}">
+                                                기존 파일 유지
+                                            </c:when>
+                                            <c:otherwise>
+                                                선택된 파일 없음
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=${notice.noticeNo}'">취소</button>
+                                <button type="submit" class="btn btn-primary">수정</button>
+                            </div>
+                        </form>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="notice-form-container">
+                        <div style="text-align: center; padding: 60px 20px; color: #666;">
+                            <h3 style="color: #b0b0b0; margin-bottom: 16px;">공지사항을 찾을 수 없습니다</h3>
+                            <p style="color: #666; margin-bottom: 24px;">요청하신 공지사항이 존재하지 않거나 삭제되었습니다.</p>
+                            <button class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">목록으로</button>
                         </div>
                     </div>
-
-                    <!-- Action Buttons -->
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">취소</button>
-                        <button type="submit" class="btn btn-primary">수정</button>
-                    </div>
-                </form>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 
@@ -290,8 +317,8 @@
                 fileNameSpan.textContent = fileInput.files[0].name;
             } else {
                 <c:choose>
-                    <c:when test="${not empty notice.noticeFile}">
-                        fileNameSpan.textContent = '<c:out value="${notice.noticeFile}"/>';
+                    <c:when test="${not empty notice.filePath}">
+                        fileNameSpan.textContent = '기존 파일 유지';
                     </c:when>
                     <c:otherwise>
                         fileNameSpan.textContent = '선택된 파일 없음';
@@ -302,54 +329,53 @@
 
         // 폼 제출 처리
         document.getElementById('noticeUpdateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             // 체크박스 유효성 검사
             const checkboxes = document.querySelectorAll('input[name="noticeType"]:checked');
             if (checkboxes.length === 0) {
+                e.preventDefault();
                 alert('공지사항 유형을 최소 1개 선택해주세요.');
-                return;
+                return false;
             }
             
             // 제목 유효성 검사
             const title = document.getElementById('noticeTitle').value.trim();
             if (title === '') {
+                e.preventDefault();
                 alert('제목을 입력해주세요.');
                 document.getElementById('noticeTitle').focus();
-                return;
+                return false;
             }
             
             // 작성자 유효성 검사
             const author = document.getElementById('noticeAuthor').value.trim();
             if (author === '') {
+                e.preventDefault();
                 alert('작성자를 입력해주세요.');
                 document.getElementById('noticeAuthor').focus();
-                return;
+                return false;
             }
             
             // 내용 유효성 검사
             const content = document.getElementById('noticeContent').value.trim();
             if (content === '') {
+                e.preventDefault();
                 alert('내용을 입력해주세요.');
                 document.getElementById('noticeContent').focus();
-                return;
+                return false;
             }
             
-            // 실제로는 서버로 폼 데이터 전송
-            alert('공지사항이 수정되었습니다.');
-            location.href = '${pageContext.request.contextPath}/notice.no';
-            
-            // TODO: 실제 서버 전송 코드
-            // this.submit();
+            // 유효성 검사 통과 시 폼 제출 (서버로 전송)
+            return true;
         });
 
         // 체크박스 상호 배타적 처리 (하나만 선택 가능하도록)
         const checkboxes = document.querySelectorAll('input[name="noticeType"]');
-        checkboxes.forEach(checkbox => {
+        checkboxes.forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
-                if (this.checked) {
-                    checkboxes.forEach(cb => {
-                        if (cb !== this) {
+                const currentCheckbox = this;
+                if (currentCheckbox.checked) {
+                    checkboxes.forEach(function(cb) {
+                        if (cb !== currentCheckbox) {
                             cb.checked = false;
                         }
                     });

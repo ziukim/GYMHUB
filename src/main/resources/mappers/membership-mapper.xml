@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.MembershipMapper">
+
+    <resultMap id="membershipResultMap" type="com.kh.gymhub.model.vo.Membership">
+        <id property="membershipNo" column="MEMBERSHIP_NO"/>
+        <result property="purchaseNo" column="PURCHASE_NO"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="membershipStatus" column="MEMBERSHIP_STATUS"/>
+        <result property="membershipCreateat" column="MEMBERSHIP_CREATEAT"/>
+        <result property="membershipUpdate" column="MEMBERSHIP_UPDATE"/>
+    </resultMap>
+
+    <resultMap id="memberWithMembershipResultMap" type="com.kh.gymhub.model.vo.MemberWithMembership">
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="memberName" column="MEMBER_NAME"/>
+        <result property="memberPhone" column="MEMBER_PHONE"/>
+        <result property="memberEmail" column="MEMBER_EMAIL"/>
+        <result property="memberAddress" column="MEMBER_ADDRESS"/>
+        <result property="membershipNo" column="MEMBERSHIP_NO"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="membershipStatus" column="MEMBERSHIP_STATUS"/>
+        <result property="lockerRealNum" column="LOCKER_REAL_NUM"/>
+        <result property="productNames" column="PRODUCT_NAMES"/>
+    </resultMap>
+
+    <insert id="insertMembership" parameterType="com.kh.gymhub.model.vo.Membership">
+        <selectKey keyProperty="membershipNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_MEMBERSHIP_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO MEMBERSHIP (
+            MEMBERSHIP_NO,
+            PURCHASE_NO,
+            MEMBER_NO,
+            GYM_NO,
+            START_DATE,
+            END_DATE,
+            MEMBERSHIP_STATUS,
+            MEMBERSHIP_CREATEAT,
+            MEMBERSHIP_UPDATE
+        ) VALUES (
+            #{membershipNo},
+            #{purchaseNo},
+            #{memberNo},
+            #{gymNo},
+            #{startDate},
+            #{endDate},
+            #{membershipStatus},
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 헬스장의 회원 목록 조회 (Membership 테이블에 정보가 있는 회원만) -->
+    <select id="selectMembersWithMembershipByGymNo" parameterType="_int" resultMap="memberWithMembershipResultMap">
+        SELECT 
+            M.MEMBER_NO,
+            M.MEMBER_ID,
+            M.MEMBER_NAME,
+            M.MEMBER_PHONE,
+            M.MEMBER_EMAIL,
+            M.MEMBER_ADDRESS,
+            MS.MEMBERSHIP_NO,
+            MS.START_DATE,
+            MS.END_DATE,
+            MS.MEMBERSHIP_STATUS,
+            NVL(L.LOCKER_REAL_NUM, '-') AS LOCKER_REAL_NUM,
+            NVL((
+                SELECT 
+                    RTRIM(
+                        LISTAGG(
+                            CASE 
+                                WHEN PI.MEMBERSHIP_PERIOD IS NOT NULL AND PI.MEMBERSHIP_PERIOD > 0 THEN 
+                                    CASE 
+                                        WHEN PI.MEMBERSHIP_PERIOD = 365 THEN '12개월 회원권'
+                                        WHEN PI.MEMBERSHIP_PERIOD >= 30 THEN TO_CHAR(FLOOR(PI.MEMBERSHIP_PERIOD / 30)) || '개월 회원권'
+                                        ELSE TO_CHAR(PI.MEMBERSHIP_PERIOD) || '일 회원권'
+                                    END
+                                ELSE ''
+                            END ||
+                            CASE 
+                                WHEN PI.LOCKER_PERIOD IS NOT NULL AND PI.LOCKER_PERIOD > 0 THEN 
+                                    CASE 
+                                        WHEN PI.LOCKER_PERIOD = 365 THEN ' + 12개월 락커 이용권'
+                                        WHEN PI.LOCKER_PERIOD >= 30 THEN ' + ' || TO_CHAR(FLOOR(PI.LOCKER_PERIOD / 30)) || '개월 락커 이용권'
+                                        ELSE ' + ' || TO_CHAR(PI.LOCKER_PERIOD) || '일 락커 이용권'
+                                    END
+                                ELSE ''
+                            END ||
+                            CASE 
+                                WHEN PI.PT_COUNT IS NOT NULL AND PI.PT_COUNT > 0 THEN 
+                                    ' + PT ' || TO_CHAR(PI.PT_COUNT) || '회 이용권'
+                                ELSE ''
+                            END,
+                            ' + '
+                        ) WITHIN GROUP (ORDER BY PI.PURCHASE_ITEM_NO),
+                        ' + '
+                    )
+                FROM PURCHASE_ITEM PI
+                WHERE PI.PURCHASE_NO = P.PURCHASE_NO
+                    AND (PI.MEMBERSHIP_PERIOD > 0 OR PI.LOCKER_PERIOD > 0 OR PI.PT_COUNT > 0)
+            ), '') AS PRODUCT_NAMES
+        FROM MEMBER M
+        INNER JOIN MEMBERSHIP MS ON M.MEMBER_NO = MS.MEMBER_NO
+        INNER JOIN PURCHASE P ON MS.PURCHASE_NO = P.PURCHASE_NO
+        LEFT JOIN LOCKER_PASS LP ON LP.MEMBER_NO = M.MEMBER_NO 
+            AND LP.LOCKER_PASS_STATUS = '정상'
+            AND LP.LOCKER_END >= TRUNC(SYSDATE)
+        LEFT JOIN LOCKER L ON LP.LOCKER_NO = L.LOCKER_NO
+        WHERE MS.GYM_NO = #{gymNo}
+            AND M.STATUS = 'Y'
+            AND MS.MEMBERSHIP_STATUS = '정상'
+        ORDER BY MS.START_DATE DESC, M.MEMBER_NAME ASC
+    </select>
+
+</mapper>
+
