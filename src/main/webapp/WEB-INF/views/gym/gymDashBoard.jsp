@@ -7,13 +7,7 @@
     <title>GymHub - 대시보드</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
+        /* gymDashBoard 전용 스타일 */
 
         /* Dashboard Grid */
         .dashboard-container {
@@ -45,16 +39,10 @@
             transform: translateY(-5px);
         }
 
+        /* stat-icon, stat-label, stat-value, stat-change는 common.css에 있음 */
         .stat-icon {
             width: 60px;
             height: 60px;
-            background-color: #2d1810;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(255, 107, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
             flex-shrink: 0;
             font-size: 24px;
         }
@@ -63,28 +51,6 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            color: white;
-        }
-
-        .stat-change {
-            font-size: 14px;
-        }
-
-        .stat-change.positive {
-            color: #05df72;
-        }
-
-        .stat-change.negative {
-            color: #ff6467;
         }
 
         /* Monthly Stats Section */
@@ -96,9 +62,9 @@
             box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
         }
 
+        /* section-header는 common.css에 있으므로 추가 속성만 정의 */
         .section-header {
             padding-bottom: 16px;
-            border-bottom: 2px solid #ff6b00;
             margin-bottom: 24px;
         }
 

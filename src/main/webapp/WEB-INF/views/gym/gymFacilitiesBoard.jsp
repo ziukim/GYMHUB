@@ -8,15 +8,8 @@
     <title>GymHub - 시설 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
-        /* 시설 관리 페이지 전용 스타일 */
+        /* gymFacilitiesBoard 전용 스타일 */
+        /* main-content는 common.css에 있음 */
 
         /* Stats Cards */
         .stats-grid {

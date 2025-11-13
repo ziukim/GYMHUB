@@ -8,38 +8,22 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* 트레이너 대시보드 전용 스타일 */
         body {
             font-family: 'ABeeZee', 'Noto Sans KR', sans-serif;
             background-color: #0a0a0a;
             color: #ffa366;
-            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-
-        /* Main Content - 최대 너비 제한 추가 */
+        /* Main Content - padding과 background-color만 오버라이드 */
         .main-content {
-            margin-left: 255px;
             padding: 29px;
-            width: calc(100% - 255px);
-            min-height: 100vh;
             background-color: #0a0a0a;
         }
 
         .page-title {
             font-size: 32px;
-            color: #ff6b00;
             margin-bottom: 56px;
         }
 
@@ -59,10 +43,8 @@
             position: relative;
         }
 
+        /* card-title은 common.css에 있으므로 추가 속성만 정의 */
         .card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             margin-bottom: 18px;
             justify-content: space-between;
             height: 30px;
@@ -737,10 +719,19 @@
                 <div class="profile-section">
                     <div class="profile-image-container">
                         <div class="profile-image" id="mainProfileImage">
-                            <svg viewBox="0 0 48 48" fill="none">
-                                <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <c:choose>
+                                <c:when test="${not empty loginMember.memberPhotoPath}">
+                                    <img src="${pageContext.request.contextPath}${loginMember.memberPhotoPath}"
+                                         alt="프로필 이미지"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                </c:when>
+                                <c:otherwise>
+                                    <svg viewBox="0 0 48 48" fill="none">
+                                        <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                         <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
                         <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">
@@ -1043,6 +1034,80 @@
 
                 if (confirm("정말로 비밀번호를 변경하시겠습니까?")) {
                     this.submit();
+                }
+            });
+        }
+
+        // 프로필 이미지 변경
+        const profileImageInput = document.getElementById('profileImageInput');
+        if (profileImageInput) {
+            profileImageInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+
+                    // 파일 크기 체크 (5MB 제한)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                        return;
+                    }
+
+                    // 이미지 파일 형식 체크
+                    if (!file.type.startsWith('image/')) {
+                        alert('이미지 파일만 업로드 가능합니다.');
+                        return;
+                    }
+
+                    // 미리보기 표시
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '50%';
+
+                        document.getElementById('mainProfileImage').innerHTML = '';
+                        document.getElementById('mainProfileImage').appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+
+                    // 서버에 업로드
+                    const formData = new FormData();
+                    formData.append('profileImage', file);
+
+                    fetch('${pageContext.request.contextPath}/uploadProfileImage.me', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                // 성공 시 이미지 경로 업데이트
+                                if (data.imagePath) {
+                                    const img = document.createElement('img');
+                                    img.src = data.imagePath;
+                                    img.style.width = '100%';
+                                    img.style.height = '100%';
+                                    img.style.objectFit = 'cover';
+                                    img.style.borderRadius = '50%';
+                                    img.alt = '프로필 이미지';
+
+                                    document.getElementById('mainProfileImage').innerHTML = '';
+                                    document.getElementById('mainProfileImage').appendChild(img);
+                                }
+                            } else {
+                                alert(data.message);
+                                // 실패 시 원래 이미지로 복구
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('이미지 업로드 중 오류가 발생했습니다.');
+                            location.reload();
+                        });
                 }
             });
         }

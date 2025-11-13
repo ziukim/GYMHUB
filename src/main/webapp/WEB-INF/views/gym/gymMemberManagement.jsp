@@ -9,84 +9,9 @@
     <title>GymHub - 회원 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
-        .content-container {
-            background-color: #2d1810;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            padding: 26px;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
-        }
-
-        /* Header */
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #ff6b00;
-            margin-bottom: 24px;
-        }
-
-        .header-info h2 {
-            font-size: 18px;
-            color: #ff6b00;
-            margin-bottom: 4px;
-        }
-
-        .header-info p {
-            font-size: 12px;
-            color: #b0b0b0;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .filter-btn {
-            background-color: #2d1810;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            padding: 10px 16px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 8px rgba(255, 107, 0, 0.25);
-        }
-
-        .filter-btn:hover {
-            background-color: #ff6b00;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.5);
-        }
-
-        .add-member-btn {
-            background-color: #ff6b00;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
-        }
-
-        .add-member-btn:hover {
-            box-shadow: 0 0 25px rgba(255, 107, 0, 0.6);
-            transform: translateY(-2px);
-        }
+        /* gymMemberManagement 전용 스타일 */
+        /* content-container, content-header, header-info, header-buttons, filter-btn는 common.css에 있음 */
+        /* add-member-btn은 add-btn 클래스를 사용하거나 동일한 스타일을 적용할 수 있음 */
 
         /* Table */
         .table-container {

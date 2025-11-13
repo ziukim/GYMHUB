@@ -13,5 +13,6 @@ public interface NoticeMapper {
     int insertNotice(GymNotice notice);
     int updateNotice(GymNotice notice);
     int updateNoticeFixStatus(@Param("noticeNo") int noticeNo, @Param("fixStatus") String fixStatus);
+    int deleteNotice(@Param("noticeNo") int noticeNo);
 }
 

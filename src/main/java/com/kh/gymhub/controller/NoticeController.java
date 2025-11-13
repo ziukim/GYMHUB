@@ -323,5 +323,70 @@ public class NoticeController {
         return result;
     }
 
+    // 공지사항 삭제
+    @PostMapping("/noticeDelete.no")
+    @ResponseBody
+    public Map<String, Object> deleteNotice(@RequestParam(value = "id", required = false) String noticeId,
+                                            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // noticeId가 없으면 에러 반환
+        if (noticeId == null || noticeId.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "공지사항 번호가 필요합니다.");
+            return result;
+        }
+        
+        try {
+            int noticeNo = Integer.parseInt(noticeId);
+            
+            // DB에서 공지사항 조회
+            GymNotice notice = noticeService.getNoticeByNo(noticeNo);
+            
+            if (notice == null) {
+                result.put("success", false);
+                result.put("message", "공지사항을 찾을 수 없습니다.");
+                return result;
+            }
+            
+            // 같은 헬스장의 공지사항인지 확인
+            if (loginMember.getGymNo() == null || notice.getGymNo() != loginMember.getGymNo()) {
+                result.put("success", false);
+                result.put("message", "접근 권한이 없습니다.");
+                return result;
+            }
+            
+            // 공지사항 삭제
+            int deleteResult = noticeService.deleteNotice(noticeNo);
+            
+            if (deleteResult > 0) {
+                result.put("success", true);
+                result.put("message", "공지사항이 삭제되었습니다.");
+            } else {
+                result.put("success", false);
+                result.put("message", "공지사항 삭제에 실패했습니다.");
+            }
+            
+        } catch (NumberFormatException e) {
+            result.put("success", false);
+            result.put("message", "잘못된 공지사항 번호입니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "공지사항 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
 }
 

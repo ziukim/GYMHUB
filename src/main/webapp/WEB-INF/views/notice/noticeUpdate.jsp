@@ -9,12 +9,8 @@
     <title>GymHub - 공지사항 수정</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
+        /* noticeUpdate 전용 스타일 */
+        /* main-content는 common.css에 있음 */
 
         /* Form Container */
         .notice-form-container {
@@ -182,7 +178,20 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+        <c:choose>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 1}">
+                <jsp:include page="../common/sidebar/sidebarMember.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 2}">
+                <jsp:include page="../common/sidebar/sidebarTrainer.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:when>
+            <c:otherwise>
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:otherwise>
+        </c:choose>
 
         <!-- Main Content -->
         <div class="main-content">

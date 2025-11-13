@@ -499,6 +499,41 @@
         }
 
         /* ========================================
+           로그인 필요 모달 전용 스타일
+           ======================================== */
+        #loginRequiredModal .modal-container {
+            max-width: 440px;
+            padding: 40px;
+            background: linear-gradient(180deg, #1a0f0a 0%, #0a0a0a 100%);
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
+        }
+
+        #loginRequiredModal .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff6b00;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        #loginRequiredModal .modal-close:hover {
+            color: #ffa366;
+        }
+
+        /* ========================================
            헬스장 상세 모달 전용 스타일
            ======================================== */
 

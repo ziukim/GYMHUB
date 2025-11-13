@@ -9,37 +9,10 @@
     <title>GymHub - 공지사항</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
-
-        /* Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            background: transparent;
-            border: none;
-            color: #ff6b00;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            transition: transform 0.2s;
-        }
-
+        /* noticeList 전용 스타일 */
+        /* main-content, page-header, header-left는 common.css에 있음 */
+        
+        /* back-button은 common.css에 있으므로 hover 효과만 추가 */
         .back-button:hover {
             transform: translateX(-3px);
         }
@@ -55,32 +28,7 @@
             margin-top: 4px;
         }
 
-        /* 검색 영역 */
-        .search-section {
-            margin-bottom: 24px;
-        }
-
-        .search-bar {
-            width: 100%;
-            background-color: #1a0f0a;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: white;
-            font-size: 14px;
-            font-family: 'Noto Sans KR', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .search-bar:focus {
-            outline: none;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
-            border-color: #ff8800;
-        }
-
-        .search-bar::placeholder {
-            color: #666;
-        }
+        /* search-section, search-bar는 common.css에 있음 */
 
         /* 공지사항 리스트 */
         .notice-section {
@@ -257,7 +205,20 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+        <c:choose>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 1}">
+                <jsp:include page="../common/sidebar/sidebarMember.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 2}">
+                <jsp:include page="../common/sidebar/sidebarTrainer.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:when>
+            <c:otherwise>
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:otherwise>
+        </c:choose>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -267,9 +228,11 @@
                 <p>헬스장의 최신 소식을 확인하세요</p>
             </div>
             <div class="page-header" style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
-                <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
-                </button>
+                <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                    <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
+                    </button>
+                </c:if>
             </div>
 
             <!-- Search Section -->

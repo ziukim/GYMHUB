@@ -9,19 +9,12 @@
     <title>GymHub - 재고 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
-
-        /* Header */
+        /* gymStockManagement 전용 스타일 */
+        /* main-content, page-header는 common.css에 있음 */
+        
+        /* page-header는 justify-content만 오버라이드 */
         .page-header {
-            display: flex;
             justify-content: flex-end;
-            align-items: center;
-            margin-bottom: 24px;
         }
 
         /* Stats Grid */

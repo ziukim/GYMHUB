@@ -91,5 +91,10 @@
         SET NOTICE_FIX_STATUS = #{fixStatus}
         WHERE NOTICE_NO = #{noticeNo}
     </update>
+
+    <delete id="deleteNotice" parameterType="int">
+        DELETE FROM GYM_NOTICE
+        WHERE NOTICE_NO = #{noticeNo}
+    </delete>
 </mapper>
 

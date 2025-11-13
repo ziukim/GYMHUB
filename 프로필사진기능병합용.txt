@@ -1,3 +1,187 @@
+// member-mapper.xml 
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.MemberMapper">
+    <resultMap id="memberResultMap" type="Member">
+        <result column="MEMBER_NO" property="memberNo"/>
+        <result column="MEMBER_TYPE" property="memberType"/>
+        <result column="MEMBER_ID" property="memberId"/>
+        <result column="MEMBER_PWD" property="memberPwd"/>
+        <result column="MEMBER_NAME" property="memberName"/>
+        <result column="MEMBER_ADDRESS" property="memberAddress"/>
+        <result column="MEMBER_PHONE" property="memberPhone"/>
+        <result column="MEMBER_BIRTH" property="memberBirth"/>
+        <result column="STATUS" property="status"/>
+        <result column="MEMBER_CREATEAT" property="memberCreateat"/>
+        <result column="MEMBER_UPDATEAT" property="memberUpdateat"/>
+        <result column="MEMBER_EMAIL" property="memberEmail"/>
+        <result column="MEMBER_PHOTO_PATH" property="memberPhotoPath"/>
+        <result column="GYM_NO" property="gymNo"/>
+        <result column="TRAINER_LICENSE" property="trainerLicense"/>
+        <result column="TRAINER_CAREER" property="trainerCareer"/>
+        <result column="TRAINER_AWARD" property="trainerAward"/>
+    </resultMap>
+
+    <select id="getMemberById" parameterType="string" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+        AND STATUS = 'Y'
+    </select>
+
+    <select id="getMemberCountById" resultType="_int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!-- 로그인용 회원 조회 (아이디와 상태만 확인) -->
+    <select id="getMemberForLogin" parameterType="string" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+        AND STATUS = 'Y'
+    </select>
+
+    <insert id="addMember" parameterType="Member">
+        <selectKey keyProperty="memberNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_MNO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO MEMBER
+        (
+        MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        MEMBER_EMAIL,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        )
+        VALUES(
+        #{memberNo},
+        #{memberType},
+        #{memberId},
+        #{memberPwd},
+        #{memberName},
+        #{memberAddress},
+        #{memberPhone},
+        #{memberBirth},
+        #{memberEmail},
+        #{gymNo},
+        #{trainerLicense},
+        #{trainerCareer},
+        #{trainerAward}
+        )
+    </insert>
+
+    <update id="updateMemberInfo" parameterType="Member">
+        UPDATE MEMBER
+        <set>
+            MEMBER_NAME = #{memberName},
+            MEMBER_PHONE = #{memberPhone},
+            MEMBER_EMAIL = #{memberEmail},
+            MEMBER_ADDRESS = #{memberAddress},
+            MEMBER_UPDATEAT = SYSDATE,
+            <if test="memberBirth != null">
+                MEMBER_BIRTH = #{memberBirth},
+            </if>
+            <!-- 트레이너 정보는 null이 아닐 때만 업데이트 -->
+            <if test="trainerCareer != null">
+                TRAINER_CAREER = #{trainerCareer},
+            </if>
+            <if test="trainerLicense != null">
+                TRAINER_LICENSE = #{trainerLicense},
+            </if>
+            <if test="trainerAward != null">
+                TRAINER_AWARD = #{trainerAward},
+            </if>
+        </set>
+        WHERE MEMBER_NO = #{memberNo}
+    </update>
+
+    <!-- 비밀번호 변경 -->
+    <update id="updatePassword">
+        UPDATE MEMBER
+        SET MEMBER_PWD = #{memberPwd},
+        MEMBER_UPDATEAT = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+    </update>
+
+    <!-- 헬스장 등록용 회원 조회 (gym_no가 null인 회원만 조회) -->
+    <select id="getMemberByIdForGymRegistration" parameterType="string" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+        AND STATUS = 'Y'
+        AND GYM_NO IS NULL
+    </select>
+    <!-- 이미지 업로드 -->
+    <update id="updateProfileImage">
+        UPDATE MEMBER
+        SET MEMBER_PHOTO_PATH = #{photoPath},
+        MEMBER_UPDATEAT = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+    </update>
+</mapper> 
+
+// MemberController.java
 package com.kh.gymhub.controller;
 
 import com.kh.gymhub.model.vo.Gym;
@@ -22,8 +206,6 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
 
 @Controller
 public class MemberController {
@@ -440,7 +622,7 @@ public class MemberController {
         }
     }
 
-    // 로그아웃
+    // ============================================== 로그 아웃 ========================================================
     @GetMapping("/logout.me")
     public String logout(HttpSession session) {
         // 세션 완전 무효화
@@ -448,7 +630,7 @@ public class MemberController {
         return "redirect:/?logout=success";
     }
 
-    // ============================================== 프로필 이미지 업로드 =======================================================
+    // ============================================== 이미지 업로드 =======================================================
     @PostMapping("/uploadProfileImage.me")
     @ResponseBody
     public Map<String, Object> uploadProfileImage(@RequestParam("profileImage") MultipartFile file,
@@ -524,4 +706,141 @@ public class MemberController {
         return result;
     }
 
+}
+
+//memberMapper.java
+package com.kh.gymhub.model.mapper;
+
+import com.kh.gymhub.model.vo.Member;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+@Mapper
+public interface MemberMapper {
+    Member getMemberById(@Param("memberId") String memberId);
+    int getMemberCountById(@Param("memberId") String memberId);
+    int addMember(Member member);
+    int updateMemberInfo(Member member);
+    int updatePassword(@Param("memberNo") int memberNo, @Param("memberPwd") String memberPwd);
+    int updateProfileImage(@Param("memberNo") int memberNo, @Param("photoPath") String photoPath);
+    Member getMemberForLogin(@Param("memberId") String memberId);
+    Member getMemberByIdForGymRegistration(@Param("memberId") String memberId);
+}
+
+//MembeService.java
+package com.kh.gymhub.service;
+
+import com.kh.gymhub.model.vo.Gym;
+import com.kh.gymhub.model.vo.Member;
+
+public interface MemberService {
+    Member getMemberById(String memberId);
+    int getMemberCountById(String memberId);
+    int addMember(Member member);
+    int addGymOwner(Member member, Gym gym);
+    int updateMemberInfo(Member member);
+    int updatePassword(int memberNo, String newPassword);
+    int updateProfileImage(int memberNo, String photoPath);
+    Member login(String memberId, String memberPwd);
+    Member getMemberByIdForGymRegistration(String memberId);
+
+}
+
+// MemberServiceImpl
+package com.kh.gymhub.service;
+
+import com.kh.gymhub.model.mapper.MemberMapper;
+import com.kh.gymhub.model.vo.Gym;
+import com.kh.gymhub.model.vo.Member;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class MemberServiceImpl implements MemberService {
+
+    private final MemberMapper memberMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final GymService gymService;
+
+    @Autowired
+    public MemberServiceImpl(MemberMapper memberMapper,
+                             BCryptPasswordEncoder bCryptPasswordEncoder,
+                             GymService gymService) {
+        this.memberMapper = memberMapper;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.gymService = gymService;
+    }
+
+    @Override
+    public Member getMemberById(String memberId) {
+        return memberMapper.getMemberById(memberId);
+    }
+
+    @Override
+    public int getMemberCountById(String memberId) {
+        return memberMapper.getMemberCountById(memberId);
+    }
+
+    @Override
+    @Transactional
+    public int addMember(Member member) {
+        return memberMapper.addMember(member);
+    }
+
+    @Override
+    @Transactional
+    public int addGymOwner(Member member, Gym gym) {
+        // 1. GYM 테이블에 먼저 INSERT (GYM_NO 생성)
+        int gymResult = gymService.addGym(gym);
+
+        if (gymResult > 0) {
+            // 2. 생성된 GYM_NO를 Member에 설정
+            member.setGymNo(gym.getGymNo());
+
+            // 3. MEMBER 테이블에 INSERT
+            int memberResult = memberMapper.addMember(member);
+
+            return memberResult;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public Member login(String memberId, String memberPwd) {
+        // 로그인 전용 쿼리로 회원 정보 조회
+        Member member = memberMapper.getMemberForLogin(memberId);
+
+        // 회원이 존재하고 비밀번호가 일치하는지 확인
+        if (member != null && bCryptPasswordEncoder.matches(memberPwd, member.getMemberPwd())) {
+            return member;
+        }
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public int updateMemberInfo(Member member) {
+        return memberMapper.updateMemberInfo(member);
+    }
+
+    @Override
+    @Transactional
+    public int updatePassword(int memberNo, String newPassword) {
+        return memberMapper.updatePassword(memberNo, newPassword);
+    }
+
+    @Override
+    public Member getMemberByIdForGymRegistration(String memberId) {
+        return memberMapper.getMemberByIdForGymRegistration(memberId);
+    }
+
+    @Override
+    @Transactional
+    public int updateProfileImage(int memberNo, String photoPath) {
+        return memberMapper.updateProfileImage(memberNo, photoPath);
+    }
 }

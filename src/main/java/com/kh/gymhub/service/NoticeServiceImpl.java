@@ -97,6 +97,65 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional
+    public int deleteNotice(int noticeNo) {
+        try {
+            // 공지사항 정보 조회 (파일 경로 확인용)
+            GymNotice notice = noticeMapper.selectNoticeByNo(noticeNo);
+            
+            if (notice == null) {
+                throw new RuntimeException("공지사항을 찾을 수 없습니다.");
+            }
+            
+            // 파일이 있으면 파일 삭제
+            if (notice.getFilePath() != null && !notice.getFilePath().isEmpty()) {
+                try {
+                    String webPath = "/resources/uploadfiles/notice/";
+                    String serverPath = servletContext.getRealPath(webPath);
+                    
+                    if (serverPath == null) {
+                        String rootPath = servletContext.getRealPath("/");
+                        if (rootPath != null) {
+                            serverPath = rootPath + "resources/uploadfiles/notice/";
+                        }
+                    }
+                    
+                    if (serverPath != null) {
+                        // 파일 경로에서 파일명 추출
+                        String fileName = notice.getFilePath().substring(notice.getFilePath().lastIndexOf("/") + 1);
+                        File file = new File(serverPath, fileName);
+                        
+                        if (file.exists()) {
+                            boolean deleted = file.delete();
+                            if (deleted) {
+                                System.out.println("공지사항 첨부파일 삭제 완료: " + file.getAbsolutePath());
+                            } else {
+                                System.out.println("공지사항 첨부파일 삭제 실패: " + file.getAbsolutePath());
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // 파일 삭제 실패해도 DB 삭제는 진행
+                    System.out.println("파일 삭제 중 오류 발생 (무시하고 계속 진행): " + e.getMessage());
+                }
+            }
+            
+            // DB에서 공지사항 삭제
+            int result = noticeMapper.deleteNotice(noticeNo);
+            
+            if (result > 0) {
+                System.out.println("공지사항 삭제 성공 - 공지사항 번호: " + noticeNo);
+                return result;
+            } else {
+                throw new RuntimeException("공지사항 삭제에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("공지사항 삭제에 실패했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
     public int insertNotice(GymNotice notice, MultipartFile file) {
         try {
             // 파일이 있으면 저장

@@ -85,6 +85,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
+    public int updateProfileImage(int memberNo, String photoPath) {
+        return memberMapper.updateProfileImage(memberNo, photoPath);
+    }
+
+    @Override
     public Member getMemberByIdForGymRegistration(String memberId) {
         return memberMapper.getMemberByIdForGymRegistration(memberId);
     }
