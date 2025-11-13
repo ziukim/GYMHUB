@@ -379,9 +379,9 @@
                 </div>
                 <div class="image-upload-area">
                     <!-- 이미지 미리보기 및 업로드 영역 -->
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                        <div class="profile-image-container" style="position: relative; width: 200px; height: 200px;">
-                            <div class="profile-image" id="mainGymImage" style="width: 200px; height: 200px; background-color: #2d1810; border: 2px solid #ff6b00; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+                        <div class="profile-image-container" style="position: relative; width: 100%; display: flex; justify-content: center;">
+                            <div class="profile-image" id="mainGymImage" style="width: 2000px; height: 600px;  background-color: #2d1810; border: 2px solid #ff6b00; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                                 <c:choose>
                                     <c:when test="${not empty gym.gymPhotoPath}">
                                         <img src="${pageContext.request.contextPath}${gym.gymPhotoPath}"
