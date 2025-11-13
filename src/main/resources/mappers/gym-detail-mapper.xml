@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.GymDetailMapper">
+    <resultMap id="gymDetailResultMap" type="GymDetail">
+        <id column="GYM_DETAIL_NO" property="gymDetailNo"/>
+        <result column="INTRO" property="intro"/>
+        <result column="FACILITIES_INFO" property="facilitiesInfo"/>
+        <result column="DETAIL_ADDRESS" property="detailAddress"/>
+        <result column="WEEK_BUSINESS_HOUR" property="weekBusinessHour"/>
+        <result column="WEEKEND_BUSINESS_HOUR" property="weekendBusinessHour"/>
+        <result column="GYM_NO" property="gymNo"/>
+    </resultMap>
+
+    <select id="selectGymDetailByGymNo" parameterType="_int" resultMap="gymDetailResultMap">
+        SELECT
+            GYM_DETAIL_NO,
+            INTRO,
+            FACILITIES_INFO,
+            DETAIL_ADDRESS,
+            WEEK_BUSINESS_HOUR,
+            WEEKEND_BUSINESS_HOUR,
+            GYM_NO
+        FROM GYM_DETAIL
+        WHERE GYM_NO = #{gymNo}
+    </select>
+
+    <insert id="insertGymDetail" parameterType="GymDetail">
+        INSERT INTO GYM_DETAIL (
+            GYM_DETAIL_NO,
+            INTRO,
+            FACILITIES_INFO,
+            DETAIL_ADDRESS,
+            WEEK_BUSINESS_HOUR,
+            WEEKEND_BUSINESS_HOUR,
+            GYM_NO
+        ) VALUES (
+            SEQ_GYM_DETAIL_NO.NEXTVAL,
+            #{intro},
+            #{facilitiesInfo},
+            #{detailAddress},
+            #{weekBusinessHour},
+            #{weekendBusinessHour},
+            #{gymNo}
+        )
+    </insert>
+
+    <update id="updateGymDetail" parameterType="GymDetail">
+        UPDATE GYM_DETAIL
+        <set>
+            <if test="intro != null and intro != ''">INTRO = #{intro},</if>
+            <if test="facilitiesInfo != null">FACILITIES_INFO = #{facilitiesInfo},</if>
+            <if test="detailAddress != null and detailAddress != ''">DETAIL_ADDRESS = #{detailAddress},</if>
+            <if test="weekBusinessHour != null and weekBusinessHour != ''">WEEK_BUSINESS_HOUR = #{weekBusinessHour},</if>
+            <if test="weekendBusinessHour != null and weekendBusinessHour != ''">WEEKEND_BUSINESS_HOUR = #{weekendBusinessHour},</if>
+        </set>
+        WHERE GYM_NO = #{gymNo}
+    </update>
+
+    <insert id="addGymDetail" parameterType="_int">
+        INSERT INTO GYM_DETAIL (
+            GYM_DETAIL_NO,
+            GYM_NO
+        ) VALUES (
+            SEQ_GYM_DETAIL_NO.NEXTVAL,
+            #{gymNo}
+        )
+    </insert>
+</mapper>
+

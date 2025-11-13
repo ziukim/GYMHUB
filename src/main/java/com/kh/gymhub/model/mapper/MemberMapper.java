@@ -11,8 +11,17 @@ public interface MemberMapper {
     int addMember(Member member);
     int updateMemberInfo(Member member);
     int updatePassword(@Param("memberNo") int memberNo, @Param("memberPwd") String memberPwd);
-    int updateProfileImage(@Param("memberNo") int memberNo, @Param("photoPath") String photoPath);
     Member getMemberForLogin(@Param("memberId") String memberId);
     Member getMemberByIdForGymRegistration(@Param("memberId") String memberId);
+    int updateMemberGymNo(@Param("memberNo") int memberNo, @Param("gymNo") Integer gymNo);
+    
+    // 트레이너 등록용 조회 (memberType=2, gymNo=null)
+    Member getTrainerByIdForRegistration(@Param("memberId") String memberId);
+    
+    // 특정 헬스장의 트레이너 목록 조회 (memberType=2, gymNo=해당 헬스장)
+    java.util.List<Member> selectTrainersByGymNo(@Param("gymNo") int gymNo);
+    
+    // 프로필 이미지 업데이트
+    int updateProfileImage(@Param("memberNo") int memberNo, @Param("photoPath") String photoPath);
 }
 

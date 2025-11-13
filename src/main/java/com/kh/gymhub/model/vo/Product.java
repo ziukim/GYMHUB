@@ -9,11 +9,11 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
-    private int productNo;
-    private int gymNo;
-    private int durationMonths;
-    private String productType;
-    private String productStartDate;
-    private int productPrice;
-    private String productStatus;
+   private int productNo;
+   private int gymNo;
+   private int durationMonths;
+   private String productType;
+   private String productStartDate;
+   private int productPrice;
+   private String productStatus;
 }

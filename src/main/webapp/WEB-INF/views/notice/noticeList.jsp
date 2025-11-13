@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,37 +9,10 @@
     <title>GymHub - 공지사항</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
-
-        /* Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            background: transparent;
-            border: none;
-            color: #ff6b00;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            transition: transform 0.2s;
-        }
-
+        /* noticeList 전용 스타일 */
+        /* main-content, page-header, header-left는 common.css에 있음 */
+        
+        /* back-button은 common.css에 있으므로 hover 효과만 추가 */
         .back-button:hover {
             transform: translateX(-3px);
         }
@@ -54,32 +28,7 @@
             margin-top: 4px;
         }
 
-        /* 검색 영역 */
-        .search-section {
-            margin-bottom: 24px;
-        }
-
-        .search-bar {
-            width: 100%;
-            background-color: #1a0f0a;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: white;
-            font-size: 14px;
-            font-family: 'Noto Sans KR', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .search-bar:focus {
-            outline: none;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
-            border-color: #ff8800;
-        }
-
-        .search-bar::placeholder {
-            color: #666;
-        }
+        /* search-section, search-bar는 common.css에 있음 */
 
         /* 공지사항 리스트 */
         .notice-section {
@@ -256,7 +205,20 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Include -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+        <c:choose>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 1}">
+                <jsp:include page="../common/sidebar/sidebarMember.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 2}">
+                <jsp:include page="../common/sidebar/sidebarTrainer.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:when>
+            <c:otherwise>
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:otherwise>
+        </c:choose>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -266,9 +228,11 @@
                 <p>헬스장의 최신 소식을 확인하세요</p>
             </div>
             <div class="page-header" style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
-                <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
-                </button>
+                <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                    <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
+                    </button>
+                </c:if>
             </div>
 
             <!-- Search Section -->
@@ -278,83 +242,67 @@
 
             <!-- Notice List -->
             <div class="notice-section">
-                <div class="notice-list" id="noticeList">
-                    <!-- 공지사항 예시 데이터 -->
-                    <div class="notice-card" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=1'">
-                        <div class="notice-header">
-                            <span class="notice-badge urgent">긴급</span>
-                            <div class="notice-title">연말연시 운영시간 안내</div>
+                <c:choose>
+                    <c:when test="${not empty notices and notices.size() > 0}">
+                        <div class="notice-list" id="noticeList">
+                            <c:forEach var="notice" items="${notices}">
+                                <c:set var="categoryClass" value="general" />
+                                <c:set var="categoryLabel" value="일반" />
+                                <c:choose>
+                                    <c:when test="${notice.noticeCategory == 'urgent' or notice.noticeCategory == '긴급'}">
+                                        <c:set var="categoryClass" value="urgent" />
+                                        <c:set var="categoryLabel" value="긴급" />
+                                    </c:when>
+                                    <c:when test="${notice.noticeCategory == 'event' or notice.noticeCategory == '이벤트'}">
+                                        <c:set var="categoryClass" value="event" />
+                                        <c:set var="categoryLabel" value="이벤트" />
+                                    </c:when>
+                                    <c:when test="${notice.noticeCategory == 'important' or notice.noticeCategory == '중요'}">
+                                        <c:set var="categoryClass" value="important" />
+                                        <c:set var="categoryLabel" value="중요" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="categoryClass" value="general" />
+                                        <c:set var="categoryLabel" value="일반" />
+                                    </c:otherwise>
+                                </c:choose>
+                                
+                                <div class="notice-card <c:if test='${notice.noticeFixStatus == \"Y\"}'>pinned</c:if>" 
+                                     onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=${notice.noticeNo}'"
+                                     data-notice-id="${notice.noticeNo}">
+                                    <div class="notice-header">
+                                        <span class="notice-badge ${categoryClass}">${categoryLabel}</span>
+                                        <div class="notice-title">${notice.noticeTitle}</div>
+                                    </div>
+                                    <div class="notice-content">${notice.noticeContent}</div>
+                                    <div class="notice-meta">
+                                        <div class="notice-meta-item">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
+                                            <span>${notice.noticeWriter}</span>
+                                        </div>
+                                        <div class="notice-meta-item">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
+                                            <span><fmt:formatDate value="${notice.noticeDate}" pattern="yyyy-MM-dd" /></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:forEach>
                         </div>
-                        <div class="notice-content">12월 31일과 1월 1일은 오전 10시부터 오후 6시까지 운영합니다. 회원 여러분의 양해 부탁드립니다.</div>
-                        <div class="notice-meta">
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>관리자 (운영자)</span>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- Empty State -->
+                        <div class="empty-state active" id="emptyState">
+                            <div class="empty-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="공지사항 없음" style="width: 48px; height: 48px;">
                             </div>
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>2025-10-25</span>
-                            </div>
+                            <h3>공지사항이 없습니다</h3>
+                            <p>등록된 공지사항이 없습니다</p>
                         </div>
-                    </div>
+                    </c:otherwise>
+                </c:choose>
 
-                    <div class="notice-card" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=2'">
-                        <div class="notice-header">
-                            <span class="notice-badge event">이벤트</span>
-                            <div class="notice-title">11월 신규 GX 프로그램 오픈</div>
-                        </div>
-                        <div class="notice-content">새로운 GX 프로그램이 준비되었습니다!</div>
-                        <div class="notice-meta">
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>빅트레이너 (트레이너)</span>
-                            </div>
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>2025-10-23</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="notice-card" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=3'">
-                        <div class="notice-header">
-                            <span class="notice-badge important">중요</span>
-                            <div class="notice-title">시설 점검 안내</div>
-                        </div>
-                        <div class="notice-content">내일(금)의 오전 2시부터 6시까지 시설 점검이 예정되어 있습니다. 해당 시간에는 이용이 불가합니다.</div>
-                        <div class="notice-meta">
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>시설관리 (운영자)</span>
-                            </div>
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>2025-10-20</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="notice-card" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=4'">
-                        <div class="notice-header">
-                            <span class="notice-badge general">일반</span>
-                            <div class="notice-title">신규 운동 기구 입고 완료</div>
-                        </div>
-                        <div class="notice-content">회원 여러분이 요청하신 최신 스미스머신과 케이블 크로스오버가 입고되었습니다. 2층 프리웨이트존에서 이용하실 수 있습니다.</div>
-                        <div class="notice-meta">
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>어트레이너 (트레이너)</span>
-                            </div>
-                            <div class="notice-meta-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
-                                <span>2025-10-18</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Empty State -->
-                <div class="empty-state" id="emptyState">
+                <!-- Empty State for Search -->
+                <div class="empty-state" id="searchEmptyState">
                     <div class="empty-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="검색" style="width: 48px; height: 48px;">
                     </div>
@@ -370,13 +318,14 @@
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const noticeCards = document.querySelectorAll('.notice-card');
-            const emptyState = document.getElementById('emptyState');
+            const searchEmptyState = document.getElementById('searchEmptyState');
+            const noticeList = document.getElementById('noticeList');
             let hasVisibleCard = false;
 
-            noticeCards.forEach(card => {
+            noticeCards.forEach(function(card) {
                 const title = card.querySelector('.notice-title').textContent.toLowerCase();
                 const content = card.querySelector('.notice-content').textContent.toLowerCase();
-                const author = card.querySelector('.notice-meta-item span:nth-child(2)').textContent.toLowerCase();
+                const author = card.querySelector('.notice-meta-item span').textContent.toLowerCase();
                 
                 if (title.includes(searchTerm) || content.includes(searchTerm) || author.includes(searchTerm)) {
                     card.style.display = 'block';
@@ -388,59 +337,51 @@
 
             // 검색 결과가 없는 경우 empty state 표시
             if (!hasVisibleCard && searchTerm !== '') {
-                emptyState.classList.add('active');
+                if (noticeList) noticeList.style.display = 'none';
+                searchEmptyState.classList.add('active');
             } else {
-                emptyState.classList.remove('active');
+                if (noticeList) noticeList.style.display = 'flex';
+                searchEmptyState.classList.remove('active');
             }
         });
-
-        // 카드 진입 애니메이션
-        window.addEventListener('load', function() {
-            const cards = document.querySelectorAll('.notice-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    card.style.transition = 'all 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        });
-        // 고정된 공지사항 ID 저장
-        let pinnedNotices = JSON.parse(localStorage.getItem('pinnedNotices') || '[]');
-
+        
         // 페이지 로드 시 모든 게시글에 핀 버튼 추가
         window.addEventListener('load', function() {
             const noticeCards = document.querySelectorAll('.notice-card');
+            
+            if (noticeCards.length === 0) {
+                return; // 공지사항이 없으면 실행하지 않음
+            }
 
-            noticeCards.forEach((card, index) => {
-                // data-notice-id 자동 추가
-                if (!card.getAttribute('data-notice-id')) {
-                    card.setAttribute('data-notice-id', index + 1);
-                }
-
+            noticeCards.forEach(function(card) {
                 const noticeId = card.getAttribute('data-notice-id');
+                if (!noticeId) return; // data-notice-id가 없으면 스킵
+                
                 const header = card.querySelector('.notice-header');
+                if (!header) return;
 
                 // 핀 버튼이 없으면 추가
                 if (!header.querySelector('.pin-button')) {
                     const pinButton = document.createElement('button');
                     pinButton.className = 'pin-button';
-                    pinButton.innerHTML = '<img src="${pageContext.request.contextPath}/resources/images/icon/pin.png" alt="고정">';
+                    
+                    // 고정 상태 확인 (서버에서 받은 데이터 기반)
+                    const isPinned = card.classList.contains('pinned');
+                    const pinIconSrc = isPinned 
+                        ? '${pageContext.request.contextPath}/resources/images/icon/onpin.png'
+                        : '${pageContext.request.contextPath}/resources/images/icon/pin.png';
+                    
+                    pinButton.innerHTML = '<img src="' + pinIconSrc + '" alt="고정">';
+                    
+                    if (isPinned) {
+                        pinButton.classList.add('pinned');
+                    }
+                    
                     pinButton.onclick = function(e) {
                         e.stopPropagation();
                         togglePin(this, noticeId);
                     };
                     header.appendChild(pinButton);
-                }
-
-                // 고정 상태 복원
-                if (pinnedNotices.includes(noticeId)) {
-                    card.classList.add('pinned');
-                    const pinButton = header.querySelector('.pin-button');
-                    pinButton.classList.add('pinned');
-                    pinButton.querySelector('img').src = '${pageContext.request.contextPath}/resources/images/icon/onpin.png';
                 }
             });
 
@@ -448,10 +389,10 @@
 
             // 카드 진입 애니메이션
             const cards = document.querySelectorAll('.notice-card');
-            cards.forEach((card, index) => {
+            cards.forEach(function(card, index) {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
-                setTimeout(() => {
+                setTimeout(function() {
                     card.style.transition = 'all 0.5s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
@@ -459,38 +400,59 @@
             });
         });
 
-        // 고정 토글 함수
+        // 고정 토글 함수 (AJAX로 DB 업데이트)
         function togglePin(button, noticeId) {
             const card = button.closest('.notice-card');
             const isPinned = card.classList.contains('pinned');
             const pinImg = button.querySelector('img');
 
-            if (isPinned) {
-                // 고정 해제
-                card.classList.remove('pinned');
-                button.classList.remove('pinned');
-                pinImg.src = '${pageContext.request.contextPath}/resources/images/icon/pin.png';
-                pinnedNotices = pinnedNotices.filter(id => id !== noticeId);
-            } else {
-                // 고정
-                card.classList.add('pinned');
-                button.classList.add('pinned');
-                pinImg.src = '${pageContext.request.contextPath}/resources/images/icon/onpin.png';
-                if (!pinnedNotices.includes(noticeId)) {
-                    pinnedNotices.push(noticeId);
+            // AJAX 요청
+            fetch('${pageContext.request.contextPath}/notice/toggleFix.ajax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'noticeNo=' + noticeId
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    // UI 업데이트
+                    if (data.fixStatus === 'Y') {
+                        // 고정
+                        card.classList.add('pinned');
+                        button.classList.add('pinned');
+                        pinImg.src = '${pageContext.request.contextPath}/resources/images/icon/onpin.png';
+                    } else {
+                        // 고정 해제
+                        card.classList.remove('pinned');
+                        button.classList.remove('pinned');
+                        pinImg.src = '${pageContext.request.contextPath}/resources/images/icon/pin.png';
+                    }
+                    
+                    // 정렬 다시 실행
+                    sortNotices();
+                } else {
+                    alert(data.message || '고정 상태 변경에 실패했습니다.');
                 }
-            }
-
-            localStorage.setItem('pinnedNotices', JSON.stringify(pinnedNotices));
-            sortNotices();
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
         }
 
         // 공지사항 정렬 (고정된 것이 위로)
         function sortNotices() {
             const noticeList = document.getElementById('noticeList');
+            if (!noticeList) return; // noticeList가 없으면 실행하지 않음
+            
             const notices = Array.from(noticeList.querySelectorAll('.notice-card'));
+            if (notices.length === 0) return;
 
-            notices.sort((a, b) => {
+            notices.sort(function(a, b) {
                 const aPinned = a.classList.contains('pinned');
                 const bPinned = b.classList.contains('pinned');
 
@@ -499,35 +461,11 @@
                 return 0;
             });
 
-            notices.forEach(notice => noticeList.appendChild(notice));
+            notices.forEach(function(notice) {
+                noticeList.appendChild(notice);
+            });
         }
 
-        // 검색 기능
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const noticeCards = document.querySelectorAll('.notice-card');
-            const emptyState = document.getElementById('emptyState');
-            let hasVisibleCard = false;
-
-            noticeCards.forEach(card => {
-                const title = card.querySelector('.notice-title').textContent.toLowerCase();
-                const content = card.querySelector('.notice-content').textContent.toLowerCase();
-                const author = card.querySelector('.notice-meta-item span').textContent.toLowerCase();
-
-                if (title.includes(searchTerm) || content.includes(searchTerm) || author.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    hasVisibleCard = true;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            if (!hasVisibleCard && searchTerm !== '') {
-                emptyState.classList.add('active');
-            } else {
-                emptyState.classList.remove('active');
-            }
-        });
     </script>
 </body>
 </html>

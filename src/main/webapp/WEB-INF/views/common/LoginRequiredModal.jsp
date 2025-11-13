@@ -3,7 +3,7 @@
 
 <!-- 로그인 필요 모달 -->
 <div class="modal-overlay" id="loginRequiredModal">
-    <div class="modal-container" style="max-width: 440px;" onclick="event.stopPropagation();">
+    <div class="modal-container" onclick="event.stopPropagation();">
         <button class="modal-close" onclick="closeLoginRequiredModal()">×</button>
 
         <div style="text-align: center; padding: 20px 0;">
@@ -97,6 +97,12 @@
             const loginRequiredModal = document.getElementById('loginRequiredModal');
             if (loginRequiredModal) {
                 loginRequiredModal.classList.remove('active');
+            }
+            
+            // 헬스장 상세 모달 닫기 (index.jsp에서 style.display로 제어하므로 동일하게 처리)
+            const gymDetailModal = document.getElementById('gymDetailModal');
+            if (gymDetailModal) {
+                gymDetailModal.style.display = 'none';
             }
             
             // 약간의 지연 후 로그인 모달 열기 (모달 전환 애니메이션을 위해)

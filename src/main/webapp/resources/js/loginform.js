@@ -384,10 +384,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 비로그인 상태: 로그인 필요 모달 표시
                 const loginRequiredModal = document.getElementById('loginRequiredModal');
                 if (loginRequiredModal) {
-                    // 헬스장 상세 모달 닫기
+                    // 헬스장 상세 모달 닫기 (index.jsp에서 style.display로 제어하므로 동일하게 처리)
                     const gymDetailModal = document.getElementById('gymDetailModal');
                     if (gymDetailModal) {
-                        gymDetailModal.classList.remove('active');
+                        gymDetailModal.style.display = 'none';
                     }
                     // 로그인 필요 모달 열기
                     setTimeout(function() {

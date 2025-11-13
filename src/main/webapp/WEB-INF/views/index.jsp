@@ -499,6 +499,41 @@
         }
 
         /* ========================================
+           로그인 필요 모달 전용 스타일
+           ======================================== */
+        #loginRequiredModal .modal-container {
+            max-width: 440px;
+            padding: 40px;
+            background: linear-gradient(180deg, #1a0f0a 0%, #0a0a0a 100%);
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
+        }
+
+        #loginRequiredModal .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff6b00;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        #loginRequiredModal .modal-close:hover {
+            color: #ffa366;
+        }
+
+        /* ========================================
            헬스장 상세 모달 전용 스타일
            ======================================== */
 
@@ -1825,23 +1860,24 @@
             .then(data => {
                 if (data.success) {
                     const gym = data.gym;
-
+                    const gymDetail = data.gymDetail || {};
 
                     // 모달에 데이터 설정
                     document.getElementById('gymDetailTitle').textContent = gym.gymName || '헬스장';
-                    document.getElementById('gymDetailDescription').textContent = gym.intro || '소개 정보가 없습니다.';
+                    document.getElementById('gymDetailDescription').textContent = gymDetail.intro || gym.intro || '소개 정보가 없습니다.';
 
                     // 주소 설정 (detailAddress가 있으면 우선, 없으면 gymAddress)
-                    const address = gym.detailAddress || gym.gymAddress || '주소 정보 없음';
+                    const address = gymDetail.detailAddress || gym.gymAddress || '주소 정보 없음';
                     document.getElementById('gymDetailAddress').textContent = address;
 
                     // 가격 설정
                     const priceContainer = document.getElementById('gymDetailPrice');
                     priceContainer.innerHTML = ''; // 초기화
-                    if (gym.products && gym.products.length > 0) {
+                    const products = data.products || gym.products || [];
+                    if (products && products.length > 0) {
 
                         // 상품 타입별로 분류
-                        const membershipProducts = gym.products.filter(p => p.productType === '회원권');
+                        const membershipProducts = products.filter(p => p.productType === '회원권');
 
                         // 회원권 가격 표시
                         if (membershipProducts.length > 0) {
@@ -1874,8 +1910,8 @@
                     document.getElementById('gymDetailPhone').href = 'tel:' + phone;
 
                     // 운영시간 설정
-                    const weekHour = gym.weekBusinessHour || '정보 없음';
-                    const weekendHour = gym.weekendBusinessHour || '정보 없음';
+                    const weekHour = gymDetail.weekBusinessHour || '정보 없음';
+                    const weekendHour = gymDetail.weekendBusinessHour || '정보 없음';
                     document.getElementById('gymDetailHours').innerHTML =
                         '<p>평일: ' + weekHour + '</p>' +
                         '<p>주말: ' + weekendHour + '</p>';
@@ -1919,8 +1955,9 @@
                         '수건': 'shower.png'
                     };
 
-                    if (gym.facilitiesInfo) {
-                        const facilities = gym.facilitiesInfo.split(',');
+                    const facilitiesInfo = gymDetail.facilitiesInfo || gym.facilitiesInfo;
+                    if (facilitiesInfo) {
+                        const facilities = facilitiesInfo.split(',');
 
                         facilities.forEach(facility => {
                             const trimmedFacility = facility.trim();

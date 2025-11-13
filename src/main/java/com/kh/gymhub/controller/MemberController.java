@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 @Controller
 public class MemberController {
 
@@ -438,7 +440,7 @@ public class MemberController {
         }
     }
 
-    // ============================================== 로그 아웃 ========================================================
+    // 로그아웃
     @GetMapping("/logout.me")
     public String logout(HttpSession session) {
         // 세션 완전 무효화
@@ -446,7 +448,7 @@ public class MemberController {
         return "redirect:/?logout=success";
     }
 
-    // ============================================== 이미지 업로드 =======================================================
+    // ============================================== 프로필 이미지 업로드 =======================================================
     @PostMapping("/uploadProfileImage.me")
     @ResponseBody
     public Map<String, Object> uploadProfileImage(@RequestParam("profileImage") MultipartFile file,

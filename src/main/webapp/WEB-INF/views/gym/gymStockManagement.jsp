@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,19 +9,12 @@
     <title>GymHub - 재고 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
-
-        /* Header */
+        /* gymStockManagement 전용 스타일 */
+        /* main-content, page-header는 common.css에 있음 */
+        
+        /* page-header는 justify-content만 오버라이드 */
         .page-header {
-            display: flex;
             justify-content: flex-end;
-            align-items: center;
-            margin-bottom: 24px;
         }
 
         /* Stats Grid */
@@ -341,74 +335,30 @@
 
             <!-- Stats Cards -->
             <div class="stats-grid">
-                <!-- Card 1: 수건 -->
-                <div class="stat-card" onclick="viewDetail('수건')">
+            <c:forEach var="stock" items="${stockList}">
+                <div class="stat-card" onclick="viewDetail(event, '${stock.stockName}')">
                     <div class="stat-card-header">
-                        <div class="stat-card-title">수건</div>
+                        <div class="stat-card-title">${stock.stockName}</div>
                         <div class="stat-card-icons">
-                            <button class="icon-button" onclick="openManageInventoryModal(event, '수건')">
+                            <button class="icon-button" onclick="openManageInventoryModal(event, ${stock.stockId}, '${stock.stockName}', ${stock.targetStockCount})">
                                 <img src="${pageContext.request.contextPath}/resources/images/icon/change.png" alt="재고 관리" style="width: 16px; height: 16px;">
                             </button>
-                            <button class="icon-button" onclick="openQuantityChangeModal(event, '수건')">
+                            <button class="icon-button" onclick="openQuantityChangeModal(event, ${stock.stockId}, '${stock.stockName}')">
                                 <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
                             </button>
-                            <button class="icon-button" onclick="deleteItem(event, '수건')">
+                            <button class="icon-button" onclick="deleteItem(event, ${stock.stockId}, '${stock.stockName}')">
                                 <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" style="width: 16px; height: 16px;">
                             </button>
                         </div>
                     </div>
-                    <div class="stat-card-info">현재 재고 150개</div>
+                    <div class="stat-card-info">현재 재고 ${stock.stockCount}개 / 목표 ${stock.targetStockCount}개</div>
                     <div class="progress-container">
-                        <div class="progress-bar" style="width: 75%;"></div>
+                        <c:set var="percentage" value="${stock.targetStockCount > 0 ? (stock.stockCount * 100 / stock.targetStockCount) : 0}" />
+                        <div class="progress-bar" style="width: ${percentage > 100 ? 100 : percentage}%;"></div>
                     </div>
-                    <div class="progress-text">150개</div>
+                    <div class="progress-text">${stock.stockCount}개</div>
                 </div>
-
-                <!-- Card 2: 운동복(상의) -->
-                <div class="stat-card" onclick="viewDetail('운동복(상의)')">
-                    <div class="stat-card-header">
-                        <div class="stat-card-title">운동복(상의)</div>
-                        <div class="stat-card-icons">
-                            <button class="icon-button" onclick="openManageInventoryModal(event, '운동복(상의)')">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/change.png" alt="재고 관리" style="width: 16px; height: 16px;">
-                            </button>
-                            <button class="icon-button" onclick="openQuantityChangeModal(event, '운동복(상의)')">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
-                            </button>
-                            <button class="icon-button" onclick="deleteItem(event, '운동복(상의)')">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" style="width: 16px; height: 16px;">
-                            </button>
-                        </div>
-                    </div>
-                    <div class="stat-card-info">현재 재고 100개</div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 100%;"></div>
-                    </div>
-                    <div class="progress-text">100%</div>
-                </div>
-
-                <!-- Card 3: 당일권 패키지 -->
-                <div class="stat-card" onclick="viewDetail('당일권 패키지')">
-                    <div class="stat-card-header">
-                        <div class="stat-card-title">당일권 패키지</div>
-                        <div class="stat-card-icons">
-                            <button class="icon-button" onclick="openManageInventoryModal(event, '당일권 패키지')">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/change.png" alt="재고 관리" style="width: 16px; height: 16px;">
-                            </button>
-                            <button class="icon-button" onclick="openQuantityChangeModal(event, '당일권 패키지')">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
-                            </button>
-                            <button class="icon-button" onclick="deleteItem(event, '당일권 패키지')">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" style="width: 16px; height: 16px;">
-                            </button>
-                        </div>
-                    </div>
-                    <div class="stat-card-info">현재 재고 50개</div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 50%;"></div>
-                    </div>
-                    <div class="progress-text">83개</div>
-                </div>
+            </c:forEach>
             </div>
 
             <!-- Inventory Table -->
@@ -423,40 +373,43 @@
                             <th>항목명</th>
                             <th>상태</th>
                             <th>수량</th>
-                            <th>최근 입고일</th>
+                    <th>최근 입출고일</th>
                         </tr>
                     </thead>
                     <tbody>
+                <c:choose>
+                    <c:when test="${empty stockManageList}">
                         <tr>
-                            <td>수건</td>
-                            <td><span class="status-badge status-sufficient">입고</span></td>
-                            <td>120 개</td>
-                            <td>2025.06.01 14 : 00</td>
+                            <td colspan="4" style="text-align: center; padding: 40px;">
+                                입출고 내역이 없습니다.
+                            </td>
                         </tr>
-                        <tr>
-                            <td>운동복(상의)</td>
-                            <td><span class="status-badge status-sufficient">입고</span></td>
-                            <td>165 개</td>
-                            <td>2025.12.15 12 : 00</td>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="manage" items="${stockManageList}">
+                            <tr>
+                                <td>${empty manage.stockName ? '(삭제된 재고)' : manage.stockName}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${manage.stockManageType eq '입고'}">
+                                            <span class="status-badge status-sufficient">입고</span>
+                                        </c:when>
+                                        <c:when test="${manage.stockManageType eq '출고'}">
+                                            <span class="status-badge status-low">출고</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="status-badge">${manage.stockManageType}</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>${manage.stockManageCount} 개</td>
+                                <td>
+                                    <fmt:formatDate value="${manage.stockManageDate}" pattern="yyyy.MM.dd HH:mm" />
+                                </td>
                         </tr>
-                        <tr>
-                            <td>운동복(하의)</td>
-                            <td><span class="status-badge status-low">출고</span></td>
-                            <td>80 개</td>
-                            <td>2025.10.15 15 : 00</td>
-                        </tr>
-                        <tr>
-                            <td>상수</td>
-                            <td><span class="status-badge status-sufficient">입고</span></td>
-                            <td>90 개</td>
-                            <td>2025.12.03 16 : 00</td>
-                        </tr>
-                        <tr>
-                            <td>바이탈 프로</td>
-                            <td><span class="status-badge status-sufficient">입고</span></td>
-                            <td>20 개</td>
-                            <td>2025.01.05 18 : 00</td>
-                        </tr>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
                     </tbody>
                 </table>
             </div>
@@ -477,25 +430,15 @@
                 <form id="addProductForm">
                     <div class="modal-form-group">
                         <label class="modal-label">재고명 <span style="color: #ff6b00;">*</span></label>
-                        <input type="text" class="modal-input" placeholder="재고명을 입력하세요" required>
+                    <input type="text" class="modal-input" id="addStockName" placeholder="재고명을 입력하세요" required>
                     </div>
                     <div class="modal-form-group">
-                        <label class="modal-label">수량 <span style="color: #ff6b00;">*</span></label>
-                        <input type="number" class="modal-input" placeholder="수량을 입력하세요" required>
+                    <label class="modal-label">목표재고수량 <span style="color: #ff6b00;">*</span></label>
+                    <input type="number" class="modal-input" id="addTargetStockCount" placeholder="목표재고수량을 입력하세요" required min="0">
                     </div>
                     <div class="modal-form-group">
-                        <label class="modal-label">가격 <span style="color: #ff6b00;">*</span></label>
-                        <input type="number" class="modal-input" placeholder="가격을 입력하세요" required>
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-label">카테고리 <span style="color: #ff6b00;">*</span></label>
-                        <select class="modal-select" required>
-                            <option value="">카테고리 선택</option>
-                            <option value="용품">용품</option>
-                            <option value="의류">의류</option>
-                            <option value="보충제">보충제</option>
-                            <option value="회원권">회원권</option>
-                        </select>
+                    <label class="modal-label">물품가격 <span style="color: #ff6b00;">*</span></label>
+                    <input type="number" class="modal-input" id="addStockPrice" placeholder="물품가격을 입력하세요" required min="0">
                     </div>
                 </form>
             </div>
@@ -506,70 +449,32 @@
         </div>
     </div>
 
-    <!-- 재고 수정 모달 -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <button class="modal-close" onclick="closeEditModal()">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
-                </button>
-                <div class="modal-title">재고 수정</div>
-                <div class="modal-subtitle">재고 정보를 수정합니다</div>
-            </div>
-            <div class="modal-body">
-                <form id="editProductForm">
-                    <div class="modal-form-group">
-                        <label class="modal-label">재고명 <span style="color: #ff6b00;">*</span></label>
-                        <input type="text" class="modal-input" id="editProductName" required>
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-label">수량 <span style="color: #ff6b00;">*</span></label>
-                        <input type="number" class="modal-input" id="editProductQuantity" required>
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-label">가격 <span style="color: #ff6b00;">*</span></label>
-                        <input type="number" class="modal-input" id="editProductPrice" required>
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-label">카테고리 <span style="color: #ff6b00;">*</span></label>
-                        <select class="modal-select" id="editProductCategory" required>
-                            <option value="">카테고리 선택</option>
-                            <option value="용품">용품</option>
-                            <option value="의류">의류</option>
-                            <option value="보충제">보충제</option>
-                            <option value="회원권">회원권</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-button modal-button-delete" onclick="confirmDelete()">삭제</button>
-                <button class="modal-button modal-button-cancel" onclick="closeEditModal()">취소</button>
-                <button class="modal-button modal-button-submit" onclick="submitEditForm()">수정</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 수량 변경 모달 -->
+<!-- 수량 변경 모달 (입출고) -->
     <div class="modal-overlay" id="quantityChangeModal">
         <div class="modal-container">
             <div class="modal-header">
                 <button class="modal-close" onclick="closeQuantityChangeModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
                 </button>
-                <div class="modal-title">수량 변경</div>
-                <div class="modal-subtitle">재고 수량을 변경합니다.</div>
+            <div class="modal-title">입출고 처리</div>
+            <div class="modal-subtitle">재고의 입출고를 처리합니다.</div>
             </div>
             <div class="modal-body">
                 <form id="quantityChangeForm">
+                <input type="hidden" id="inOutStockId">
+                <div class="modal-form-group">
+                    <label class="modal-label">재고명</label>
+                    <input type="text" class="modal-input" id="inOutStockName" readonly>
+                </div>
                     <div class="modal-form-group">
+                    <label class="modal-label">입출고 구분 <span style="color: #ff6b00;">*</span></label>
                         <div class="radio-group">
                             <div class="radio-option">
-                                <input type="radio" id="outgoing" name="type" value="outgoing" checked>
+                            <input type="radio" id="outgoing" name="type" value="출고" checked>
                                 <label for="outgoing">출고</label>
                             </div>
                             <div class="radio-option">
-                                <input type="radio" id="incoming" name="type" value="incoming">
+                            <input type="radio" id="incoming" name="type" value="입고">
                                 <label for="incoming">입고</label>
                             </div>
                         </div>
@@ -582,7 +487,7 @@
             </div>
             <div class="modal-footer">
                 <button class="modal-button modal-button-cancel" onclick="closeQuantityChangeModal()">취소</button>
-                <button class="modal-button modal-button-submit" onclick="submitQuantityChange()">수정</button>
+            <button class="modal-button modal-button-submit" onclick="submitQuantityChange()">처리</button>
             </div>
         </div>
     </div>
@@ -594,24 +499,29 @@
                 <button class="modal-close" onclick="closeManageInventoryModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
                 </button>
-                <div class="modal-title">관리 재고 수정</div>
-                <div class="modal-subtitle">재고의 변경된 사항을 입력해주세요.</div>
+            <div class="modal-title">재고 정보 수정</div>
+            <div class="modal-subtitle">재고명과 목표재고수량을 수정합니다.</div>
             </div>
             <div class="modal-body">
                 <form id="manageInventoryForm">
+                <input type="hidden" id="manageStockId">
+                <div class="modal-form-group">
+                    <label class="modal-label">재고명 <span style="color: #ff6b00;">*</span></label>
+                    <input type="text" class="modal-input" id="manageStockName" placeholder="재고명을 입력하세요" required>
+                </div>
                     <div class="modal-form-group">
-                        <label class="modal-label">재고 이름 <span style="color: #ff6b00;">*</span></label>
-                        <input type="text" class="modal-input" id="inventoryNameInput" placeholder="재고 이름을 입력하세요" required>
+                    <label class="modal-label">목표재고수량 <span style="color: #ff6b00;">*</span></label>
+                    <input type="number" class="modal-input" id="manageTargetStockCount" placeholder="목표재고수량을 입력하세요" required min="0">
                     </div>
                     <div class="modal-form-group">
-                        <label class="modal-label">관리 재고 수량 <span style="color: #ff6b00;">*</span></label>
-                        <input type="number" class="modal-input" id="inventoryQuantitySelect" placeholder="수량을 입력하세요" required min="1">
+                    <label class="modal-label">물품가격 <span style="color: #ff6b00;">*</span></label>
+                    <input type="number" class="modal-input" id="manageStockPrice" placeholder="물품가격을 입력하세요" required min="0">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="modal-button modal-button-cancel" onclick="closeManageInventoryModal()">취소</button>
-                <button class="modal-button modal-button-submit" onclick="submitManageInventory()">등록</button>
+            <button class="modal-button modal-button-submit" onclick="submitManageInventory()">수정</button>
             </div>
         </div>
     </div>
@@ -628,104 +538,176 @@
             document.getElementById('addProductForm').reset();
         }
 
-        // 재고 수정 모달 열기
-        function openEditModal(productName) {
-            document.getElementById('editModal').classList.add('active');
-            document.getElementById('editProductName').value = productName;
-            // 실제로는 서버에서 데이터를 가져와서 채워야 함
-        }
+    // 재고 추가 폼 제출
+    function submitAddForm() {
+        console.log('=== submitAddForm 시작 ===');
 
-        // 재고 수정 모달 닫기
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
-            document.getElementById('editProductForm').reset();
-        }
+        const stockName = document.getElementById('addStockName').value.trim();
+        const targetStockCount = document.getElementById('addTargetStockCount').value;
+        const stockPrice = document.getElementById('addStockPrice').value;
 
-        // 재고 추가 폼 제출
-        function submitAddForm() {
-            const form = document.getElementById('addProductForm');
-            if (form.checkValidity()) {
-                alert('재고가 추가되었습니다.');
-                closeAddModal();
-                // 실제로는 서버로 데이터 전송
-            } else {
+        console.log('stockName:', stockName);
+        console.log('targetStockCount:', targetStockCount);
+        console.log('stockPrice:', stockPrice);
+
+        if (!stockName || !targetStockCount || !stockPrice) {
                 alert('모든 필수 항목을 입력해주세요.');
-            }
+            return;
         }
 
-        // 재고 수정 폼 제출
-        function submitEditForm() {
-            const form = document.getElementById('editProductForm');
-            if (form.checkValidity()) {
-                alert('재고가 수정되었습니다.');
-                closeEditModal();
-                // 실제로는 서버로 데이터 전송
+        const formData = new FormData();
+        formData.append('stockName', stockName);
+        formData.append('targetStockCount', targetStockCount);
+        formData.append('stockPrice', stockPrice);
+
+        console.log('fetch 요청 시작');
+
+        fetch('${pageContext.request.contextPath}/stockInsert.gym', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                console.log('response:', response);
+                return response.text();
+            })
+            .then(result => {
+                console.log('result:', result);
+                if (result === 'success') {
+                    alert('재고가 추가되었습니다.');
+                    // 페이지 전체 새로고침이 아닌 목록 페이지로 이동
+                    window.location.href = '${pageContext.request.contextPath}/stock.gym';
+                } else if (result === 'fail_auth') {
+                    alert('권한이 없습니다.');
             } else {
-                alert('모든 필수 항목을 입력해주세요.');
+                    alert('재고 추가에 실패했습니다: ' + result);
             }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
         }
 
-        // 수량 변경 모달 열기
-        function openQuantityChangeModal(event, itemName) {
+    // 입출고 모달 열기
+    function openQuantityChangeModal(event, stockId, stockName) {
             if (event) {
                 event.stopPropagation();
             }
+        document.getElementById('inOutStockId').value = stockId;
+        document.getElementById('inOutStockName').value = stockName;
+        document.getElementById('quantityInput').value = '';
+        document.getElementById('outgoing').checked = true;
             document.getElementById('quantityChangeModal').classList.add('active');
-            // 현재 재고 정보를 가져와서 설정할 수 있음
-            document.getElementById('quantityInput').value = '';
         }
 
-        // 수량 변경 모달 닫기
+    // 입출고 모달 닫기
         function closeQuantityChangeModal() {
             document.getElementById('quantityChangeModal').classList.remove('active');
             document.getElementById('quantityChangeForm').reset();
-            document.getElementById('outgoing').checked = true;
         }
 
-        // 수량 변경 제출
+    // 입출고 처리 제출
         function submitQuantityChange() {
-            const form = document.getElementById('quantityChangeForm');
-            if (form.checkValidity()) {
+        const stockId = document.getElementById('inOutStockId').value;
                 const type = document.querySelector('input[name="type"]:checked').value;
-                const quantity = document.getElementById('quantityInput').value;
-                const typeText = type === 'outgoing' ? '출고' : '입고';
-                alert(`${typeText} ${quantity}개가 처리되었습니다.`);
-                closeQuantityChangeModal();
-                // 실제로는 서버로 데이터 전송
-            } else {
+        const count = document.getElementById('quantityInput').value;
+
+        if (!count || count <= 0) {
                 alert('수량을 입력해주세요.');
-            }
+            return;
         }
 
-        // 관리 재고 수정 모달 열기
-        function openManageInventoryModal(event, itemName) {
+        const formData = new FormData();
+        formData.append('stockId', stockId);
+        formData.append('type', type);
+        formData.append('count', count);
+
+        fetch('${pageContext.request.contextPath}/stockInOut.gym', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'success') {
+                    alert(type + ' 처리가 완료되었습니다.');
+                    location.reload();
+                } else if (result === 'fail_auth') {
+                    alert('권한이 없습니다.');
+                } else {
+                    alert('처리에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    }
+
+    // 재고 정보 수정 모달 열기
+    function openManageInventoryModal(event, stockId, stockName, targetStockCount) {
             if (event) {
                 event.stopPropagation();
             }
+
+        // 서버에서 재고 상세 정보 조회
+        fetch('${pageContext.request.contextPath}/stockDetail.gym?stockId=' + stockId)
+            .then(response => response.json())
+            .then(stock => {
+                document.getElementById('manageStockId').value = stock.stockId;
+                document.getElementById('manageStockName').value = stock.stockName;
+                document.getElementById('manageTargetStockCount').value = targetStockCount;
+                document.getElementById('manageStockPrice').value = stock.stockPrice;
             document.getElementById('manageInventoryModal').classList.add('active');
-            document.getElementById('inventoryNameInput').value = itemName || '';
-            // 실제로는 서버에서 현재 재고 정보를 가져와서 설정
-            document.getElementById('inventoryQuantitySelect').value = '10'; // 예시: 기본값 10개
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('재고 정보를 불러오는데 실패했습니다.');
+            });
         }
 
-        // 관리 재고 수정 모달 닫기
+    // 재고 정보 수정 모달 닫기
         function closeManageInventoryModal() {
             document.getElementById('manageInventoryModal').classList.remove('active');
             document.getElementById('manageInventoryForm').reset();
         }
 
-        // 관리 재고 수정 제출
+    // 재고 정보 수정 제출
         function submitManageInventory() {
-            const form = document.getElementById('manageInventoryForm');
-            if (form.checkValidity()) {
-                const inventoryName = document.getElementById('inventoryNameInput').value;
-                const quantity = document.getElementById('inventoryQuantitySelect').value;
-                alert(`재고 "${inventoryName}"의 수량이 ${quantity}개로 수정되었습니다.`);
-                closeManageInventoryModal();
-                // 실제로는 서버로 데이터 전송
-            } else {
+        const stockId = document.getElementById('manageStockId').value;
+        const stockName = document.getElementById('manageStockName').value.trim();
+        const targetStockCount = document.getElementById('manageTargetStockCount').value;
+        const stockPrice = document.getElementById('manageStockPrice').value;
+
+        if (!stockName || !targetStockCount || !stockPrice) {
                 alert('모든 필수 항목을 입력해주세요.');
-            }
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('stockId', stockId);
+        formData.append('stockName', stockName);
+        formData.append('targetStockCount', targetStockCount);
+        formData.append('stockPrice', stockPrice);
+
+        fetch('${pageContext.request.contextPath}/stockUpdate.gym', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'success') {
+                    alert('재고 정보가 수정되었습니다.');
+                    location.reload();
+                } else if (result === 'fail_auth') {
+                    alert('권한이 없습니다.');
+                } else {
+                    alert('수정에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
         }
 
         // 상세 보기
@@ -733,30 +715,36 @@
             if (event && event.stopPropagation) {
                 event.stopPropagation();
             }
-            if (itemName) {
-                alert(itemName + ' 상세 정보를 확인합니다.');
-            }
-        }
-
-        // 편집
-        function editItem(event, itemName) {
-            event.stopPropagation();
-            openEditModal(itemName);
         }
 
         // 삭제
-        function deleteItem(event, itemName) {
+    function deleteItem(event, stockId, stockName) {
             event.stopPropagation();
-            confirmDelete(itemName);
+
+        if (!confirm(stockName + '을(를) 삭제하시겠습니까?')) {
+            return;
         }
 
-        // 삭제 확인
-        function confirmDelete(itemName) {
-            if (confirm((itemName || '이 재고') + '을(를) 삭제하시겠습니까?')) {
-                alert((itemName || '재고') + '이(가) 삭제되었습니다.');
-                closeEditModal();
-                // 실제로는 서버로 삭제 요청
-            }
+        const formData = new FormData();
+        formData.append('stockId', stockId);
+
+        fetch('${pageContext.request.contextPath}/stockDelete.gym', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'success') {
+                    alert('재고가 삭제되었습니다.');
+                    location.reload();
+                } else {
+                    alert('삭제에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
         }
 
         // 프로그레스 바 애니메이션
@@ -795,4 +783,3 @@
 
 </body>
 </html>
-

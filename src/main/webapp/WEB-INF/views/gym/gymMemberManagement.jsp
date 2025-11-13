@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,84 +9,9 @@
     <title>GymHub - 회원 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
-        .content-container {
-            background-color: #2d1810;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            padding: 26px;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
-        }
-
-        /* Header */
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #ff6b00;
-            margin-bottom: 24px;
-        }
-
-        .header-info h2 {
-            font-size: 18px;
-            color: #ff6b00;
-            margin-bottom: 4px;
-        }
-
-        .header-info p {
-            font-size: 12px;
-            color: #b0b0b0;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .filter-btn {
-            background-color: #2d1810;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            padding: 10px 16px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 8px rgba(255, 107, 0, 0.25);
-        }
-
-        .filter-btn:hover {
-            background-color: #ff6b00;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.5);
-        }
-
-        .add-member-btn {
-            background-color: #ff6b00;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
-        }
-
-        .add-member-btn:hover {
-            box-shadow: 0 0 25px rgba(255, 107, 0, 0.6);
-            transform: translateY(-2px);
-        }
+        /* gymMemberManagement 전용 스타일 */
+        /* content-container, content-header, header-info, header-buttons, filter-btn는 common.css에 있음 */
+        /* add-member-btn은 add-btn 클래스를 사용하거나 동일한 스타일을 적용할 수 있음 */
 
         /* Table */
         .table-container {
@@ -1110,7 +1037,7 @@
             <div class="content-header">
                 <div class="header-info">
                     <h2>회원 목록</h2>
-                    <p>전체 8명</p>
+                    <p>전체 ${empty members ? 0 : members.size()}명</p>
                 </div>
                 <div class="header-buttons">
                     <button class="filter-btn" onclick="filterMembers('all')">전체</button>
@@ -1139,118 +1066,78 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-status="normal">
-                        <td>김회원</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.04.01</td>
-                        <td>2025.04.01</td>
-                        <td>A-127</td>
-                        <td><span class="status-badge status-normal">정상</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="expiring">
-                        <td>이회원</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.09.15</td>
-                        <td>2024.12.15</td>
-                        <td>B-45</td>
-                        <td><span class="status-badge status-expiring">만료임박</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="normal">
-                        <td>박서준</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.08.01</td>
-                        <td>2024.11.01</td>
-                        <td>-</td>
-                        <td><span class="status-badge status-normal">정상</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="expired">
-                        <td>최유진</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.06.10</td>
-                        <td>2024.09.10</td>
-                        <td>A-89</td>
-                        <td><span class="status-badge status-expired">만료</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="new">
-                        <td>정수연</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.10.01</td>
-                        <td>2025.01.01</td>
-                        <td>C-12</td>
-                        <td><span class="status-badge status-new">신규</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="normal">
-                        <td>강민지</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.05.15</td>
-                        <td>2025.05.15</td>
-                        <td>A-34</td>
-                        <td><span class="status-badge status-normal">정상</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="expiring">
-                        <td>윤태민</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.07.20</td>
-                        <td>2024.10.20</td>
-                        <td>-</td>
-                        <td><span class="status-badge status-expiring">만료임박</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-status="normal">
-                        <td>한소희</td>
-                        <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                        <td>2024.09.01</td>
-                        <td>2024.12.01</td>
-                        <td>B-78</td>
-                        <td><span class="status-badge status-normal">정상</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
+                    <c:choose>
+                        <c:when test="${empty members}">
+                            <!-- DB 조회 결과가 없을 때 빈 상태 메시지 표시 -->
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: #b0b0b0;">
+                                    등록된 회원이 없습니다. 신규 회원을 등록해주세요.
+                                </td>
+                            </tr>
+                        </c:when>
+                        <c:otherwise>
+                            <%
+                                java.util.Date now = new java.util.Date();
+                                pageContext.setAttribute("now", now);
+                            %>
+                            <c:forEach var="member" items="${members}">
+                                <c:set var="status" value="normal" />
+                                
+                                <c:if test="${not empty member.endDate}">
+                                    <c:choose>
+                                        <c:when test="${member.endDate.time < now.time}">
+                                            <c:set var="status" value="expired" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="daysUntilExpiry" value="${(member.endDate.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                            <c:if test="${daysUntilExpiry <= 7 and daysUntilExpiry >= 0}">
+                                                <c:set var="status" value="expiring" />
+                                            </c:if>
+                                            <c:if test="${status != 'expiring' and not empty member.startDate}">
+                                                <c:set var="daysSinceStart" value="${(now.time - member.startDate.time) / (1000 * 60 * 60 * 24)}" />
+                                                <c:if test="${daysSinceStart <= 7 and daysSinceStart >= 0}">
+                                                    <c:set var="status" value="new" />
+                                                </c:if>
+                                            </c:if>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:if>
+                                
+                                <tr data-status="${status}">
+                                    <td>${member.memberName}</td>
+                                    <td>${empty member.productNames ? '-' : member.productNames}</td>
+                                    <td><fmt:formatDate value="${member.startDate}" pattern="yyyy.MM.dd" /></td>
+                                    <td><fmt:formatDate value="${member.endDate}" pattern="yyyy.MM.dd" /></td>
+                                    <td>${empty member.lockerRealNum ? '-' : member.lockerRealNum}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${status == 'normal'}">
+                                                <span class="status-badge status-normal">정상</span>
+                                            </c:when>
+                                            <c:when test="${status == 'expiring'}">
+                                                <span class="status-badge status-expiring">만료임박</span>
+                                            </c:when>
+                                            <c:when test="${status == 'expired'}">
+                                                <span class="status-badge status-expired">만료</span>
+                                            </c:when>
+                                            <c:when test="${status == 'new'}">
+                                                <span class="status-badge status-new">신규</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="status-badge status-normal">정상</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="edit-btn" onclick="editMember(this)">수정</button>
+                                            <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
                     </tbody>
                 </table>
             </div>
@@ -1312,6 +1199,7 @@
                     <div class="modal-display-field" id="membershipDisplay"></div>
                     <button class="modal-btn modal-btn-secondary" onclick="registerMembership()">등록</button>
                 </div>
+                <input type="hidden" id="selectedProductNos" value="">
             </div>
 
             <!-- 날짜 입력 -->
@@ -1721,12 +1609,15 @@
             let displayText = '';
             
             if (type === 'month') {
-                // 회원권/락커: 일 단위를 개월로 변환
-                const months = Math.floor(product.durationMonths / 30);
-                if (months === 12) {
+                // 회원권/락커: 일 단위를 개월 또는 일로 변환
+                const days = product.durationMonths;
+                if (days >= 365) {
                     displayText = '12개월';
-                } else {
+                } else if (days >= 30) {
+                    const months = Math.floor(days / 30);
                     displayText = months + '개월';
+                } else {
+                    displayText = days + '일';
                 }
             } else if (type === 'count') {
                 // PT: 횟수 그대로 표시
@@ -1777,9 +1668,13 @@
         const lockerCheck = document.getElementById('lockerMembershipCheck').checked;
         const ptCheck = document.getElementById('ptMembershipCheck').checked;
 
-        const gymValue = document.getElementById('gymMembershipSelect').value;
-        const lockerValue = document.getElementById('lockerMembershipSelect').value;
-        const ptValue = document.getElementById('ptMembershipSelect').value;
+        const gymSelect = document.getElementById('gymMembershipSelect');
+        const lockerSelect = document.getElementById('lockerMembershipSelect');
+        const ptSelect = document.getElementById('ptMembershipSelect');
+        
+        const gymValue = gymSelect.value;
+        const lockerValue = lockerSelect.value;
+        const ptValue = ptSelect.value;
 
         // 선택된 항목이 있는지 확인
         if (!gymCheck && !lockerCheck && !ptCheck) {
@@ -1801,7 +1696,31 @@
             return;
         }
 
-        // ✅ 선택된 이용권 텍스트 생성
+        // 선택된 상품 번호 저장
+        const selectedProductNos = [];
+        if (gymCheck && gymValue) {
+            const selectedOption = gymSelect.options[gymSelect.selectedIndex];
+            const productNo = selectedOption.getAttribute('data-product-no');
+            if (productNo) {
+                selectedProductNos.push(parseInt(productNo));
+            }
+        }
+        if (lockerCheck && lockerValue) {
+            const selectedOption = lockerSelect.options[lockerSelect.selectedIndex];
+            const productNo = selectedOption.getAttribute('data-product-no');
+            if (productNo) {
+                selectedProductNos.push(parseInt(productNo));
+            }
+        }
+        if (ptCheck && ptValue) {
+            const selectedOption = ptSelect.options[ptSelect.selectedIndex];
+            const productNo = selectedOption.getAttribute('data-product-no');
+            if (productNo) {
+                selectedProductNos.push(parseInt(productNo));
+            }
+        }
+
+        // 선택된 이용권 텍스트 생성
         const selectedMemberships = [];
         if (gymCheck && gymValue) {
             selectedMemberships.push(gymValue + ' 회원권');
@@ -1813,7 +1732,7 @@
             selectedMemberships.push('PT ' + ptValue);
         }
 
-        const membershipText = selectedMemberships.join(' + ');  // ✅ 이 줄 추가!
+        const membershipText = selectedMemberships.join(' + ');
 
         // 이용권 표시 필드에 설정
         if (window.isEditingMembership) {
@@ -1821,6 +1740,7 @@
             window.isEditingMembership = false;
         } else {
             document.getElementById('membershipDisplay').textContent = membershipText;
+            document.getElementById('selectedProductNos').value = selectedProductNos.join(',');
         }
 
         closeMembershipSelectModal();
@@ -1857,23 +1777,39 @@
 
         // 회원권 기간 확인
         if (membershipDisplay.includes('회원권')) {
-            const gymMatch = membershipDisplay.match(/(\d+)개월\s*회원권/);
-            if (gymMatch) {
-                const months = parseInt(gymMatch[1]);
+            // 개월 단위 확인
+            const gymMatchMonth = membershipDisplay.match(/(\d+)개월\s*회원권/);
+            if (gymMatchMonth) {
+                const months = parseInt(gymMatchMonth[1]);
                 // 1개월 = 30일, 12개월 = 365일로 계산
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const gymMatchDay = membershipDisplay.match(/(\d+)일\s*회원권/);
+                if (gymMatchDay) {
+                    const days = parseInt(gymMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
         // 락커 이용권 기간 확인
         if (membershipDisplay.includes('락커 이용권')) {
-            const lockerMatch = membershipDisplay.match(/(\d+)개월\s*락커 이용권/);
-            if (lockerMatch) {
-                const months = parseInt(lockerMatch[1]);
+            // 개월 단위 확인
+            const lockerMatchMonth = membershipDisplay.match(/(\d+)개월\s*락커 이용권/);
+            if (lockerMatchMonth) {
+                const months = parseInt(lockerMatchMonth[1]);
                 // 1개월 = 30일, 12개월 = 365일로 계산
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const lockerMatchDay = membershipDisplay.match(/(\d+)일\s*락커 이용권/);
+                if (lockerMatchDay) {
+                    const days = parseInt(lockerMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
@@ -1913,38 +1849,52 @@
 
     // 락커 선택 모달 열기
     function openLockerSelectModal() {
-        // 빈 락커 목록 (실제로는 서버에서 가져와야 함)
-        const availableLockers = [
-            'A-1', 'A-5', 'A-12', 'A-23', 'A-45', 'A-56',
-            'B-68', 'B-72', 'B-89', 'C-15', 'C-34', 'C-67'
-        ];
-
-        // 락커 목록 생성
+        // 락커 목록 초기화
         const lockerList = document.getElementById('lockerList');
-        lockerList.innerHTML = '';
+        lockerList.innerHTML = '<div style="text-align: center; padding: 20px; color: #b0b0b0;">로딩 중...</div>';
 
-        availableLockers.forEach(locker => {
-            const lockerItem = document.createElement('div');
-            lockerItem.className = 'locker-item';
-
-            const lockerNumber = document.createElement('span');
-            lockerNumber.className = 'locker-number';
-            lockerNumber.textContent = locker;
-
-            const assignBtn = document.createElement('button');
-            assignBtn.className = 'locker-assign-btn';
-            assignBtn.textContent = '배정';
-            assignBtn.onclick = function() {
-                assignLocker(locker);
-            };
-
-            lockerItem.appendChild(lockerNumber);
-            lockerItem.appendChild(assignBtn);
-            lockerList.appendChild(lockerItem);
-        });
-
-        // 모달 열기
+        // 모달 먼저 열기
         document.getElementById('lockerSelectModal').classList.add('active');
+
+        // 서버에서 빈 락커 목록 조회
+        fetch('/locker/available.ajax')
+            .then(response => response.json())
+            .then(data => {
+                lockerList.innerHTML = '';
+
+                if (data.success && data.lockers && data.lockers.length > 0) {
+                    // 락커 목록이 있는 경우
+                    data.lockers.forEach(locker => {
+                        const lockerItem = document.createElement('div');
+                        lockerItem.className = 'locker-item';
+
+                        const lockerNumber = document.createElement('span');
+                        lockerNumber.className = 'locker-number';
+                        lockerNumber.textContent = locker.lockerRealNum || '';
+
+                        const assignBtn = document.createElement('button');
+                        assignBtn.className = 'locker-assign-btn';
+                        assignBtn.textContent = '배정';
+                        assignBtn.onclick = function() {
+                            assignLocker(locker.lockerRealNum);
+                        };
+
+                        lockerItem.appendChild(lockerNumber);
+                        lockerItem.appendChild(assignBtn);
+                        lockerList.appendChild(lockerItem);
+                    });
+                } else {
+                    // 락커 목록이 없는 경우
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.style.cssText = 'text-align: center; padding: 40px; color: #b0b0b0; font-size: 14px;';
+                    emptyMessage.textContent = '사용 가능한 락커가 없습니다.';
+                    lockerList.appendChild(emptyMessage);
+                }
+            })
+            .catch(error => {
+                console.error('락커 목록 조회 오류:', error);
+                lockerList.innerHTML = '<div style="text-align: center; padding: 40px; color: #ff5252; font-size: 14px;">락커 목록을 불러오는 중 오류가 발생했습니다.</div>';
+            });
     }
 
     // 락커 배정 함수
@@ -2022,28 +1972,62 @@
     // 최종 등록 확정
     function confirmRegistration() {
         const memberId = document.getElementById('memberIdInput').value;
-        const membership = document.getElementById('membershipDisplay').textContent;
         const startDate = document.getElementById('startDateInput').value;
         const endDate = document.getElementById('endDateInput').value;
-        const locker = document.getElementById('lockerInput').value;
-        const name = document.getElementById('confirmName').textContent;
+        const lockerRealNum = document.getElementById('lockerInput').value;
+        const selectedProductNosStr = document.getElementById('selectedProductNos').value;
+        
+        // 선택된 상품 번호 배열로 변환
+        const productNos = selectedProductNosStr ? selectedProductNosStr.split(',').map(no => parseInt(no)) : [];
 
-        // 실제로는 서버로 데이터 전송
-        console.log('회원 등록 데이터:', {
-            memberId,
-            name,
-            membership,
-            startDate,
-            endDate,
-            locker
+        // 필수 항목 검증
+        if (!memberId) {
+            alert('회원 아이디가 필요합니다.');
+            return;
+        }
+
+        if (productNos.length === 0) {
+            alert('이용권을 선택해주세요.');
+            return;
+        }
+
+        if (!startDate || !endDate) {
+            alert('시작일과 만료일을 입력해주세요.');
+            return;
+        }
+
+        // 서버로 데이터 전송
+        const requestData = {
+            memberId: memberId,
+            productNos: productNos,
+            startDate: startDate,
+            endDate: endDate,
+            lockerRealNum: lockerRealNum || null
+        };
+
+        fetch('${pageContext.request.contextPath}/member/register.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('회원이 성공적으로 등록되었습니다!');
+                closeConfirmModal();
+                closeAddMemberModal();
+                // 페이지 새로고침
+                location.reload();
+            } else {
+                alert(data.message || '회원 등록에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('회원 등록 오류:', error);
+            alert('회원 등록 중 오류가 발생했습니다.');
         });
-
-        alert('회원이 등록되었습니다!');
-        closeConfirmModal();
-        closeAddMemberModal();
-
-        // 페이지 새로고침 또는 테이블 업데이트
-        // location.reload();
     }
 
     // 모달 외부 클릭 시 닫기 (DOMContentLoaded 안에서 실행)
@@ -2278,40 +2262,53 @@
     }
 
     // 락커 조회 (수정용)
-    // 락커 조회 (수정용)
     function lookupEditLocker() {
-        // 빈 락커 목록 (실제로는 서버에서 가져와야 함)
-        const availableLockers = [
-            'A-1', 'A-5', 'A-12', 'A-23', 'A-45', 'A-56',
-            'B-68', 'B-72', 'B-89', 'C-15', 'C-34', 'C-67'
-        ];
-
-        // 락커 목록 생성
+        // 락커 목록 초기화
         const lockerList = document.getElementById('lockerList');
-        lockerList.innerHTML = '';
+        lockerList.innerHTML = '<div style="text-align: center; padding: 20px; color: #b0b0b0;">로딩 중...</div>';
 
-        availableLockers.forEach(locker => {
-            const lockerItem = document.createElement('div');
-            lockerItem.className = 'locker-item';
-
-            const lockerNumber = document.createElement('span');
-            lockerNumber.className = 'locker-number';
-            lockerNumber.textContent = locker;
-
-            const assignBtn = document.createElement('button');
-            assignBtn.className = 'locker-assign-btn';
-            assignBtn.textContent = '배정';
-            assignBtn.onclick = function() {
-                assignEditLocker(locker);
-            };
-
-            lockerItem.appendChild(lockerNumber);
-            lockerItem.appendChild(assignBtn);
-            lockerList.appendChild(lockerItem);
-        });
-
-        // 모달 열기
+        // 모달 먼저 열기
         document.getElementById('lockerSelectModal').classList.add('active');
+
+        // 서버에서 빈 락커 목록 조회
+        fetch('/locker/available.ajax')
+            .then(response => response.json())
+            .then(data => {
+                lockerList.innerHTML = '';
+
+                if (data.success && data.lockers && data.lockers.length > 0) {
+                    // 락커 목록이 있는 경우
+                    data.lockers.forEach(locker => {
+                        const lockerItem = document.createElement('div');
+                        lockerItem.className = 'locker-item';
+
+                        const lockerNumber = document.createElement('span');
+                        lockerNumber.className = 'locker-number';
+                        lockerNumber.textContent = locker.lockerRealNum || '';
+
+                        const assignBtn = document.createElement('button');
+                        assignBtn.className = 'locker-assign-btn';
+                        assignBtn.textContent = '배정';
+                        assignBtn.onclick = function() {
+                            assignEditLocker(locker.lockerRealNum);
+                        };
+
+                        lockerItem.appendChild(lockerNumber);
+                        lockerItem.appendChild(assignBtn);
+                        lockerList.appendChild(lockerItem);
+                    });
+                } else {
+                    // 락커 목록이 없는 경우
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.style.cssText = 'text-align: center; padding: 40px; color: #b0b0b0; font-size: 14px;';
+                    emptyMessage.textContent = '사용 가능한 락커가 없습니다.';
+                    lockerList.appendChild(emptyMessage);
+                }
+            })
+            .catch(error => {
+                console.error('락커 목록 조회 오류:', error);
+                lockerList.innerHTML = '<div style="text-align: center; padding: 40px; color: #ff5252; font-size: 14px;">락커 목록을 불러오는 중 오류가 발생했습니다.</div>';
+            });
     }
 
     // 락커 배정 함수 (수정용)
@@ -2456,21 +2453,37 @@
 
         // 회원권 기간 확인
         if (editMembershipDisplay.includes('회원권')) {
-            const gymMatch = editMembershipDisplay.match(/(\d+)개월\s*회원권/);
-            if (gymMatch) {
-                const months = parseInt(gymMatch[1]);
+            // 개월 단위 확인
+            const gymMatchMonth = editMembershipDisplay.match(/(\d+)개월\s*회원권/);
+            if (gymMatchMonth) {
+                const months = parseInt(gymMatchMonth[1]);
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const gymMatchDay = editMembershipDisplay.match(/(\d+)일\s*회원권/);
+                if (gymMatchDay) {
+                    const days = parseInt(gymMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
         // 락커 이용권 기간 확인
         if (editMembershipDisplay.includes('락커 이용권')) {
-            const lockerMatch = editMembershipDisplay.match(/(\d+)개월\s*락커 이용권/);
-            if (lockerMatch) {
-                const months = parseInt(lockerMatch[1]);
+            // 개월 단위 확인
+            const lockerMatchMonth = editMembershipDisplay.match(/(\d+)개월\s*락커 이용권/);
+            if (lockerMatchMonth) {
+                const months = parseInt(lockerMatchMonth[1]);
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const lockerMatchDay = editMembershipDisplay.match(/(\d+)일\s*락커 이용권/);
+                if (lockerMatchDay) {
+                    const days = parseInt(lockerMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
@@ -2485,9 +2498,6 @@
         document.getElementById('editEndDateInput').value = year + '-' + month + '-' + day;
     }
 
-
-
 </script>
 </body>
 </html>
-

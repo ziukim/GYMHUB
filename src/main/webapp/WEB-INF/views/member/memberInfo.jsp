@@ -9,14 +9,11 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
 
     <style>
+        /* memberInfo 전용 스타일 */
+        /* main-content는 common.css에 있으므로 padding만 오버라이드 */
         .main-content {
-            flex: 1;
-            width: 100%;
-            max-width: 100%;
             padding: 40px 40px 40px 20px;
-            margin-left: 0;
         }
-        /* 추가 스타일 - common.css에 없는 부분만 */
         .profile-section {
             display: flex;
             gap: 24px;

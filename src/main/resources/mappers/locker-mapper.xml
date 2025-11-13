@@ -28,7 +28,8 @@
             LP.LOCKER_PASS_STATUS,
             M.MEMBER_NAME
         FROM LOCKER L
-        LEFT JOIN LOCKER_PASS LP ON L.LOCKER_NO = LP.LOCKER_NO AND LP.LOCKER_PASS_STATUS = '정상'
+        LEFT JOIN LOCKER_PASS LP ON L.LOCKER_NO = LP.LOCKER_NO 
+            AND LP.LOCKER_PASS_STATUS = '정상'
         LEFT JOIN MEMBER M ON LP.MEMBER_NO = M.MEMBER_NO
         WHERE L.GYM_NO = #{gymNo}
         ORDER BY L.LOCKER_REAL_NUM ASC
@@ -65,6 +66,61 @@
         )
         AND L.LOCKER_STATUS != '빈'
     </update>
+
+    <insert id="insertLockerPass" parameterType="com.kh.gymhub.model.vo.LockerPass">
+        <selectKey keyProperty="lockerPassNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_LOCKER_PASS_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO LOCKER_PASS (
+            LOCKER_PASS_NO,
+            PURCHASE_NO,
+            LOCKER_NO,
+            MEMBER_NO,
+            LOCKER_PASS_START,
+            LOCKER_END,
+            LOCKER_PASS_STATUS
+        ) VALUES (
+            #{lockerPassNo},
+            #{purchaseNo},
+            #{lockerNo},
+            #{memberNo},
+            #{lockerPassStart},
+            #{lockerEnd},
+            #{lockerPassStatus}
+        )
+    </insert>
+
+    <select id="selectLockerByRealNum" resultType="com.kh.gymhub.model.vo.LockerPass">
+        SELECT L.LOCKER_NO as lockerNo,
+               L.LOCKER_REAL_NUM as lockerRealNum
+        FROM LOCKER L
+        WHERE L.LOCKER_REAL_NUM = #{lockerRealNum}
+        AND L.GYM_NO = #{gymNo}
+    </select>
+
+    <update id="updateLockerStatus">
+        UPDATE LOCKER
+        SET LOCKER_STATUS = #{lockerStatus}
+        WHERE LOCKER_NO = #{lockerNo}
+    </update>
+
+    <select id="selectLockerByNo" resultType="com.kh.gymhub.model.vo.Locker">
+        SELECT
+            LOCKER_NO as lockerNo,
+            GYM_NO as gymNo,
+            LOCKER_REAL_NUM as lockerRealNum,
+            LOCKER_STATUS as lockerStatus
+        FROM LOCKER
+        WHERE LOCKER_NO = #{lockerNo}
+    </select>
+
+    <select id="countActiveLockerPassByLockerNo" resultType="_int">
+        SELECT COUNT(*)
+        FROM LOCKER_PASS
+        WHERE LOCKER_NO = #{lockerNo}
+        AND LOCKER_PASS_STATUS = '정상'
+        AND LOCKER_END >= TRUNC(SYSDATE)
+    </select>
 
 </mapper>
 

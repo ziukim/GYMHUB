@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,37 +9,10 @@
     <title>GymHub - 공지사항 상세</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
-
-        /* Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            background: transparent;
-            border: none;
-            color: #ff6b00;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            transition: transform 0.2s;
-        }
-
+        /* noticeDetail 전용 스타일 */
+        /* main-content, page-header, header-left는 common.css에 있음 */
+        
+        /* back-button은 common.css에 있으므로 hover 효과만 추가 */
         .back-button:hover {
             transform: translateX(-3px);
         }
@@ -148,6 +122,28 @@
             white-space: pre-wrap;
         }
 
+        /* Thumbnail Area */
+        .thumbnail-area {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #333;
+        }
+
+        .thumbnail-area img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #ff6b00;
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .thumbnail-area img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.5);
+        }
+
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -171,11 +167,20 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Include -->
-
-        <!-- notice 폴더에 있는 jsp 파일들은 모두 C:if 를 사용하여, 회원 타입 별 사이드바가 다르게 나오도록 해야한다. -->
-        <!--include page="../common/sidebar/sidebarMember.jsp.jsp" />
-        jsp:include page="../common/sidebar/sidebarTrainer.jsp.jsp" -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+        <c:choose>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 1}">
+                <jsp:include page="../common/sidebar/sidebarMember.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 2}">
+                <jsp:include page="../common/sidebar/sidebarTrainer.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:when>
+            <c:otherwise>
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:otherwise>
+        </c:choose>
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
@@ -189,150 +194,112 @@
             </div>
 
             <!-- Notice Detail Card -->
-            <div class="notice-detail-card">
-                <!-- Notice Header -->
-                <div class="notice-detail-header">
-                    <span class="notice-badge urgent" id="noticeBadge">긴급</span>
-                    <h2 class="notice-detail-title" id="noticeTitle">연말연시 운영시간 안내</h2>
-                    <div class="notice-meta">
-                        <div class="notice-meta-item">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
-                            <span><strong id="noticeAuthor">관리자 (운영자)</strong></span>
+            <c:choose>
+                <c:when test="${not empty notice}">
+                    <c:set var="categoryClass" value="general" />
+                    <c:set var="categoryLabel" value="일반" />
+                    <c:choose>
+                        <c:when test="${notice.noticeCategory == 'urgent' or notice.noticeCategory == '긴급'}">
+                            <c:set var="categoryClass" value="urgent" />
+                            <c:set var="categoryLabel" value="긴급" />
+                        </c:when>
+                        <c:when test="${notice.noticeCategory == 'event' or notice.noticeCategory == '이벤트'}">
+                            <c:set var="categoryClass" value="event" />
+                            <c:set var="categoryLabel" value="이벤트" />
+                        </c:when>
+                        <c:when test="${notice.noticeCategory == 'important' or notice.noticeCategory == '중요'}">
+                            <c:set var="categoryClass" value="important" />
+                            <c:set var="categoryLabel" value="중요" />
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="categoryClass" value="general" />
+                            <c:set var="categoryLabel" value="일반" />
+                        </c:otherwise>
+                    </c:choose>
+                    
+                    <div class="notice-detail-card">
+                        <!-- Notice Header -->
+                        <div class="notice-detail-header">
+                            <span class="notice-badge ${categoryClass}">${categoryLabel}</span>
+                            <h2 class="notice-detail-title">${notice.noticeTitle}</h2>
+                            <div class="notice-meta">
+                                <div class="notice-meta-item">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="작성자" class="notice-icon" style="width: 16px; height: 16px;">
+                                    <span><strong>${notice.noticeWriter}</strong></span>
+                                </div>
+                                <div class="notice-meta-item">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
+                                    <span><fmt:formatDate value="${notice.noticeDate}" pattern="yyyy-MM-dd" /></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="notice-meta-item">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="notice-icon" style="width: 16px; height: 16px;">
-                            <span id="noticeDate">2025-10-25</span>
+
+                        <!-- Notice Content -->
+                        <div class="notice-content-section">
+                            <div class="notice-content">${notice.noticeContent}</div>
+                            <div class="thumbnail-area">
+                                <c:if test="${not empty notice.filePath}">
+                                    <img src="${pageContext.request.contextPath}${notice.filePath}" 
+                                         alt="공지사항 첨부이미지"
+                                         onclick="window.open('${pageContext.request.contextPath}${notice.filePath}', '_blank')">
+                                </c:if>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">목록으로</button>
+                            <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3 and sessionScope.loginMember.gymNo == notice.gymNo}">
+                                <button class="btn btn-danger" onclick="deleteNotice(${notice.noticeNo})">삭제하기</button>
+                                <button class="btn btn-primary" onclick="location.href='${pageContext.request.contextPath}/noticeUpdateForm.no?id=${notice.noticeNo}'">수정하기</button>
+                            </c:if>
                         </div>
                     </div>
-                </div>
-
-                <!-- Notice Content -->
-                <div class="notice-content-section">
-                    <div class="notice-content" id="noticeContent">12월 31일과 1월 1일은 오전 10시부터 오후 6시까지 운영합니다. 회원 여러분의 양해 부탁드립니다.</div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">목록으로</button>
-                    <button class="btn btn-danger" onclick="deleteNotice()">삭제하기</button>
-                    <button class="btn btn-primary" onclick="editNotice()">수정하기</button>
-                </div>
-            </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="notice-detail-card">
+                        <div style="text-align: center; padding: 60px 20px; color: #666;">
+                            <h3 style="color: #b0b0b0; margin-bottom: 16px;">공지사항을 찾을 수 없습니다</h3>
+                            <p style="color: #666; margin-bottom: 24px;">요청하신 공지사항이 존재하지 않거나 삭제되었습니다.</p>
+                            <button class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">목록으로</button>
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 
     <script>
-        // Sample notice data (in a real app, this would come from database)
-        const noticeDataMap = {
-            '1': {
-                type: 'urgent',
-                badge: '긴급',
-                title: '연말연시 운영시간 안내',
-                content: '12월 31일과 1월 1일은 오전 10시부터 오후 6시까지 운영합니다. 회원 여러분의 양해 부탁드립니다.',
-                author: '관리자 (운영자)',
-                date: '2025-10-25'
-            },
-            '2': {
-                type: 'event',
-                badge: '이벤트',
-                title: '11월 신규 GX 프로그램 오픈',
-                content: '새로운 GX 프로그램이 준비되었습니다!',
-                author: '빅트레이너 (트레이너)',
-                date: '2025-10-23'
-            },
-            '3': {
-                type: 'important',
-                badge: '중요',
-                title: '시설 점검 안내',
-                content: '내일(금)의 오전 2시부터 6시까지 시설 점검이 예정되어 있습니다. 해당 시간에는 이용이 불가합니다.',
-                author: '시설관리 (운영자)',
-                date: '2025-10-20'
-            },
-            '4': {
-                type: 'general',
-                badge: '일반',
-                title: '신규 운동 기구 입고 완료',
-                content: '회원 여러분이 요청하신 최신 스미스머신과 케이블 크로스오버가 입고되었습니다. 2층 프리웨이트존에서 이용하실 수 있습니다.',
-                author: '어트레이너 (트레이너)',
-                date: '2025-10-18'
-            }
-        };
-
-        // Function to get URL parameters
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-
-        // Load notice data
-        function loadNoticeData() {
-            const noticeId = getUrlParameter('id');
-            const noticeData = noticeDataMap[noticeId];
-            
-            if (noticeData) {
-                // Update the page with notice data
-                document.getElementById('noticeBadge').textContent = noticeData.badge;
-                document.getElementById('noticeBadge').className = 'notice-badge ' + noticeData.type;
-                document.getElementById('noticeTitle').textContent = noticeData.title;
-                document.getElementById('noticeAuthor').textContent = noticeData.author;
-                document.getElementById('noticeDate').textContent = noticeData.date;
-                document.getElementById('noticeContent').textContent = noticeData.content;
-            } else {
-                // 데이터가 없을 경우 기본값 유지 또는 에러 처리
-                console.log('Notice not found');
-            }
-        }
-
-        // Edit notice function
-        function editNotice() {
-            const noticeId = getUrlParameter('id');
-            if (noticeId) {
-                window.location.href = '${pageContext.request.contextPath}/noticeUpdateForm.no?id=' + noticeId;
-            } else {
-                alert('공지사항 ID를 찾을 수 없습니다.');
-            }
-        }
-
         // Delete notice function
-        function deleteNotice() {
-            const noticeId = getUrlParameter('id');
-            if (!noticeId) {
+        function deleteNotice(noticeNo) {
+            if (!noticeNo) {
                 alert('공지사항 ID를 찾을 수 없습니다.');
                 return;
             }
 
             if (confirm('정말로 이 공지사항을 삭제하시겠습니까?\n삭제된 공지사항은 복구할 수 없습니다.')) {
-                // TODO: 실제 서버 삭제 요청
-                // fetch('${pageContext.request.contextPath}/notice/delete.do?id=' + noticeId, {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     }
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) {
-                //         alert('공지사항이 삭제되었습니다.');
-                //         location.href = '${pageContext.request.contextPath}/notice.no';
-                //     } else {
-                //         alert('삭제 중 오류가 발생했습니다.');
-                //     }
-                // })
-                // .catch(error => {
-                //     console.error('Error:', error);
-                //     alert('삭제 중 오류가 발생했습니다.');
-                // });
-
-                // 임시 처리
-                alert('공지사항이 삭제되었습니다.');
-                location.href = '${pageContext.request.contextPath}/notice.no';
+                fetch('${pageContext.request.contextPath}/noticeDelete.no', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'id=' + noticeNo
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('공지사항이 삭제되었습니다.');
+                        location.href = '${pageContext.request.contextPath}/notice.no';
+                    } else {
+                        alert(data.message || '삭제 중 오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
             }
         }
-
-        // Initialize page
-        loadNoticeData();
     </script>
 </body>
 </html>

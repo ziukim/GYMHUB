@@ -196,5 +196,45 @@ public class MachineController {
             return "fail";
         }
     }
+
+    /**
+     * 락커 정보 조회
+     */
+    @GetMapping("/locker/detail.gym")
+    @ResponseBody
+    public com.kh.gymhub.model.vo.Locker getLockerDetail(@RequestParam int lockerNo) {
+        try {
+            return lockerService.selectLockerByNo(lockerNo);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 락커 상태 변경
+     */
+    @PostMapping("/locker/updateStatus.gym")
+    @ResponseBody
+    public String updateLockerStatus(@RequestParam int lockerNo,
+                                     @RequestParam String lockerStatus,
+                                     HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            return "fail_auth";
+        }
+
+        try {
+            int result = lockerService.updateLockerStatus(lockerNo, lockerStatus);
+            if (result > 0) {
+                return "success";
+            } else if (result == -1) {
+                return "fail_in_use"; // 활성 이용권이 있는 경우
+            } else {
+                return "fail";
+            }
+        } catch (Exception e) {
+            return "error";
+        }
+    }
 }
 

@@ -171,7 +171,68 @@
         AND STATUS = 'Y'
         AND GYM_NO IS NULL
     </select>
-    <!-- 이미지 업로드 -->
+
+    <!-- 회원의 헬스장 번호 업데이트 -->
+    <update id="updateMemberGymNo">
+        UPDATE MEMBER
+        SET GYM_NO = #{gymNo},
+            MEMBER_UPDATEAT = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+    </update>
+
+    <!-- 트레이너 등록용 조회 (memberType=2, gymNo=null) -->
+    <select id="getTrainerByIdForRegistration" parameterType="string" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+        AND STATUS = 'Y'
+        AND MEMBER_TYPE = 2
+        AND GYM_NO IS NULL
+    </select>
+
+    <!-- 특정 헬스장의 트레이너 목록 조회 (memberType=2, gymNo=해당 헬스장) -->
+    <select id="selectTrainersByGymNo" parameterType="_int" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE GYM_NO = #{gymNo}
+        AND MEMBER_TYPE = 2
+        AND STATUS = 'Y'
+        ORDER BY MEMBER_NAME
+    </select>
+
+    <!-- 프로필 이미지 업로드 -->
     <update id="updateProfileImage">
         UPDATE MEMBER
         SET MEMBER_PHOTO_PATH = #{photoPath},

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.PurchaseMapper">
+
+    <resultMap id="purchaseResultMap" type="com.kh.gymhub.model.vo.Purchase">
+        <id property="purchaseNo" column="PURCHASE_NO"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="purchaseDate" column="PURCHASE_DATE"/>
+        <result property="purchaseCost" column="PURCHASE_COST"/>
+        <result property="purchaseStatus" column="PURCHASE_STATUS"/>
+    </resultMap>
+
+    <insert id="insertPurchase" parameterType="com.kh.gymhub.model.vo.Purchase">
+        <selectKey keyProperty="purchaseNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_PURCHASE_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO PURCHASE (
+            PURCHASE_NO,
+            MEMBER_NO,
+            GYM_NO,
+            PURCHASE_DATE,
+            PURCHASE_COST,
+            PURCHASE_STATUS
+        ) VALUES (
+            #{purchaseNo},
+            #{memberNo},
+            #{gymNo},
+            SYSDATE,
+            #{purchaseCost},
+            #{purchaseStatus}
+        )
+    </insert>
+
+    <select id="selectPurchaseByNo" parameterType="_int" resultMap="purchaseResultMap">
+        SELECT PURCHASE_NO,
+               MEMBER_NO,
+               GYM_NO,
+               PURCHASE_DATE,
+               PURCHASE_COST,
+               PURCHASE_STATUS
+        FROM PURCHASE
+        WHERE PURCHASE_NO = #{purchaseNo}
+    </select>
+
+</mapper>
+

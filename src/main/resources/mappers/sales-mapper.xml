@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.SalesMapper">
+
+    <resultMap id="salesResultMap" type="com.kh.gymhub.model.vo.Sales">
+        <id property="salesNo" column="SALES_NO"/>
+        <result property="purchaseNo" column="PURCHASE_NO"/>
+        <result property="stockId" column="STOCK_ID"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="salesType" column="SALES_TYPE"/>
+        <result property="salesDate" column="SALES_DATE"/>
+    </resultMap>
+
+    <insert id="insertSales" parameterType="com.kh.gymhub.model.vo.Sales">
+        <selectKey keyProperty="salesNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_SALES_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO SALES (
+            SALES_NO,
+            PURCHASE_NO,
+            STOCK_ID,
+            GYM_NO,
+            SALES_TYPE,
+            SALES_DATE
+        ) VALUES (
+            #{salesNo},
+            #{purchaseNo},
+            #{stockId},
+            #{gymNo},
+            #{salesType},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 회원권 매출 조회 (해당 달) -->
+    <!-- SALES 테이블의 salesType이 '이용권'인 경우와 PURCHASE 테이블에서 직접 조회하는 경우 모두 고려 -->
+    <select id="selectMembershipSalesByGymNoAndMonth" resultType="_int">
+        SELECT NVL(SUM(P.PURCHASE_COST), 0)
+        FROM PURCHASE P
+        WHERE P.GYM_NO = #{gymNo}
+          AND P.PURCHASE_STATUS = '결제'
+          AND EXTRACT(YEAR FROM P.PURCHASE_DATE) = #{year}
+          AND EXTRACT(MONTH FROM P.PURCHASE_DATE) = #{month}
+          AND EXISTS (
+              SELECT 1 
+              FROM PURCHASE_ITEM PI
+              WHERE PI.PURCHASE_NO = P.PURCHASE_NO
+                AND PI.MEMBERSHIP_PERIOD > 0
+          )
+    </select>
+
+    <!-- 재고(물품 판매) 매출 조회 (해당 달, 출고만) -->
+    <select id="selectStockSalesByGymNoAndMonth" resultType="_int">
+        SELECT NVL(SUM(P.PURCHASE_COST), 0)
+        FROM SALES S
+        INNER JOIN PURCHASE P ON S.PURCHASE_NO = P.PURCHASE_NO
+        WHERE S.GYM_NO = #{gymNo}
+          AND S.SALES_TYPE = '재고'
+          AND EXTRACT(YEAR FROM S.SALES_DATE) = #{year}
+          AND EXTRACT(MONTH FROM S.SALES_DATE) = #{month}
+    </select>
+
+</mapper>
+

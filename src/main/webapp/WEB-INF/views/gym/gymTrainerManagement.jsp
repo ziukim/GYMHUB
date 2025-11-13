@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,14 +12,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=ABeeZee&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
+        /* gymTrainerManagement 전용 스타일 */
+        /* main-content는 common.css에 있음 */
+        
         body {
             font-family: 'ABeeZee', 'Noto Sans KR', sans-serif;
             background: #0a0a0a;
@@ -447,7 +444,40 @@
 
                 <!-- Trainer Grid -->
                 <div class="trainer-grid" id="trainerGrid">
-                    <!-- Trainer cards will be dynamically inserted here -->
+                    <c:choose>
+                        <c:when test="${empty trainers}">
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #8a6a50;">
+                                등록된 트레이너가 없습니다.
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="trainer" items="${trainers}">
+                                <div class="trainer-card">
+                                    <div class="trainer-name">${trainer.memberName}</div>
+                                    <div class="trainer-info">
+                                        <div class="trainer-info-item">
+                                            <span class="trainer-info-label">연락처:</span><br>
+                                            ${trainer.memberPhone}
+                                        </div>
+                                        <c:if test="${not empty trainer.memberEmail}">
+                                            <div class="trainer-info-item">
+                                                <span class="trainer-info-label">이메일:</span><br>
+                                                ${trainer.memberEmail}
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                    <div class="trainer-actions">
+                                        <form method="post" action="${pageContext.request.contextPath}/trainer/delete.gym" style="display: inline;">
+                                            <input type="hidden" name="memberNo" value="${trainer.memberNo}">
+                                            <button type="submit" class="delete-button" onclick="return confirm('정말 삭제하시겠습니까?')">
+                                                <img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="delete-icon">
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
@@ -465,13 +495,14 @@
                 <p class="modal-description">새로운 트레이너를 등록하세요</p>
             </div>
 
+            <form method="post" action="${pageContext.request.contextPath}/trainer/register.gym" id="trainerRegisterForm">
             <div class="modal-body">
                 <!-- 아이디 조회 -->
                 <div class="form-group">
                     <label class="form-label">아이디 조회</label>
                     <div class="id-lookup-group">
-                        <input type="text" class="form-input" id="trainerIdInput" placeholder="예: 김트레이너">
-                        <button class="lookup-btn" onclick="lookupTrainerId()">조회하기</button>
+                        <input type="text" class="form-input" id="trainerIdInput" name="memberId" placeholder="예: 김트레이너" required>
+                        <button type="button" class="lookup-btn" onclick="lookupTrainerId()">조회하기</button>
                     </div>
                 </div>
 
@@ -519,69 +550,24 @@
                 </div>
 
                 <div class="modal-buttons">
-                    <button class="modal-button btn-cancel" onclick="closeModal()">취소</button>
-                    <button class="modal-button btn-confirm" onclick="confirmTrainerRegistration()">등록</button>
+                    <button type="button" class="modal-button btn-cancel" onclick="closeModal()">취소</button>
+                    <button type="submit" class="modal-button btn-confirm" id="registerSubmitBtn" disabled>등록</button>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 
     <script>
-        // Sample trainer data
-        let trainers = [
-            { id: 1, name: '이트레이너', contact: '010-2345-6789', email: 'kim@gym.com' },
-            { id: 2, name: '김트레이너', contact: '010-3456-7890', email: 'kim@gym.com' },
-            { id: 3, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 4, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 5, name: '김트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 6, name: '박트레이너', contact: '010-3456-7890', email: 'kim@gym.com' },
-            { id: 7, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 8, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 9, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' },
-            { id: 10, name: '최트레이너', contact: '010-4567-8901', email: 'kim@gym.com' }
-        ];
-
-        let editingId = null;
-
-        // Render trainers
-        function renderTrainers() {
-            const grid = document.getElementById('trainerGrid');
-            grid.innerHTML = '';
-
-            trainers.forEach(trainer => {
-                const card = document.createElement('div');
-                card.className = 'trainer-card';
-                
-                let infoHTML = '<div class="trainer-info-item">' +
-                    '<span class="trainer-info-label">연락처:</span><br>' +
-                    trainer.contact +
-                    '</div>';
-                
-                // 이메일이 있는 경우에만 표시
-                if (trainer.email) {
-                    infoHTML += '<div class="trainer-info-item">' +
-                        '<span class="trainer-info-label">이메일:</span><br>' +
-                        trainer.email +
-                        '</div>';
-                }
-                
-                card.innerHTML = '<div class="trainer-name">' + trainer.name + '</div>' +
-                    '<div class="trainer-info">' + infoHTML + '</div>' +
-                    '<div class="trainer-actions">' +
-                        '<button class="delete-button" onclick="deleteTrainer(' + trainer.id + ')">' +
-                            '<img src="${pageContext.request.contextPath}/resources/images/icon/delete.png" alt="삭제" class="delete-icon">' +
-                        '</button>' +
-                    '</div>';
-                grid.appendChild(card);
-            });
-        }
+        let trainerData = null;
 
         // Open add modal
         function openAddModal() {
-            editingId = null;
             document.getElementById('modalTitle').textContent = '트레이너 등록';
             document.getElementById('trainerIdInput').value = '';
             document.getElementById('trainerLookupSection').style.display = 'none';
+            document.getElementById('registerSubmitBtn').disabled = true;
+            trainerData = null;
             document.getElementById('trainerModal').classList.add('active');
         }
 
@@ -591,6 +577,8 @@
             // 초기화
             document.getElementById('trainerIdInput').value = '';
             document.getElementById('trainerLookupSection').style.display = 'none';
+            document.getElementById('registerSubmitBtn').disabled = true;
+            trainerData = null;
         }
 
         // 아이디 조회 함수
@@ -602,77 +590,43 @@
                 return;
             }
             
-            // 실제로는 서버에서 조회
-            console.log('트레이너 아이디 조회:', trainerId);
-            
-            // 예시 아이디로 프로필 카드 표시
-            const trainerData = {
-                name: '홍길동',
-                id: '010915',
-                birth: '010915',
-                phone: '010-1234-5678',
-                email: 'hong@example.com',
-                address: '서울시 강남구 테헤란로 123'
-            };
-            
-            // 프로필 카드에 데이터 설정
-            document.getElementById('trainerProfileName').textContent = trainerData.name;
-            document.getElementById('trainerProfileId').textContent = trainerData.id;
-            document.getElementById('trainerDetailName').textContent = trainerData.name;
-            document.getElementById('trainerDetailBirth').textContent = trainerData.birth;
-            document.getElementById('trainerDetailPhone').textContent = trainerData.phone;
-            document.getElementById('trainerDetailEmail').textContent = trainerData.email;
-            document.getElementById('trainerDetailAddress').textContent = trainerData.address;
-            
-            // 프로필 아바타 업데이트 (이름 첫 글자로)
-            const firstChar = trainerData.name.charAt(0);
-            document.getElementById('trainerAvatarText').textContent = firstChar;
-            
-            // 트레이너 조회 섹션 표시
-            document.getElementById('trainerLookupSection').style.display = 'block';
-        }
-
-        // 트레이너 등록 확인 함수
-        function confirmTrainerRegistration() {
-            const trainerId = document.getElementById('trainerIdInput').value.trim();
-            
-            if (!trainerId) {
-                alert('아이디를 입력해주세요.');
-                return;
-            }
-            
-            // 트레이너 조회 섹션이 표시되지 않았으면
-            if (document.getElementById('trainerLookupSection').style.display === 'none') {
-                alert('아이디 조회를 먼저 진행해주세요.');
-                return;
-            }
-            
-            // 프로필 정보 가져오기
-            const name = document.getElementById('trainerProfileName').textContent;
-            const phone = document.getElementById('trainerDetailPhone').textContent;
-            const email = document.getElementById('trainerDetailEmail').textContent;
-            
-            // 새 트레이너 추가
-            const newTrainer = {
-                id: trainers.length > 0 ? Math.max(...trainers.map(t => t.id)) + 1 : 1,
-                name,
-                contact: phone,
-                email
-            };
-            
-            trainers.push(newTrainer);
-            renderTrainers();
-            closeModal();
-            alert('트레이너가 등록되었습니다!');
-        }
-
-        // Delete trainer
-        function deleteTrainer(id) {
-            if (confirm('정말 삭제하시겠습니까?')) {
-                trainers = trainers.filter(t => t.id !== id);
-                renderTrainers();
-                alert('트레이너가 삭제되었습니다!');
-            }
+            // 서버에서 트레이너 조회 (memberType=2, gymNo=null)
+            fetch('${pageContext.request.contextPath}/trainer/lookup.ajax?memberId=' + encodeURIComponent(trainerId))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        trainerData = data.trainer;
+                        
+                        // 프로필 카드에 데이터 설정
+                        document.getElementById('trainerProfileName').textContent = trainerData.memberName || '';
+                        document.getElementById('trainerProfileId').textContent = trainerData.memberId || '';
+                        document.getElementById('trainerDetailName').textContent = trainerData.memberName || '';
+                        document.getElementById('trainerDetailBirth').textContent = trainerData.memberBirth ? new Date(trainerData.memberBirth).toLocaleDateString('ko-KR') : '';
+                        document.getElementById('trainerDetailPhone').textContent = trainerData.memberPhone || '';
+                        document.getElementById('trainerDetailEmail').textContent = trainerData.memberEmail || '없음';
+                        document.getElementById('trainerDetailAddress').textContent = trainerData.memberAddress || '없음';
+                        
+                        // 프로필 아바타 업데이트 (이름 첫 글자로)
+                        const firstChar = trainerData.memberName ? trainerData.memberName.charAt(0) : '?';
+                        document.getElementById('trainerAvatarText').textContent = firstChar;
+                        
+                        // 트레이너 조회 섹션 표시
+                        document.getElementById('trainerLookupSection').style.display = 'block';
+                        
+                        // 등록 버튼 활성화
+                        document.getElementById('registerSubmitBtn').disabled = false;
+                    } else {
+                        alert(data.message || '등록 가능한 트레이너를 찾을 수 없습니다. (이미 다른 헬스장에 등록되었거나 트레이너가 아닌 회원입니다.)');
+                        document.getElementById('trainerLookupSection').style.display = 'none';
+                        document.getElementById('registerSubmitBtn').disabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.error('트레이너 조회 오류:', error);
+                    alert('트레이너 조회 중 오류가 발생했습니다.');
+                    document.getElementById('trainerLookupSection').style.display = 'none';
+                    document.getElementById('registerSubmitBtn').disabled = true;
+                });
         }
 
         // Close modal when clicking outside
@@ -689,8 +643,28 @@
             }
         });
 
-        // Initial render
-        renderTrainers();
+        // 폼 제출 전 검증
+        document.getElementById('trainerRegisterForm').addEventListener('submit', function(e) {
+            const trainerId = document.getElementById('trainerIdInput').value.trim();
+            
+            if (!trainerId) {
+                e.preventDefault();
+                alert('아이디를 입력해주세요.');
+                return false;
+            }
+            
+            if (document.getElementById('trainerLookupSection').style.display === 'none') {
+                e.preventDefault();
+                alert('아이디 조회를 먼저 진행해주세요.');
+                return false;
+            }
+            
+            if (!trainerData) {
+                e.preventDefault();
+                alert('트레이너 정보를 조회해주세요.');
+                return false;
+            }
+        });
     </script>
 </body>
 </html>

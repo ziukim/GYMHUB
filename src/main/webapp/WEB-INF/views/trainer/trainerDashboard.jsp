@@ -8,38 +8,22 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* 트레이너 대시보드 전용 스타일 */
         body {
             font-family: 'ABeeZee', 'Noto Sans KR', sans-serif;
             background-color: #0a0a0a;
             color: #ffa366;
-            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-
-        /* Main Content - 최대 너비 제한 추가 */
+        /* Main Content - padding과 background-color만 오버라이드 */
         .main-content {
-            margin-left: 255px;
             padding: 29px;
-            width: calc(100% - 255px);
-            min-height: 100vh;
             background-color: #0a0a0a;
         }
 
         .page-title {
             font-size: 32px;
-            color: #ff6b00;
             margin-bottom: 56px;
         }
 
@@ -59,10 +43,8 @@
             position: relative;
         }
 
+        /* card-title은 common.css에 있으므로 추가 속성만 정의 */
         .card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             margin-bottom: 18px;
             justify-content: space-between;
             height: 30px;
@@ -1055,61 +1037,79 @@
                 }
             });
         }
-    });
-    document.getElementById('profileImageInput').addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
-            var file = e.target.files[0];
 
-            // 파일 크기 체크 (5MB 제한)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('파일 크기는 5MB를 초과할 수 없습니다.');
-                return;
-            }
+        // 프로필 이미지 변경
+        const profileImageInput = document.getElementById('profileImageInput');
+        if (profileImageInput) {
+            profileImageInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
 
-            // 이미지 파일 형식 체크
-            if (!file.type.startsWith('image/')) {
-                alert('이미지 파일만 업로드 가능합니다.');
-                return;
-            }
-
-            // 미리보기 표시
-            var reader = new FileReader();
-            reader.onload = function(event) {
-                var img = document.createElement('img');
-                img.src = event.target.result;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                img.style.borderRadius = '50%';
-
-                document.getElementById('mainProfileImage').innerHTML = '';
-                document.getElementById('mainProfileImage').appendChild(img);
-            }
-            reader.readAsDataURL(file);
-
-            // 서버에 업로드
-            var formData = new FormData();
-            formData.append('profileImage', file);
-
-            fetch('${pageContext.request.contextPath}/uploadProfileImage.me', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                    } else {
-                        alert(data.message);
-                        // 실패 시 원래 이미지로 복구
-                        location.reload();
+                    // 파일 크기 체크 (5MB 제한)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                        return;
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('이미지 업로드 중 오류가 발생했습니다.');
-                    location.reload();
-                });
+
+                    // 이미지 파일 형식 체크
+                    if (!file.type.startsWith('image/')) {
+                        alert('이미지 파일만 업로드 가능합니다.');
+                        return;
+                    }
+
+                    // 미리보기 표시
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '50%';
+
+                        document.getElementById('mainProfileImage').innerHTML = '';
+                        document.getElementById('mainProfileImage').appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+
+                    // 서버에 업로드
+                    const formData = new FormData();
+                    formData.append('profileImage', file);
+
+                    fetch('${pageContext.request.contextPath}/uploadProfileImage.me', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                // 성공 시 이미지 경로 업데이트
+                                if (data.imagePath) {
+                                    const img = document.createElement('img');
+                                    img.src = data.imagePath;
+                                    img.style.width = '100%';
+                                    img.style.height = '100%';
+                                    img.style.objectFit = 'cover';
+                                    img.style.borderRadius = '50%';
+                                    img.alt = '프로필 이미지';
+
+                                    document.getElementById('mainProfileImage').innerHTML = '';
+                                    document.getElementById('mainProfileImage').appendChild(img);
+                                }
+                            } else {
+                                alert(data.message);
+                                // 실패 시 원래 이미지로 복구
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('이미지 업로드 중 오류가 발생했습니다.');
+                            location.reload();
+                        });
+                }
+            });
         }
     });
 </script>

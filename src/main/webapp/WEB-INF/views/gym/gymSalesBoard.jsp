@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,15 +8,8 @@
     <title>GymHub - 매출 현황</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
-        /* 매출 현황 페이지 전용 스타일 */
+        /* gymSalesBoard 전용 스타일 */
+        /* main-content는 common.css에 있음 */
 
         /* Dashboard Container */
         .dashboard-container {
@@ -48,16 +42,11 @@
             transform: translateY(-3px);
         }
 
+        /* stat-icon, stat-label, stat-value, stat-change는 common.css에 있음 */
+        /* stat-icon은 large 클래스 사용 가능 */
         .stat-icon {
             width: 60px;
             height: 60px;
-            background-color: #2d1810;
-            border: 2px solid #ff6b00;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(255, 107, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
             flex-shrink: 0;
         }
 
@@ -66,24 +55,6 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            color: white;
-        }
-
-        .stat-change {
-            font-size: 14px;
-        }
-
-        .stat-change.positive {
-            color: #05df72;
         }
 
         /* Details Section */
@@ -95,9 +66,9 @@
             box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
         }
 
+        /* section-header는 common.css에 있으므로 추가 속성만 정의 */
         .section-header {
             padding-bottom: 16px;
-            border-bottom: 2px solid #ff6b00;
             margin-bottom: 24px;
         }
 
@@ -224,8 +195,7 @@
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">이번 달 총매출</div>
-                        <div class="stat-value">17,200,000원</div>
-                        <div class="stat-change positive">+7.5%</div>
+                        <div class="stat-value"><fmt:formatNumber value="${totalSales}" pattern="#,###"/>원</div>
                     </div>
                 </div>
 
@@ -236,7 +206,7 @@
                     </div>
                     <div class="stat-info">
                         <div class="stat-label">전체 회원</div>
-                        <div class="stat-value">205명</div>
+                        <div class="stat-value"><fmt:formatNumber value="${totalMembers}" pattern="#,###"/>명</div>
                     </div>
                 </div>
             </div>
@@ -253,14 +223,7 @@
                     <div class="detail-item">
                         <div class="detail-left">
                             <div class="detail-name">회원권 매출</div>
-                            <div class="detail-amount">17,200,000원</div>
-                        </div>
-                        <div class="detail-right">
-                            <svg class="trend-icon" fill="none" viewBox="0 0 16 16">
-                                <path d="M10.6667 4.66667H14.6667V8.66667" stroke="#05DF72" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                                <path d="M14.6667 4.66667L9 10.3333L5.66667 7L1.33333 11.3333" stroke="#05DF72" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                            </svg>
-                            <div class="trend-text positive">+7.5%</div>
+                            <div class="detail-amount"><fmt:formatNumber value="${membershipSales}" pattern="#,###"/>원</div>
                         </div>
                     </div>
 
@@ -268,14 +231,7 @@
                     <div class="detail-item">
                         <div class="detail-left">
                             <div class="detail-name">물품 판매</div>
-                            <div class="detail-amount">890,000원</div>
-                        </div>
-                        <div class="detail-right">
-                            <svg class="trend-icon" fill="none" viewBox="0 0 16 16">
-                                <path d="M10.6667 11.3333H14.6667V7.33333" stroke="#FF6467" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                                <path d="M14.6667 11.3333L9 5.66667L5.66667 9L1.33333 4.66667" stroke="#FF6467" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.33333" />
-                            </svg>
-                            <div class="trend-text negative">-2.1%</div>
+                            <div class="detail-amount"><fmt:formatNumber value="${stockSales}" pattern="#,###"/>원</div>
                         </div>
                     </div>
 
@@ -283,14 +239,7 @@
                     <div class="detail-item total">
                         <div class="detail-left">
                             <div class="detail-name total">총 매출</div>
-                            <div class="detail-amount total">20,700,000원</div>
-                        </div>
-                        <div class="detail-right">
-                            <svg class="trend-icon large" fill="none" viewBox="0 0 20 20">
-                                <path d="M13.3333 5.83333H18.3333V10.8333" stroke="#05DF72" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" />
-                                <path d="M18.3333 5.83333L11.25 12.9167L7.08333 8.75L1.66667 14.1667" stroke="#05DF72" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" />
-                            </svg>
-                            <div class="trend-text positive large">+6.8%</div>
+                            <div class="detail-amount total"><fmt:formatNumber value="${totalSales}" pattern="#,###"/>원</div>
                         </div>
                     </div>
                 </div>
@@ -328,11 +277,16 @@
 
     // 페이지 로드 시 숫자 애니메이션 실행
     window.addEventListener('load', function() {
+        // 서버에서 받은 값들
+        const membershipSales = ${membershipSales != null ? membershipSales : 0};
+        const stockSales = ${stockSales != null ? stockSales : 0};
+        const totalSales = ${totalSales != null ? totalSales : 0};
+        
         const amounts = [
-            { element: document.querySelectorAll('.stat-value')[0], value: 17200000 },
-            { element: document.querySelectorAll('.detail-amount')[0], value: 17200000 },
-            { element: document.querySelectorAll('.detail-amount')[1], value: 890000 },
-            { element: document.querySelectorAll('.detail-amount')[2], value: 20700000 }
+            { element: document.querySelectorAll('.stat-value')[0], value: totalSales },
+            { element: document.querySelectorAll('.detail-amount')[0], value: membershipSales },
+            { element: document.querySelectorAll('.detail-amount')[1], value: stockSales },
+            { element: document.querySelectorAll('.detail-amount')[2], value: totalSales }
         ];
 
         amounts.forEach(item => {

@@ -5,6 +5,7 @@ import com.kh.gymhub.model.vo.Gym;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -24,17 +25,24 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
-    public Gym getGymWithDetailByNo(int gymNo) {
-        return gymMapper.selectGymWithDetailByNo(gymNo);
+    public Gym getGymByNo(int gymNo) {
+        return gymMapper.selectGymByNo(gymNo);
     }
 
     @Override
     public List<Gym> getAllGyms() {
         return gymMapper.selectAllGyms();
     }
+
     @Override
     @Transactional
     public int updateProfileImage(int gymNo, String photoPath) {
         return gymMapper.updateProfileImage(gymNo, photoPath);
+    }
+
+    @Override
+    @Transactional
+    public int updateGym(Gym gym) {
+        return gymMapper.updateGym(gym);
     }
 }

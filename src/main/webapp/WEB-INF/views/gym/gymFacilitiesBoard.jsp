@@ -8,15 +8,8 @@
     <title>GymHub - 시설 관리</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
-        /* 시설 관리 페이지 전용 스타일 */
+        /* gymFacilitiesBoard 전용 스타일 */
+        /* main-content는 common.css에 있음 */
 
         /* Stats Cards */
         .stats-grid {
@@ -219,6 +212,36 @@
             opacity: 0.6;
         }
 
+        .locker-item.expired {
+            border-color: #f44336;
+            opacity: 0.7;
+        }
+
+        .locker-item.broken {
+            border-color: #9e9e9e;
+            background-color: #3a3a3a;
+            opacity: 0.8;
+            position: relative;
+        }
+
+        .locker-item.broken::after {
+            content: '고장';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: #9e9e9e;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .expired-date {
+            color: #f44336 !important;
+            font-weight: 600;
+        }
+
         /* Locker Status */
         .locker-status {
             display: flex;
@@ -249,7 +272,7 @@
 
         .status-sub-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
@@ -263,6 +286,14 @@
 
         .status-value.available {
             color: #b0b0b0; /* Grey, matching other labels */
+        }
+
+        .status-value.expired {
+            color: #f44336;
+        }
+
+        .status-value.broken {
+            color: #9e9e9e;
         }
 
         .machine-image {
@@ -698,21 +729,83 @@
                     <c:otherwise>
                         <div class="locker-grid">
                             <c:forEach items="${lockerPassList}" var="locker">
+                                <c:set var="now" value="<%=new java.util.Date()%>" />
                                 <c:choose>
-                                    <c:when test="${not empty locker.memberName}">
-                                        <div class="locker-item occupied">
+                                    <c:when test="${locker.lockerStatus == '고장'}">
+                                        <!-- 고장 락커 -->
+                                        <div class="locker-item broken" data-locker-no="${locker.lockerNo}" data-locker-status="${locker.lockerStatus}" data-has-member="${not empty locker.memberName}">
                                             <div class="locker-number">${locker.lockerRealNum}</div>
-                                            <div class="locker-name">${locker.memberName}</div>
-                                            <div class="locker-date">
-                                                <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                            <div class="locker-name">
+                                                <c:choose>
+                                                    <c:when test="${not empty locker.memberName}">${locker.memberName}</c:when>
+                                                    <c:otherwise>-</c:otherwise>
+                                                </c:choose>
                                             </div>
                                             <div class="locker-date">
-                                                <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                <c:choose>
+                                                    <c:when test="${not empty locker.lockerPassStart}">
+                                                        <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                                    </c:when>
+                                                    <c:otherwise>-</c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                            <div class="locker-date">
+                                                <c:choose>
+                                                    <c:when test="${not empty locker.lockerEnd}">
+                                                        <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                    </c:when>
+                                                    <c:otherwise>-</c:otherwise>
+                                                </c:choose>
                                             </div>
                                         </div>
                                     </c:when>
+                                    <c:when test="${not empty locker.memberName and not empty locker.lockerEnd}">
+                                        <c:set var="daysUntilExpiry" value="${(locker.lockerEnd.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                        <c:choose>
+                                            <c:when test="${daysUntilExpiry < 0}">
+                                                <!-- 만료된 락커 -->
+                                                <div class="locker-item expired" data-locker-no="${locker.lockerNo}" data-locker-status="${locker.lockerStatus}" data-has-member="true">
+                                                    <div class="locker-number">${locker.lockerRealNum}</div>
+                                                    <div class="locker-name">${locker.memberName}</div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                    <div class="locker-date expired-date">
+                                                        <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                </div>
+                                            </c:when>
+                                            <c:when test="${daysUntilExpiry <= 7 and daysUntilExpiry >= 0}">
+                                                <!-- 만료 임박 락커 -->
+                                                <div class="locker-item expiring" data-locker-no="${locker.lockerNo}" data-locker-status="${locker.lockerStatus}" data-has-member="true">
+                                                    <div class="locker-number">${locker.lockerRealNum}</div>
+                                                    <div class="locker-name">${locker.memberName}</div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- 정상 사용중 락커 -->
+                                                <div class="locker-item occupied" data-locker-no="${locker.lockerNo}" data-locker-status="${locker.lockerStatus}" data-has-member="true">
+                                                    <div class="locker-number">${locker.lockerRealNum}</div>
+                                                    <div class="locker-name">${locker.memberName}</div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerPassStart}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                    <div class="locker-date">
+                                                        <fmt:formatDate value="${locker.lockerEnd}" pattern="yy.MM.dd" />
+                                                    </div>
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:when>
                                     <c:otherwise>
-                                        <div class="locker-item available">
+                                        <!-- 빈 락커 -->
+                                        <div class="locker-item available" data-locker-no="${locker.lockerNo}" data-locker-status="${locker.lockerStatus}" data-has-member="false">
                                             <div class="locker-number">${locker.lockerRealNum}</div>
                                             <div class="locker-name">-</div>
                                             <div class="locker-date">-</div>
@@ -744,9 +837,13 @@
                             <div class="status-label">사용중</div>
                             <div class="status-value used">
                                 <c:set var="usedCount" value="0" />
+                                <c:set var="now" value="<%=new java.util.Date()%>" />
                                 <c:forEach items="${lockerPassList}" var="l">
-                                    <c:if test="${not empty l.memberName}">
-                                        <c:set var="usedCount" value="${usedCount + 1}" />
+                                    <c:if test="${l.lockerStatus != '고장' and not empty l.memberName and not empty l.lockerEnd}">
+                                        <c:set var="daysUntilExpiry" value="${(l.lockerEnd.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                        <c:if test="${daysUntilExpiry > 7}">
+                                            <c:set var="usedCount" value="${usedCount + 1}" />
+                                        </c:if>
                                     </c:if>
                                 </c:forEach>
                                 ${usedCount}개
@@ -755,21 +852,58 @@
                         <div class="status-item">
                             <div class="status-label">만료예정</div>
                             <div class="status-value expiring">
-                                 <c:set var="expiringCount" value="0" />
+                                <c:set var="expiringCount" value="0" />
+                                <c:set var="now" value="<%=new java.util.Date()%>" />
                                 <c:forEach items="${lockerPassList}" var="l">
-                                    <c:set var="now" value="<%=new java.util.Date()%>" />
-                                    <c:if test="${l.lockerEnd.time > now.time && (l.lockerEnd.time - now.time) < (7 * 24 * 60 * 60 * 1000)}">
-                                        <c:set var="expiringCount" value="${expiringCount + 1}" />
+                                    <c:if test="${l.lockerStatus != '고장' and not empty l.memberName and not empty l.lockerEnd}">
+                                        <c:set var="daysUntilExpiry" value="${(l.lockerEnd.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                        <c:if test="${daysUntilExpiry <= 7 and daysUntilExpiry >= 0}">
+                                            <c:set var="expiringCount" value="${expiringCount + 1}" />
+                                        </c:if>
                                     </c:if>
                                 </c:forEach>
                                 ${expiringCount}개
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">만료</div>
+                            <div class="status-value expired">
+                                <c:set var="expiredCount" value="0" />
+                                <c:set var="now" value="<%=new java.util.Date()%>" />
+                                <c:forEach items="${lockerPassList}" var="l">
+                                    <c:if test="${l.lockerStatus != '고장' and not empty l.memberName and not empty l.lockerEnd}">
+                                        <c:set var="daysUntilExpiry" value="${(l.lockerEnd.time - now.time) / (1000 * 60 * 60 * 24)}" />
+                                        <c:if test="${daysUntilExpiry < 0}">
+                                            <c:set var="expiredCount" value="${expiredCount + 1}" />
+                                        </c:if>
+                                    </c:if>
+                                </c:forEach>
+                                ${expiredCount}개
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">고장</div>
+                            <div class="status-value broken">
+                                <c:set var="brokenCount" value="0" />
+                                <c:forEach items="${lockerPassList}" var="l">
+                                    <c:if test="${l.lockerStatus == '고장'}">
+                                        <c:set var="brokenCount" value="${brokenCount + 1}" />
+                                    </c:if>
+                                </c:forEach>
+                                ${brokenCount}개
                             </div>
                         </div>
                     </div>
                     <div class="status-item">
                         <div class="status-label">사용 가능한 락커 수</div>
                         <div class="status-value available">
-                            ${(not empty lockerPassList ? lockerPassList.size() : 0) - usedCount}개
+                            <c:set var="availableCount" value="0" />
+                            <c:forEach items="${lockerPassList}" var="l">
+                                <c:if test="${empty l.memberName and l.lockerStatus != '고장'}">
+                                    <c:set var="availableCount" value="${availableCount + 1}" />
+                                </c:if>
+                            </c:forEach>
+                            ${availableCount}개
                         </div>
                     </div>
                 </div>
@@ -840,6 +974,37 @@
         <div class="modal-footer">
             <button class="modal-button modal-button-cancel" onclick="closeModal('addLockerModal')">취소</button>
             <button class="modal-button modal-button-submit" onclick="submitLockerRegistration()">등록</button>
+        </div>
+    </div>
+</div>
+
+<!-- 락커 상태 변경 모달 -->
+<div class="modal-overlay" id="editLockerModal" onclick="closeModalOnOverlay(event, 'editLockerModal')">
+    <div class="modal-container" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeModal('editLockerModal')">×</button>
+            <h2 class="modal-title">락커 상태 변경</h2>
+            <p class="modal-subtitle" id="modalLockerNumber"></p>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editLockerNo">
+            <input type="hidden" id="editLockerHasMember">
+            <input type="hidden" id="editLockerCurrentStatus">
+
+            <div class="modal-form-group">
+                <label class="modal-label" for="editLockerStatus">
+                    상태<span class="required">*</span>
+                </label>
+                <select id="editLockerStatus" class="modal-select">
+                    <option value="빈">빈</option>
+                    <option value="고장">고장</option>
+                    <option value="사용중">사용중</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button modal-button-cancel" onclick="closeModal('editLockerModal')">취소</button>
+            <button class="modal-button modal-button-submit" onclick="submitLockerStatusUpdate()">수정</button>
         </div>
     </div>
 </div>
@@ -1034,17 +1199,141 @@
         }
     });
 
-    // 락커 클릭
+    // 락커 클릭 - 상태 변경 모달 열기
     var lockerItems = document.querySelectorAll('.locker-item');
     for (var i = 0; i < lockerItems.length; i++) {
         lockerItems[i].addEventListener('click', function() {
+            var lockerNo = this.getAttribute('data-locker-no');
+            var lockerStatus = this.getAttribute('data-locker-status');
+            var hasMember = this.getAttribute('data-has-member') === 'true';
             var number = this.querySelector('.locker-number').textContent;
-            var name = this.querySelector('.locker-name').textContent;
-            if (name === '-') {
-                alert(number + ' 락커는 사용 가능합니다.');
-            } else {
-                alert(number + ' 락커 정보\n사용자: ' + name);
+            
+            // 고장 락커는 수정 가능 (이용중이 아니므로)
+            // 이용중인 락커는 수정 불가 (고장 상태가 아닌 경우만)
+            if (hasMember && lockerStatus !== '고장') {
+                var name = this.querySelector('.locker-name').textContent;
+                alert(number + ' 락커는 현재 이용중입니다.\n사용자: ' + name + '\n\n이용중인 락커는 상태를 변경할 수 없습니다.');
+                return;
             }
+            
+            // 락커 정보 조회 후 모달 열기
+            fetch('${pageContext.request.contextPath}/locker/detail.gym?lockerNo=' + lockerNo)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data) {
+                        document.getElementById('editLockerNo').value = data.lockerNo;
+                        document.getElementById('editLockerHasMember').value = hasMember;
+                        document.getElementById('modalLockerNumber').textContent = data.lockerRealNum + ' 락커';
+                        // 현재 상태를 hidden 필드에 저장 (고장 락커 체크용)
+                        var currentStatus = data.lockerStatus || '빈';
+                        document.getElementById('editLockerCurrentStatus').value = currentStatus;
+                        
+                        // 상태 선택 옵션 설정
+                        var statusSelect = document.getElementById('editLockerStatus');
+                        statusSelect.innerHTML = '';
+                        
+                        // 빈 락커는 "사용중" 옵션 제거
+                        if (currentStatus === '빈' || currentStatus === '' || currentStatus === null) {
+                            var emptyOption = document.createElement('option');
+                            emptyOption.value = '빈';
+                            emptyOption.textContent = '빈';
+                            statusSelect.appendChild(emptyOption);
+                            
+                            var brokenOption = document.createElement('option');
+                            brokenOption.value = '고장';
+                            brokenOption.textContent = '고장';
+                            statusSelect.appendChild(brokenOption);
+                            
+                            statusSelect.value = '빈';
+                        } else {
+                            // 고장 락커나 다른 상태는 모든 옵션 표시
+                            var emptyOption = document.createElement('option');
+                            emptyOption.value = '빈';
+                            emptyOption.textContent = '빈';
+                            statusSelect.appendChild(emptyOption);
+                            
+                            var brokenOption = document.createElement('option');
+                            brokenOption.value = '고장';
+                            brokenOption.textContent = '고장';
+                            statusSelect.appendChild(brokenOption);
+                            
+                            // 빈 락커가 아닌 경우에만 "사용중" 옵션 추가
+                            if (currentStatus !== '빈' && currentStatus !== '') {
+                                var usedOption = document.createElement('option');
+                                usedOption.value = '사용중';
+                                usedOption.textContent = '사용중';
+                                statusSelect.appendChild(usedOption);
+                            }
+                            
+                            statusSelect.value = currentStatus;
+                        }
+                        
+                        openModal('editLockerModal');
+                    } else {
+                        alert('락커 정보를 불러오는데 실패했습니다.');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    alert('락커 정보를 불러오는데 실패했습니다.');
+                });
+        });
+    }
+
+    // 락커 상태 변경
+    function submitLockerStatusUpdate() {
+        var lockerNo = document.getElementById('editLockerNo').value;
+        var lockerStatus = document.getElementById('editLockerStatus').value;
+        var hasMember = document.getElementById('editLockerHasMember').value === 'true';
+        var currentStatus = document.getElementById('editLockerCurrentStatus').value;
+
+        if (!lockerNo || !lockerStatus) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 이용중인 락커는 수정 불가 (이중 체크) - 단, 고장 상태는 수정 가능
+        // 고장 락커는 이용중이 아니므로 수정 가능
+        if (hasMember && currentStatus !== '고장') {
+            alert('이용중인 락커는 상태를 변경할 수 없습니다.');
+            return;
+        }
+
+        // 빈 락커는 "사용중"으로 변경 불가 (이중 체크)
+        if ((currentStatus === '빈' || currentStatus === '' || currentStatus === null) && lockerStatus === '사용중') {
+            alert('빈 락커는 "사용중" 상태로 변경할 수 없습니다.\n실제 이용권이 등록되어야 "사용중" 상태가 됩니다.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('lockerNo', lockerNo);
+        formData.append('lockerStatus', lockerStatus);
+
+        fetch('${pageContext.request.contextPath}/locker/updateStatus.gym', {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        })
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(result) {
+            if (result === 'success') {
+                alert('락커 상태가 변경되었습니다.');
+                closeModal('editLockerModal');
+                location.reload();
+            } else if (result === 'fail_in_use') {
+                alert('이용중인 락커는 상태를 변경할 수 없습니다.');
+            } else if (result === 'fail_auth') {
+                alert('인증에 실패했습니다. 다시 로그인해주세요.');
+            } else {
+                alert('락커 상태 변경에 실패했습니다.');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('락커 상태 변경 중 오류가 발생했습니다.');
         });
     }
 
