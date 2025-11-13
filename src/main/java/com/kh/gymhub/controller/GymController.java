@@ -1,15 +1,9 @@
 package com.kh.gymhub.controller;
 
-import com.kh.gymhub.model.vo.Gym;
-import com.kh.gymhub.model.vo.Member;
-import com.kh.gymhub.model.vo.Product;
-import com.kh.gymhub.model.vo.YoutubeUrl;
-import com.kh.gymhub.service.MemberService;
-import com.kh.gymhub.service.ProductService;
-import com.kh.gymhub.service.YoutubeUrlService;
+import com.kh.gymhub.model.vo.*;
+import com.kh.gymhub.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import com.kh.gymhub.service.GymService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +29,15 @@ public class GymController {
     private final YoutubeUrlService youtubeUrlService;
     private final MemberService memberService;
     private final GymService gymService;
+    private final MachineService machineService;
 
     @Autowired
-    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService,  GymService gymService) {
+    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService,  GymService gymService, MachineService machineService) {
         this.gymService = gymService;
         this.productService = productService;
         this.youtubeUrlService = youtubeUrlService;
         this.memberService = memberService;
+        this.machineService = machineService;
     }
 
     @GetMapping("/dashboard.gym")
@@ -923,6 +920,31 @@ public class GymController {
             e.printStackTrace();
             result.put("success", false);
             result.put("message", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    // 헬스장 기구 목록 조회 (AJAX)
+    @GetMapping("/gym/machines.ajax")
+    @ResponseBody
+    public Map<String, Object> getGymMachines(@RequestParam("gymNo") int gymNo) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<MachineManage> machines = machineService.selectMachineListByGymNo(gymNo);
+
+            if (machines != null && !machines.isEmpty()) {
+                result.put("success", true);
+                result.put("machines", machines);
+            } else {
+                result.put("success", true);
+                result.put("machines", new ArrayList<>());
+                result.put("message", "등록된 기구가 없습니다.");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "기구 목록 조회 중 오류가 발생했습니다.");
         }
 
         return result;

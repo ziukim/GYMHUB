@@ -1542,31 +1542,9 @@
             <h3 class="section-title">기구 목록</h3>
             <button class="more-text">+더보기</button>
             <div class="equipment-grid">
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="로우로우">
-                    </div>
-                    <p class="equipment-name">로우로우 - 스머트헬스</p>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 프레스">
-                    </div>
-                    <p class="equipment-name">레그 프레스 - 스텍</p>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="체스트 프레스">
-                    </div>
-                    <p class="equipment-name">체스트 프레스 - 스크짐</p>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="스미스머신">
-                    </div>
-                    <p class="equipment-name">스미스머신 - 스텍</p>
-                </div>
+                <!-- JavaScript로 동적 생성됩니다 -->
             </div>
+
         </div>
 
         <!-- 방문 예약 버튼 -->
@@ -1644,114 +1622,7 @@
         </div>
 
         <div class="equipment-list-grid" id="equipmentListGrid">
-            <!-- 기구 카드들이 여기에 동적으로 추가됩니다 -->
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="로우로우">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">로우로우 - 스머트헬스</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 프레스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">레그 프레스 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="체스트 프레스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">체스트 프레스 - 스크짐</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="스미스머신">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">스미스머신 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="랫 풀다운">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">랫 풀다운 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 익스텐션">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">레그 익스텐션 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="인클라인 벤치">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">인클라인 벤치 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="케이블 크로스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">케이블 크로스 - 스크짐</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="시티드 로우">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">시티드 로우 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 컬">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">레그 컬 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="숄더 프레스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">숄더 프레스 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="덤벨 플라이">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">덤벨 플라이 - 스크짐</h3>
-                </div>
-            </div>
+            <!-- JavaScript로 동적으로 채워집니다 -->
         </div>
     </div>
 </div>
@@ -2079,6 +1950,8 @@
                         facilityGrid.innerHTML = '<p style="color: #8a6a50; text-align: center; grid-column: 1 / -1;">시설 정보가 없습니다.</p>';
                     }
 
+                    loadGymMachines(gymNo);
+
                     // 모달 열기
                     document.getElementById('gymDetailModal').style.display = 'flex';
                 } else {
@@ -2095,6 +1968,200 @@
     document.getElementById('closeGymDetailModal').addEventListener('click', function() {
         document.getElementById('gymDetailModal').style.display = 'none';
     });
+
+    // 기구 목록 로드 함수
+    function loadGymMachines(gymNo) {
+        fetch('${pageContext.request.contextPath}/gym/machines.ajax?gymNo=' + gymNo)
+            .then(response => response.json())
+            .then(data => {
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                const moreButton = document.querySelector('.more-text');
+
+                if (data.success && data.machines && data.machines.length > 0) {
+                    // 기존 기구 목록 초기화
+                    equipmentGrid.innerHTML = '';
+
+                    // 전체 기구 데이터 저장 (더보기 기능용)
+                    equipmentGrid.dataset.allMachines = JSON.stringify(data.machines);
+
+                    // 처음 4개만 표시
+                    const displayMachines = data.machines.slice(0, 4);
+
+                    displayMachines.forEach(machine => {
+                        const equipmentItem = document.createElement('div');
+                        equipmentItem.className = 'equipment-item';
+
+                        const imagePath = machine.machinePhotoPath
+                            ? '${pageContext.request.contextPath}' + machine.machinePhotoPath
+                            : 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300';
+
+                        const displayName = machine.machineName +
+                            (machine.brand ? ' - ' + machine.brand : '');
+
+                        equipmentItem.innerHTML =
+                            '<div class="equipment-image">' +
+                            '    <img src="' + imagePath + '" alt="' + machine.machineName + '" ' +
+                            '         onerror="this.src=\'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300\'">' +
+                            '</div>' +
+                            '<p class="equipment-name">' + displayName + '</p>';
+
+                        equipmentGrid.appendChild(equipmentItem);
+                    });
+
+                    // 더보기 버튼 표시/숨김 및 상태 관리
+                    if (data.machines.length > 4) {
+                        moreButton.style.display = 'block';
+                        moreButton.textContent = '+더보기';
+                        moreButton.dataset.expanded = 'false';
+
+                        // 기존 이벤트 리스너 제거 후 새로 추가
+                        moreButton.onclick = function() {
+                            toggleEquipmentList(this);
+                        };
+                    } else {
+                        moreButton.style.display = 'none';
+                    }
+                } else {
+                    // 기구가 없는 경우
+                    equipmentGrid.innerHTML =
+                        '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #8a6a50;">' +
+                        '등록된 기구가 없습니다.' +
+                        '</div>';
+                    moreButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('기구 목록 조회 오류:', error);
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                equipmentGrid.innerHTML =
+                    '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #fb2c36;">' +
+                    '기구 목록을 불러오는 중 오류가 발생했습니다.' +
+                    '</div>';
+            });
+    }
+
+    // 기구 목록 로드 함수 (수정)
+    function loadGymMachines(gymNo) {
+        fetch('${pageContext.request.contextPath}/gym/machines.ajax?gymNo=' + gymNo)
+            .then(response => response.json())
+            .then(data => {
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                const moreButton = document.querySelector('.more-text');
+
+                if (data.success && data.machines && data.machines.length > 0) {
+                    // 기존 기구 목록 초기화
+                    equipmentGrid.innerHTML = '';
+
+                    // 전체 기구 데이터 저장 (더보기 기능용)
+                    equipmentGrid.dataset.allMachines = JSON.stringify(data.machines);
+
+                    // 처음 4개만 표시
+                    const displayMachines = data.machines.slice(0, 4);
+
+                    displayMachines.forEach(machine => {
+                        const equipmentItem = document.createElement('div');
+                        equipmentItem.className = 'equipment-item';
+
+                        const imagePath = machine.machinePhotoPath
+                            ? '${pageContext.request.contextPath}' + machine.machinePhotoPath
+                            : 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300';
+
+                        const displayName = machine.machineName +
+                            (machine.brand ? ' - ' + machine.brand : '');
+
+                        equipmentItem.innerHTML =
+                            '<div class="equipment-image">' +
+                            '    <img src="' + imagePath + '" alt="' + machine.machineName + '" ' +
+                            '         onerror="this.src=\'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300\'">' +
+                            '</div>' +
+                            '<p class="equipment-name">' + displayName + '</p>';
+
+                        equipmentGrid.appendChild(equipmentItem);
+                    });
+
+                    // 더보기 버튼 표시/숨김
+                    if (data.machines.length > 4) {
+                        moreButton.style.display = 'block';
+
+                        // 기존 이벤트 리스너 제거 후 새로 추가
+                        moreButton.onclick = function() {
+                            showAllMachines();
+                        };
+                    } else {
+                        moreButton.style.display = 'none';
+                    }
+                } else {
+                    // 기구가 없는 경우
+                    equipmentGrid.innerHTML =
+                        '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #8a6a50;">' +
+                        '등록된 기구가 없습니다.' +
+                        '</div>';
+                    moreButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('기구 목록 조회 오류:', error);
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                equipmentGrid.innerHTML =
+                    '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #fb2c36;">' +
+                    '기구 목록을 불러오는 중 오류가 발생했습니다.' +
+                    '</div>';
+            });
+    }
+    // 전체 기구 목록 모달 표시
+    function showAllMachines() {
+        const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+        const allMachines = JSON.parse(equipmentGrid.dataset.allMachines || '[]');
+
+        if (allMachines.length === 0) {
+            alert('표시할 기구가 없습니다.');
+            return;
+        }
+
+        // 기구 목록 모달 그리드 초기화
+        const equipmentListGrid = document.getElementById('equipmentListGrid');
+        equipmentListGrid.innerHTML = '';
+
+        // 모든 기구 표시
+        allMachines.forEach(machine => {
+            const equipmentCard = document.createElement('div');
+            equipmentCard.className = 'equipment-card';
+
+            const imagePath = machine.machinePhotoPath
+                ? '${pageContext.request.contextPath}' + machine.machinePhotoPath
+                : 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300';
+
+            const displayName = machine.machineName +
+                (machine.brand ? ' - ' + machine.brand : '');
+
+            equipmentCard.innerHTML =
+                '<div class="equipment-card-image">' +
+                '    <img src="' + imagePath + '" alt="' + machine.machineName + '" ' +
+                '         onerror="this.src=\'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300\'">' +
+                '</div>' +
+                '<div class="equipment-card-content">' +
+                '    <h3 class="equipment-card-title">' + displayName + '</h3>' +
+                '</div>';
+
+            equipmentListGrid.appendChild(equipmentCard);
+        });
+
+        // 기구 목록 모달 열기
+        document.getElementById('equipmentListModal').style.display = 'flex';
+    }
+
+    // 기구 목록 모달 닫기
+    document.getElementById('closeEquipmentListModal').addEventListener('click', function() {
+        document.getElementById('equipmentListModal').style.display = 'none';
+    });
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('equipmentListModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+
 </script>
 
 <!-- 로그인 성공/실패 메시지 표시 -->
