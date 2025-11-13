@@ -2,12 +2,18 @@ package com.kh.gymhub.controller;
 
 import com.kh.gymhub.model.mapper.MemberMapper;
 import com.kh.gymhub.model.mapper.MembershipMapper;
+import com.kh.gymhub.model.vo.Gym;
+import com.kh.gymhub.model.vo.GymDetail;
 import com.kh.gymhub.model.vo.LockerPass;
+import com.kh.gymhub.model.vo.MachineManage;
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.model.vo.MemberWithMembership;
 import com.kh.gymhub.model.vo.Product;
 import com.kh.gymhub.model.vo.YoutubeUrl;
+import com.kh.gymhub.service.GymDetailService;
+import com.kh.gymhub.service.GymService;
 import com.kh.gymhub.service.LockerService;
+import com.kh.gymhub.service.MachineService;
 import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.ProductService;
 import com.kh.gymhub.service.PurchaseService;
@@ -23,9 +29,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class GymController {
@@ -38,9 +50,12 @@ public class GymController {
     private final MembershipMapper membershipMapper;
     private final SalesService salesService;
     private final MemberMapper memberMapper;
+    private final GymService gymService;
+    private final GymDetailService gymDetailService;
+    private final MachineService machineService;
     
     @Autowired
-    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper) {
+    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper, GymService gymService, GymDetailService gymDetailService, MachineService machineService) {
         this.productService = productService;
         this.youtubeUrlService = youtubeUrlService;
         this.memberService = memberService;
@@ -49,8 +64,57 @@ public class GymController {
         this.membershipMapper = membershipMapper;
         this.salesService = salesService;
         this.memberMapper = memberMapper;
+        this.gymService = gymService;
+        this.gymDetailService = gymDetailService;
+        this.machineService = machineService;
     }
     
+    // 메인 페이지 - 헬스장 목록 조회
+    @GetMapping("/")
+    public String index(Model model) {
+        try {
+            // 모든 헬스장 조회
+            List<Gym> gyms = gymService.getAllGyms();
+            
+            // 각 헬스장에 대해 GymDetail 조회하여 합치기
+            List<Map<String, Object>> gymList = new ArrayList<>();
+            for (Gym gym : gyms) {
+                Map<String, Object> gymMap = new HashMap<>();
+                
+                // Gym 기본 정보
+                gymMap.put("gymNo", gym.getGymNo());
+                gymMap.put("gymName", gym.getGymName());
+                gymMap.put("gymOwner", gym.getGymOwner());
+                gymMap.put("gymPhone", gym.getGymPhone());
+                gymMap.put("gymAddress", gym.getGymAddress());
+                gymMap.put("gymPhotoPath", gym.getGymPhotoPath());
+                
+                // GymDetail 정보 조회
+                GymDetail gymDetail = gymDetailService.getGymDetailByGymNo(gym.getGymNo());
+                if (gymDetail != null) {
+                    gymMap.put("intro", gymDetail.getIntro());
+                    gymMap.put("facilitiesInfo", gymDetail.getFacilitiesInfo());
+                    gymMap.put("detailAddress", gymDetail.getDetailAddress());
+                    gymMap.put("weekBusinessHour", gymDetail.getWeekBusinessHour());
+                    gymMap.put("weekendBusinessHour", gymDetail.getWeekendBusinessHour());
+                }
+                
+                // Product 정보도 조회 (가격 정보용)
+                List<Product> products = productService.getProductsByGymNo(gym.getGymNo());
+                gymMap.put("products", products);
+                
+                gymList.add(gymMap);
+            }
+            
+            model.addAttribute("gymList", gymList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("gymList", new ArrayList<>());
+        }
+        
+        return "index";
+    }
+
     @GetMapping("/dashboard.gym")
     public String gymDashboard() {
         return "gym/gymDashBoard";
@@ -148,7 +212,37 @@ public class GymController {
     }
 
     @GetMapping("/info.gym")
-    public String gymInfoManagement() {
+    public String gymInfoManagement(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        // 로그인하지 않았거나 헬스장 운영자가 아닌 경우 메인 페이지로 리다이렉트
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+
+        // 헬스장 정보 조회 및 Model에 추가
+        try {
+            Gym gym = gymService.getGymByNo(gymNo);
+            GymDetail gymDetail = gymDetailService.getGymDetailByGymNo(gymNo);
+            
+            System.out.println("=== Gym Info ===");
+            System.out.println("Gym Photo Path: " + gym.getGymPhotoPath());
+            
+            model.addAttribute("gym", gym);
+            model.addAttribute("gymDetail", gymDetail);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "gym/gymInfoManagement";
     }
 
@@ -1201,6 +1295,201 @@ public class GymController {
         }
         
         return result;
+    }
+
+    // 헬스장 상세 정보 조회 (AJAX)
+    @GetMapping("/gym/detail.ajax")
+    @ResponseBody
+    public Map<String, Object> getGymDetail(@RequestParam("gymNo") int gymNo) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            Gym gym = gymService.getGymByNo(gymNo);
+            GymDetail gymDetail = gymDetailService.getGymDetailByGymNo(gymNo);
+            
+            // Product 정보도 조회
+            List<Product> products = productService.getProductsByGymNo(gymNo);
+
+            if (gym != null) {
+                result.put("success", true);
+                result.put("gym", gym);
+                result.put("gymDetail", gymDetail);
+                result.put("products", products != null ? products : new ArrayList<>());
+            } else {
+                result.put("success", false);
+                result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "데이터 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+    @PostMapping("/uploadGymImage.gym")
+    @ResponseBody
+    public Map<String, Object> uploadGymImage(@RequestParam("gymImage") MultipartFile file,
+                                              HttpSession session,
+                                              HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+
+        if (file.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "파일이 선택되지 않았습니다.");
+            return result;
+        }
+
+        try {
+            // 파일 저장 경로 설정
+            String uploadPath = session.getServletContext().getRealPath("/resources/uploadfiles/Gym");
+            File uploadDir = new File(uploadPath);
+
+            // 디렉토리가 없으면 생성
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // 원본 파일명
+            String originalFilename = file.getOriginalFilename();
+
+            // 확장자 추출
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 고유한 파일명 생성 (gym_헬스장번호_타임스탬프.확장자)
+            String savedFilename = "gym_" + gymNo + "_" + System.currentTimeMillis() + extension;
+
+            // 파일 저장
+            File destFile = new File(uploadDir, savedFilename);
+            file.transferTo(destFile);
+
+            // DB에 저장할 경로 (상대 경로)
+            String dbPath = "/resources/uploadfiles/Gym/" + savedFilename;
+
+            // DB 업데이트 (GYM 테이블의 GYM_PHOTO_PATH 업데이트)
+            int updateResult = gymService.updateProfileImage(gymNo, dbPath);
+
+            if (updateResult > 0) {
+                result.put("success", true);
+                result.put("message", "헬스장 이미지가 업데이트되었습니다.");
+                result.put("imagePath", request.getContextPath() + dbPath);
+            } else {
+                result.put("success", false);
+                result.put("message", "DB 업데이트에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    // 헬스장 기구 목록 조회 (AJAX)
+    @GetMapping("/gym/machines.ajax")
+    @ResponseBody
+    public Map<String, Object> getGymMachines(@RequestParam("gymNo") int gymNo) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<MachineManage> machines = machineService.selectMachineListByGymNo(gymNo);
+
+            if (machines != null && !machines.isEmpty()) {
+                result.put("success", true);
+                result.put("machines", machines);
+            } else {
+                result.put("success", true);
+                result.put("machines", new ArrayList<>());
+                result.put("message", "등록된 기구가 없습니다.");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "기구 목록 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+    @PostMapping("/gym/info/update")
+    @ResponseBody
+    public String updateGymInfo(@RequestParam String gymName,
+                                @RequestParam String gymDescription,
+                                @RequestParam String gymPhone,
+                                @RequestParam String gymAddress,
+                                @RequestParam String gymDetailAddress,
+                                @RequestParam String weekdayStart,
+                                @RequestParam String weekdayEnd,
+                                @RequestParam String weekendStart,
+                                @RequestParam String weekendEnd,
+                                @RequestParam(required = false) String facilities,
+                                HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            return "fail";
+        }
+
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            return "fail";
+        }
+
+        try {
+            // Gym 업데이트
+            Gym gym = new Gym();
+            gym.setGymNo(gymNo);
+            gym.setGymName(gymName);
+            gym.setGymPhone(gymPhone);
+            gym.setGymAddress(gymAddress);
+            int gymResult = gymService.updateGym(gym);
+
+            // GymDetail 업데이트
+            GymDetail gymDetail = gymDetailService.getGymDetailByGymNo(gymNo);
+            if (gymDetail == null) {
+                // GymDetail이 없으면 생성
+                gymDetailService.addGymDetail(gymNo);
+                gymDetail = gymDetailService.getGymDetailByGymNo(gymNo);
+            }
+
+            gymDetail.setIntro(gymDescription);
+            gymDetail.setDetailAddress(gymDetailAddress);
+            gymDetail.setFacilitiesInfo(facilities);
+            gymDetail.setWeekBusinessHour(weekdayStart + " ~ " + weekdayEnd);
+            gymDetail.setWeekendBusinessHour(weekendStart + " ~ " + weekendEnd);
+            gymDetail.setGymNo(gymNo);
+
+            int detailResult = gymDetailService.updateGymDetail(gymDetail);
+
+            if (gymResult > 0 && detailResult > 0) {
+                return "success";
+            } else {
+                return "fail";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
     }
 
 }
