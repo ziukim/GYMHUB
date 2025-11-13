@@ -30,7 +30,6 @@
         FROM LOCKER L
         LEFT JOIN LOCKER_PASS LP ON L.LOCKER_NO = LP.LOCKER_NO 
             AND LP.LOCKER_PASS_STATUS = '정상'
-            AND LP.LOCKER_END >= TRUNC(SYSDATE)
         LEFT JOIN MEMBER M ON LP.MEMBER_NO = M.MEMBER_NO
         WHERE L.GYM_NO = #{gymNo}
         ORDER BY L.LOCKER_REAL_NUM ASC
@@ -104,6 +103,24 @@
         SET LOCKER_STATUS = #{lockerStatus}
         WHERE LOCKER_NO = #{lockerNo}
     </update>
+
+    <select id="selectLockerByNo" resultType="com.kh.gymhub.model.vo.Locker">
+        SELECT
+            LOCKER_NO as lockerNo,
+            GYM_NO as gymNo,
+            LOCKER_REAL_NUM as lockerRealNum,
+            LOCKER_STATUS as lockerStatus
+        FROM LOCKER
+        WHERE LOCKER_NO = #{lockerNo}
+    </select>
+
+    <select id="countActiveLockerPassByLockerNo" resultType="_int">
+        SELECT COUNT(*)
+        FROM LOCKER_PASS
+        WHERE LOCKER_NO = #{lockerNo}
+        AND LOCKER_PASS_STATUS = '정상'
+        AND LOCKER_END >= TRUNC(SYSDATE)
+    </select>
 
 </mapper>
 

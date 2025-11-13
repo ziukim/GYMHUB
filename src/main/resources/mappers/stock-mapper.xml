@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.StockMapper">
+
+    <!-- Stock resultMap -->
+    <resultMap id="stockResultMap" type="com.kh.gymhub.model.vo.Stock">
+        <id property="stockId" column="STOCK_ID"/>
+        <result property="stockName" column="STOCK_NAME"/>
+        <result property="stockCount" column="STOCK_COUNT"/>
+        <result property="stockPrice" column="STOCK_PRICE"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="targetStockCount" column="TARGET_STOCK_COUNT"/>
+    </resultMap>
+
+    <!-- StockManage resultMap -->
+    <resultMap id="stockManageResultMap" type="com.kh.gymhub.model.vo.StockManage">
+        <id property="stockManageNo" column="STOCK_MANAGE_NO"/>
+        <result property="stockId" column="STOCK_ID"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="stockManageType" column="STOCK_MANAGE_TYPE"/>
+        <result property="stockManageDate" column="STOCK_MANAGE_DATE"/>
+        <result property="stockManageCount" column="STOCK_MANAGE_COUNT"/>
+        <!-- JOIN 필드 -->
+        <result property="stockName" column="STOCK_NAME"/>
+        <result property="stockCount" column="STOCK_COUNT"/>
+        <result property="stockPrice" column="STOCK_PRICE"/>
+    </resultMap>
+
+    <!-- 1. 재고 물품 등록 -->
+    <insert id="insertStock" parameterType="com.kh.gymhub.model.vo.Stock">
+        <selectKey keyProperty="stockId" resultType="int" order="BEFORE">
+            SELECT SEQ_STOCK_ID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO STOCK (
+        STOCK_ID,
+        STOCK_NAME,
+        STOCK_COUNT,
+        STOCK_PRICE
+        ) VALUES (
+        #{stockId},
+        #{stockName},
+        #{stockCount},
+        #{stockPrice}
+        )
+    </insert>
+
+    <!-- 2. 재고 관리 정보 등록 (입출고) -->
+    <insert id="insertStockManage" parameterType="com.kh.gymhub.model.vo.StockManage">
+        <selectKey keyProperty="stockManageNo" resultType="int" order="BEFORE">
+            SELECT SEQ_STOCK_MANAGE_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO STOCK_MANAGER (
+        STOCK_MANAGE_NO,
+        STOCK_ID,
+        GYM_NO,
+        STOCK_MANAGE_TYPE,
+        STOCK_MANAGE_DATE,
+        STOCK_MANAGE_COUNT
+        ) VALUES (
+        #{stockManageNo},
+        #{stockId},
+        #{gymNo},
+        #{stockManageType},
+        SYSDATE,
+        #{stockManageCount}
+        )
+    </insert>
+
+    <!-- 3. 특정 헬스장의 재고 목록 조회 (최근 목표재고수량 포함) -->
+    <select id="selectStockListByGymNo" resultMap="stockResultMap">
+        SELECT
+            S.STOCK_ID,
+            S.STOCK_NAME,
+            S.STOCK_COUNT,
+            S.STOCK_PRICE,
+            SM.GYM_NO,
+            SM.LATEST_TARGET_COUNT AS TARGET_STOCK_COUNT
+        FROM STOCK S
+                 INNER JOIN (
+            SELECT
+                SM1.STOCK_ID,
+                SM1.GYM_NO,
+                SM1.STOCK_MANAGE_COUNT AS LATEST_TARGET_COUNT
+            FROM STOCK_MANAGER SM1
+                     INNER JOIN (
+                SELECT
+                    STOCK_ID,
+                    MAX(STOCK_MANAGE_DATE) AS MAX_DATE
+                FROM STOCK_MANAGER
+                WHERE GYM_NO = #{gymNo}
+                  AND STOCK_MANAGE_TYPE IN ('초기등록', '목표수정')
+                GROUP BY STOCK_ID
+            ) SM2 ON SM1.STOCK_ID = SM2.STOCK_ID
+                AND SM1.STOCK_MANAGE_DATE = SM2.MAX_DATE
+            WHERE SM1.GYM_NO = #{gymNo}
+              AND SM1.STOCK_MANAGE_TYPE IN ('초기등록', '목표수정')
+        ) SM ON S.STOCK_ID = SM.STOCK_ID
+        ORDER BY S.STOCK_ID DESC
+    </select>
+
+    <!-- 4. 특정 재고의 상세 정보 조회 -->
+    <select id="selectStockById" resultMap="stockResultMap">
+        SELECT
+            STOCK_ID,
+            STOCK_NAME,
+            STOCK_COUNT,
+            STOCK_PRICE
+        FROM STOCK
+        WHERE STOCK_ID = #{stockId}
+    </select>
+
+    <!-- 5. 재고 정보 수정 -->
+    <update id="updateStock" parameterType="com.kh.gymhub.model.vo.Stock">
+        UPDATE STOCK
+        SET STOCK_NAME = #{stockName},
+            STOCK_PRICE = #{stockPrice}
+        WHERE STOCK_ID = #{stockId}
+    </update>
+
+    <!-- 6. 재고 수량 업데이트 -->
+    <update id="updateStockCount">
+        UPDATE STOCK
+        SET STOCK_COUNT = STOCK_COUNT + #{stockCount}
+        WHERE STOCK_ID = #{stockId}
+    </update>
+
+    <!-- 7-1. 재고 관리 내역 삭제 (CASCADE) -->
+    <delete id="deleteStockManageByStockId">
+        DELETE FROM STOCK_MANAGER
+        WHERE STOCK_ID = #{stockId}
+    </delete>
+
+    <!-- 7. 재고 삭제 -->
+    <delete id="deleteStock">
+        DELETE FROM STOCK
+        WHERE STOCK_ID = #{stockId}
+    </delete>
+
+    <!-- 외래키 제약조건 비활성화 -->
+    <update id="disableForeignKeyConstraint" statementType="STATEMENT">
+        ALTER TABLE ${tableName} DISABLE CONSTRAINT ${constraintName}
+    </update>
+
+    <!-- 외래키 제약조건 활성화 -->
+    <update id="enableForeignKeyConstraint" statementType="STATEMENT">
+        ALTER TABLE ${tableName} ENABLE CONSTRAINT ${constraintName}
+    </update>
+
+    <!-- 8. 특정 헬스장의 입출고 내역 조회 (입고/출고만) -->
+    <select id="selectStockManageListByGymNo" resultMap="stockManageResultMap">
+        SELECT
+            SM.STOCK_MANAGE_NO,
+            SM.STOCK_ID,
+            SM.GYM_NO,
+            SM.STOCK_MANAGE_TYPE,
+            SM.STOCK_MANAGE_DATE,
+            SM.STOCK_MANAGE_COUNT,
+            S.STOCK_NAME,
+            S.STOCK_COUNT,
+            S.STOCK_PRICE
+        FROM STOCK_MANAGER SM
+                 LEFT JOIN STOCK S ON SM.STOCK_ID = S.STOCK_ID
+        WHERE SM.GYM_NO = #{gymNo}
+          AND SM.STOCK_MANAGE_TYPE IN ('입고', '출고')
+        ORDER BY SM.STOCK_MANAGE_DATE DESC
+    </select>
+
+    <!-- 9. 특정 재고의 최근 목표재고수량 조회 -->
+    <select id="selectTargetStockCount" resultType="int">
+        SELECT STOCK_MANAGE_COUNT
+        FROM (
+                 SELECT STOCK_MANAGE_COUNT
+                 FROM STOCK_MANAGER
+                 WHERE STOCK_ID = #{stockId}
+                   AND GYM_NO = #{gymNo}
+                   AND STOCK_MANAGE_TYPE IN ('초기등록', '목표수정')
+                 ORDER BY STOCK_MANAGE_DATE DESC
+             )
+        WHERE ROWNUM = 1
+    </select>
+
+    <!-- 10. 목표재고수량 업데이트 (새로운 관리 내역 추가) -->
+    <insert id="updateTargetStockCount" parameterType="com.kh.gymhub.model.vo.StockManage">
+        <selectKey keyProperty="stockManageNo" resultType="int" order="BEFORE">
+            SELECT SEQ_STOCK_MANAGE_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO STOCK_MANAGER (
+        STOCK_MANAGE_NO,
+        STOCK_ID,
+        GYM_NO,
+        STOCK_MANAGE_TYPE,
+        STOCK_MANAGE_DATE,
+        STOCK_MANAGE_COUNT
+        ) VALUES (
+        #{stockManageNo},
+        #{stockId},
+        #{gymNo},
+        '목표수정',
+        SYSDATE,
+        #{stockManageCount}
+        )
+    </insert>
+
+</mapper>
+

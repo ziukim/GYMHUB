@@ -11,5 +11,11 @@ public interface LockerService {
     int addLocker(Locker locker);
 
     void updateExpiredLockers();
+    
+    Locker selectLockerByNo(int lockerNo);
+    
+    int updateLockerStatus(int lockerNo, String lockerStatus);
+    
+    boolean hasActiveLockerPass(int lockerNo);
 }
 
