@@ -1131,7 +1131,7 @@
                         <div class="gym-image">
                             <c:choose>
                                 <c:when test="${not empty gym.gymPhotoPath}">
-                                    <img src="${pageContext.request.contextPath}/${gym.gymPhotoPath}"
+                                    <img src="${pageContext.request.contextPath}${gym.gymPhotoPath}"
                                          alt="${gym.gymName}"
                                          style="width: 100%; height: 100%; object-fit: cover;">
                                 </c:when>
@@ -1423,7 +1423,10 @@
 
         <!-- 메인 이미지 -->
         <div class="main-image" style="width: 100%; max-width: 550px; height: 300px; border-radius: 10px; overflow: hidden; margin-bottom: 24px; background-color: #2d1810; border: 1px solid #ff6b00;">
-            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=550" alt="헬스장 이미지" id="gymDetailImage" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/logo.png"
+                 alt="헬스장 이미지"
+                 id="gymDetailImage"
+                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
 
         <!-- 뱃지 (facilitiesInfo에서 동적으로 생성) -->
@@ -1519,7 +1522,7 @@
                     <span>가격 정보</span>
                 </div>
                 <div class="card-content" id="gymDetailPrice">
-                    <p>가격 정보가 없습니다.</p>
+
                 </div>
             </div>
 
@@ -1529,8 +1532,7 @@
                     <span>운영시간</span>
                 </div>
                 <div class="card-content" id="gymDetailHours">
-                    <p>평일: 정보 없음</p>
-                    <p>주말: 정보 없음</p>
+
                 </div>
             </div>
         </div>
@@ -1953,6 +1955,7 @@
                 if (data.success) {
                     const gym = data.gym;
 
+
                     // 모달에 데이터 설정
                     document.getElementById('gymDetailTitle').textContent = gym.gymName || '헬스장';
                     document.getElementById('gymDetailDescription').textContent = gym.intro || '소개 정보가 없습니다.';
@@ -1960,6 +1963,39 @@
                     // 주소 설정 (detailAddress가 있으면 우선, 없으면 gymAddress)
                     const address = gym.detailAddress || gym.gymAddress || '주소 정보 없음';
                     document.getElementById('gymDetailAddress').textContent = address;
+
+                    // 가격 설정
+                    const priceContainer = document.getElementById('gymDetailPrice');
+                    priceContainer.innerHTML = ''; // 초기화
+                    if (gym.products && gym.products.length > 0) {
+
+                        // 상품 타입별로 분류
+                        const membershipProducts = gym.products.filter(p => p.productType === '회원권');
+
+                        // 회원권 가격 표시
+                        if (membershipProducts.length > 0) {
+                            const membershipHTML = '<p style="margin-bottom: 8px; color: #ff6b00; font-weight: 600;">회원권</p>';
+                            priceContainer.innerHTML += membershipHTML;
+
+                            membershipProducts.forEach(function(product) {
+                                const durationValue = Number(product.durationMonths);
+                                const priceValue = Number(product.productPrice);
+
+                                const duration = durationValue >= 30
+                                    ? Math.floor(durationValue / 30) + '개월'
+                                    : durationValue + '일';
+                                const price = priceValue.toLocaleString('ko-KR');
+
+                                // 문자열 연결 방식 사용 (템플릿 리터럴 대신)
+                                const priceHTML = '<p>' + duration + ': ' + price + '원</p>';
+                                priceContainer.innerHTML += priceHTML;
+                            });
+                        } else {
+                            priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
+                        }
+                    } else {
+                        priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
+                    }
 
                     // 전화번호 설정
                     const phone = gym.gymPhone || '전화번호 없음';
@@ -1973,12 +2009,23 @@
                         '<p>평일: ' + weekHour + '</p>' +
                         '<p>주말: ' + weekendHour + '</p>';
 
-                    // 이미지 설정
+                    // 이미지 설정 - 수정된 부분
                     const gymImage = document.getElementById('gymDetailImage');
+                    const mainImageContainer = gymImage.parentElement;
+
                     if (gym.gymPhotoPath) {
-                        gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
+                        // 이미지가 있는 경우
+                        gymImage.style.display = 'block';
+                        // 슬래시가 이미 있으면 contextPath만, 없으면 contextPath + /
+                        if (gym.gymPhotoPath.startsWith('/')) {
+                            gymImage.src = '${pageContext.request.contextPath}' + gym.gymPhotoPath;
+                        } else {
+                            gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
+                        }
                     } else {
-                        gymImage.src = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=550';
+                        // 이미지가 없는 경우
+                        gymImage.style.display = 'none';
+                        mainImageContainer.innerHTML = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #8a6a50; font-size: 14px;">헬스장 이미지가 없습니다</div>';
                     }
 
                     // 시설 정보를 뱃지와 시설 아이콘으로 표시
@@ -2019,11 +2066,10 @@
 
                             const iconName = facilityIcons[trimmedFacility] || 'machine.png'; // 기본 아이콘
 
-                            facilityItem.innerHTML = `
-                            <img src="${'${pageContext.request.contextPath}'}/resources/images/icon/${iconName}"
-                                 alt="${trimmedFacility}" style="width: 24px; height: 24px;">
-                            <span>${trimmedFacility}</span>
-                        `;
+                            facilityItem.innerHTML =
+                                '<img src="' + window.contextPath + '/resources/images/icon/' + iconName + '"' +
+                                '     alt="' + trimmedFacility + '" style="width: 24px; height: 24px;">' +
+                                '<span>' + trimmedFacility + '</span>';
 
                             facilityGrid.appendChild(facilityItem);
                         });

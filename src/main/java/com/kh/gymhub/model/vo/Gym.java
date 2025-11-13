@@ -2,6 +2,7 @@ package com.kh.gymhub.model.vo;
 
 import lombok.*;
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,4 +27,6 @@ public class Gym {
     private String detailAddress;      // 상세 주소
     private String weekBusinessHour;   // 평일 운영시간
     private String weekendBusinessHour; // 주말 운영시간
+
+    private List<Product> products;    // 상품 목록
 }

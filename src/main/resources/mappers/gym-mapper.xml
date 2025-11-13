@@ -5,7 +5,7 @@
 
 <mapper namespace="com.kh.gymhub.model.mapper.GymMapper">
     <resultMap id="gymResultMap" type="Gym">
-        <result column="GYM_NO" property="gymNo"/>
+        <id column="GYM_NO" property="gymNo"/>
         <result column="GYM_NAME" property="gymName"/>
         <result column="GYM_OWNER" property="gymOwner"/>
         <result column="GYM_PHONE" property="gymPhone"/>
@@ -15,6 +15,24 @@
         <result column="GYM_UPDATEAT" property="gymUpdateat"/>
         <result column="GYM_PHOTO_PATH" property="gymPhotoPath"/>
         <result column="ATT_CACHE_NO" property="attCacheNo"/>
+
+        <!-- GYM_DETAIL 테이블 컬럼 -->
+        <result column="INTRO" property="intro"/>
+        <result column="FACILITIES_INFO" property="facilitiesInfo"/>
+        <result column="DETAIL_ADDRESS" property="detailAddress"/>
+        <result column="WEEK_BUSINESS_HOUR" property="weekBusinessHour"/>
+        <result column="WEEKEND_BUSINESS_HOUR" property="weekendBusinessHour"/>
+
+        <!-- PRODUCT 테이블과 JOIN (collection) -->
+        <collection property="products" ofType="Product">
+            <id column="PRODUCT_NO" property="productNo"/>
+            <result column="PRODUCT_GYM_NO" property="gymNo"/>
+            <result column="DURATION_MONTHS" property="durationMonths"/>
+            <result column="PRODUCT_TYPE" property="productType"/>
+            <result column="PRODUCT_START_DATE" property="productStartDate"/>
+            <result column="PRODUCT_PRICE" property="productPrice"/>
+            <result column="PRODUCT_STATUS" property="productStatus"/>
+        </collection>
     </resultMap>
 
     <insert id="insertGym" parameterType="Gym">
@@ -37,6 +55,7 @@
         #{attCacheNo}
         )
     </insert>
+
     <select id="selectGymWithDetailByNo" parameterType="_int" resultMap="gymResultMap">
         SELECT
         G.GYM_NO,
@@ -53,12 +72,22 @@
         GD.FACILITIES_INFO,
         GD.DETAIL_ADDRESS,
         GD.WEEK_BUSINESS_HOUR,
-        GD.WEEKEND_BUSINESS_HOUR
+        GD.WEEKEND_BUSINESS_HOUR,
+        P.PRODUCT_NO,
+        P.GYM_NO AS PRODUCT_GYM_NO,
+        P.DURATION_MONTHS,
+        P.PRODUCT_TYPE,
+        P.PRODUCT_START_DATE,
+        P.PRODUCT_PRICE,
+        P.PRODUCT_STATUS
         FROM GYM G
         LEFT JOIN GYM_DETAIL GD ON G.GYM_NO = GD.GYM_NO
+        LEFT JOIN PRODUCT P ON G.GYM_NO = P.GYM_NO AND P.PRODUCT_STATUS = 'Y'
         WHERE G.GYM_NO = #{gymNo}
         AND G.STATUS = 'Y'
+        ORDER BY P.PRODUCT_TYPE, P.DURATION_MONTHS
     </select>
+
     <!-- 모든 헬스장 목록 조회 -->
     <select id="selectAllGyms" resultMap="gymResultMap">
         SELECT
@@ -82,6 +111,7 @@
         WHERE G.STATUS = 'Y'
         ORDER BY G.GYM_NO DESC
     </select>
+
     <update id="updateProfileImage">
         UPDATE GYM
         SET GYM_PHOTO_PATH = #{photoPath},
