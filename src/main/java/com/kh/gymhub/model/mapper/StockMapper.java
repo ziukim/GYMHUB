@@ -112,5 +112,12 @@ public interface StockMapper {
      * @return 등록된 행 수
      */
     int updateTargetStockCount(StockManage stockManage);
+
+    /**
+     * 헬스장의 첫 번째 회원 번호 조회 (재고 판매용 더미 회원)
+     * @param gymNo 헬스장 번호
+     * @return 회원 번호
+     */
+    int selectFirstMemberNoByGymNo(@Param("gymNo") int gymNo);
 }
 
