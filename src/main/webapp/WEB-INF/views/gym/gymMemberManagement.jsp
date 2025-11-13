@@ -1143,19 +1143,10 @@
                     <tbody>
                     <c:choose>
                         <c:when test="${empty members}">
-                            <!-- 예시 데이터 (DB에 데이터가 없을 때만 표시) -->
-                            <tr data-status="normal">
-                                <td>김회원</td>
-                                <td>30일 이용권 + 30일 락커 이용권 + PT 10회 이용권</td>
-                                <td>2024.04.01</td>
-                                <td>2025.04.01</td>
-                                <td>A-127</td>
-                                <td><span class="status-badge status-normal">정상</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="edit-btn" onclick="editMember(this)">수정</button>
-                                        <button class="delete-btn" onclick="deleteMember(this)">삭제</button>
-                                    </div>
+                            <!-- DB 조회 결과가 없을 때 빈 상태 메시지 표시 -->
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: #b0b0b0;">
+                                    등록된 회원이 없습니다. 신규 회원을 등록해주세요.
                                 </td>
                             </tr>
                         </c:when>
@@ -1693,12 +1684,15 @@
             let displayText = '';
             
             if (type === 'month') {
-                // 회원권/락커: 일 단위를 개월로 변환
-                const months = Math.floor(product.durationMonths / 30);
-                if (months === 12) {
+                // 회원권/락커: 일 단위를 개월 또는 일로 변환
+                const days = product.durationMonths;
+                if (days >= 365) {
                     displayText = '12개월';
-                } else {
+                } else if (days >= 30) {
+                    const months = Math.floor(days / 30);
                     displayText = months + '개월';
+                } else {
+                    displayText = days + '일';
                 }
             } else if (type === 'count') {
                 // PT: 횟수 그대로 표시
@@ -1858,23 +1852,39 @@
 
         // 회원권 기간 확인
         if (membershipDisplay.includes('회원권')) {
-            const gymMatch = membershipDisplay.match(/(\d+)개월\s*회원권/);
-            if (gymMatch) {
-                const months = parseInt(gymMatch[1]);
+            // 개월 단위 확인
+            const gymMatchMonth = membershipDisplay.match(/(\d+)개월\s*회원권/);
+            if (gymMatchMonth) {
+                const months = parseInt(gymMatchMonth[1]);
                 // 1개월 = 30일, 12개월 = 365일로 계산
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const gymMatchDay = membershipDisplay.match(/(\d+)일\s*회원권/);
+                if (gymMatchDay) {
+                    const days = parseInt(gymMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
         // 락커 이용권 기간 확인
         if (membershipDisplay.includes('락커 이용권')) {
-            const lockerMatch = membershipDisplay.match(/(\d+)개월\s*락커 이용권/);
-            if (lockerMatch) {
-                const months = parseInt(lockerMatch[1]);
+            // 개월 단위 확인
+            const lockerMatchMonth = membershipDisplay.match(/(\d+)개월\s*락커 이용권/);
+            if (lockerMatchMonth) {
+                const months = parseInt(lockerMatchMonth[1]);
                 // 1개월 = 30일, 12개월 = 365일로 계산
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const lockerMatchDay = membershipDisplay.match(/(\d+)일\s*락커 이용권/);
+                if (lockerMatchDay) {
+                    const days = parseInt(lockerMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
@@ -2037,28 +2047,62 @@
     // 최종 등록 확정
     function confirmRegistration() {
         const memberId = document.getElementById('memberIdInput').value;
-        const membership = document.getElementById('membershipDisplay').textContent;
         const startDate = document.getElementById('startDateInput').value;
         const endDate = document.getElementById('endDateInput').value;
-        const locker = document.getElementById('lockerInput').value;
-        const name = document.getElementById('confirmName').textContent;
+        const lockerRealNum = document.getElementById('lockerInput').value;
+        const selectedProductNosStr = document.getElementById('selectedProductNos').value;
+        
+        // 선택된 상품 번호 배열로 변환
+        const productNos = selectedProductNosStr ? selectedProductNosStr.split(',').map(no => parseInt(no)) : [];
 
-        // 실제로는 서버로 데이터 전송
-        console.log('회원 등록 데이터:', {
-            memberId,
-            name,
-            membership,
-            startDate,
-            endDate,
-            locker
+        // 필수 항목 검증
+        if (!memberId) {
+            alert('회원 아이디가 필요합니다.');
+            return;
+        }
+
+        if (productNos.length === 0) {
+            alert('이용권을 선택해주세요.');
+            return;
+        }
+
+        if (!startDate || !endDate) {
+            alert('시작일과 만료일을 입력해주세요.');
+            return;
+        }
+
+        // 서버로 데이터 전송
+        const requestData = {
+            memberId: memberId,
+            productNos: productNos,
+            startDate: startDate,
+            endDate: endDate,
+            lockerRealNum: lockerRealNum || null
+        };
+
+        fetch('${pageContext.request.contextPath}/member/register.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('회원이 성공적으로 등록되었습니다!');
+                closeConfirmModal();
+                closeAddMemberModal();
+                // 페이지 새로고침
+                location.reload();
+            } else {
+                alert(data.message || '회원 등록에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('회원 등록 오류:', error);
+            alert('회원 등록 중 오류가 발생했습니다.');
         });
-
-        alert('회원이 등록되었습니다!');
-        closeConfirmModal();
-        closeAddMemberModal();
-
-        // 페이지 새로고침 또는 테이블 업데이트
-        // location.reload();
     }
 
     // 모달 외부 클릭 시 닫기 (DOMContentLoaded 안에서 실행)
@@ -2484,21 +2528,37 @@
 
         // 회원권 기간 확인
         if (editMembershipDisplay.includes('회원권')) {
-            const gymMatch = editMembershipDisplay.match(/(\d+)개월\s*회원권/);
-            if (gymMatch) {
-                const months = parseInt(gymMatch[1]);
+            // 개월 단위 확인
+            const gymMatchMonth = editMembershipDisplay.match(/(\d+)개월\s*회원권/);
+            if (gymMatchMonth) {
+                const months = parseInt(gymMatchMonth[1]);
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const gymMatchDay = editMembershipDisplay.match(/(\d+)일\s*회원권/);
+                if (gymMatchDay) {
+                    const days = parseInt(gymMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 
         // 락커 이용권 기간 확인
         if (editMembershipDisplay.includes('락커 이용권')) {
-            const lockerMatch = editMembershipDisplay.match(/(\d+)개월\s*락커 이용권/);
-            if (lockerMatch) {
-                const months = parseInt(lockerMatch[1]);
+            // 개월 단위 확인
+            const lockerMatchMonth = editMembershipDisplay.match(/(\d+)개월\s*락커 이용권/);
+            if (lockerMatchMonth) {
+                const months = parseInt(lockerMatchMonth[1]);
                 const days = months === 12 ? 365 : months * 30;
                 maxDays = Math.max(maxDays, days);
+            } else {
+                // 일 단위 확인
+                const lockerMatchDay = editMembershipDisplay.match(/(\d+)일\s*락커 이용권/);
+                if (lockerMatchDay) {
+                    const days = parseInt(lockerMatchDay[1]);
+                    maxDays = Math.max(maxDays, days);
+                }
             }
         }
 

@@ -510,11 +510,6 @@ public class GymController {
         return result;
     }
 
-    @GetMapping("/stock.gym")
-    public String stockManagement() {
-        return "gym/gymStockManagement";
-    }
-
     @GetMapping("/product.gym")
     public String productManagement(HttpSession session, Model model) {
         // 세션에서 로그인 정보 확인

@@ -50,5 +50,26 @@ public class LockerServiceImpl implements LockerService {
             // 로그 처리 필요시 추가
         }
     }
+
+    @Override
+    public Locker selectLockerByNo(int lockerNo) {
+        return lockerMapper.selectLockerByNo(lockerNo);
+    }
+
+    @Override
+    @Transactional
+    public int updateLockerStatus(int lockerNo, String lockerStatus) {
+        // 활성 이용권이 있는 경우 수정 불가
+        if (hasActiveLockerPass(lockerNo)) {
+            return -1; // 활성 이용권이 있음을 나타내는 반환값
+        }
+        return lockerMapper.updateLockerStatus(lockerNo, lockerStatus);
+    }
+
+    @Override
+    public boolean hasActiveLockerPass(int lockerNo) {
+        int count = lockerMapper.countActiveLockerPassByLockerNo(lockerNo);
+        return count > 0;
+    }
 }
 

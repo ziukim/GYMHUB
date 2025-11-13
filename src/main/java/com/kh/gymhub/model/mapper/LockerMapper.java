@@ -22,5 +22,9 @@ public interface LockerMapper {
     LockerPass selectLockerByRealNum(@Param("lockerRealNum") String lockerRealNum, @Param("gymNo") int gymNo);
     
     int updateLockerStatus(@Param("lockerNo") int lockerNo, @Param("lockerStatus") String lockerStatus);
+    
+    Locker selectLockerByNo(@Param("lockerNo") int lockerNo);
+    
+    int countActiveLockerPassByLockerNo(@Param("lockerNo") int lockerNo);
 }
 
