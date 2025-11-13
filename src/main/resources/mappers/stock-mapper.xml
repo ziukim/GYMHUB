@@ -201,5 +201,18 @@
         )
     </insert>
 
+    <!-- 11. 헬스장의 첫 번째 회원 번호 조회 (재고 판매용 더미 회원) -->
+    <select id="selectFirstMemberNoByGymNo" resultType="_int">
+        SELECT MEMBER_NO
+        FROM (
+            SELECT MEMBER_NO
+            FROM MEMBER
+            WHERE GYM_NO = #{gymNo}
+            AND STATUS = 'Y'
+            ORDER BY MEMBER_NO ASC
+        )
+        WHERE ROWNUM = 1
+    </select>
+
 </mapper>
 

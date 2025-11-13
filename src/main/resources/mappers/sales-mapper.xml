@@ -51,15 +51,13 @@
 
     <!-- 재고(물품 판매) 매출 조회 (해당 달, 출고만) -->
     <select id="selectStockSalesByGymNoAndMonth" resultType="_int">
-        SELECT NVL(SUM(ST.STOCK_PRICE * SM.STOCK_MANAGE_COUNT), 0)
+        SELECT NVL(SUM(P.PURCHASE_COST), 0)
         FROM SALES S
-        INNER JOIN STOCK_MANAGER SM ON S.STOCK_ID = SM.STOCK_ID AND S.GYM_NO = SM.GYM_NO
-        INNER JOIN STOCK ST ON SM.STOCK_ID = ST.STOCK_ID
+        INNER JOIN PURCHASE P ON S.PURCHASE_NO = P.PURCHASE_NO
         WHERE S.GYM_NO = #{gymNo}
           AND S.SALES_TYPE = '재고'
-          AND SM.STOCK_MANAGE_TYPE = '출고'
-          AND EXTRACT(YEAR FROM SM.STOCK_MANAGE_DATE) = #{year}
-          AND EXTRACT(MONTH FROM SM.STOCK_MANAGE_DATE) = #{month}
+          AND EXTRACT(YEAR FROM S.SALES_DATE) = #{year}
+          AND EXTRACT(MONTH FROM S.SALES_DATE) = #{month}
     </select>
 
 </mapper>

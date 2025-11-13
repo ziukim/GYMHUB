@@ -1,6 +1,10 @@
 package com.kh.gymhub.service;
 
+import com.kh.gymhub.model.mapper.PurchaseMapper;
+import com.kh.gymhub.model.mapper.SalesMapper;
 import com.kh.gymhub.model.mapper.StockMapper;
+import com.kh.gymhub.model.vo.Purchase;
+import com.kh.gymhub.model.vo.Sales;
 import com.kh.gymhub.model.vo.Stock;
 import com.kh.gymhub.model.vo.StockManage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +17,14 @@ import java.util.List;
 public class StockServiceImpl implements StockService {
 
     private final StockMapper stockMapper;
+    private final SalesMapper salesMapper;
+    private final PurchaseMapper purchaseMapper;
 
     @Autowired
-    public StockServiceImpl(StockMapper stockMapper) {
+    public StockServiceImpl(StockMapper stockMapper, SalesMapper salesMapper, PurchaseMapper purchaseMapper) {
         this.stockMapper = stockMapper;
+        this.salesMapper = salesMapper;
+        this.purchaseMapper = purchaseMapper;
     }
 
     @Override
@@ -77,6 +85,50 @@ public class StockServiceImpl implements StockService {
                         .build();
 
                 result = stockMapper.insertStockManage(stockManage);
+                
+                // 3. 출고이고 가격이 있으면 SALES 테이블에 매출 정보 추가
+                if (result > 0 && "출고".equals(type)) {
+                    // 재고 정보 조회하여 가격 확인
+                    Stock stock = stockMapper.selectStockById(stockId);
+                    if (stock != null && stock.getStockPrice() > 0) {
+                        // 재고 판매를 위한 더미 PURCHASE 레코드 생성
+                        // 헬스장의 첫 번째 회원을 더미 회원으로 사용 (실제로는 재고 판매이므로 회원 정보는 중요하지 않음)
+                        int dummyMemberNo = stockMapper.selectFirstMemberNoByGymNo(gymNo);
+                        if (dummyMemberNo > 0) {
+                            // 총 판매 금액 계산 (가격 * 수량)
+                            int totalPrice = stock.getStockPrice() * count;
+                            
+                            // 더미 PURCHASE 레코드 생성
+                            Purchase dummyPurchase = Purchase.builder()
+                                    .memberNo(dummyMemberNo)
+                                    .gymNo(gymNo)
+                                    .purchaseCost(totalPrice)
+                                    .purchaseStatus("결제")
+                                    .build();
+                            
+                            int purchaseResult = purchaseMapper.insertPurchase(dummyPurchase);
+                            if (purchaseResult > 0) {
+                                // 매출 테이블에 INSERT (물품 판매)
+                                Sales sales = Sales.builder()
+                                        .purchaseNo(dummyPurchase.getPurchaseNo())
+                                        .stockId(stockId)
+                                        .gymNo(gymNo)
+                                        .salesType("재고")
+                                        .build();
+                                
+                                int salesResult = salesMapper.insertSales(sales);
+                                if (salesResult <= 0) {
+                                    // 매출 등록 실패는 로그만 남기고 계속 진행
+                                    System.out.println("매출 등록 실패: stockId=" + stockId);
+                                }
+                            } else {
+                                System.out.println("더미 PURCHASE 생성 실패: stockId=" + stockId);
+                            }
+                        } else {
+                            System.out.println("헬스장 회원 조회 실패: gymNo=" + gymNo);
+                        }
+                    }
+                }
             }
 
             return result;
