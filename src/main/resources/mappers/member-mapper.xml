@@ -231,4 +231,12 @@
         AND STATUS = 'Y'
         ORDER BY MEMBER_NAME
     </select>
+
+    <!-- 프로필 이미지 업로드 -->
+    <update id="updateProfileImage">
+        UPDATE MEMBER
+        SET MEMBER_PHOTO_PATH = #{photoPath},
+        MEMBER_UPDATEAT = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+    </update>
 </mapper>

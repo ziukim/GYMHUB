@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,14 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=ABeeZee&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
-
+        /* gymInfoManagement 전용 스타일 */
+        /* main-content는 common.css에 있음 */
+        
         body {
             font-family: 'ABeeZee', 'Noto Sans KR', sans-serif;
             background: #0a0a0a;
@@ -377,10 +373,32 @@
                         대표 이미지
                     </div>
                     <div class="image-upload-area">
-                        <button class="upload-button" onclick="uploadImage()">
-                            <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
-                            <span>이미지 업로드</span>
-                        </button>
+                        <!-- 이미지 미리보기 및 업로드 영역 -->
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+                            <div class="profile-image-container" style="position: relative; width: 100%; display: flex; justify-content: center;">
+                                <div class="profile-image" id="mainGymImage" style="width: 100%; height: 600px; background-color: #2d1810; border: 2px solid #ff6b00; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    <c:choose>
+                                        <c:when test="${not empty gym.gymPhotoPath}">
+                                            <img src="${pageContext.request.contextPath}${gym.gymPhotoPath}"
+                                                 alt="헬스장 이미지"
+                                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <svg viewBox="0 0 48 48" fill="none" style="width: 80px; height: 80px;">
+                                                <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <input type="file" id="gymImageInput" accept="image/*" style="display: none;">
+                            </div>
+
+                            <button class="upload-button" onclick="document.getElementById('gymImageInput').click()">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/upload.png" alt="업로드" style="width: 16px; height: 16px;">
+                                <span>이미지 업로드</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -396,29 +414,29 @@
                                 <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="헬스장 이름" class="label-icon">
                                 헬스장 이름
                             </label>
-                            <input type="text" class="form-input" placeholder="피트니스 센터 강남점" id="gymName">
+                            <input type="text" class="form-input" placeholder="피트니스 센터 강남점" id="gymName" value="${gym.gymName}">
                         </div>
                         <div class="form-group full-width">
                             <label class="form-label">헬스장 소개</label>
-                            <textarea class="form-textarea" placeholder="헬스장에 대한 간단한 소개를 입력해주세요" id="gymDescription"></textarea>
+                            <textarea class="form-textarea" placeholder="헬스장에 대한 간단한 소개를 입력해주세요" id="gymDescription"><c:if test="${not empty gymDetail}">${gymDetail.intro}</c:if></textarea>
                         </div>
                         <div class="form-group">
                             <label class="form-label">
                                 <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화번호" class="label-icon">
                                 전화번호
                             </label>
-                            <input type="text" class="form-input" placeholder="02-1234-5678" id="gymPhone">
+                            <input type="text" class="form-input" placeholder="02-1234-5678" id="gymPhone" value="${gym.gymPhone}">
                         </div>
                         <div class="form-group">
                             <label class="form-label">
                                 <img src="${pageContext.request.contextPath}/resources/images/icon/location.png" alt="주소" class="label-icon">
                                 주소
                             </label>
-                            <input type="text" class="form-input" placeholder="서울 강남구 테헤란로 123" id="gymAddress">
+                            <input type="text" class="form-input" placeholder="서울 강남구 테헤란로 123" id="gymAddress" value="${gym.gymAddress}">
                         </div>
                         <div class="form-group full-width">
                             <label class="form-label">상세 주소 / 위치 안내</label>
-                            <input type="text" class="form-input" placeholder="3층 (해성빌딩 2번 출구 기준 5분)" id="gymDetailAddress">
+                            <input type="text" class="form-input" placeholder="3층 (해성빌딩 2번 출구 기준 5분)" id="gymDetailAddress" value="<c:if test="${not empty gymDetail}">${gymDetail.detailAddress}</c:if>">
                         </div>
                     </div>
                 </div>
@@ -436,11 +454,11 @@
                         <div class="time-grid">
                             <div class="time-group">
                                 <label class="time-label">시작 시간</label>
-                                <input type="text" class="form-input" placeholder="06:00" id="weekdayStart">
+                                <input type="text" class="form-input" placeholder="06:00" id="weekdayStart" value="<c:if test="${not empty gymDetail and not empty gymDetail.weekBusinessHour}">${gymDetail.weekBusinessHour.split(' ~ ')[0]}</c:if>">
                             </div>
                             <div class="time-group">
                                 <label class="time-label">종료 시간</label>
-                                <input type="text" class="form-input" placeholder="23:00" id="weekdayEnd">
+                                <input type="text" class="form-input" placeholder="23:00" id="weekdayEnd" value="<c:if test="${not empty gymDetail and not empty gymDetail.weekBusinessHour}">${gymDetail.weekBusinessHour.split(' ~ ')[1]}</c:if>">
                             </div>
                         </div>
                         <div class="time-note">예시: 평일 00:00 ~ 23:59</div>
@@ -452,11 +470,11 @@
                         <div class="time-grid">
                             <div class="time-group">
                                 <label class="time-label">시작 시간</label>
-                                <input type="text" class="form-input" placeholder="08:00" id="weekendStart">
+                                <input type="text" class="form-input" placeholder="08:00" id="weekendStart" value="<c:if test="${not empty gymDetail and not empty gymDetail.weekendBusinessHour}">${gymDetail.weekendBusinessHour.split(' ~ ')[0]}</c:if>">
                             </div>
                             <div class="time-group">
                                 <label class="time-label">종료 시간</label>
-                                <input type="text" class="form-input" placeholder="20:00" id="weekendEnd">
+                                <input type="text" class="form-input" placeholder="20:00" id="weekendEnd" value="<c:if test="${not empty gymDetail and not empty gymDetail.weekendBusinessHour}">${gymDetail.weekendBusinessHour.split(' ~ ')[1]}</c:if>">
                             </div>
                         </div>
                         <div class="time-note">예시: 주말 00:00 ~ 23:59</div>
@@ -532,6 +550,23 @@
         // Facility buttons toggle
         const facilityButtons = document.querySelectorAll('.facility-button');
         const selectedFacilities = [];
+
+        // Initialize facilities from the model
+        const gymFacilities = "<c:if test="${not empty gymDetail}">${gymDetail.facilitiesInfo}</c:if>";
+        if (gymFacilities) {
+            const facilitiesArray = gymFacilities.split(',');
+            facilitiesArray.forEach(facility => {
+                const trimmedFacility = facility.trim();
+                if (trimmedFacility) {
+                    selectedFacilities.push(trimmedFacility);
+                    const button = Array.from(facilityButtons).find(btn => btn.getAttribute('data-facility') === trimmedFacility);
+                    if (button) {
+                        button.classList.add('selected');
+                    }
+                }
+            });
+            updateFacilityTags();
+        }
         
         facilityButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -579,23 +614,92 @@
 
         // Save button
         function saveGymInfo() {
-            alert('정보가 저장되었습니다!');
-            // 실제 저장 로직은 여기에 추가
+            const formData = new FormData();
+            formData.append('gymName', document.getElementById('gymName').value);
+            formData.append('gymDescription', document.getElementById('gymDescription').value);
+            formData.append('gymPhone', document.getElementById('gymPhone').value);
+            formData.append('gymAddress', document.getElementById('gymAddress').value);
+            formData.append('gymDetailAddress', document.getElementById('gymDetailAddress').value);
+            formData.append('weekdayStart', document.getElementById('weekdayStart').value);
+            formData.append('weekdayEnd', document.getElementById('weekdayEnd').value);
+            formData.append('weekendStart', document.getElementById('weekendStart').value);
+            formData.append('weekendEnd', document.getElementById('weekendEnd').value);
+            formData.append('facilities', selectedFacilities.join(', '));
+
+            fetch('${pageContext.request.contextPath}/gym/info/update', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        alert('정보가 성공적으로 저장되었습니다.');
+                    } else {
+                        alert('정보 저장에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('오류가 발생했습니다.');
+                });
         }
 
-        // Image upload
-        function uploadImage() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.multiple = true;
-            input.onchange = (e) => {
-                const files = Array.from(e.target.files);
-                console.log('Uploaded files:', files);
-                alert(`${files.length}개의 이미지가 업로드되었습니다.`);
-            };
-            input.click();
-        }
+        // 헬스장 이미지
+        document.getElementById('gymImageInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                var file = e.target.files[0];
+
+                // 파일 크기 체크 (5MB 제한)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                    return;
+                }
+
+                // 이미지 파일 형식 체크
+                if (!file.type.startsWith('image/')) {
+                    alert('이미지 파일만 업로드 가능합니다.');
+                    return;
+                }
+
+                // 미리보기 표시
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+
+                    document.getElementById('mainGymImage').innerHTML = '';
+                    document.getElementById('mainGymImage').appendChild(img);
+                }
+                reader.readAsDataURL(file);
+
+                // 서버에 업로드
+                var formData = new FormData();
+                formData.append('gymImage', file);
+
+                fetch('${pageContext.request.contextPath}/uploadGymImage.gym', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                            // 실패 시 원래 이미지로 복구
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('이미지 업로드 중 오류가 발생했습니다.');
+                        location.reload();
+                    });
+            }
+        });
     </script>
 </body>
 </html>

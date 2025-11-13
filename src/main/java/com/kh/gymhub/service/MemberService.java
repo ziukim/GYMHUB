@@ -10,6 +10,7 @@ public interface MemberService {
     int addGymOwner(Member member, Gym gym);
     int updateMemberInfo(Member member);
     int updatePassword(int memberNo, String newPassword);
+    int updateProfileImage(int memberNo, String photoPath);
     Member login(String memberId, String memberPwd);
     Member getMemberByIdForGymRegistration(String memberId);
 

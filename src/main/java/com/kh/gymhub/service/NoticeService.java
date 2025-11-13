@@ -11,5 +11,6 @@ public interface NoticeService {
     int insertNotice(GymNotice notice, MultipartFile file);
     int updateNotice(GymNotice notice, MultipartFile file);
     int updateNoticeFixStatus(int noticeNo, String fixStatus);
+    int deleteNotice(int noticeNo);
 }
 

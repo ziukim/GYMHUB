@@ -4,13 +4,17 @@
 <style>
     /* 사이드바 기본 스타일 */
     .sidebar {
-        position: relative;
+        position: fixed;
+        left: 0;
+        top: 0;
         width: 255px;
         height: 100vh;
         background-color: #1a0f0a;
         border-right: 1px solid #ff6b00;
         margin: 0;
         padding: 0;
+        overflow-y: auto;
+        z-index: 1000;
     }
 
     /* Logo Container */

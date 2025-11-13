@@ -7,7 +7,522 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 대시보드 - GymHub</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/dashboard.css">
+    <style>
+        /* 회원 대시보드 전용 스타일 */
+        .main-content {
+            margin-left: 255px;
+            width: calc(100% - 255px);
+            padding: 40px 40px 40px 20px;
+            min-height: 100vh;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            font-size: 32px;
+            color: #ff6b00;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .welcome-message img {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* Attendance Card */
+        .attendance-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .attendance-number {
+            font-size: 30px;
+            color: #ff6b00;
+            font-weight: 500;
+        }
+
+        .attendance-label {
+            font-size: 14px;
+            color: #8a6a50;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2d1810;
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ff6b00;
+            width: 72%;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .large-card {
+            background: #1a0f0a;
+            border: 1px solid #ff6b00;
+            border-radius: 14px;
+            padding: 25px;
+            min-height: 380px;
+        }
+
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+
+        .large-text {
+            font-size: 30px;
+            color: #ff6b00;
+            margin: 10px 0;
+        }
+
+        .medium-text {
+            font-size: 18px;
+            color: #8a6a50;
+            margin: 8px 0;
+        }
+
+        /* Notice */
+        .notice-list {
+            margin-top: 80px;
+        }
+
+        .notice-item {
+            background: #2d1810;
+            border: 1px solid #ff6b00;
+            border-radius: 10px;
+            padding: 17px;
+            margin-bottom: 16px;
+        }
+
+        .notice-badge {
+            display: inline-block;
+            background: #ff6b00;
+            color: #0a0a0a;
+            padding: 3px 9px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .notice-title {
+            color: #ffa366;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .notice-date {
+            color: #8a6a50;
+            font-size: 12px;
+        }
+
+        /* Video Library */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background: #2d1810;
+            border: 1px solid #ff6b00;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 151px;
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .play-button {
+            width: 48px;
+            height: 48px;
+            background: rgba(10, 10, 10, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ff6b00;
+            font-size: 20px;
+            transition: background 0.3s;
+        }
+
+        .play-button:hover {
+            background: rgba(10, 10, 10, 0.9);
+        }
+
+        .video-info {
+            padding: 12px;
+        }
+
+        .video-title {
+            color: #ffa366;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .video-author {
+            color: #8a6a50;
+            font-size: 14px;
+        }
+
+        /* Goals */
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .goal-item {
+            background: #2d1810;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 1px solid #ff6b00;
+            border-radius: 4px;
+            background: #2d1810;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .checkbox:checked {
+            background: #ff6b00;
+        }
+
+        .checkbox:checked::after {
+            content: "✓";
+            color: #0a0a0a;
+            position: absolute;
+            top: -1px;
+            left: 2px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .goal-text {
+            flex: 1;
+        }
+
+        .goal-title {
+            font-size: 16px;
+            color: #ffa366;
+            margin-bottom: 4px;
+        }
+
+        .goal-title.completed {
+            color: #8a6a50;
+            text-decoration: line-through;
+        }
+
+        .goal-subtitle {
+            font-size: 14px;
+            color: #8a6a50;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background: #1a0f0a;
+            border: 2px solid #ff6b00;
+            border-radius: 16px;
+            width: 520px;
+            height: 520px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(255, 107, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Close Button */
+        .close-button {
+            position: absolute;
+            top: 17px;
+            right: 16px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+            transition: opacity 0.3s;
+        }
+
+        .close-button:hover {
+            opacity: 0.7;
+        }
+
+        .close-button svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Modal Header */
+        .modal-header {
+            padding: 25px 53px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            color: #ff6b00;
+            font-weight: 700;
+        }
+
+        /* Tab List */
+        .tab-list {
+            display: flex;
+            background: #31221b;
+            border-radius: 14px;
+            height: 36px;
+            width: 204px;
+            overflow: hidden;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 100px;
+            background: transparent;
+            border: none;
+            color: #8a6a50;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 14px;
+            transition: all 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+            white-space: nowrap;
+            padding: 8px 20px;
+            text-align: center;
+        }
+
+        .tab-button.active {
+            background: #ff6b00;
+            color: #0a0a0a;
+        }
+
+        .tab-button:hover:not(.active) {
+            color: #ffa366;
+        }
+
+        /* Modal Body */
+        .modal-body {
+            padding: 0 49px;
+            height: 366px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #2d1810;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #ff6b00;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: block;
+        }
+
+        /* Modal Goal Item */
+        .modal-goal-item {
+            background: #2d1810;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 83px;
+        }
+
+        .modal-goal-text {
+            flex: 1;
+        }
+
+        .modal-goal-title {
+            font-size: 16px;
+            color: #ffa366;
+            margin-bottom: 4px;
+        }
+
+        .modal-goal-title.completed {
+            color: #8a6a50;
+            text-decoration: line-through;
+        }
+
+        .modal-goal-date {
+            font-size: 14px;
+            color: #8a6a50;
+        }
+
+        .modal-goal-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Goal Input */
+        .goal-input-wrapper {
+            background: #2d1810;
+            border: 1px solid #ff6b00;
+            border-radius: 8px;
+            height: 36px;
+        }
+
+        .goal-input {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 0 13px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            color: #ffa366;
+        }
+
+        .goal-input::placeholder {
+            color: #8a6a50;
+        }
+
+        /* Modal Buttons */
+        .modal-btn {
+            flex: 1;
+            height: 36px;
+            border-radius: 8px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.85;
+        }
+
+        .modal-btn-cancel {
+            background: #0a0a0a;
+            border: 1px solid #8a6a50;
+            color: #8a6a50;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #2d1810;
+        }
+
+        .modal-btn-submit {
+            background: #ff6b00;
+            color: #0a0a0a;
+            font-weight: 600;
+        }
+
+        .modal-btn-submit:hover {
+            background: #ff8800;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .video-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-message {
+                font-size: 24px;
+            }
+
+            .modal-content {
+                width: 90%;
+                max-width: 520px;
+                height: auto;
+                max-height: 90vh;
+            }
+
+            .modal-body {
+                max-height: 400px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="app-container">

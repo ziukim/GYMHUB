@@ -9,14 +9,11 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
 
     <style>
+        /* memberInfo 전용 스타일 */
+        /* main-content는 common.css에 있으므로 padding만 오버라이드 */
         .main-content {
-            flex: 1;
-            width: 100%;
-            max-width: 100%;
             padding: 40px 40px 40px 20px;
-            margin-left: 0;
         }
-        /* 추가 스타일 - common.css에 없는 부분만 */
         .profile-section {
             display: flex;
             gap: 24px;
@@ -174,10 +171,19 @@
             <div class="profile-section">
                 <div class="profile-image-container">
                     <div class="profile-image" id="mainProfileImage">
-                        <svg viewBox="0 0 48 48" fill="none">
-                            <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <c:choose>
+                            <c:when test="${not empty loginMember.memberPhotoPath}">
+                                <img src="${pageContext.request.contextPath}${loginMember.memberPhotoPath}"
+                                     alt="프로필 이미지"
+                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            </c:when>
+                            <c:otherwise>
+                                <svg viewBox="0 0 48 48" fill="none">
+                                    <path d="M24 24C28.4183 24 32 20.4183 32 16C32 11.5817 28.4183 8 24 8C19.5817 8 16 11.5817 16 16C16 20.4183 19.5817 24 24 24Z" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M40 40C40 35.757 38.3143 31.6869 35.3137 28.6863C32.3131 25.6857 28.243 24 24 24C19.757 24 15.6869 25.6857 12.6863 28.6863C9.68571 31.6869 8 35.757 8 40" stroke="#FF6B00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                     <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
                     <button class="camera-button" onclick="document.getElementById('profileImageInput').click()">
@@ -585,6 +591,21 @@
     // 프로필 이미지 변경
     document.getElementById('profileImageInput').addEventListener('change', function(e) {
         if (e.target.files && e.target.files[0]) {
+            var file = e.target.files[0];
+
+            // 파일 크기 체크 (5MB 제한)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                return;
+            }
+
+            // 이미지 파일 형식 체크
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드 가능합니다.');
+                return;
+            }
+
+            // 미리보기 표시
             var reader = new FileReader();
             reader.onload = function(event) {
                 var img = document.createElement('img');
@@ -597,7 +618,31 @@
                 document.getElementById('mainProfileImage').innerHTML = '';
                 document.getElementById('mainProfileImage').appendChild(img);
             }
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
+
+            // 서버에 업로드
+            var formData = new FormData();
+            formData.append('profileImage', file);
+
+            fetch('${pageContext.request.contextPath}/uploadProfileImage.me', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert(data.message);
+                        // 실패 시 원래 이미지로 복구
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('이미지 업로드 중 오류가 발생했습니다.');
+                    location.reload();
+                });
         }
     });
     // 비밀번호 변경 폼 검증

@@ -9,37 +9,10 @@
     <title>GymHub - 공지사항 상세</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px !important;
-        }
-
-        /* Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            background: transparent;
-            border: none;
-            color: #ff6b00;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            transition: transform 0.2s;
-        }
-
+        /* noticeDetail 전용 스타일 */
+        /* main-content, page-header, header-left는 common.css에 있음 */
+        
+        /* back-button은 common.css에 있으므로 hover 효과만 추가 */
         .back-button:hover {
             transform: translateX(-3px);
         }
@@ -194,11 +167,20 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Include -->
-
-        <!-- notice 폴더에 있는 jsp 파일들은 모두 C:if 를 사용하여, 회원 타입 별 사이드바가 다르게 나오도록 해야한다. -->
-        <!--include page="../common/sidebar/sidebarMember.jsp.jsp" />
-        jsp:include page="../common/sidebar/sidebarTrainer.jsp.jsp" -->
-        <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+        <c:choose>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 1}">
+                <jsp:include page="../common/sidebar/sidebarMember.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 2}">
+                <jsp:include page="../common/sidebar/sidebarTrainer.jsp" />
+            </c:when>
+            <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:when>
+            <c:otherwise>
+                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
+            </c:otherwise>
+        </c:choose>
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
@@ -267,7 +249,7 @@
                         <!-- Action Buttons -->
                         <div class="action-buttons">
                             <button class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/notice.no'">목록으로</button>
-                            <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                            <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3 and sessionScope.loginMember.gymNo == notice.gymNo}">
                                 <button class="btn btn-danger" onclick="deleteNotice(${notice.noticeNo})">삭제하기</button>
                                 <button class="btn btn-primary" onclick="location.href='${pageContext.request.contextPath}/noticeUpdateForm.no?id=${notice.noticeNo}'">수정하기</button>
                             </c:if>
@@ -296,28 +278,26 @@
             }
 
             if (confirm('정말로 이 공지사항을 삭제하시겠습니까?\n삭제된 공지사항은 복구할 수 없습니다.')) {
-                // TODO: 실제 서버 삭제 요청 구현 필요
-                // fetch('${pageContext.request.contextPath}/noticeDelete.no?id=' + noticeNo, {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     }
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) {
-                //         alert('공지사항이 삭제되었습니다.');
-                //         location.href = '${pageContext.request.contextPath}/notice.no';
-                //     } else {
-                //         alert('삭제 중 오류가 발생했습니다.');
-                //     }
-                // })
-                // .catch(error => {
-                //     console.error('Error:', error);
-                //     alert('삭제 중 오류가 발생했습니다.');
-                // });
-                
-                alert('삭제 기능은 아직 구현되지 않았습니다.');
+                fetch('${pageContext.request.contextPath}/noticeDelete.no', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'id=' + noticeNo
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('공지사항이 삭제되었습니다.');
+                        location.href = '${pageContext.request.contextPath}/notice.no';
+                    } else {
+                        alert(data.message || '삭제 중 오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
             }
         }
     </script>

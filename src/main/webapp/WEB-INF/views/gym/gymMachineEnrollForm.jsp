@@ -7,27 +7,10 @@
     <title>GymHub - 운동 기구 등록</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important;
-            margin-right: 0 !important;
-        }
+        /* gymMachineEnrollForm 전용 스타일 */
+        /* main-content는 common.css에 있음 */
 
-        /* 페이지 헤더 */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        /* page-header, header-left는 common.css에 있음 */
 
         .page-title-group h1 {
             font-size: 24px;

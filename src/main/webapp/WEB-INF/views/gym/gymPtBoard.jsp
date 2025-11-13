@@ -12,13 +12,8 @@
 
     <!-- Page-specific styles -->
     <style>
-        /* main-content 가로로 가득 차게 - !important로 common.css 오버라이드 */
-        .main-content {
-            width: calc(100% - 255px) !important;
-            margin-left: 255px !important;
-            padding: 24px 24px 24px 24px !important; /* 모든 방향 패딩 (사이드바와 콘텐츠 사이 간격) */
-            margin-right: 0 !important;
-        }
+        /* gymPtBoard 전용 스타일 */
+        /* main-content는 common.css에 있음 */
 
         /* PT 관리 페이지별 스타일 */
         .pt-header {

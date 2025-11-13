@@ -499,6 +499,41 @@
         }
 
         /* ========================================
+           로그인 필요 모달 전용 스타일
+           ======================================== */
+        #loginRequiredModal .modal-container {
+            max-width: 440px;
+            padding: 40px;
+            background: linear-gradient(180deg, #1a0f0a 0%, #0a0a0a 100%);
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
+        }
+
+        #loginRequiredModal .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff6b00;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        #loginRequiredModal .modal-close:hover {
+            color: #ffa366;
+        }
+
+        /* ========================================
            헬스장 상세 모달 전용 스타일
            ======================================== */
 
@@ -1124,95 +1159,67 @@
 <!-- 카드 섹션 -->
 <section class="cards-section">
     <div class="cards-grid">
-        <c:forEach var="gym" items="${gymList}" varStatus="status">
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">${gym.name}</div>
-                            <div class="gym-location">${gym.location}</div>
+        <c:choose>
+            <c:when test="${not empty gymList}">
+                <c:forEach var="gym" items="${gymList}" varStatus="status">
+                    <div class="gym-card" onclick="openGymDetailModal(${gym.gymNo})">
+                        <div class="gym-image">
+                            <c:choose>
+                                <c:when test="${not empty gym.gymPhotoPath}">
+                                    <img src="${pageContext.request.contextPath}${gym.gymPhotoPath}"
+                                         alt="${gym.gymName}"
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                </c:when>
+                                <c:otherwise>
+                                    헬스장 썸네일 이미지
+                                </c:otherwise>
+                            </c:choose>
                         </div>
-                        <div class="gym-rating">★ ${gym.rating} (${gym.reviewCount})</div>
-                    </div>
-                    <div class="gym-tags">
-                        <c:forEach var="tag" items="${gym.tags}">
-                            <span class="tag">${tag}</span>
-                        </c:forEach>
-                    </div>
-                    <div class="gym-description">
-                            ${gym.description}
-                    </div>
-                    <div class="gym-price">월 ${gym.price}원</div>
-                </div>
-            </div>
-        </c:forEach>
-
-        <!-- 테스트용 샘플 데이터 (실제 데이터가 없을 때) -->
-        <c:if test="${empty gymList}">
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">파워 헬스 클럽 대교점</div>
-                            <div class="gym-location">경기 남양주</div>
-                        </div>
-                    </div>
-                    <div class="gym-tags">
-                        <span class="tag">GX</span>
-                        <span class="tag">파워</span>
-                        <span class="tag">주차</span>
-                    </div>
-                    <div class="gym-description">
-                        최신 시설을 갖춘 파워 헬스 클럽입니다
-                    </div>
-                    <div class="gym-price">월 85,000원</div>
-                </div>
-            </div>
-
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">파워 헬스 클럽 강동점</div>
-                            <div class="gym-location">서울 강동</div>
+                        <div class="gym-info">
+                            <div class="gym-header">
+                                <div>
+                                    <div class="gym-title">${gym.gymName}</div>
+                                    <div class="gym-location">
+                                        <c:choose>
+                                            <c:when test="${not empty gym.detailAddress}">
+                                                ${gym.detailAddress}
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${gym.gymAddress}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gym-tags">
+                                <c:if test="${not empty gym.facilitiesInfo}">
+                                    <c:forTokens var="tag" items="${gym.facilitiesInfo}" delims=",">
+                                        <span class="tag">${tag}</span>
+                                    </c:forTokens>
+                                </c:if>
+                            </div>
+                            <div class="gym-description">
+                                <c:choose>
+                                    <c:when test="${not empty gym.intro}">
+                                        ${gym.intro}
+                                    </c:when>
+                                    <c:otherwise>
+                                        소개 정보가 없습니다.
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
                         </div>
                     </div>
-                    <div class="gym-tags">
-                        <span class="tag">GX</span>
-                        <span class="tag">파워</span>
-                        <span class="tag">주차</span>
-                    </div>
-                    <div class="gym-description">
-                        깨끗한 헬스 클럽입니다
-                    </div>
-                    <div class="gym-price">월 75,000원</div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <!-- 데이터가 없을 때 표시할 메시지 -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <h3 style="color: #8a6a50; font-size: 24px; margin-bottom: 10px;">등록된 헬스장이 없습니다.</h3>
+                    <p style="color: #8a6a50; font-size: 16px;">곧 새로운 헬스장이 추가될 예정입니다.</p>
                 </div>
-            </div>
-
-            <div class="gym-card">
-                <div class="gym-image">헬스장 썸네일 이미지</div>
-                <div class="gym-info">
-                    <div class="gym-header">
-                        <div>
-                            <div class="gym-title">운동하는 헬스 클럽 강남점</div>
-                            <div class="gym-location">서울 강남구</div>
-                        </div>
-                    </div>
-                    <div class="gym-tags">
-                        <span class="tag">GX</span>
-                        <span class="tag">파워</span>
-                        <span class="tag">주차</span>
-                    </div>
-                    <div class="gym-description">
-                        깔끔한 헬스 클럽입니다
-                    </div>
-                    <div class="gym-price">월 90,000원</div>
-                </div>
-            </div>
-        </c:if>
+            </c:otherwise>
+        </c:choose>
     </div>
 </section>
 
@@ -1451,15 +1458,15 @@
 
         <!-- 메인 이미지 -->
         <div class="main-image" style="width: 100%; max-width: 550px; height: 300px; border-radius: 10px; overflow: hidden; margin-bottom: 24px; background-color: #2d1810; border: 1px solid #ff6b00;">
-            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=550" alt="헬스장 이미지" id="gymDetailImage" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/logo.png"
+                 alt="헬스장 이미지"
+                 id="gymDetailImage"
+                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
 
-        <!-- 뱃지 -->
+        <!-- 뱃지 (facilitiesInfo에서 동적으로 생성) -->
         <div class="badges" id="gymDetailBadges">
-            <span class="badge">24시간</span>
-            <span class="badge">주차가능</span>
-            <span class="badge">샤워실</span>
-            <span class="badge">PT</span>
+            <!-- JavaScript로 동적 생성 -->
         </div>
 
         <!-- 소개 -->
@@ -1493,27 +1500,11 @@
             </div>
         </div>
 
-        <!-- 시설 정보 -->
+        <!-- 시설 정보 (facilitiesInfo에서 동적으로 생성) -->
         <div class="section">
             <h3 class="section-title">시설 정보</h3>
-
-            <div class="facility-grid">
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/parking.png" alt="주차" style="width: 24px; height: 24px;">
-                    <span>주차</span>
-                </div>
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/shower.png" alt="샤워실" style="width: 24px; height: 24px;">
-                    <span>샤워실</span>
-                </div>
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커" style="width: 24px; height: 24px;">
-                    <span>락커</span>
-                </div>
-                <div class="facility-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/machine.png" alt="최신기구" style="width: 24px; height: 24px;">
-                    <span>최신기구</span>
-                </div>
+            <div class="facility-grid" id="facilityGrid">
+                <!-- JavaScript로 동적 생성 -->
             </div>
         </div>
 
@@ -1566,9 +1557,7 @@
                     <span>가격 정보</span>
                 </div>
                 <div class="card-content" id="gymDetailPrice">
-                    <p>1개월: ₩89,000</p>
-                    <p>3개월: ₩79,000</p>
-                    <p>6개월: ₩69,000</p>
+
                 </div>
             </div>
 
@@ -1578,8 +1567,7 @@
                     <span>운영시간</span>
                 </div>
                 <div class="card-content" id="gymDetailHours">
-                    <p>평일: 00:00 - 23:59</p>
-                    <p>주말: 00:00 - 23:59</p>
+
                 </div>
             </div>
         </div>
@@ -1589,31 +1577,9 @@
             <h3 class="section-title">기구 목록</h3>
             <button class="more-text">+더보기</button>
             <div class="equipment-grid">
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="로우로우">
-                    </div>
-                    <p class="equipment-name">로우로우 - 스머트헬스</p>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 프레스">
-                    </div>
-                    <p class="equipment-name">레그 프레스 - 스텍</p>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="체스트 프레스">
-                    </div>
-                    <p class="equipment-name">체스트 프레스 - 스크짐</p>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-image">
-                        <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="스미스머신">
-                    </div>
-                    <p class="equipment-name">스미스머신 - 스텍</p>
-                </div>
+                <!-- JavaScript로 동적 생성됩니다 -->
             </div>
+
         </div>
 
         <!-- 방문 예약 버튼 -->
@@ -1691,114 +1657,7 @@
         </div>
 
         <div class="equipment-list-grid" id="equipmentListGrid">
-            <!-- 기구 카드들이 여기에 동적으로 추가됩니다 -->
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="로우로우">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">로우로우 - 스머트헬스</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 프레스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">레그 프레스 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="체스트 프레스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">체스트 프레스 - 스크짐</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="스미스머신">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">스미스머신 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="랫 풀다운">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">랫 풀다운 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 익스텐션">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">레그 익스텐션 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="인클라인 벤치">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">인클라인 벤치 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="케이블 크로스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">케이블 크로스 - 스크짐</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300" alt="시티드 로우">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">시티드 로우 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=300" alt="레그 컬">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">레그 컬 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=300" alt="숄더 프레스">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">숄더 프레스 - 스텍</h3>
-                </div>
-            </div>
-
-            <div class="equipment-card">
-                <div class="equipment-card-image">
-                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300" alt="덤벨 플라이">
-                </div>
-                <div class="equipment-card-content">
-                    <h3 class="equipment-card-title">덤벨 플라이 - 스크짐</h3>
-                </div>
-            </div>
+            <!-- JavaScript로 동적으로 채워집니다 -->
         </div>
     </div>
 </div>
@@ -1993,6 +1852,353 @@
             return true;
         });
     });
+    // 헬스장 상세 모달 열기
+    function openGymDetailModal(gymNo) {
+        // AJAX로 헬스장 상세 정보 조회
+        fetch('${pageContext.request.contextPath}/gym/detail.ajax?gymNo=' + gymNo)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const gym = data.gym;
+                    const gymDetail = data.gymDetail || {};
+
+                    // 모달에 데이터 설정
+                    document.getElementById('gymDetailTitle').textContent = gym.gymName || '헬스장';
+                    document.getElementById('gymDetailDescription').textContent = gymDetail.intro || gym.intro || '소개 정보가 없습니다.';
+
+                    // 주소 설정 (detailAddress가 있으면 우선, 없으면 gymAddress)
+                    const address = gymDetail.detailAddress || gym.gymAddress || '주소 정보 없음';
+                    document.getElementById('gymDetailAddress').textContent = address;
+
+                    // 가격 설정
+                    const priceContainer = document.getElementById('gymDetailPrice');
+                    priceContainer.innerHTML = ''; // 초기화
+                    const products = data.products || gym.products || [];
+                    if (products && products.length > 0) {
+
+                        // 상품 타입별로 분류
+                        const membershipProducts = products.filter(p => p.productType === '회원권');
+
+                        // 회원권 가격 표시
+                        if (membershipProducts.length > 0) {
+                            const membershipHTML = '<p style="margin-bottom: 8px; color: #ff6b00; font-weight: 600;">회원권</p>';
+                            priceContainer.innerHTML += membershipHTML;
+
+                            membershipProducts.forEach(function(product) {
+                                const durationValue = Number(product.durationMonths);
+                                const priceValue = Number(product.productPrice);
+
+                                const duration = durationValue >= 30
+                                    ? Math.floor(durationValue / 30) + '개월'
+                                    : durationValue + '일';
+                                const price = priceValue.toLocaleString('ko-KR');
+
+                                // 문자열 연결 방식 사용 (템플릿 리터럴 대신)
+                                const priceHTML = '<p>' + duration + ': ' + price + '원</p>';
+                                priceContainer.innerHTML += priceHTML;
+                            });
+                        } else {
+                            priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
+                        }
+                    } else {
+                        priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
+                    }
+
+                    // 전화번호 설정
+                    const phone = gym.gymPhone || '전화번호 없음';
+                    document.getElementById('gymDetailPhone').textContent = phone;
+                    document.getElementById('gymDetailPhone').href = 'tel:' + phone;
+
+                    // 운영시간 설정
+                    const weekHour = gymDetail.weekBusinessHour || '정보 없음';
+                    const weekendHour = gymDetail.weekendBusinessHour || '정보 없음';
+                    document.getElementById('gymDetailHours').innerHTML =
+                        '<p>평일: ' + weekHour + '</p>' +
+                        '<p>주말: ' + weekendHour + '</p>';
+
+                    // 이미지 설정 - 수정된 부분
+                    const gymImage = document.getElementById('gymDetailImage');
+                    const mainImageContainer = gymImage.parentElement;
+
+                    if (gym.gymPhotoPath) {
+                        // 이미지가 있는 경우
+                        gymImage.style.display = 'block';
+                        // 슬래시가 이미 있으면 contextPath만, 없으면 contextPath + /
+                        if (gym.gymPhotoPath.startsWith('/')) {
+                            gymImage.src = '${pageContext.request.contextPath}' + gym.gymPhotoPath;
+                        } else {
+                            gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
+                        }
+                    } else {
+                        // 이미지가 없는 경우
+                        gymImage.style.display = 'none';
+                        mainImageContainer.innerHTML = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #8a6a50; font-size: 14px;">헬스장 이미지가 없습니다</div>';
+                    }
+
+                    // 시설 정보를 뱃지와 시설 아이콘으로 표시
+                    const badgesContainer = document.getElementById('gymDetailBadges');
+                    const facilityGrid = document.getElementById('facilityGrid');
+                    badgesContainer.innerHTML = ''; // 기존 뱃지 초기화
+                    facilityGrid.innerHTML = ''; // 기존 시설 아이콘 초기화
+
+                    // 시설 아이콘 매핑 (facilitiesInfo의 값에 따라 아이콘 선택)
+                    const facilityIcons = {
+                        '주차': 'parking.png',
+                        '샤워실': 'shower.png',
+                        '락커': 'locker.png',
+                        '최신기구': 'machine.png',
+                        'GX': 'machine.png',
+                        'PT': 'machine.png',
+                        '24시간': 'clock.png',
+                        '와이파이': 'machine.png',
+                        '운동복': 'locker.png',
+                        '수건': 'shower.png'
+                    };
+
+                    const facilitiesInfo = gymDetail.facilitiesInfo || gym.facilitiesInfo;
+                    if (facilitiesInfo) {
+                        const facilities = facilitiesInfo.split(',');
+
+                        facilities.forEach(facility => {
+                            const trimmedFacility = facility.trim();
+
+                            // 뱃지 생성
+                            const badge = document.createElement('span');
+                            badge.className = 'badge';
+                            badge.textContent = trimmedFacility;
+                            badgesContainer.appendChild(badge);
+
+                            // 시설 아이콘 생성
+                            const facilityItem = document.createElement('div');
+                            facilityItem.className = 'facility-item';
+
+                            const iconName = facilityIcons[trimmedFacility] || 'machine.png'; // 기본 아이콘
+
+                            facilityItem.innerHTML =
+                                '<img src="' + window.contextPath + '/resources/images/icon/' + iconName + '"' +
+                                '     alt="' + trimmedFacility + '" style="width: 24px; height: 24px;">' +
+                                '<span>' + trimmedFacility + '</span>';
+
+                            facilityGrid.appendChild(facilityItem);
+                        });
+                    } else {
+                        // 시설 정보가 없는 경우
+                        badgesContainer.innerHTML = '<span class="badge">정보 없음</span>';
+                        facilityGrid.innerHTML = '<p style="color: #8a6a50; text-align: center; grid-column: 1 / -1;">시설 정보가 없습니다.</p>';
+                    }
+
+                    loadGymMachines(gymNo);
+
+                    // 모달 열기
+                    document.getElementById('gymDetailModal').style.display = 'flex';
+                } else {
+                    alert(data.message || '헬스장 정보를 불러올 수 없습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('헬스장 상세 정보 조회 오류:', error);
+                alert('헬스장 정보를 불러오는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 모달 닫기
+    document.getElementById('closeGymDetailModal').addEventListener('click', function() {
+        document.getElementById('gymDetailModal').style.display = 'none';
+    });
+
+    // 기구 목록 로드 함수
+    function loadGymMachines(gymNo) {
+        fetch('${pageContext.request.contextPath}/gym/machines.ajax?gymNo=' + gymNo)
+            .then(response => response.json())
+            .then(data => {
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                const moreButton = document.querySelector('.more-text');
+
+                if (data.success && data.machines && data.machines.length > 0) {
+                    // 기존 기구 목록 초기화
+                    equipmentGrid.innerHTML = '';
+
+                    // 전체 기구 데이터 저장 (더보기 기능용)
+                    equipmentGrid.dataset.allMachines = JSON.stringify(data.machines);
+
+                    // 처음 4개만 표시
+                    const displayMachines = data.machines.slice(0, 4);
+
+                    displayMachines.forEach(machine => {
+                        const equipmentItem = document.createElement('div');
+                        equipmentItem.className = 'equipment-item';
+
+                        const imagePath = machine.machinePhotoPath
+                            ? '${pageContext.request.contextPath}' + machine.machinePhotoPath
+                            : 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300';
+
+                        const displayName = machine.machineName +
+                            (machine.brand ? ' - ' + machine.brand : '');
+
+                        equipmentItem.innerHTML =
+                            '<div class="equipment-image">' +
+                            '    <img src="' + imagePath + '" alt="' + machine.machineName + '" ' +
+                            '         onerror="this.src=\'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300\'">' +
+                            '</div>' +
+                            '<p class="equipment-name">' + displayName + '</p>';
+
+                        equipmentGrid.appendChild(equipmentItem);
+                    });
+
+                    // 더보기 버튼 표시/숨김 및 상태 관리
+                    if (data.machines.length > 4) {
+                        moreButton.style.display = 'block';
+                        moreButton.textContent = '+더보기';
+                        moreButton.dataset.expanded = 'false';
+
+                        // 기존 이벤트 리스너 제거 후 새로 추가
+                        moreButton.onclick = function() {
+                            toggleEquipmentList(this);
+                        };
+                    } else {
+                        moreButton.style.display = 'none';
+                    }
+                } else {
+                    // 기구가 없는 경우
+                    equipmentGrid.innerHTML =
+                        '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #8a6a50;">' +
+                        '등록된 기구가 없습니다.' +
+                        '</div>';
+                    moreButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('기구 목록 조회 오류:', error);
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                equipmentGrid.innerHTML =
+                    '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #fb2c36;">' +
+                    '기구 목록을 불러오는 중 오류가 발생했습니다.' +
+                    '</div>';
+            });
+    }
+
+    // 기구 목록 로드 함수 (수정)
+    function loadGymMachines(gymNo) {
+        fetch('${pageContext.request.contextPath}/gym/machines.ajax?gymNo=' + gymNo)
+            .then(response => response.json())
+            .then(data => {
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                const moreButton = document.querySelector('.more-text');
+
+                if (data.success && data.machines && data.machines.length > 0) {
+                    // 기존 기구 목록 초기화
+                    equipmentGrid.innerHTML = '';
+
+                    // 전체 기구 데이터 저장 (더보기 기능용)
+                    equipmentGrid.dataset.allMachines = JSON.stringify(data.machines);
+
+                    // 처음 4개만 표시
+                    const displayMachines = data.machines.slice(0, 4);
+
+                    displayMachines.forEach(machine => {
+                        const equipmentItem = document.createElement('div');
+                        equipmentItem.className = 'equipment-item';
+
+                        const imagePath = machine.machinePhotoPath
+                            ? '${pageContext.request.contextPath}' + machine.machinePhotoPath
+                            : 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300';
+
+                        const displayName = machine.machineName +
+                            (machine.brand ? ' - ' + machine.brand : '');
+
+                        equipmentItem.innerHTML =
+                            '<div class="equipment-image">' +
+                            '    <img src="' + imagePath + '" alt="' + machine.machineName + '" ' +
+                            '         onerror="this.src=\'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300\'">' +
+                            '</div>' +
+                            '<p class="equipment-name">' + displayName + '</p>';
+
+                        equipmentGrid.appendChild(equipmentItem);
+                    });
+
+                    // 더보기 버튼 표시/숨김
+                    if (data.machines.length > 4) {
+                        moreButton.style.display = 'block';
+
+                        // 기존 이벤트 리스너 제거 후 새로 추가
+                        moreButton.onclick = function() {
+                            showAllMachines();
+                        };
+                    } else {
+                        moreButton.style.display = 'none';
+                    }
+                } else {
+                    // 기구가 없는 경우
+                    equipmentGrid.innerHTML =
+                        '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #8a6a50;">' +
+                        '등록된 기구가 없습니다.' +
+                        '</div>';
+                    moreButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('기구 목록 조회 오류:', error);
+                const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+                equipmentGrid.innerHTML =
+                    '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #fb2c36;">' +
+                    '기구 목록을 불러오는 중 오류가 발생했습니다.' +
+                    '</div>';
+            });
+    }
+    // 전체 기구 목록 모달 표시
+    function showAllMachines() {
+        const equipmentGrid = document.querySelector('.gym-detail-modal .equipment-grid');
+        const allMachines = JSON.parse(equipmentGrid.dataset.allMachines || '[]');
+
+        if (allMachines.length === 0) {
+            alert('표시할 기구가 없습니다.');
+            return;
+        }
+
+        // 기구 목록 모달 그리드 초기화
+        const equipmentListGrid = document.getElementById('equipmentListGrid');
+        equipmentListGrid.innerHTML = '';
+
+        // 모든 기구 표시
+        allMachines.forEach(machine => {
+            const equipmentCard = document.createElement('div');
+            equipmentCard.className = 'equipment-card';
+
+            const imagePath = machine.machinePhotoPath
+                ? '${pageContext.request.contextPath}' + machine.machinePhotoPath
+                : 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300';
+
+            const displayName = machine.machineName +
+                (machine.brand ? ' - ' + machine.brand : '');
+
+            equipmentCard.innerHTML =
+                '<div class="equipment-card-image">' +
+                '    <img src="' + imagePath + '" alt="' + machine.machineName + '" ' +
+                '         onerror="this.src=\'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300\'">' +
+                '</div>' +
+                '<div class="equipment-card-content">' +
+                '    <h3 class="equipment-card-title">' + displayName + '</h3>' +
+                '</div>';
+
+            equipmentListGrid.appendChild(equipmentCard);
+        });
+
+        // 기구 목록 모달 열기
+        document.getElementById('equipmentListModal').style.display = 'flex';
+    }
+
+    // 기구 목록 모달 닫기
+    document.getElementById('closeEquipmentListModal').addEventListener('click', function() {
+        document.getElementById('equipmentListModal').style.display = 'none';
+    });
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('equipmentListModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+
 </script>
 
 <!-- 로그인 성공/실패 메시지 표시 -->

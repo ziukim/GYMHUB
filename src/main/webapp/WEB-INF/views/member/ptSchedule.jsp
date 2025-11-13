@@ -14,50 +14,26 @@
     <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=ABeeZee&family=Noto+Sans+KR:wght@400;900&family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
 
     <style>
+        /* ptSchedule 전용 스타일 */
+        /* main-content는 common.css에 있으므로 padding만 오버라이드 */
         .main-content {
-            flex: 1;
-            width: 100%;
-            max-width: 100%;
             padding: 40px 40px 40px 20px;
-            margin-left: 0;
         }
-        /* Main Content 추가 스타일 */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
+        
+        /* header는 common.css에 있음 */
+        
+        /* header-title은 common.css에 있으므로 font-family만 추가 */
         .header-title h1 {
             font-family: 'Abhaya Libre', 'Noto Sans KR', sans-serif;
-            font-size: 30px;
-            font-weight: 900;
-            color: #ff6b00;
-            margin-bottom: 8px;
         }
-
-        .header-title p {
-            font-size: 16px;
-            color: #8a6a50;
-        }
-
+        
+        /* btn-primary는 common.css에 있으므로 추가 속성만 정의 */
         .btn-primary {
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 8px 12px;
-            background-color: #ff6b00;
-            border: none;
-            border-radius: 8px;
             color: #0a0a0a;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #ff7b10;
         }
 
         /* Stats Cards */
@@ -83,19 +59,15 @@
             margin-bottom: 30px;
         }
 
-        .stat-icon {
-            width: 20px;
-            height: 20px;
-        }
-
+        /* stat-icon, stat-value는 common.css에 있음 */
+        
         .stat-title {
             font-size: 16px;
             color: #ff6b00;
         }
-
+        
+        /* stat-value는 common.css에 있으므로 margin-bottom만 추가 */
         .stat-value {
-            font-size: 30px;
-            color: #ffa366;
             margin-bottom: 8px;
         }
 

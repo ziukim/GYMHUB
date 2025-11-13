@@ -5,7 +5,7 @@
 
 <mapper namespace="com.kh.gymhub.model.mapper.GymMapper">
     <resultMap id="gymResultMap" type="Gym">
-        <result column="GYM_NO" property="gymNo"/>
+        <id column="GYM_NO" property="gymNo"/>
         <result column="GYM_NAME" property="gymName"/>
         <result column="GYM_OWNER" property="gymOwner"/>
         <result column="GYM_PHONE" property="gymPhone"/>
@@ -22,19 +22,71 @@
             SELECT SEQ_GYM_NO.NEXTVAL FROM DUAL
         </selectKey>
         INSERT INTO GYM (
-        GYM_NO,
-        GYM_NAME,
-        GYM_OWNER,
-        GYM_PHONE,
-        GYM_ADDRESS,
-        ATT_CACHE_NO
+            GYM_NO,
+            GYM_NAME,
+            GYM_OWNER,
+            GYM_PHONE,
+            GYM_ADDRESS,
+            ATT_CACHE_NO
         ) VALUES (
-        #{gymNo},
-        #{gymName},
-        #{gymOwner},
-        #{gymPhone},
-        #{gymAddress},
-        #{attCacheNo}
+            #{gymNo},
+            #{gymName},
+            #{gymOwner},
+            #{gymPhone},
+            #{gymAddress},
+            #{attCacheNo}
         )
     </insert>
+
+    <select id="selectGymByNo" parameterType="_int" resultMap="gymResultMap">
+        SELECT
+            GYM_NO,
+            GYM_NAME,
+            GYM_OWNER,
+            GYM_PHONE,
+            GYM_ADDRESS,
+            STATUS,
+            GYM_CREATEAT,
+            GYM_UPDATEAT,
+            GYM_PHOTO_PATH,
+            ATT_CACHE_NO
+        FROM GYM
+        WHERE GYM_NO = #{gymNo}
+        AND STATUS = 'Y'
+    </select>
+
+    <select id="selectAllGyms" resultMap="gymResultMap">
+        SELECT
+            GYM_NO,
+            GYM_NAME,
+            GYM_OWNER,
+            GYM_PHONE,
+            GYM_ADDRESS,
+            STATUS,
+            GYM_CREATEAT,
+            GYM_UPDATEAT,
+            GYM_PHOTO_PATH,
+            ATT_CACHE_NO
+        FROM GYM
+        WHERE STATUS = 'Y'
+        ORDER BY GYM_NO DESC
+    </select>
+
+    <update id="updateProfileImage">
+        UPDATE GYM
+        SET GYM_PHOTO_PATH = #{photoPath},
+            GYM_UPDATEAT = SYSDATE
+        WHERE GYM_NO = #{gymNo}
+    </update>
+
+    <update id="updateGym" parameterType="Gym">
+        UPDATE GYM
+        <set>
+            <if test="gymName != null and gymName != ''">GYM_NAME = #{gymName},</if>
+            <if test="gymPhone != null and gymPhone != ''">GYM_PHONE = #{gymPhone},</if>
+            <if test="gymAddress != null and gymAddress != ''">GYM_ADDRESS = #{gymAddress},</if>
+            GYM_UPDATEAT = SYSDATE
+        </set>
+        WHERE GYM_NO = #{gymNo}
+    </update>
 </mapper>
