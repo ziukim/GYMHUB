@@ -99,23 +99,31 @@ webapp/resources/css/common.css
 ```
 
 **common.css에 포함되는 스타일:**
-- 기본 리셋 스타일
+- 기본 리셋 스타일 (`*`, `body`, `a`, `ul`, `li`)
 - 레이아웃 (app-container, main-content)
 - 사이드바 관련 스타일
-- 공통 카드 및 섹션
-- 통계 카드
+- 페이지 헤더 (page-header, header-title, header-left, back-button)
+- 공통 카드 및 섹션 (card, card-title, card-icon, section, section-header, section-title)
+- 정보 행 (info-row, info-label, info-value)
+- 컨텐츠 컨테이너 (content-container, content-header, header-info, header-buttons)
+- 통계 카드 (stats-grid, stat-card, stat-icon, stat-label, stat-value, stat-change)
 - 테이블 기본 스타일
-- 공통 폼 스타일
-- 공통 버튼 스타일
+- 공통 폼 스타일 (form-grid, form-group, form-label, input-group, input-label, input-field)
+- 공통 버튼 스타일 (btn, btn-primary, btn-secondary, filter-btn, add-btn, button-group)
 - 기본 모달 구조
 - 배지 및 상태 표시
-- 검색, 페이지네이션, 탭 등 공통 컴포넌트
+- 아이콘 스타일 (logo-icon, icon, nav-icon, card-icon, stat-icon, upload-icon)
+- 검색 컴포넌트 (search-area, search-input, search-btn, search-bar, search-section)
+- 페이지네이션, 탭 등 공통 컴포넌트
 - 유틸리티 클래스
 
 **common.css에 포함하지 않는 스타일:**
 - 특정 페이지의 고유 레이아웃 (예: index.jsp의 헤더, 히어로 섹션)
 - 페이지별 모달 스타일 (예: index.jsp의 로그인/회원가입 모달, 헬스장 상세 모달)
 - 페이지 고유 컴포넌트 (예: index.jsp의 검색 UI, 카드 그리드)
+- 페이지별 특수 padding/margin 값 (예: main-content의 특정 padding 값)
+- 페이지별 폰트 패밀리 오버라이드
+- 페이지별 색상 변형 (공통 색상과 다른 경우)
 
 ### 2. JSP 파일의 기본 구조
 
@@ -310,7 +318,22 @@ webapp/resources/css/common.css
 ```html
 <div class="app-container">
     <div class="sidebar">...</div>
-    <div class="main-content">...</div>
+    <div class="main-content">
+        <!-- 사이드바가 있는 경우 자동으로 margin-left와 width가 적용됨 -->
+        <!-- 필요시 padding만 오버라이드 -->
+    </div>
+</div>
+
+<!-- 페이지 헤더 -->
+<div class="page-header">
+    <div class="header-left">
+        <button class="back-button">←</button>
+        <div class="header-title">
+            <h1>페이지 제목</h1>
+            <p>페이지 설명</p>
+        </div>
+    </div>
+    <button class="btn btn-primary">액션</button>
 </div>
 ```
 
@@ -334,8 +357,20 @@ webapp/resources/css/common.css
 ```html
 <!-- 기본 카드 -->
 <div class="card">
-    <h3>카드 제목</h3>
-    <p>카드 내용</p>
+    <div class="card-title">
+        <span class="card-icon">
+            <img src="icon.png" alt="아이콘">
+        </span>
+        카드 제목
+    </div>
+    <div class="info-row">
+        <span class="info-label">라벨</span>
+        <span class="info-value">값</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">라벨</span>
+        <span class="info-value highlight">강조 값</span>
+    </div>
 </div>
 
 <!-- 섹션 (헤더 포함) -->
@@ -356,6 +391,21 @@ webapp/resources/css/common.css
         <p>만료일: 2025-12-31</p>
     </div>
 </div>
+
+<!-- 컨텐츠 컨테이너 (gym 페이지들) -->
+<div class="content-container">
+    <div class="content-header">
+        <div class="header-info">
+            <h2>회원 관리</h2>
+            <p>전체 245명</p>
+        </div>
+        <div class="header-buttons">
+            <button class="filter-btn">필터</button>
+            <button class="add-btn">회원 추가</button>
+        </div>
+    </div>
+    <!-- 컨텐츠 -->
+</div>
 ```
 
 ### 통계
@@ -367,6 +417,19 @@ webapp/resources/css/common.css
         <div class="stat-card-sub">전월 대비 +12</div>
     </div>
 </div>
+
+<!-- 통계 카드 (아이콘 포함) -->
+<div class="stat-card">
+    <div class="stat-icon large">📊</div>
+    <div class="stat-info">
+        <div class="stat-label">총 매출</div>
+        <div class="stat-value">1,250,000원</div>
+        <div class="stat-change positive">+12%</div>
+    </div>
+</div>
+
+<!-- 통계 값 (큰 사이즈) -->
+<div class="stat-value large">30일</div>
 ```
 
 ### 테이블
@@ -406,6 +469,17 @@ webapp/resources/css/common.css
     </div>
 </div>
 
+<!-- 입력 그룹 (booking 페이지 등) -->
+<div class="input-group">
+    <label class="input-label">이름<span class="required">*</span></label>
+    <input type="text" class="input-field" placeholder="이름을 입력하세요">
+</div>
+
+<div class="input-group">
+    <label class="input-label">이메일<span class="optional">(선택)</span></label>
+    <input type="email" class="input-field" placeholder="example@email.com">
+</div>
+
 <!-- 체크박스 -->
 <div class="checkbox-group">
     <label class="checkbox-item">
@@ -420,6 +494,8 @@ webapp/resources/css/common.css
 <button class="btn btn-primary">저장</button>
 <button class="btn btn-secondary">취소</button>
 <button class="add-button">추가하기</button>
+<button class="add-btn">회원 추가</button>
+<button class="filter-btn">필터</button>
 <button class="edit-btn">수정</button>
 <button class="delete-btn">삭제</button>
 
@@ -429,6 +505,11 @@ webapp/resources/css/common.css
 </div>
 
 <div class="button-group">
+    <button class="btn btn-secondary">취소</button>
+    <button class="btn btn-primary">확인</button>
+</div>
+
+<div class="button-group justify-end">
     <button class="btn btn-secondary">취소</button>
     <button class="btn btn-primary">확인</button>
 </div>
@@ -475,10 +556,15 @@ document.getElementById('myModal').classList.remove('active');
 
 ### 검색, 페이지네이션, 탭
 ```html
-<!-- 검색 -->
+<!-- 검색 (중앙 정렬) -->
 <div class="search-area">
     <input type="text" class="search-input" placeholder="검색...">
     <button class="search-btn">검색</button>
+</div>
+
+<!-- 검색 바 (전체 너비) -->
+<div class="search-section">
+    <input type="text" class="search-bar" placeholder="공지사항 검색...">
 </div>
 
 <!-- 페이지네이션 -->
@@ -514,6 +600,168 @@ document.getElementById('myModal').classList.remove('active');
 </div>
 <input type="file" id="file" class="hidden">
 ```
+
+### 아이콘
+```html
+<!-- 로고 아이콘 (사이드바, 헤더) -->
+<div class="logo-icon">
+    <img src="${pageContext.request.contextPath}/resources/images/icon/logo.png" alt="로고">
+</div>
+
+<!-- 일반 아이콘 (48x48px) -->
+<div class="icon">
+    <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="홈">
+</div>
+
+<!-- 헤더 로고 아이콘 (35x35px) -->
+<header>
+    <img src="${pageContext.request.contextPath}/resources/images/icon/logo.png" class="logo-icon" alt="로고">
+</header>
+
+<!-- 사이드바 네비게이션 아이콘 (16x16px) -->
+<nav class="sidebar-nav">
+    <a href="#" class="nav-item">
+        <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="대시보드" class="nav-icon">
+        <span>대시보드</span>
+    </a>
+</nav>
+
+<!-- 카드 타이틀 아이콘 (20x20px) -->
+<div class="card">
+    <div class="card-title">
+        <span class="card-icon">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="아이콘">
+        </span>
+        카드 제목
+    </div>
+</div>
+
+<!-- 통계 카드 아이콘 (20x20px) -->
+<div class="stat-card">
+    <div class="stat-icon">📊</div>
+    <div class="stat-info">
+        <div class="stat-label">총 매출</div>
+        <div class="stat-value">1,250,000원</div>
+    </div>
+</div>
+
+<!-- 통계 카드 큰 아이콘 (60x60px) -->
+<div class="stat-card">
+    <div class="stat-icon large">📊</div>
+    <div class="stat-info">
+        <div class="stat-label">총 매출</div>
+        <div class="stat-value">1,250,000원</div>
+    </div>
+</div>
+
+<!-- 인라인 아이콘 (버튼 내부) -->
+<button class="btn btn-primary">
+    <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="예약" style="width: 16px; height: 16px;">
+    방문 예약
+</button>
+
+<!-- 아이콘 버튼 (페이지별 스타일 필요) -->
+<button class="icon-button" onclick="editItem()">
+    <img src="${pageContext.request.contextPath}/resources/images/icon/edit.png" alt="수정" style="width: 16px; height: 16px;">
+</button>
+```
+
+**아이콘 스타일 설명:**
+
+| 클래스 | 크기 | 용도 | 애니메이션 |
+|--------|------|------|-----------|
+| `.logo-icon` | 48x48px (사이드바), 35x35px (헤더) | 로고 아이콘 | 네온 효과 애니메이션 (iconNeonBuzz) |
+| `.icon` | 48x48px | 일반 아이콘 | 네온 효과 애니메이션 (iconNeonBuzz) |
+| `.nav-icon` | 16x16px | 사이드바 네비게이션 아이콘 | 없음 |
+| `.card-icon` | 20x20px | 카드 타이틀 아이콘 | 없음 |
+| `.stat-icon` | 20x20px | 통계 카드 작은 아이콘 | 없음 |
+| `.stat-icon.large` | 60x60px | 통계 카드 큰 아이콘 (배경, 테두리 포함) | 없음 |
+| `.upload-icon` | 48px (폰트 크기) | 이미지 업로드 영역 아이콘 | 없음 |
+
+**아이콘 이미지 파일 위치:**
+```
+${pageContext.request.contextPath}/resources/images/icon/
+```
+
+**사용 가능한 아이콘 파일:**
+- `add.png` - 추가
+- `arrow.png` - 화살표
+- `book.png` - 예약/책
+- `breakdown.png` - 분석/내역
+- `calendar.png` - 달력/예약
+- `call.png` - 전화
+- `campaign.png` - 캠페인/공지
+- `change.png` - 변경/수정
+- `clock.png` - 시간/운영시간
+- `close.png` - 닫기
+- `company.png` - 회사/헬스장
+- `delete.png` - 삭제
+- `done.png` - 완료
+- `edit.png` - 수정
+- `expiration.png` - 만료
+- `home.png` - 홈/대시보드
+- `image.png` - 이미지
+- `inspection.png` - 점검
+- `location.png` - 위치
+- `locker.png` - 락커
+- `logo.png` - 로고
+- `machine.png` - 기구
+- `money.png` - 금액/매출
+- `onpin.png` - 핀 (활성)
+- `output.png` - 출력
+- `parking.png` - 주차
+- `people.png` - 회원/사람들
+- `person.png` - 개인/회원
+- `pin.png` - 핀
+- `shower.png` - 샤워실
+- `target.png` - 목표
+- `ticket.png` - 티켓/이용권
+- `upload.png` - 업로드
+- `video.png` - 비디오
+- `wifi.png` - 와이파이
+
+**아이콘 사용 예시:**
+
+```jsp
+<!-- 사이드바 네비게이션 -->
+<a href="${pageContext.request.contextPath}/dashboard.gym" class="nav-item">
+    <img src="${pageContext.request.contextPath}/resources/images/icon/home.png" alt="대시보드" class="nav-icon">
+    <span>대시보드</span>
+</a>
+
+<!-- 카드에 아이콘 포함 -->
+<div class="card">
+    <div class="card-title">
+        <span class="card-icon">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="예약">
+        </span>
+        방문 예약
+    </div>
+</div>
+
+<!-- 통계 카드에 큰 아이콘 -->
+<div class="stat-card">
+    <div class="stat-icon large">📊</div>
+    <div class="stat-info">
+        <div class="stat-label">총 매출</div>
+        <div class="stat-value">1,250,000원</div>
+    </div>
+</div>
+
+<!-- 버튼에 아이콘 포함 -->
+<button class="btn btn-primary">
+    <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="예약" style="width: 16px; height: 16px;">
+    방문 예약
+</button>
+```
+
+**주의사항:**
+- 로고 아이콘과 일반 `.icon` 클래스는 자동으로 네온 효과 애니메이션이 적용됩니다.
+- 사이드바 네비게이션 아이콘은 `.nav-icon` 클래스를 사용해야 합니다.
+- 카드 타이틀 아이콘은 `.card-icon` 클래스를 사용해야 합니다.
+- 통계 카드 아이콘은 `.stat-icon` 또는 `.stat-icon.large` 클래스를 사용합니다.
+- 인라인 아이콘(버튼 내부 등)은 인라인 스타일로 크기를 지정합니다: `style="width: 16px; height: 16px;"`
+- 모든 아이콘 이미지는 `alt` 속성을 포함해야 접근성을 준수합니다.
 
 ### 달력 팝업 (공통)
 ```html
@@ -739,20 +987,38 @@ document.getElementById('myModal').classList.remove('active');
 | 사이드바 전체 | `.sidebar` | 공통 |
 | 로고 영역 | `.logo-container` + `.logo-text` | 공통 |
 | 네비게이션 메뉴 | `.sidebar-nav` + `.nav-item` | 공통 |
-| 메인 콘텐츠 | `.main-content` | 공통 |
-| 카드 | `.card` 또는 `.section` | 공통 |
-| 통계 카드 | `.stats-grid` + `.stat-card` | 공통 |
+| 메인 콘텐츠 | `.main-content` | 공통 (width, margin-left 자동 적용) |
+| 페이지 헤더 | `.page-header`, `.header-title`, `.header-left` | 공통 |
+| 뒤로가기 버튼 | `.back-button` | 공통 |
+| 카드 | `.card`, `.card-title`, `.card-icon` | 공통 |
+| 정보 행 | `.info-row`, `.info-label`, `.info-value` | 공통 |
+| 섹션 | `.section`, `.section-header`, `.section-title` | 공통 |
+| 컨텐츠 컨테이너 | `.content-container`, `.content-header`, `.header-info` | 공통 |
+| 통계 카드 | `.stats-grid`, `.stat-card`, `.stat-icon`, `.stat-label`, `.stat-value` | 공통 |
+| 통계 변화량 | `.stat-change`, `.stat-change.positive`, `.stat-change.negative` | 공통 |
 | 테이블 | `<table>` (기본 스타일 자동 적용) | 공통 |
-| 폼 | `.form-grid` + `.form-group` | 공통 |
+| 폼 | `.form-grid` + `.form-group` 또는 `.input-group` + `.input-field` | 공통 |
 | 버튼 (주황) | `.btn.btn-primary` | 공통 |
 | 버튼 (테두리) | `.btn.btn-secondary` | 공통 |
+| 필터 버튼 | `.filter-btn` | 공통 |
+| 추가 버튼 | `.add-btn` | 공통 |
+| 버튼 그룹 | `.button-group`, `.button-group.justify-end` | 공통 |
+| 검색 영역 | `.search-area`, `.search-input`, `.search-btn` | 공통 |
+| 검색 바 | `.search-bar`, `.search-section` | 공통 |
 | 기본 모달 구조 | `.modal-overlay` + `.modal-container` | 공통 |
 | 달력 팝업 | `.calendar-overlay` + `.calendar-popup` | 공통 |
 | 날짜 입력 필드 | `.date-input-field` | 공통 |
 | 배지 | `.badge` 또는 `.status-badge` | 공통 |
-| 페이지 헤더 | 페이지별 `<style>` 태그 | 페이지별 |
+| 로고 아이콘 | `.logo-icon` | 공통 (네온 애니메이션 포함) |
+| 일반 아이콘 | `.icon` | 공통 (네온 애니메이션 포함) |
+| 네비게이션 아이콘 | `.nav-icon` | 공통 |
+| 카드 아이콘 | `.card-icon` | 공통 |
+| 통계 아이콘 | `.stat-icon`, `.stat-icon.large` | 공통 |
+| 업로드 아이콘 | `.upload-icon` | 공통 |
+| 아이콘 버튼 | `.icon-button` | 페이지별 (스타일 필요) |
 | 페이지 특수 레이아웃 | 페이지별 `<style>` 태그 | 페이지별 |
 | 페이지별 모달 스타일 | 페이지별 `<style>` 태그 | 페이지별 |
+| 페이지별 padding/margin | 페이지별 `<style>` 태그 | 페이지별 |
 
 ---
 
@@ -994,6 +1260,86 @@ document.getElementById('myModal').classList.remove('active');
 4. **경로 규칙** 
    - 웬만하면 `${pageContext.request.contextPath}` 사용
    - 하드코딩 경로는 가급적 사용에 주의할 것 (보안규칙에 어긋날 수 있음)
+
+---
+
+## 최근 변경 사항 (2025-01-15)
+
+### CSS 구조 개선
+
+1. **별도 CSS 파일 제거**
+   - `dashboard.css` 삭제 → `memberDashboard.jsp`의 `<style>` 태그로 이동
+   - `booking.css` 삭제 → `booking.jsp`의 `<style>` 태그로 이동
+
+2. **common.css에 추가된 공통 스타일**
+   - `.main-content`에 `width: calc(100% - 255px)` 추가
+   - `.page-header`, `.header-title`, `.header-left` 추가
+   - `.content-container`, `.content-header`, `.header-info`, `.header-buttons` 추가
+   - `.filter-btn`, `.add-btn` 추가
+   - `.stat-icon`, `.stat-label`, `.stat-value`, `.stat-change` 추가
+   - `.search-bar`, `.search-section` 추가
+   - `.card-title`, `.card-icon`, `.info-row`, `.info-label`, `.info-value` 추가
+   - `.input-group`, `.input-label`, `.input-field` 추가
+
+3. **JSP 파일들에서 제거된 중복 스타일**
+   - 모든 gym 페이지들: `.main-content` 기본 스타일 제거
+   - 모든 notice 페이지들: `.main-content`, `.page-header`, `.search-bar` 제거
+   - `trainerDashboard.jsp`: 리셋 스타일, `.app-container`, `.card-title` 기본 속성 제거
+   - `ptSchedule.jsp`, `memberInfo.jsp`: `.main-content` 기본 속성 제거
+   - 각 파일은 이제 페이지별 고유 스타일만 포함
+
+### 스타일 사용 가이드
+
+**공통 스타일 사용 예시:**
+```html
+<!-- main-content는 common.css에서 자동으로 width와 margin-left가 적용됨 -->
+<div class="main-content">
+    <!-- padding만 필요시 오버라이드 -->
+</div>
+
+<!-- 페이지 헤더는 공통 클래스 사용 -->
+<div class="page-header">
+    <div class="header-left">
+        <button class="back-button">←</button>
+        <div class="header-title">
+            <h1>제목</h1>
+            <p>설명</p>
+        </div>
+    </div>
+</div>
+
+<!-- 컨텐츠 컨테이너 (gym 페이지들) -->
+<div class="content-container">
+    <div class="content-header">
+        <div class="header-info">
+            <h2>제목</h2>
+            <p>설명</p>
+        </div>
+        <div class="header-buttons">
+            <button class="filter-btn">필터</button>
+            <button class="add-btn">추가</button>
+        </div>
+    </div>
+</div>
+```
+
+**페이지별 스타일 오버라이드 예시:**
+```jsp
+<style>
+    /* common.css의 기본 스타일을 오버라이드하거나 추가 속성만 정의 */
+    .main-content {
+        padding: 40px 40px 40px 20px; /* padding만 변경 */
+    }
+    
+    .header-title h1 {
+        font-family: 'Abhaya Libre', 'Noto Sans KR', sans-serif; /* font-family만 추가 */
+    }
+    
+    .back-button:hover {
+        transform: translateX(-3px); /* hover 효과만 추가 */
+    }
+</style>
+```
 
 ---
 
