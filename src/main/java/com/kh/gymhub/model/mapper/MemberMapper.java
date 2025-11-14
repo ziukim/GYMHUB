@@ -23,5 +23,8 @@ public interface MemberMapper {
     
     // 프로필 이미지 업데이트
     int updateProfileImage(@Param("memberNo") int memberNo, @Param("photoPath") String photoPath);
+    
+    // 회원번호로 회원 조회
+    Member getMemberByNo(@Param("memberNo") int memberNo);
 }
 

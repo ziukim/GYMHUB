@@ -1103,7 +1103,7 @@
                                     </c:choose>
                                 </c:if>
                                 
-                                <tr data-status="${status}">
+                                <tr data-status="${status}" data-member-no="${member.memberNo}">
                                     <td>${member.memberName}</td>
                                     <td>${empty member.productNames ? '-' : member.productNames}</td>
                                     <td><fmt:formatDate value="${member.startDate}" pattern="yyyy.MM.dd" /></td>
@@ -1411,7 +1411,7 @@
                 <label>이용권 정보 <span class="required">*</span></label>
                 <div class="modal-input-group">
                     <div class="modal-display-field" id="editMembershipDisplay">30일 이용권</div>
-                    <button class="modal-btn modal-btn-secondary" onclick="editMembership()">수정</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="editMembership()">연장</button>
                 </div>
             </div>
 
@@ -1538,10 +1538,21 @@
                     document.getElementById('profileEmail').textContent = member.memberEmail || '없음';
                     document.getElementById('profileAddress').textContent = member.memberAddress || '없음';
 
-                    // 프로필 아바타 업데이트 (이름의 첫 글자로)
-                    const firstChar = member.memberName ? member.memberName.charAt(0) : '?';
-                    const avatarSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23ff6b00\'/%3E%3Ctext x=\'30\' y=\'40\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-weight=\'bold\'%3E' + encodeURIComponent(firstChar) + '%3C/text%3E%3C/svg%3E';
-                    document.getElementById('profileAvatar').src = avatarSvg;
+                    // 프로필 아바타 업데이트 (프로필 사진이 있으면 표시, 없으면 기본 아바타)
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    if (member.memberPhotoPath && member.memberPhotoPath.trim() !== '') {
+                        // 프로필 사진이 있는 경우
+                        profileAvatar.src = '${pageContext.request.contextPath}' + member.memberPhotoPath;
+                        profileAvatar.style.objectFit = 'cover';
+                        profileAvatar.style.borderRadius = '50%';
+                    } else {
+                        // 프로필 사진이 없는 경우 기본 아바타 (이름의 첫 글자)
+                        const firstChar = member.memberName ? member.memberName.charAt(0) : '?';
+                        const avatarSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23ff6b00\'/%3E%3Ctext x=\'30\' y=\'40\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-weight=\'bold\'%3E' + encodeURIComponent(firstChar) + '%3C/text%3E%3C/svg%3E';
+                        profileAvatar.src = avatarSvg;
+                        profileAvatar.style.objectFit = 'contain';
+                        profileAvatar.style.borderRadius = '0';
+                    }
 
                     // 프로필 카드 표시
                     document.getElementById('memberProfileCard').style.display = 'block';
@@ -1737,7 +1748,14 @@
         // 이용권 표시 필드에 설정
         if (window.isEditingMembership) {
             document.getElementById('editMembershipDisplay').textContent = membershipText;
+            // 연장용 상품 번호 저장
+            window.selectedProductNosForExtension = selectedProductNos;
             window.isEditingMembership = false;
+            
+            // 연장 시 만료일 계산
+            if (currentEditingMember && currentEditingMember.currentEndDate) {
+                calculateExtensionEndDate(selectedProductNos);
+            }
         } else {
             document.getElementById('membershipDisplay').textContent = membershipText;
             document.getElementById('selectedProductNos').value = selectedProductNos.join(',');
@@ -1750,6 +1768,55 @@
         if (document.getElementById('startDateInput').value) {
             calculateEndDate();
         }
+    }
+    
+    // 연장 시 만료일 계산 함수
+    function calculateExtensionEndDate(productNos) {
+        if (!currentEditingMember || !currentEditingMember.currentEndDate) {
+            return;
+        }
+        
+        // 서버에서 상품 정보 조회하여 기간 계산
+        fetch('${pageContext.request.contextPath}/member/products.ajax')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let maxDays = 0;
+                    let ptCount = 0;
+                    
+                    // 모든 상품 정보 합치기
+                    const allProducts = [...(data.membership || []), ...(data.locker || []), ...(data.pt || [])];
+                    
+                    productNos.forEach(productNo => {
+                        const product = allProducts.find(p => p.productNo === productNo);
+                        if (product) {
+                            if (product.productType === '회원권' || product.productType === '락커') {
+                                // 일 단위로 변환
+                                const days = product.durationMonths;
+                                maxDays = Math.max(maxDays, days);
+                            } else if (product.productType === 'PT') {
+                                // PT는 횟수만 저장
+                                ptCount += product.durationMonths;
+                            }
+                        }
+                    });
+                    
+                    // 기존 만료일에서 기간 추가
+                    if (maxDays > 0) {
+                        const currentEndDate = new Date(currentEditingMember.currentEndDate);
+                        const newEndDate = new Date(currentEndDate);
+                        newEndDate.setDate(newEndDate.getDate() + maxDays);
+                        
+                        const year = newEndDate.getFullYear();
+                        const month = String(newEndDate.getMonth() + 1).padStart(2, '0');
+                        const day = String(newEndDate.getDate()).padStart(2, '0');
+                        document.getElementById('editEndDateInput').value = year + '-' + month + '-' + day;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('상품 정보 조회 오류:', error);
+            });
     }
 
     // 종료일 자동 계산 함수
@@ -2060,53 +2127,124 @@
     // 회원 정보 수정 함수
     function editMember(button) {
         const row = button.closest('tr');
+        const memberNo = row.dataset.memberNo;
         const name = row.querySelector('td:nth-child(1)').textContent;
         const membership = row.querySelector('td:nth-child(2)').textContent;
         const startDate = row.querySelector('td:nth-child(3)').textContent;
         const endDate = row.querySelector('td:nth-child(4)').textContent;
         const locker = row.querySelector('td:nth-child(5)').textContent;
 
-        currentEditingMember = {
-            row: row,
-            name: name,
-            membership: membership,
-            startDate: startDate,
-            endDate: endDate,
-            locker: locker
-        };
+        if (!memberNo) {
+            alert('회원 정보를 불러올 수 없습니다.');
+            return;
+        }
 
-        document.getElementById('editProfileName').textContent = name;
-        document.getElementById('editProfileId').textContent = '010015';
-        document.getElementById('editProfilePhone').textContent = '010-1234-5678';
-        document.getElementById('editProfileEmail').textContent = 'member@example.com';
-        document.getElementById('editProfileAddress').textContent = '서울시 강남구';
+        // 서버에서 회원 상세 정보 조회
+        fetch('${pageContext.request.contextPath}/member/detail.ajax?memberNo=' + memberNo)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const member = data.member;
+                    
+                    currentEditingMember = {
+                        row: row,
+                        memberNo: memberNo,
+                        name: name,
+                        membership: membership,
+                        startDate: startDate,
+                        endDate: endDate,
+                        locker: locker,
+                        membershipNo: member.membershipNo,
+                        ptPassNo: member.ptPassNo,
+                        lockerPassNo: member.lockerPassNo,
+                        currentEndDate: member.endDate,
+                        ptEnd: member.ptEnd,
+                        lockerEnd: member.lockerEnd
+                    };
 
-        const firstChar = name.charAt(0);
-        const avatarSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23ff6b00\'/%3E%3Ctext x=\'30\' y=\'40\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-weight=\'bold\'%3E' + encodeURIComponent(firstChar) + '%3C/text%3E%3C/svg%3E';
-        document.getElementById('editProfileAvatar').src = avatarSvg;
+                    // 프로필 정보 설정
+                    document.getElementById('editProfileName').textContent = member.memberName || name;
+                    document.getElementById('editProfileId').textContent = member.memberId || '';
+                    document.getElementById('editProfilePhone').textContent = member.memberPhone || '';
+                    document.getElementById('editProfileEmail').textContent = member.memberEmail || '';
+                    document.getElementById('editProfileAddress').textContent = member.memberAddress || '';
 
-        document.getElementById('editMembershipDisplay').textContent = membership;
-        document.getElementById('editStartDateInput').value = startDate;
-        document.getElementById('editEndDateInput').value = endDate;
-        document.getElementById('editLockerInput').value = locker === '-' ? '' : locker;
+                    // 프로필 아바타 업데이트 (프로필 사진이 있으면 표시, 없으면 기본 아바타)
+                    const editProfileAvatar = document.getElementById('editProfileAvatar');
+                    if (member.memberPhotoPath && member.memberPhotoPath.trim() !== '') {
+                        // 프로필 사진이 있는 경우
+                        editProfileAvatar.src = '${pageContext.request.contextPath}' + member.memberPhotoPath;
+                        editProfileAvatar.style.objectFit = 'cover';
+                        editProfileAvatar.style.borderRadius = '50%';
+                    } else {
+                        // 프로필 사진이 없는 경우 기본 아바타 (이름의 첫 글자)
+                        const firstChar = (member.memberName || name).charAt(0);
+                        const avatarSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23ff6b00\'/%3E%3Ctext x=\'30\' y=\'40\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-weight=\'bold\'%3E' + encodeURIComponent(firstChar) + '%3C/text%3E%3C/svg%3E';
+                        editProfileAvatar.src = avatarSvg;
+                        editProfileAvatar.style.objectFit = 'contain';
+                        editProfileAvatar.style.borderRadius = '0';
+                    }
 
-        document.getElementById('editMemberModal').classList.add('active');
+                    // 이용권 정보 설정
+                    document.getElementById('editMembershipDisplay').textContent = membership;
+                    document.getElementById('editStartDateInput').value = startDate;
+                    document.getElementById('editEndDateInput').value = endDate;
+                    document.getElementById('editLockerInput').value = locker === '-' ? '' : locker;
+
+                    // 모달 열기
+                    document.getElementById('editMemberModal').classList.add('active');
+                } else {
+                    alert(data.message || '회원 정보를 불러오는데 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('회원 정보 조회 오류:', error);
+                alert('회원 정보를 불러오는 중 오류가 발생했습니다.');
+            });
     }
 
 
     // 회원 삭제 함수
     function deleteMember(button) {
         const row = button.closest('tr');
+        const memberNo = row.dataset.memberNo;
         const name = row.querySelector('td:first-child').textContent;
 
         if (confirm(name + ' 회원을 삭제하시겠습니까?')) {
-            row.remove();
-
-            // 전체 회원 수 업데이트
-            const totalRows = document.querySelectorAll('#memberTable tbody tr').length;
-            document.querySelector('.header-info p').textContent = '전체 ' + totalRows + '명';
-
-            alert(name + ' 회원을 삭제했습니다.');
+            const requestData = {
+                memberNo: parseInt(memberNo)
+            };
+            
+            fetch('${pageContext.request.contextPath}/member/delete.gym', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    row.remove();
+                    
+                    // 전체 회원 수 업데이트
+                    const totalRows = document.querySelectorAll('#memberTable tbody tr').length;
+                    const headerInfo = document.querySelector('.header-info p');
+                    if (headerInfo) {
+                        headerInfo.textContent = '전체 ' + totalRows + '명';
+                    }
+                    
+                    alert(name + ' 회원을 삭제했습니다.');
+                } else {
+                    alert(data.message || '회원 삭제에 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('회원 삭제 오류:', error);
+                alert('회원 삭제 중 오류가 발생했습니다.');
+            });
         }
     }
 
@@ -2320,6 +2458,11 @@
 
     // 회원 수정 제출
     function submitEditMember() {
+        if (!currentEditingMember || !currentEditingMember.memberNo) {
+            alert('회원 정보가 올바르지 않습니다.');
+            return;
+        }
+
         const membership = document.getElementById('editMembershipDisplay').textContent;
         const startDate = document.getElementById('editStartDateInput').value;
         const endDate = document.getElementById('editEndDateInput').value;
@@ -2338,16 +2481,45 @@
             return;
         }
 
-        if (currentEditingMember && currentEditingMember.row) {
-            const row = currentEditingMember.row;
-            row.querySelector('td:nth-child(2)').textContent = membership;
-            row.querySelector('td:nth-child(3)').textContent = startDate;
-            row.querySelector('td:nth-child(4)').textContent = endDate;
-            row.querySelector('td:nth-child(5)').textContent = locker || '-';
-        }
+        // 이용권 연장인지 확인 (기존 이용권이 있고, 연장 버튼을 눌렀는지)
+        const isExtension = window.isEditingMembership && window.selectedProductNosForExtension;
+        
+        // 요청 데이터 구성
+        const requestData = {
+            memberNo: currentEditingMember.memberNo,
+            productNos: isExtension && window.selectedProductNosForExtension ? window.selectedProductNosForExtension : [],
+            lockerRealNum: locker || null,
+            originalLockerRealNum: currentEditingMember.locker && currentEditingMember.locker !== '-' ? currentEditingMember.locker : null
+        };
 
-        alert('회원 정보가 수정되었습니다!');
-        closeEditMemberModal();
+        // 이용권 연장 또는 락커 재배정 요청
+        fetch('${pageContext.request.contextPath}/member/update.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (isExtension && window.selectedProductNosForExtension && window.selectedProductNosForExtension.length > 0) {
+                    alert('이용권이 연장되었습니다!');
+                } else if (locker && locker !== currentEditingMember.locker) {
+                    alert('락커가 재배정되었습니다!');
+                } else {
+                    alert('회원 정보가 수정되었습니다!');
+                }
+                // 페이지 새로고침
+                location.reload();
+            } else {
+                alert(data.message || '회원 정보 수정에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('회원 정보 수정 오류:', error);
+            alert('회원 정보 수정 중 오류가 발생했습니다.');
+        });
     }
 
     // 수정용 달력 관련
