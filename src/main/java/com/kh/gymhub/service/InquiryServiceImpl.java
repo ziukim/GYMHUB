@@ -1,8 +1,8 @@
 package com.kh.gymhub.service;
 
-import com.kh.gymhub.model.dao.InquiryMapper;
+import com.kh.gymhub.model.mapper.InquiryMapper;
+import com.kh.gymhub.model.mapper.InquiryMapper;
 import com.kh.gymhub.model.vo.InquiryReserve;
-import com.kh.gymhub.service.InquiryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -152,5 +152,15 @@ public class InquiryServiceImpl implements InquiryService {
 
         // 3. 결과 반환
         return result;
+    }
+
+    @Override
+    public List<InquiryReserve> getReservationsByGymNo(int gymNo) {
+        return inquiryMapper.selectReservationsByGymNo(gymNo);
+    }
+
+    @Override
+    public int updateInquiryStatus(int inquiryNo, String status) {
+        return inquiryMapper.updateInquiryStatus(inquiryNo, status);
     }
 }

@@ -206,10 +206,7 @@ public class GymController {
     }
 
 
-    @GetMapping("/reservation.gym")
-    public String reservationManagement() {
-        return "gym/gymReservationManagement";
-    }
+
 
     @GetMapping("/info.gym")
     public String gymInfoManagement(HttpSession session, Model model) {

@@ -51,4 +51,19 @@ public interface InquiryService {
      * @return 성공 시 1, 실패 시 0
      */
     int deleteReserve(int inquiryNo);
+
+    /**
+     * 헬스장 번호로 모든 예약 조회
+     * @param gymNo 헬스장 번호
+     * @return 예약 목록
+     */
+    List<InquiryReserve> getReservationsByGymNo(int gymNo);
+
+    /**
+     * 예약 상태 업데이트
+     * @param inquiryNo 예약 번호
+     * @param status 새로운 상태
+     * @return 성공 시 1, 실패 시 0
+     */
+    int updateInquiryStatus(int inquiryNo, String status);
 }
