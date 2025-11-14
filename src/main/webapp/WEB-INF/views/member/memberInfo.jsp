@@ -221,7 +221,7 @@
 
                     <div class="info-item">
                         <label class="info-label">소속 헬스장</label>
-                        <p class="info-value">강남 헬스보이짐</p>
+                        <p class="info-value">${loginMember.gymName}</p>
                     </div>
 
                     <div class="edit-buttons">
@@ -234,26 +234,44 @@
 
         <!-- 정보 카드들 -->
         <section class="info-cards">
+
+            <!-- 회원권 카드 -->
             <div class="info-card">
                 <div class="card-header">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
-                    </span>
+            <span class="card-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+            </span>
                     <h3>회원권</h3>
                 </div>
-                <div class="card-content">
-                    <span class="badge">프리미엄 회원권</span>
-                    <div class="membership-dates">
-                        <p><span class="date-label">시작:</span> 2025. 4. 1.</p>
-                        <p><span class="date-label">만료:</span> 2026. 3. 31.</p>
-                    </div>
-                    <p class="remaining-days">154일 남음</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 42%"></div>
-                    </div>
-                </div>
+
+                <c:choose>
+                    <c:when test="${not empty membership}">
+                        <div class="card-content">
+                            <span class="badge">${membership.MEMBERSHIPNAME}</span>
+
+                            <div class="membership-dates">
+                                <p><span class="date-label">시작:</span> ${membership.STARTDATE}</p>
+                                <p><span class="date-label">만료:</span> ${membership.ENDDATE}</p>
+                            </div>
+
+                            <p class="remaining-days">${membership.REMAININGDAYS}일 남음</p>
+
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${membership.PROGRESSRATE}%"></div>
+                            </div>
+                        </div>
+                    </c:when>
+
+                    <c:otherwise>
+                        <div class="card-content" style="text-align:center; color:#8a6a50;">
+                            <p>등록된 회원권이 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
+
+            <!-- PT 정보 카드 -->
             <div class="info-card">
                 <div class="card-header">
                     <span class="card-icon">
@@ -261,28 +279,48 @@
                     </span>
                     <h3>PT 정보</h3>
                 </div>
-                <div class="card-content">
-                    <p class="pt-count">8 / 20회</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 40%"></div>
-                    </div>
-                    <p class="pt-remaining">남은 PT: 8회</p>
-                </div>
-            </div>
+                <c:choose>
+                    <c:when test="${not empty ptInfo}">
+                        <div class="card-content">
+                            <p class="pt-count">${ptInfo.REMAININGCOUNT} / ${ptInfo.TOTALCOUNT}회</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${ptInfo.RATE}%"></div>
+                            </div>
+                            <p class="pt-remaining">남은 PT: ${ptInfo.REMAININGCOUNT}회</p>
+                        </div>
+                    </c:when>
 
+                    <c:otherwise>
+                        <div class="card-content" style="text-align:center; color:#8a6a50;">
+                            <p>등록된 PT 정보가 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <!-- 락커 정보 카드 -->
             <div class="info-card">
                 <div class="card-header">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커 아이콘">
-                    </span>
+            <span class="card-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커 아이콘">
+            </span>
                     <h3>락커</h3>
                 </div>
-                <div class="card-content">
-                    <p class="locker-number">A-42</p>
-                    <p class="locker-expire">만료일: 2026. 3. 31.</p>
-                </div>
+                <c:choose>
+                    <c:when test="${not empty membership}">
+                        <div class="card-content">
+                            <p class="locker-number">${membership.LOCKERNO}번</p>
+                            <p class="locker-expire">만료일: ${membership.LOCKERENDDATE}</p>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="card-content" style="text-align:center; color:#8a6a50;">
+                            <p>등록된 락커가 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </section>
+
 
         <!-- 탭 -->
         <div class="tabs">
@@ -291,7 +329,6 @@
         </div>
 
         <!-- 인바디 기록 탭 -->
-        <!-- 인바디 기록 탭 - 수정된 부분 -->
         <section id="inbodyTab" class="tab-content active">
             <div class="section">
                 <div class="section-header">

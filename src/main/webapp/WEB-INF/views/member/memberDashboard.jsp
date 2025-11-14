@@ -862,9 +862,9 @@
         <div class="large-card">
             <div class="goals-header">
                 <div class="card-title">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="목표 아이콘">
-                    </span>
+            <span class="card-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="목표 아이콘">
+            </span>
                     운동 목표
                 </div>
                 <div class="btn-group">
@@ -873,32 +873,26 @@
                 </div>
             </div>
 
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title completed">벤치 프레스 100KG 달성</div>
-                    <div class="goal-subtitle">벤치프레스</div>
-                </div>
-            </div>
-
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title completed">스쿼트 160KG 달성</div>
-                    <div class="goal-subtitle">1RM</div>
-                </div>
-            </div>
-
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title">데드리프트 200KG 달성</div>
-                    <div class="goal-subtitle">1RM</div>
-                </div>
-            </div>
-
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title">체지방 12% 미만 달성</div>
-                    <div class="goal-subtitle">3세트 x 최대</div>
-                </div>
+            <div id="dashboardGoalsList">
+                <c:choose>
+                    <c:when test="${not empty goals}">
+                        <c:forEach var="goal" items="${goals}" varStatus="status">
+                            <c:if test="${status.index < 5}">
+                                <div class="goal-item">
+                                    <div class="goal-text">
+                                        <div class="goal-title ${goal.goalStatus eq '달성' ? 'completed' : ''}">${goal.goalTitle}</div>
+                                        <div class="goal-subtitle">${goal.goalDate}</div>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                            <p style="margin: 0;">등록된 운동 목표가 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -1061,60 +1055,7 @@
             <div class="modal-body">
                 <!-- Goals Tab -->
                 <div id="goalsTab" class="tab-content">
-
-
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">데드리프트 200KG 달성</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">체지방 12% 미만 달성</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">주 3회 꾸준히 운동 3개월 유지</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">체중 65kg → 58kg</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">5km 러닝 25분 이내 완주</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
+                    <!-- JavaScript로 동적으로 채워질 영역 -->
                 </div>
 
                 <!-- Completed Tab -->

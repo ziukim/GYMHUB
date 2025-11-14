@@ -26,5 +26,6 @@ public class Member {
     private String trainerLicense;
     private String trainerCareer;
     private String trainerAward;
+    private String gymName;
 }
 

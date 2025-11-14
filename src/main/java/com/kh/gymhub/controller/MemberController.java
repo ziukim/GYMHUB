@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class MemberController {
 
         Integer gymNo = loginMember.getGymNo();
 
+
         if(gymNo != null && gymNo > 0) {
             // gym_no가 있는 경우: 헬스장 관련 정보 조회
             Map<String, Object> dashboardData = dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
@@ -66,6 +68,7 @@ public class MemberController {
             model.addAttribute("videos", dashboardData.get("videos"));
             model.addAttribute("allVideos", dashboardData.get("allVideos"));
             model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+
         } else {
             // gym_no가 없는 경우
             model.addAttribute("hasGym", false);
@@ -82,6 +85,7 @@ public class MemberController {
         // 세션에서 로그인 정보 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");
 
+
         if (loginMember == null) {
             // 로그인하지 않은 경우 메인 페이지로 리다이렉트
             session.setAttribute("errorMsg", "로그인이 필요합니다.");
@@ -91,10 +95,22 @@ public class MemberController {
         // 인바디 기록 목록 조회
         List<InbodyRecord> inbodyList = inbodyService.getInbodyList(loginMember.getMemberNo());
 
+        Integer gymNo = loginMember.getGymNo();
+
         // Model에 추가
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("inbodyList", inbodyList);
 
+
+        if (gymNo != null && gymNo > 0) {
+            Map<String, Object> dashboardData =
+                    dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
+            model.addAttribute("membership", dashboardData.get("membership"));
+            model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+
+        } else {
+            model.addAttribute("hasGym", false);
+        }
         return "member/memberInfo";
     }
 
@@ -552,5 +568,6 @@ public class MemberController {
 
         return result;
     }
+
 
 }

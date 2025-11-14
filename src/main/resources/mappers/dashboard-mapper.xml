@@ -12,6 +12,7 @@
         TO_CHAR(M.START_DATE, 'YYYY.MM.DD') AS startDate,
         TO_CHAR(M.END_DATE, 'YYYY.MM.DD') AS endDate,
         NVL(L.LOCKER_REAL_NUM, '미배정') AS lockerNo,
+        TO_CHAR(LP.LOCKER_END, 'YYYY.MM.DD') AS lockerEndDate,
         TRUNC(M.END_DATE - SYSDATE) AS remainingDays
         FROM MEMBERSHIP M
         LEFT JOIN LOCKER_PASS LP ON M.MEMBER_NO = LP.MEMBER_NO
@@ -122,5 +123,6 @@
         ORDER BY PR.PT_RESERVE_TIME ASC
         FETCH FIRST 1 ROW ONLY
     </select>
+
 
 </mapper>

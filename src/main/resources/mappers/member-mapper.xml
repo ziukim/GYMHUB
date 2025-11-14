@@ -22,29 +22,33 @@
         <result column="TRAINER_LICENSE" property="trainerLicense"/>
         <result column="TRAINER_CAREER" property="trainerCareer"/>
         <result column="TRAINER_AWARD" property="trainerAward"/>
+        <result column="GYM_NAME" property="gymName"/>
+        <result column="GYM_NAME" property="gymName"/>
     </resultMap>
 
     <select id="getMemberById" parameterType="string" resultMap="memberResultMap">
-        SELECT MEMBER_NO,
-        MEMBER_TYPE,
-        MEMBER_ID,
-        MEMBER_PWD,
-        MEMBER_NAME,
-        MEMBER_ADDRESS,
-        MEMBER_PHONE,
-        MEMBER_BIRTH,
-        STATUS,
-        MEMBER_CREATEAT,
-        MEMBER_UPDATEAT,
-        MEMBER_EMAIL,
-        MEMBER_PHOTO_PATH,
-        GYM_NO,
-        TRAINER_LICENSE,
-        TRAINER_CAREER,
-        TRAINER_AWARD
-        FROM MEMBER
-        WHERE MEMBER_ID = #{memberId}
-        AND STATUS = 'Y'
+        SELECT m.MEMBER_NO,
+        m.MEMBER_TYPE,
+        m.MEMBER_ID,
+        m.MEMBER_PWD,
+        m.MEMBER_NAME,
+        m.MEMBER_ADDRESS,
+        m.MEMBER_PHONE,
+        m.MEMBER_BIRTH,
+        m.STATUS,
+        m.MEMBER_CREATEAT,
+        m.MEMBER_UPDATEAT,
+        m.MEMBER_EMAIL,
+        m.MEMBER_PHOTO_PATH,
+        m.GYM_NO,
+        m.TRAINER_LICENSE,
+        m.TRAINER_CAREER,
+        m.TRAINER_AWARD,
+        g.GYM_NAME
+        FROM MEMBER m
+        LEFT JOIN GYM g ON m.GYM_NO = g.GYM_NO
+        WHERE m.MEMBER_ID = #{memberId}
+        AND m.STATUS = 'Y'
     </select>
 
     <select id="getMemberCountById" resultType="_int">
@@ -55,26 +59,28 @@
 
     <!-- 로그인용 회원 조회 (아이디와 상태만 확인) -->
     <select id="getMemberForLogin" parameterType="string" resultMap="memberResultMap">
-        SELECT MEMBER_NO,
-        MEMBER_TYPE,
-        MEMBER_ID,
-        MEMBER_PWD,
-        MEMBER_NAME,
-        MEMBER_ADDRESS,
-        MEMBER_PHONE,
-        MEMBER_BIRTH,
-        STATUS,
-        MEMBER_CREATEAT,
-        MEMBER_UPDATEAT,
-        MEMBER_EMAIL,
-        MEMBER_PHOTO_PATH,
-        GYM_NO,
-        TRAINER_LICENSE,
-        TRAINER_CAREER,
-        TRAINER_AWARD
-        FROM MEMBER
-        WHERE MEMBER_ID = #{memberId}
-        AND STATUS = 'Y'
+        SELECT m.MEMBER_NO,
+        m.MEMBER_TYPE,
+        m.MEMBER_ID,
+        m.MEMBER_PWD,
+        m.MEMBER_NAME,
+        m.MEMBER_ADDRESS,
+        m.MEMBER_PHONE,
+        m.MEMBER_BIRTH,
+        m.STATUS,
+        m.MEMBER_CREATEAT,
+        m.MEMBER_UPDATEAT,
+        m.MEMBER_EMAIL,
+        m.MEMBER_PHOTO_PATH,
+        m.GYM_NO,
+        m.TRAINER_LICENSE,
+        m.TRAINER_CAREER,
+        m.TRAINER_AWARD,
+        g.GYM_NAME
+        FROM MEMBER m
+        LEFT JOIN GYM g ON m.GYM_NO = g.GYM_NO
+        WHERE m.MEMBER_ID = #{memberId}
+        AND m.STATUS = 'Y'
     </select>
 
     <insert id="addMember" parameterType="Member">
