@@ -1,26 +1,37 @@
 package com.kh.gymhub.service;
 
 import com.kh.gymhub.model.mapper.InquiryMapper;
+<<<<<<< HEAD
 import com.kh.gymhub.model.mapper.InquiryMapper;
 import com.kh.gymhub.model.vo.InquiryReserve;
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+import com.kh.gymhub.model.vo.InquiryReserve;
+>>>>>>> d0982fa5179d205f92ac84af68dbd1819ce5da0d
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+<<<<<<< HEAD
 /**
  * InquiryService 구현체
  */
+=======
+>>>>>>> d0982fa5179d205f92ac84af68dbd1819ce5da0d
 @Service
 public class InquiryServiceImpl implements InquiryService {
 
     private final InquiryMapper inquiryMapper;
 
+<<<<<<< HEAD
     @Autowired
+=======
+>>>>>>> d0982fa5179d205f92ac84af68dbd1819ce5da0d
     public InquiryServiceImpl(InquiryMapper inquiryMapper) {
         this.inquiryMapper = inquiryMapper;
     }
 
+<<<<<<< HEAD
     /**
      * 회원 번호로 예약 조회
      */
@@ -164,3 +175,21 @@ public class InquiryServiceImpl implements InquiryService {
         return inquiryMapper.updateInquiryStatus(inquiryNo, status);
     }
 }
+=======
+    @Override
+    public List<InquiryReserve> getApprovedFutureReservationsByGymNo(int gymNo) {
+        return inquiryMapper.selectApprovedFutureReservationsByGymNo(gymNo);
+    }
+
+    @Override
+    public List<InquiryReserve> getReservedInquiriesByGymNo(int gymNo) {
+        return inquiryMapper.selectReservedInquiriesByGymNo(gymNo);
+    }
+
+    @Override
+    public int updateInquiryStatusToCompleted(int inquiryNo) {
+        return inquiryMapper.updateInquiryStatusToCompleted(inquiryNo);
+    }
+}
+
+>>>>>>> d0982fa5179d205f92ac84af68dbd1819ce5da0d

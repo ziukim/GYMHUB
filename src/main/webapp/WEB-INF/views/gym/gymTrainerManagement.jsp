@@ -277,6 +277,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
             color: white;
             font-size: 24px;
             font-weight: bold;
@@ -286,6 +287,17 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .profile-avatar span {
+            position: relative;
+            z-index: 1;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         .profile-info {
@@ -514,6 +526,7 @@
                     <div class="trainer-profile-card">
                         <div class="profile-header">
                             <div class="profile-avatar" id="trainerAvatar">
+                                <img id="trainerAvatarImg" src="" alt="프로필" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 <span id="trainerAvatarText">홍</span>
                             </div>
                             <div class="profile-info">
@@ -606,9 +619,22 @@
                         document.getElementById('trainerDetailEmail').textContent = trainerData.memberEmail || '없음';
                         document.getElementById('trainerDetailAddress').textContent = trainerData.memberAddress || '없음';
                         
-                        // 프로필 아바타 업데이트 (이름 첫 글자로)
-                        const firstChar = trainerData.memberName ? trainerData.memberName.charAt(0) : '?';
-                        document.getElementById('trainerAvatarText').textContent = firstChar;
+                        // 프로필 아바타 업데이트 (프로필 사진이 있으면 표시, 없으면 기본 아바타)
+                        const trainerAvatarImg = document.getElementById('trainerAvatarImg');
+                        const trainerAvatarText = document.getElementById('trainerAvatarText');
+                        
+                        if (trainerData.memberPhotoPath && trainerData.memberPhotoPath.trim() !== '') {
+                            // 프로필 사진이 있는 경우
+                            trainerAvatarImg.src = '${pageContext.request.contextPath}' + trainerData.memberPhotoPath;
+                            trainerAvatarImg.style.display = 'block';
+                            trainerAvatarText.style.display = 'none';
+                        } else {
+                            // 프로필 사진이 없는 경우 기본 아바타 (이름의 첫 글자)
+                            const firstChar = trainerData.memberName ? trainerData.memberName.charAt(0) : '?';
+                            trainerAvatarText.textContent = firstChar;
+                            trainerAvatarImg.style.display = 'none';
+                            trainerAvatarText.style.display = 'block';
+                        }
                         
                         // 트레이너 조회 섹션 표시
                         document.getElementById('trainerLookupSection').style.display = 'block';

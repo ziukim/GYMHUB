@@ -163,6 +163,7 @@
 
             <div class="consultation-list">
                 <c:choose>
+<<<<<<< HEAD
                     <c:when test="${empty reservationList}">
                         <!-- Empty State -->
                         <div class="empty-state">
@@ -195,6 +196,45 @@
                                 </button>
                             </div>
                         </c:forEach>
+=======
+                    <c:when test="${not empty reservedInquiries and reservedInquiries.size() > 0}">
+                        <c:forEach var="inquiry" items="${reservedInquiries}">
+                            <div class="consultation-item" onclick="viewConsultation(${inquiry.inquiryNo})" data-inquiry-no="${inquiry.inquiryNo}">
+                                <div class="consultation-info">
+                                    <div class="consultation-name">${inquiry.memberName}</div>
+                                    <div class="consultation-details">
+                                        <div class="detail-item">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
+                                            <span>
+                                                <fmt:formatDate value="${inquiry.visitDatetime}" pattern="MM월 dd일 HH:mm" />
+                                            </span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
+                                            <span>${inquiry.memberPhone}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <c:choose>
+                                    <c:when test="${inquiry.inquiryStatus == '예약'}">
+                                        <button class="status-button pending" onclick="toggleStatus(event, this, ${inquiry.inquiryNo})">상담 예정</button>
+                                    </c:when>
+                                    <c:when test="${inquiry.inquiryStatus == '완료'}">
+                                        <button class="status-button completed" onclick="toggleStatus(event, this, ${inquiry.inquiryNo})">상담 완료</button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button class="status-button pending" onclick="toggleStatus(event, this, ${inquiry.inquiryNo})">${inquiry.inquiryStatus}</button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <div class="empty-text">예약 상담 현황이 없습니다</div>
+                        </div>
+>>>>>>> d0982fa5179d205f92ac84af68dbd1819ce5da0d
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -204,6 +244,7 @@
 
 <script>
     // 상담 상세 보기
+<<<<<<< HEAD
     function viewConsultation(name, time, phone, memo) {
         let message = '상담 정보\n\n이름: ' + name + '\n시간: ' + time + '\n연락처: ' + phone;
         if (memo && memo.trim() !== '') {
@@ -268,6 +309,61 @@
                     console.error('Error:', error);
                     alert('상태 변경 중 오류가 발생했습니다.');
                 });
+=======
+    function viewConsultation(inquiryNo) {
+        const item = event.currentTarget;
+        const name = item.querySelector('.consultation-name').textContent;
+        const time = item.querySelector('.consultation-details .detail-item:first-child span').textContent.trim();
+        const phone = item.querySelector('.consultation-details .detail-item:last-child span').textContent.trim();
+        
+        alert(`상담 정보\n\n이름: ${name}\n시간: ${time}\n연락처: ${phone}`);
+    }
+
+    // 상태 토글 (상담 완료 처리)
+    function toggleStatus(event, button, inquiryNo) {
+        event.stopPropagation(); // 부모 클릭 이벤트 방지
+        
+        if (button.classList.contains('pending')) {
+            if (confirm('상담을 완료 처리하시겠습니까?')) {
+                // 서버에 완료 처리 요청
+                const requestData = {
+                    inquiryNo: inquiryNo
+                };
+                
+                fetch('${pageContext.request.contextPath}/reservation/complete.ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        button.classList.remove('pending');
+                        button.classList.add('completed');
+                        button.textContent = '상담 완료';
+                        
+                        // 애니메이션 효과
+                        button.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            button.style.transform = 'scale(1)';
+                        }, 200);
+                    } else {
+                        alert(data.message || '상담 완료 처리에 실패했습니다.');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('상담 완료 처리 오류:', error);
+                    alert('상담 완료 처리 중 오류가 발생했습니다.');
+                });
+            }
+        } else {
+            // 완료 상태는 되돌릴 수 없음 (요구사항에 없음)
+            alert('이미 완료 처리된 상담입니다.');
+>>>>>>> d0982fa5179d205f92ac84af68dbd1819ce5da0d
         }
     }
 

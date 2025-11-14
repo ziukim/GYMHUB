@@ -118,5 +118,141 @@
         ORDER BY MS.START_DATE DESC, M.MEMBER_NAME ASC
     </select>
 
-</mapper>
+    <!-- 활성 회원 수 조회 (만료되지 않은 회원권) -->
+    <select id="selectActiveMemberCountByGymNo" parameterType="_int" resultType="_int">
+        SELECT COUNT(DISTINCT MS.MEMBER_NO)
+        FROM MEMBERSHIP MS
+        INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
+        WHERE MS.GYM_NO = #{gymNo}
+          AND M.STATUS = 'Y'
+          AND MS.MEMBERSHIP_STATUS != '만료'
+          AND MS.END_DATE &gt;= TRUNC(SYSDATE)
+    </select>
 
+    <!-- 신규 회원 수 조회 (이번 달 등록) -->
+    <select id="selectNewMemberCountByGymNoAndMonth" resultType="_int">
+        SELECT COUNT(DISTINCT MS.MEMBER_NO)
+        FROM MEMBERSHIP MS
+        INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
+        WHERE MS.GYM_NO = #{gymNo}
+          AND M.STATUS = 'Y'
+          AND EXTRACT(YEAR FROM MS.START_DATE) = #{year}
+          AND EXTRACT(MONTH FROM MS.START_DATE) = #{month}
+    </select>
+
+    <!-- 만료 예정 회원 수 조회 (7일 이내 만료) -->
+    <select id="selectExpiringMemberCountByGymNo" parameterType="_int" resultType="_int">
+        SELECT COUNT(DISTINCT MS.MEMBER_NO)
+        FROM MEMBERSHIP MS
+        INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
+        WHERE MS.GYM_NO = #{gymNo}
+          AND M.STATUS = 'Y'
+          AND MS.MEMBERSHIP_STATUS != '만료'
+          AND MS.END_DATE IS NOT NULL
+          AND TRUNC(MS.END_DATE) &gt;= TRUNC(SYSDATE)
+          AND TRUNC(MS.END_DATE) &lt;= TRUNC(SYSDATE) + 7
+    </select>
+
+    <!-- 특정 월 말일 기준 활성 회원 수 조회 -->
+    <select id="selectActiveMemberCountByGymNoAndMonthEnd" resultType="_int">
+        SELECT COUNT(DISTINCT MS.MEMBER_NO)
+        FROM MEMBERSHIP MS
+        INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
+        WHERE MS.GYM_NO = #{gymNo}
+          AND M.STATUS = 'Y'
+          AND MS.MEMBERSHIP_STATUS != '만료'
+          AND MS.END_DATE IS NOT NULL
+          AND TRUNC(MS.START_DATE) &lt;= 
+              CASE 
+                  WHEN #{year} = EXTRACT(YEAR FROM SYSDATE) AND #{month} = EXTRACT(MONTH FROM SYSDATE) 
+                  THEN TRUNC(SYSDATE)
+                  ELSE LAST_DAY(TO_DATE(#{year} || '-' || LPAD(#{month}, 2, '0') || '-01', 'YYYY-MM-DD'))
+              END
+          AND TRUNC(MS.END_DATE) &gt;= 
+              CASE 
+                  WHEN #{year} = EXTRACT(YEAR FROM SYSDATE) AND #{month} = EXTRACT(MONTH FROM SYSDATE) 
+                  THEN TRUNC(SYSDATE)
+                  ELSE LAST_DAY(TO_DATE(#{year} || '-' || LPAD(#{month}, 2, '0') || '-01', 'YYYY-MM-DD'))
+              END
+    </select>
+
+    <!-- 특정 월에 만료된 회원 수 조회 -->
+    <select id="selectExpiredMemberCountByGymNoAndMonth" resultType="_int">
+        SELECT COUNT(DISTINCT MS.MEMBER_NO)
+        FROM MEMBERSHIP MS
+        INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
+        WHERE MS.GYM_NO = #{gymNo}
+          AND M.STATUS = 'Y'
+          AND MS.MEMBERSHIP_STATUS = '만료'
+          AND MS.END_DATE IS NOT NULL
+          AND EXTRACT(YEAR FROM MS.END_DATE) = #{year}
+          AND EXTRACT(MONTH FROM MS.END_DATE) = #{month}
+    </select>
+
+    <!-- 회원번호로 회원권 조회 -->
+    <select id="selectMembershipByMemberNo" resultMap="membershipResultMap">
+        SELECT 
+            MEMBERSHIP_NO,
+            PURCHASE_NO,
+            MEMBER_NO,
+            GYM_NO,
+            START_DATE,
+            END_DATE,
+            MEMBERSHIP_STATUS,
+            MEMBERSHIP_CREATEAT,
+            MEMBERSHIP_UPDATE
+        FROM MEMBERSHIP
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND MEMBERSHIP_STATUS = '정상'
+          AND ROWNUM = 1
+        ORDER BY END_DATE DESC
+    </select>
+
+    <!-- 회원권 만료일 연장 -->
+    <update id="updateMembershipEndDate">
+        UPDATE MEMBERSHIP
+        SET END_DATE = #{newEndDate},
+            MEMBERSHIP_UPDATE = SYSDATE
+        WHERE MEMBERSHIP_NO = #{membershipNo}
+    </update>
+
+    <!-- 만료된 회원권 상태 업데이트 (END_DATE가 SYSDATE보다 이전이고 상태가 '정상'인 회원권) -->
+    <update id="updateExpiredMemberships">
+        UPDATE MEMBERSHIP
+        SET MEMBERSHIP_STATUS = '만료',
+            MEMBERSHIP_UPDATE = SYSDATE
+        WHERE MEMBERSHIP_STATUS = '정상'
+          AND END_DATE IS NOT NULL
+          AND TRUNC(END_DATE) &lt; TRUNC(SYSDATE)
+    </update>
+
+    <!-- 특정 회원의 회원권 만료 처리 (회원 삭제 시 사용) -->
+    <update id="expireMembershipByMemberNo">
+        UPDATE MEMBERSHIP
+        SET MEMBERSHIP_STATUS = '만료',
+            MEMBERSHIP_UPDATE = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND MEMBERSHIP_STATUS = '정상'
+    </update>
+
+    <!-- 만료된 회원권을 가진 회원들의 회원번호 목록 조회 (활성 회원권이 없는 회원만) -->
+    <select id="selectMemberNosWithExpiredMemberships" resultType="_int">
+        SELECT DISTINCT M.MEMBER_NO
+        FROM MEMBER M
+        INNER JOIN MEMBERSHIP MS ON M.MEMBER_NO = MS.MEMBER_NO
+        WHERE M.GYM_NO IS NOT NULL
+          AND M.STATUS = 'Y'
+          AND M.MEMBER_TYPE = 1
+          AND MS.MEMBERSHIP_STATUS = '만료'
+          AND NOT EXISTS (
+              SELECT 1
+              FROM MEMBERSHIP MS2
+              WHERE MS2.MEMBER_NO = M.MEMBER_NO
+                AND MS2.MEMBERSHIP_STATUS = '정상'
+                AND (MS2.END_DATE IS NULL OR TRUNC(MS2.END_DATE) >= TRUNC(SYSDATE))
+          )
+    </select>
+
+</mapper>
