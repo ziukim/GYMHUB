@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.PtBookingMapper">
+
+    <!-- 특정 날짜/트레이너의 예약된 시간 조회 -->
+    <select id="selectBookedTimeSlots" resultType="string">
+        SELECT TO_CHAR(PT_RESERVE_TIME, 'HH24:MI') AS TIME_SLOT
+        FROM PT_RESERVE
+        WHERE PT_TRAINER_NO = #{trainerNo}
+          AND TO_CHAR(PT_RESERVE_TIME, 'YYYY-MM-DD') = #{reserveDate}
+          AND PT_RESERVE_STATUS IN ('대기중', '승인됨')
+        ORDER BY PT_RESERVE_TIME
+    </select>
+
+    <!-- PT 예약 신청 -->
+    <insert id="insertPtReservation">
+        INSERT INTO PT_RESERVE (
+            PT_RESERVE_NO,
+            PT_PASS_NO,
+            PT_RESERVE_TIME,
+            MEMBER_NO,
+            PT_TRAINER_NO,
+            PT_RESERVE_STATUS
+        ) VALUES (
+            SEQ_PT_RESERVE_NO.NEXTVAL,
+            #{ptPassNo},
+            #{reserveTime},
+            #{desiredTrainerNo},
+            #{desiredTrainerNo},
+            '대기중'
+        )
+    </insert>
+
+</mapper>
+

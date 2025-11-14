@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.PtScheduleMapper">
+
+    <!-- 회원의 활성 PT 이용권 정보 조회 -->
+    <select id="selectActivePtPass" parameterType="_int" resultType="map">
+        SELECT 
+            PT_PASS_NO,
+            PT_TOTAL_COUNT,
+            PT_END
+        FROM PT_PASS
+        WHERE MEMBER_NO = #{memberNo}
+          AND (PT_END IS NULL OR PT_END &gt;= TRUNC(SYSDATE))
+        ORDER BY 
+            CASE 
+                WHEN PT_END IS NULL THEN 0
+                ELSE 1
+            END,
+            PT_END DESC,
+            PT_PASS_NO ASC
+        FETCH FIRST 1 ROW ONLY
+    </select>
+
+    <!-- PT 사용 완료 횟수 조회 (예약 확정된 PT) -->
+    <select id="countCompletedPtReservations" parameterType="_int" resultType="_int">
+        SELECT COUNT(*)
+        FROM PT_RESERVE
+        WHERE PT_PASS_NO = #{ptPassNo}
+          AND PT_RESERVE_STATUS = '승인됨'
+    </select>
+
+    <!-- ResultMap for PtReservation -->
+    <resultMap id="ptReservationMap" type="com.kh.gymhub.model.vo.PtReservation">
+        <id property="ptReserveNo" column="PT_RESERVE_NO"/>
+        <result property="ptPassNo" column="PT_PASS_NO"/>
+        <result property="ptReserveTime" column="PT_RESERVE_TIME"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="ptTrainerNo" column="PT_TRAINER_NO"/>
+        <result property="ptReserveStatus" column="PT_RESERVE_STATUS"/>
+        <result property="desiredTrainerName" column="DESIRED_TRAINER_NAME"/>
+        <result property="desiredTrainerPhotoPath" column="DESIRED_TRAINER_PHOTO_PATH"/>
+        <result property="desiredTrainerPhone" column="DESIRED_TRAINER_PHONE"/>
+        <result property="desiredTrainerEmail" column="DESIRED_TRAINER_EMAIL"/>
+        <result property="desiredTrainerLicense" column="DESIRED_TRAINER_LICENSE"/>
+        <result property="confirmedTrainerName" column="CONFIRMED_TRAINER_NAME"/>
+        <result property="confirmedTrainerPhotoPath" column="CONFIRMED_TRAINER_PHOTO_PATH"/>
+        <result property="confirmedTrainerPhone" column="CONFIRMED_TRAINER_PHONE"/>
+        <result property="confirmedTrainerEmail" column="CONFIRMED_TRAINER_EMAIL"/>
+        <result property="confirmedTrainerLicense" column="CONFIRMED_TRAINER_LICENSE"/>
+    </resultMap>
+
+    <!-- 가장 가까운 미래 PT 예약 조회 (대기중/승인됨, 희망+확정 트레이너 둘 다) -->
+    <select id="selectUpcomingReservation" parameterType="_int" resultMap="ptReservationMap">
+        SELECT 
+            PR.PT_RESERVE_NO,
+            PR.PT_PASS_NO,
+            PR.PT_RESERVE_TIME,
+            PR.MEMBER_NO,
+            PR.PT_TRAINER_NO,
+            PR.PT_RESERVE_STATUS,
+            DT.MEMBER_NAME AS DESIRED_TRAINER_NAME,
+            DT.MEMBER_PHOTO_PATH AS DESIRED_TRAINER_PHOTO_PATH,
+            DT.MEMBER_PHONE AS DESIRED_TRAINER_PHONE,
+            DT.MEMBER_EMAIL AS DESIRED_TRAINER_EMAIL,
+            DT.TRAINER_LICENSE AS DESIRED_TRAINER_LICENSE,
+            CT.MEMBER_NAME AS CONFIRMED_TRAINER_NAME,
+            CT.MEMBER_PHOTO_PATH AS CONFIRMED_TRAINER_PHOTO_PATH,
+            CT.MEMBER_PHONE AS CONFIRMED_TRAINER_PHONE,
+            CT.MEMBER_EMAIL AS CONFIRMED_TRAINER_EMAIL,
+            CT.TRAINER_LICENSE AS CONFIRMED_TRAINER_LICENSE
+        FROM PT_RESERVE PR
+        LEFT JOIN MEMBER DT ON PR.MEMBER_NO = DT.MEMBER_NO
+        LEFT JOIN MEMBER CT ON PR.PT_TRAINER_NO = CT.MEMBER_NO
+        WHERE PR.PT_PASS_NO = #{ptPassNo}
+          AND PR.PT_RESERVE_STATUS IN ('대기중', '승인됨')
+          AND PR.PT_RESERVE_TIME &gt; SYSDATE
+        ORDER BY PR.PT_RESERVE_TIME ASC
+        FETCH FIRST 1 ROW ONLY
+    </select>
+
+    <!-- 예정된 PT 목록 조회 (승인됨 + 미래, 확정 트레이너만) -->
+    <select id="selectScheduledPtList" parameterType="_int" resultMap="ptReservationMap">
+        SELECT 
+            PR.PT_RESERVE_NO,
+            PR.PT_PASS_NO,
+            PR.PT_RESERVE_TIME,
+            PR.MEMBER_NO,
+            PR.PT_TRAINER_NO,
+            PR.PT_RESERVE_STATUS,
+            CT.MEMBER_NAME AS CONFIRMED_TRAINER_NAME,
+            CT.MEMBER_PHOTO_PATH AS CONFIRMED_TRAINER_PHOTO_PATH,
+            CT.MEMBER_PHONE AS CONFIRMED_TRAINER_PHONE,
+            CT.MEMBER_EMAIL AS CONFIRMED_TRAINER_EMAIL,
+            CT.TRAINER_LICENSE AS CONFIRMED_TRAINER_LICENSE
+        FROM PT_RESERVE PR
+        LEFT JOIN MEMBER CT ON PR.PT_TRAINER_NO = CT.MEMBER_NO
+        WHERE PR.PT_PASS_NO = #{ptPassNo}
+          AND PR.PT_RESERVE_STATUS = '승인됨'
+          AND PR.PT_RESERVE_TIME &gt; SYSDATE
+        ORDER BY PR.PT_RESERVE_TIME ASC
+    </select>
+
+    <!-- 완료된 PT 목록 조회 (승인됨 + 과거, 확정 트레이너만) -->
+    <select id="selectCompletedPtList" parameterType="_int" resultMap="ptReservationMap">
+        SELECT 
+            PR.PT_RESERVE_NO,
+            PR.PT_PASS_NO,
+            PR.PT_RESERVE_TIME,
+            PR.MEMBER_NO,
+            PR.PT_TRAINER_NO,
+            PR.PT_RESERVE_STATUS,
+            CT.MEMBER_NAME AS CONFIRMED_TRAINER_NAME,
+            CT.MEMBER_PHOTO_PATH AS CONFIRMED_TRAINER_PHOTO_PATH,
+            CT.MEMBER_PHONE AS CONFIRMED_TRAINER_PHONE,
+            CT.MEMBER_EMAIL AS CONFIRMED_TRAINER_EMAIL,
+            CT.TRAINER_LICENSE AS CONFIRMED_TRAINER_LICENSE
+        FROM PT_RESERVE PR
+        LEFT JOIN MEMBER CT ON PR.PT_TRAINER_NO = CT.MEMBER_NO
+        WHERE PR.PT_PASS_NO = #{ptPassNo}
+          AND PR.PT_RESERVE_STATUS = '승인됨'
+          AND PR.PT_RESERVE_TIME &lt;= SYSDATE
+        ORDER BY PR.PT_RESERVE_TIME DESC
+    </select>
+
+</mapper>
+

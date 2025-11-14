@@ -3,8 +3,12 @@ package com.kh.gymhub.controller;
 import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.model.vo.PtBookingData;
+import com.kh.gymhub.model.vo.PtScheduleSummary;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
+import com.kh.gymhub.service.PtBookingService;
+import com.kh.gymhub.service.PtScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -31,12 +35,16 @@ public class MemberController {
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
+    private final PtScheduleService ptScheduleService;
+    private final PtBookingService ptBookingService;
 
     @Autowired
-    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
+    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService, PtScheduleService ptScheduleService, PtBookingService ptBookingService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.ptScheduleService = ptScheduleService;
+        this.ptBookingService = ptBookingService;
     }
 
     @GetMapping("/dashboard.me")
@@ -73,13 +81,91 @@ public class MemberController {
     public String memberNotice() { return "notice/noticeList"; }
 
     @GetMapping("/schedule.me")
-    public String memberPtSchedule() { return "member/ptSchedule"; }
+    public String memberPtSchedule(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null) {
+            return "redirect:/";
+        }
+        
+        // PT 스케줄 요약 정보 조회
+        PtScheduleSummary ptSummary = ptScheduleService.getPtScheduleSummary(loginMember.getMemberNo());
+        model.addAttribute("ptSummary", ptSummary);
+        
+        return "member/ptSchedule";
+    }
 
     @GetMapping("/ptBooking.me")
-    public String memberptBookingForm() { return "member/ptBookingForm"; }
+    public String memberptBookingForm(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null) {
+            return "redirect:/";
+        }
+        
+        // PT 예약 데이터 조회 (loginMember 전체 전달)
+        PtBookingData bookingData = ptBookingService.getPtBookingData(loginMember);
+        model.addAttribute("bookingData", bookingData);
+        
+        return "member/ptBookingForm";
+    }
 
     // ⭐ /booking.me 매핑은 BookingController로 이동됨
     // BookingController에서 헬스장 정보 조회, 예약자 정보 설정, 기존 예약 확인 등 모든 비즈니스 로직을 처리합니다.
+
+    // ====================================== PT 예약 AJAX ======================================================
+    
+    @GetMapping("/pt/bookedSlots.ajax")
+    @ResponseBody
+    public Map<String, Object> getBookedTimeSlots(@RequestParam("trainerNo") int trainerNo,
+                                                    @RequestParam("date") String date) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<String> bookedSlots = ptBookingService.getBookedTimeSlots(trainerNo, date);
+            response.put("success", true);
+            response.put("bookedSlots", bookedSlots);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "예약 시간 조회 중 오류가 발생했습니다.");
+        }
+        return response;
+    }
+    
+    @PostMapping("/pt/reserve.do")
+    @ResponseBody
+    public Map<String, Object> createPtReservation(HttpSession session,
+                                                     @RequestParam("trainerNo") int trainerNo,
+                                                     @RequestParam("reserveDateTime") String reserveDateTime) {
+        Map<String, Object> response = new HashMap<>();
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+        
+        try {
+            boolean result = ptBookingService.createPtReservation(
+                loginMember.getMemberNo(), 
+                trainerNo, 
+                reserveDateTime
+            );
+            
+            if (result) {
+                response.put("success", true);
+                response.put("message", "PT 예약이 신청되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "PT 예약 신청에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "예약 처리 중 오류가 발생했습니다.");
+        }
+        
+        return response;
+    }
 
     // ====================================== 회원가입 ======================================================
     @GetMapping("/signup/checkId")
