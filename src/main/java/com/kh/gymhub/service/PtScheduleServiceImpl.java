@@ -1,12 +1,15 @@
 package com.kh.gymhub.service;
 
 import com.kh.gymhub.model.mapper.PtScheduleMapper;
+import com.kh.gymhub.model.vo.PtReservation;
 import com.kh.gymhub.model.vo.PtScheduleSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -79,7 +82,23 @@ public class PtScheduleServiceImpl implements PtScheduleService {
             endDateLabel = sdf.format(ptEnd);
         }
         
-        // 8. 결과 반환
+        // 8. 예약 정보 조회
+        PtReservation upcomingReservation = ptScheduleMapper.selectUpcomingReservation(ptPassNo);
+        if (upcomingReservation != null) {
+            formatReservationTime(upcomingReservation);
+        }
+        
+        List<PtReservation> scheduledPtList = ptScheduleMapper.selectScheduledPtList(ptPassNo);
+        for (PtReservation reservation : scheduledPtList) {
+            formatReservationTime(reservation);
+        }
+        
+        List<PtReservation> completedPtList = ptScheduleMapper.selectCompletedPtList(ptPassNo);
+        for (PtReservation reservation : completedPtList) {
+            formatReservationTime(reservation);
+        }
+        
+        // 9. 결과 반환
         return PtScheduleSummary.builder()
                 .ptPassNo(ptPassNo)
                 .totalCount(totalCount)
@@ -89,7 +108,28 @@ public class PtScheduleServiceImpl implements PtScheduleService {
                 .progressRateLabel(progressRateLabel)
                 .ptEnd(ptEnd)
                 .endDateLabel(endDateLabel)
+                .upcomingReservation(upcomingReservation)
+                .scheduledPtList(scheduledPtList)
+                .completedPtList(completedPtList)
                 .build();
+    }
+    
+    /**
+     * 예약 시간 포맷팅
+     */
+    private void formatReservationTime(PtReservation reservation) {
+        if (reservation == null || reservation.getPtReserveTime() == null) {
+            return;
+        }
+        
+        Timestamp reserveTime = reservation.getPtReserveTime();
+        SimpleDateFormat sdfFull = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy년 M월 d일");
+        SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm");
+        
+        reservation.setReserveTimeLabel(sdfFull.format(reserveTime));
+        reservation.setReserveDateLabel(sdfDate.format(reserveTime));
+        reservation.setReserveHourLabel(sdfHour.format(reserveTime));
     }
     
     /**

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,5 +24,10 @@ public class PtScheduleSummary {
     private double progressRate;      // 진행률 (0-100)
     private String progressRateLabel; // 진행률 레이블 (예: "60%")
     private String endDateLabel;      // 만료일 레이블 (예: "2025.12.31")
+    
+    // 예약 정보
+    private PtReservation upcomingReservation;    // 가장 가까운 미래 예약
+    private List<PtReservation> scheduledPtList;  // 예정된 PT 목록
+    private List<PtReservation> completedPtList;  // 완료된 PT 목록
 }
 
