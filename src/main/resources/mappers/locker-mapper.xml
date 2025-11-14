@@ -122,5 +122,59 @@
         AND LOCKER_END >= TRUNC(SYSDATE)
     </select>
 
+    <!-- 회원번호로 락커 이용권 조회 -->
+    <select id="selectLockerPassByMemberNo" resultMap="lockerPassResultMap">
+        SELECT 
+            LP.LOCKER_PASS_NO,
+            LP.PURCHASE_NO,
+            LP.LOCKER_NO,
+            LP.MEMBER_NO,
+            LP.LOCKER_PASS_START,
+            LP.LOCKER_END,
+            LP.LOCKER_PASS_STATUS,
+            L.LOCKER_REAL_NUM,
+            L.LOCKER_STATUS
+        FROM LOCKER_PASS LP
+        INNER JOIN LOCKER L ON LP.LOCKER_NO = L.LOCKER_NO
+        WHERE LP.MEMBER_NO = #{memberNo}
+          AND L.GYM_NO = #{gymNo}
+          AND LP.LOCKER_PASS_STATUS = '정상'
+          AND ROWNUM = 1
+        ORDER BY LP.LOCKER_END DESC
+    </select>
+
+    <!-- 락커 이용권 만료일 연장 -->
+    <update id="updateLockerPassEndDate">
+        UPDATE LOCKER_PASS
+        SET LOCKER_END = #{newEndDate}
+        WHERE LOCKER_PASS_NO = #{lockerPassNo}
+    </update>
+
+    <!-- 락커 이용권의 락커번호 변경 -->
+    <update id="updateLockerPassLockerNo">
+        UPDATE LOCKER_PASS
+        SET LOCKER_NO = #{newLockerNo}
+        WHERE LOCKER_PASS_NO = #{lockerPassNo}
+    </update>
+
+    <!-- 락커 이용권 상태를 만료로 변경 -->
+    <update id="updateLockerPassStatusToExpired">
+        UPDATE LOCKER_PASS
+        SET LOCKER_PASS_STATUS = '만료'
+        WHERE LOCKER_PASS_NO = #{lockerPassNo}
+    </update>
+
+    <!-- 락커 실제 번호로 락커 조회 -->
+    <select id="selectLockerByRealNumAndGymNo" resultType="com.kh.gymhub.model.vo.Locker">
+        SELECT
+            LOCKER_NO as lockerNo,
+            GYM_NO as gymNo,
+            LOCKER_REAL_NUM as lockerRealNum,
+            LOCKER_STATUS as lockerStatus
+        FROM LOCKER
+        WHERE LOCKER_REAL_NUM = #{lockerRealNum}
+        AND GYM_NO = #{gymNo}
+    </select>
+
 </mapper>
 

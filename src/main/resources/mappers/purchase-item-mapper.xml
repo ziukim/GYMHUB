@@ -35,5 +35,12 @@
         )
     </insert>
 
+    <!-- 구매 번호로 구매 아이템 조회 -->
+    <select id="selectPurchaseItemByPurchaseNo" parameterType="_int" resultMap="purchaseItemResultMap">
+        SELECT *
+        FROM PURCHASE_ITEM
+        WHERE PURCHASE_NO = #{purchaseNo}
+    </select>
+
 </mapper>
 

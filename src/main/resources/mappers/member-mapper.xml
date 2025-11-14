@@ -239,4 +239,28 @@
         MEMBER_UPDATEAT = SYSDATE
         WHERE MEMBER_NO = #{memberNo}
     </update>
+
+    <!-- 회원번호로 회원 조회 -->
+    <select id="getMemberByNo" parameterType="_int" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE MEMBER_NO = #{memberNo}
+        AND STATUS = 'Y'
+    </select>
 </mapper>

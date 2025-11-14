@@ -1,5 +1,6 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -322,21 +323,149 @@
         <!-- Tabs -->
         <div class="tabs-container">
             <button class="tab-btn active" data-tab="pending">
-                대기중 <span class="tab-count" id="pendingCount">(5)</span>
+                대기중 <span class="tab-count" id="pendingCount">
+                    (<c:choose>
+                        <c:when test="${not empty pendingPtReserves}">${pendingPtReserves.size()}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>)
+                </span>
             </button>
             <button class="tab-btn" data-tab="completed">
-                승인/거절 <span class="tab-count" id="completedCount">(5)</span>
+                승인/거절 <span class="tab-count" id="completedCount">
+                    (<c:choose>
+                        <c:when test="${not empty approvedOrRejectedPtReserves}">${approvedOrRejectedPtReserves.size()}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>)
+                </span>
             </button>
         </div>
 
         <!-- 대기중 탭 -->
         <div class="tab-panel active" id="pending-panel">
-            <!-- PT 신청 카드들이 동적으로 추가됨 -->
+            <c:choose>
+                <c:when test="${not empty pendingPtReserves}">
+                    <c:forEach var="ptReserve" items="${pendingPtReserves}">
+                        <div class="pt-request-card" data-pt-reserve-no="${ptReserve.ptReserveNo}">
+                            <div class="card-header-section">
+                                <div class="user-icon">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자">
+                                </div>
+                                <div class="card-user-info">
+                                    <div class="card-user-name">${ptReserve.memberName}</div>
+                                    <div class="card-user-id">회원 번호: ${ptReserve.memberNo}</div>
+                                </div>
+                                <span class="card-status status-pending">대기중</span>
+                            </div>
+
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="예약일" class="detail-icon"> 예약일:
+                                    </span>
+                                    <span class="detail-value">
+                                        <c:choose>
+                                            <c:when test="${not empty ptReserve.ptReserveTime}">
+                                                <fmt:formatDate value="${ptReserve.ptReserveTime}" pattern="yyyy-MM-dd HH:mm" />
+                                            </c:when>
+                                            <c:otherwise>-</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                                <c:if test="${not empty ptReserve.ptTrainer}">
+                                    <div class="detail-item">
+                                        <span class="detail-label">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:
+                                        </span>
+                                        <span class="detail-value">${ptReserve.ptTrainer}번</span>
+                                    </div>
+                                </c:if>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:
+                                    </span>
+                                    <span class="detail-value">${empty ptReserve.memberPhone ? '-' : ptReserve.memberPhone}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-actions">
+                                <button class="action-btn approve-btn" onclick="handleApprove(this)">✓ 승인</button>
+                                <button class="action-btn reject-btn" onclick="handleReject(this)">✕ 거절</button>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <div style="text-align: center; padding: 40px; color: #b0b0b0;">
+                        대기중인 PT 신청이 없습니다.
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- 완성 내역 탭 -->
         <div class="tab-panel" id="completed-panel">
-            <!-- PT 신청 카드들이 동적으로 추가됨 -->
+            <c:choose>
+                <c:when test="${not empty approvedOrRejectedPtReserves}">
+                    <c:forEach var="ptReserve" items="${approvedOrRejectedPtReserves}">
+                        <c:set var="statusClass" value="${ptReserve.ptReserveStatus == '승인됨' ? 'status-completed' : 'status-cancelled'}" />
+                        <div class="pt-request-card" data-pt-reserve-no="${ptReserve.ptReserveNo}">
+                            <div class="card-header-section">
+                                <div class="user-icon">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사용자">
+                                </div>
+                                <div class="card-user-info">
+                                    <div class="card-user-name">${ptReserve.memberName}</div>
+                                    <div class="card-user-id">회원 번호: ${ptReserve.memberNo}</div>
+                                </div>
+                                <span class="card-status ${statusClass}">${ptReserve.ptReserveStatus}</span>
+                            </div>
+
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="예약일" class="detail-icon"> 예약일:
+                                    </span>
+                                    <span class="detail-value">
+                                        <c:choose>
+                                            <c:when test="${not empty ptReserve.ptReserveTime}">
+                                                <fmt:formatDate value="${ptReserve.ptReserveTime}" pattern="yyyy-MM-dd HH:mm" />
+                                            </c:when>
+                                            <c:otherwise>-</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                                <c:if test="${ptReserve.ptReserveStatus == '승인됨' and not empty ptReserve.trainerName}">
+                                    <div class="detail-item">
+                                        <span class="detail-label">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 배정 트레이너:
+                                        </span>
+                                        <span class="detail-value">${ptReserve.trainerName}</span>
+                                    </div>
+                                </c:if>
+                                <c:if test="${ptReserve.ptReserveStatus == '거절됨' and not empty ptReserve.ptTrainer}">
+                                    <div class="detail-item">
+                                        <span class="detail-label">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:
+                                        </span>
+                                        <span class="detail-value">${ptReserve.ptTrainer}번</span>
+                                    </div>
+                                </c:if>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:
+                                    </span>
+                                    <span class="detail-value">${empty ptReserve.memberPhone ? '-' : ptReserve.memberPhone}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <div style="text-align: center; padding: 40px; color: #b0b0b0;">
+                        승인/거절 내역이 없습니다.
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </div>
@@ -355,10 +484,7 @@
                 <label class="form-label">트레이너 조회</label>
                 <select class="form-select" id="trainerSelect">
                     <option value="">선택하세요</option>
-                    <option value="김트레이너">김트레이너</option>
-                    <option value="이코치">이코치</option>
-                    <option value="박강사">박강사</option>
-                    <option value="최트레이너">최트레이너</option>
+                    <!-- 동적으로 트레이너 목록이 추가됩니다 -->
                 </select>
             </div>
         </div>
@@ -371,317 +497,112 @@
 
 <script>
     // 전역 변수
-    const contextPath = '${pageContext.request.contextPath}';
-    let currentCard = null;
-    let currentCardId = null;
-
-    // 더미 데이터
-    const ptRequests = {
-        pending: [
-            {
-                id: 'pt001',
-                userName: '김영희',
-                userId: 'M002',
-                requestDate: '2025.10.28',
-                desiredTrainer: '이코치',
-                desiredTime: '14:00',
-                desiredDate: '2025-11-08',
-                phone: '010-1111-2222'
-            },
-            {
-                id: 'pt002',
-                userName: '정수진',
-                userId: 'M005',
-                requestDate: '2025.10.28',
-                desiredTrainer: '최트레이너',
-                desiredTime: '18:00',
-                desiredDate: '2025-11-10',
-                phone: '010-2222-3333'
-            },
-            {
-                id: 'pt003',
-                userName: '이민수',
-                userId: 'M007',
-                requestDate: '2025.10.29',
-                desiredTrainer: '박강사',
-                desiredTime: '09:00',
-                desiredDate: '2025-11-12',
-                phone: '010-3333-4444'
-            },
-            {
-                id: 'pt004',
-                userName: '최지영',
-                userId: 'M008',
-                requestDate: '2025.10.30',
-                desiredTrainer: '김트레이너',
-                desiredTime: '15:00',
-                desiredDate: '2025-11-15',
-                phone: '010-4444-5555'
-            },
-            {
-                id: 'pt005',
-                userName: '강동원',
-                userId: 'M009',
-                requestDate: '2025.10.31',
-                desiredTrainer: '이코치',
-                desiredTime: '11:00',
-                desiredDate: '2025-11-18',
-                phone: '010-5555-6666'
-            }
-        ],
-        completed: [
-            {
-                id: 'pt101',
-                userName: '홍길동',
-                userId: 'M001',
-                requestDate: '2025.10.28',
-                assignedTrainer: '박강사',
-                desiredTime: '10:00',
-                desiredDate: '2025-11-05',
-                phone: '010-6666-7777',
-                status: 'approved'
-            },
-            {
-                id: 'pt102',
-                userName: '박철수',
-                userId: 'M003',
-                requestDate: '2025.10.25',
-                assignedTrainer: '김트레이너',
-                desiredTime: '16:00',
-                desiredDate: '2025-11-03',
-                phone: '010-7777-8888',
-                status: 'rejected'
-            },
-            {
-                id: 'pt103',
-                userName: '윤서연',
-                userId: 'M004',
-                requestDate: '2025.10.26',
-                assignedTrainer: '최트레이너',
-                desiredTime: '13:00',
-                desiredDate: '2025-11-06',
-                phone: '010-8888-9999',
-                status: 'approved'
-            },
-            {
-                id: 'pt104',
-                userName: '장민호',
-                userId: 'M006',
-                requestDate: '2025.10.27',
-                assignedTrainer: '이코치',
-                desiredTime: '17:00',
-                desiredDate: '2025-11-07',
-                phone: '010-9999-0000',
-                status: 'rejected'
-            },
-            {
-                id: 'pt105',
-                userName: '송혜교',
-                userId: 'M010',
-                requestDate: '2025.10.24',
-                assignedTrainer: '박강사',
-                desiredTime: '12:00',
-                desiredDate: '2025-11-02',
-                phone: '010-0000-1111',
-                status: 'approved'
-            }
-        ]
-    };
-
-    // 카드 생성 함수
-    function createPendingCard(request) {
-        var html = '<div class="pt-request-card" data-id="' + request.id + '">';
-        html += '<div class="card-header-section">';
-        html += '<div class="user-icon"><img src="' + contextPath + '/resources/images/icon/person.png" alt="사용자"></div>';
-        html += '<div class="card-user-info">';
-        html += '<div class="card-user-name">' + request.userName + '</div>';
-        html += '<div class="card-user-id">회원 ID: ' + request.userId + '</div>';
-        html += '</div>';
-        html += '<span class="card-status status-pending">대기중</span>';
-        html += '</div>';
-
-        html += '<div class="card-details">';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="신청일" class="detail-icon"> 신청일:</span>';
-        html += '<span class="detail-value">' + request.requestDate + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:</span>';
-        html += '<span class="detail-value">' + request.desiredTrainer + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/clock.png" alt="시간" class="detail-icon"> 희망 시간:</span>';
-        html += '<span class="detail-value">' + request.desiredTime + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="날짜" class="detail-icon"> 희망 날짜:</span>';
-        html += '<span class="detail-value">' + request.desiredDate + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:</span>';
-        html += '<span class="detail-value">' + request.phone + '</span>';
-        html += '</div>';
-        html += '</div>';
-
-        html += '<div class="card-actions">';
-        html += '<button class="action-btn approve-btn" onclick="handleApprove(this)">✓ 승인</button>';
-        html += '<button class="action-btn reject-btn" onclick="handleReject(this)">✕ 거절</button>';
-        html += '</div>';
-        html += '</div>';
-
-        return html;
-    }
-
-    function createCompletedCard(request) {
-        var statusClass = request.status === 'approved' ? 'status-completed' : 'status-cancelled';
-        var statusText = request.status === 'approved' ? '승인됨' : '거절됨';
-        var trainerLabel = request.status === 'approved' ? '배정 트레이너' : '희망 트레이너';
-
-        var html = '<div class="pt-request-card" data-id="' + request.id + '">';
-        html += '<div class="card-header-section">';
-        html += '<div class="user-icon"><img src="' + contextPath + '/resources/images/icon/person.png" alt="사용자"></div>';
-        html += '<div class="card-user-info">';
-        html += '<div class="card-user-name">' + request.userName + '</div>';
-        html += '<div class="card-user-id">회원 ID: ' + request.userId + '</div>';
-        html += '</div>';
-        html += '<span class="card-status ' + statusClass + '">' + statusText + '</span>';
-        html += '</div>';
-
-        html += '<div class="card-details">';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="신청일" class="detail-icon"> 신청일:</span>';
-        html += '<span class="detail-value">' + request.requestDate + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> ' + trainerLabel + ':</span>';
-        html += '<span class="detail-value">' + request.assignedTrainer + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/clock.png" alt="시간" class="detail-icon"> 희망 시간:</span>';
-        html += '<span class="detail-value">' + request.desiredTime + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/calendar.png" alt="날짜" class="detail-icon"> 희망 날짜:</span>';
-        html += '<span class="detail-value">' + request.desiredDate + '</span>';
-        html += '</div>';
-        html += '<div class="detail-item">';
-        html += '<span class="detail-label"><img src="' + contextPath + '/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:</span>';
-        html += '<span class="detail-value">' + request.phone + '</span>';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
-
-        return html;
-    }
-
-    // 페이지 렌더링
-    function renderPage() {
-        const pendingPanel = document.getElementById('pending-panel');
-        const completedPanel = document.getElementById('completed-panel');
-
-        console.log('렌더링 시작');
-        console.log('대기중 데이터:', ptRequests.pending);
-        console.log('완성 데이터:', ptRequests.completed);
-
-        // 대기중 목록 렌더링
-        if (pendingPanel) {
-            pendingPanel.innerHTML = ptRequests.pending.map(request => createPendingCard(request)).join('');
-            console.log('대기중 패널 렌더링 완료');
-        }
-
-        // 완성 내역 렌더링
-        if (completedPanel) {
-            completedPanel.innerHTML = ptRequests.completed.map(request => createCompletedCard(request)).join('');
-            console.log('완성내역 패널 렌더링 완료');
-        }
-
-        // 카운트 업데이트
-        const pendingCountEl = document.getElementById('pendingCount');
-        const completedCountEl = document.getElementById('completedCount');
-
-        if (pendingCountEl) {
-            pendingCountEl.textContent = `(${ptRequests.pending.length})`;
-        }
-        if (completedCountEl) {
-            completedCountEl.textContent = `(${ptRequests.completed.length})`;
-        }
-    }
+    var contextPath = '${pageContext.request.contextPath}';
+    var currentCard = null;
+    var currentPtReserveNo = null;
 
     // 탭 전환 기능
     function initializeTabs() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
+        var tabButtons = document.querySelectorAll('.tab-btn');
 
-        tabButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-tab');
-
-                console.log('탭 클릭:', targetTab);
+        for (var i = 0; i < tabButtons.length; i++) {
+            tabButtons[i].addEventListener('click', function() {
+                var targetTab = this.getAttribute('data-tab');
 
                 // 모든 탭 버튼에서 active 제거
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
+                var allTabButtons = document.querySelectorAll('.tab-btn');
+                for (var j = 0; j < allTabButtons.length; j++) {
+                    allTabButtons[j].classList.remove('active');
+                }
 
                 // 모든 패널에서 active 제거
-                document.querySelectorAll('.tab-panel').forEach(panel => {
-                    panel.classList.remove('active');
-                });
+                var allPanels = document.querySelectorAll('.tab-panel');
+                for (var k = 0; k < allPanels.length; k++) {
+                    allPanels[k].classList.remove('active');
+                }
 
                 // 클릭된 탭 버튼에 active 추가
                 this.classList.add('active');
 
                 // 해당 패널에 active 추가
-                const targetPanel = document.getElementById(targetTab + '-panel');
+                var targetPanel = document.getElementById(targetTab + '-panel');
                 if (targetPanel) {
                     targetPanel.classList.add('active');
-                    console.log('패널 활성화:', targetTab + '-panel');
-                } else {
-                    console.error('패널을 찾을 수 없음:', targetTab + '-panel');
                 }
             });
-        });
+        }
     }
 
     // 승인 버튼 클릭
     function handleApprove(btn) {
         currentCard = btn.closest('.pt-request-card');
-        currentCardId = currentCard.getAttribute('data-id');
-        document.getElementById('trainerModal').classList.add('active');
+        currentPtReserveNo = parseInt(currentCard.getAttribute('data-pt-reserve-no'));
+        
+        // 트레이너 목록 조회
+        fetch(contextPath + '/trainer/list.ajax')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    var trainerSelect = document.getElementById('trainerSelect');
+                    trainerSelect.innerHTML = '<option value="">선택하세요</option>';
+                    
+                    if (data.trainers && data.trainers.length > 0) {
+                        for (var i = 0; i < data.trainers.length; i++) {
+                            var trainer = data.trainers[i];
+                            var option = document.createElement('option');
+                            option.value = trainer.memberNo;
+                            option.textContent = trainer.memberName || '트레이너 ' + trainer.memberNo;
+                            trainerSelect.appendChild(option);
+                        }
+                    }
+                    
+                    // 모달 표시
+                    document.getElementById('trainerModal').classList.add('active');
+                } else {
+                    alert(data.message || '트레이너 목록을 불러오는데 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('트레이너 목록 조회 오류:', error);
+                alert('트레이너 목록을 불러오는 중 오류가 발생했습니다.');
+            });
     }
 
     // 거절 버튼 클릭
     function handleReject(btn) {
-        const card = btn.closest('.pt-request-card');
-        const cardId = card.getAttribute('data-id');
-        const userName = card.querySelector('.card-user-name').textContent;
+        var card = btn.closest('.pt-request-card');
+        var ptReserveNo = parseInt(card.getAttribute('data-pt-reserve-no'));
+        var userName = card.querySelector('.card-user-name').textContent;
 
         if (confirm(userName + '님의 PT 신청을 거절하시겠습니까?')) {
-            // 대기중 목록에서 해당 요청 찾기
-            const requestIndex = ptRequests.pending.findIndex(req => req.id === cardId);
-            if (requestIndex !== -1) {
-                const request = ptRequests.pending[requestIndex];
-
-                // 완성 내역으로 이동 (거절 상태)
-                ptRequests.completed.unshift({
-                    id: request.id,
-                    userName: request.userName,
-                    userId: request.userId,
-                    requestDate: request.requestDate,
-                    assignedTrainer: request.desiredTrainer,
-                    desiredTime: request.desiredTime,
-                    desiredDate: request.desiredDate,
-                    phone: request.phone,
-                    status: 'rejected'
-                });
-
-                // 대기중 목록에서 제거
-                ptRequests.pending.splice(requestIndex, 1);
-
-                // 페이지 재렌더링
-                renderPage();
-
-                alert('거절되었습니다.');
-            }
+            var requestData = {
+                ptReserveNo: ptReserveNo
+            };
+            
+            fetch(contextPath + '/pt/reject.ajax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    alert('PT 예약이 거절되었습니다.');
+                    location.reload();
+                } else {
+                    alert(data.message || 'PT 예약 거절에 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('PT 예약 거절 오류:', error);
+                alert('PT 예약 거절 중 오류가 발생했습니다.');
+            });
         }
     }
 
@@ -690,61 +611,67 @@
         document.getElementById('trainerModal').classList.remove('active');
         document.getElementById('trainerSelect').value = '';
         currentCard = null;
-        currentCardId = null;
+        currentPtReserveNo = null;
     }
 
     // 트레이너 배정 확인
     function confirmAssign() {
-        const trainerSelect = document.getElementById('trainerSelect');
-        const selectedTrainer = trainerSelect.value;
+        var trainerSelect = document.getElementById('trainerSelect');
+        var selectedTrainerNo = trainerSelect.value;
 
-        if (!selectedTrainer) {
+        if (!selectedTrainerNo) {
             alert('트레이너를 선택해주세요.');
             return;
         }
 
-        // 대기중 목록에서 해당 요청 찾기
-        const requestIndex = ptRequests.pending.findIndex(req => req.id === currentCardId);
-        if (requestIndex !== -1) {
-            const request = ptRequests.pending[requestIndex];
-            const userName = request.userName;
-
-            // 완성 내역으로 이동 (승인 상태)
-            ptRequests.completed.unshift({
-                id: request.id,
-                userName: request.userName,
-                userId: request.userId,
-                requestDate: request.requestDate,
-                assignedTrainer: selectedTrainer,
-                desiredTime: request.desiredTime,
-                desiredDate: request.desiredDate,
-                phone: request.phone,
-                status: 'approved'
-            });
-
-            // 대기중 목록에서 제거
-            ptRequests.pending.splice(requestIndex, 1);
-
-            // 페이지 재렌더링
-            renderPage();
-
-            alert(userName + '님의 PT 신청이 승인되었습니다.\n배정 트레이너: ' + selectedTrainer);
+        if (!currentPtReserveNo) {
+            alert('예약 정보를 찾을 수 없습니다.');
+            return;
         }
 
-        closeModal();
+        var requestData = {
+            ptReserveNo: currentPtReserveNo,
+            ptTrainerNo: parseInt(selectedTrainerNo)
+        };
+        
+        fetch(contextPath + '/pt/approve.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                var selectedTrainerName = trainerSelect.options[trainerSelect.selectedIndex].textContent;
+                alert('PT 예약이 승인되었습니다.\n배정 트레이너: ' + selectedTrainerName);
+                closeModal();
+                location.reload();
+            } else {
+                alert(data.message || 'PT 예약 승인에 실패했습니다.');
+            }
+        })
+        .catch(function(error) {
+            console.error('PT 예약 승인 오류:', error);
+            alert('PT 예약 승인 중 오류가 발생했습니다.');
+        });
     }
 
     // 모달 오버레이 클릭시 닫기
-    document.getElementById('trainerModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-
-    // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('페이지 로드 완료');
-        renderPage();
+        var modal = document.getElementById('trainerModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+        
+        // 탭 초기화
         initializeTabs();
     });
 </script>
