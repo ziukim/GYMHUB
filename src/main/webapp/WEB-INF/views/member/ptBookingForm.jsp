@@ -34,44 +34,50 @@
             flex: 1;
             padding: 24px;
             min-height: 100vh;
-            margin-left: 0px;
+            margin-left: 255px;
         }
 
-        .header {
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .header-left {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 24px;
-            justify-content: flex-start;
         }
 
         .back-button {
-            width: 36px;
-            height: 36px;
-            background-color: #0a0a0a;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
             border: 1px solid #ff6b00;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            font-size: 20px;
+            color: #ff6b00;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .back-button:hover {
-            opacity: 0.8;
+            background-color: rgba(255, 107, 0, 0.1);
         }
 
-        .header-title h1 {
+        .page-title-wrapper h1 {
             font-size: 30px;
             font-weight: 900;
             color: #ff6b00;
-            line-height: 36px;
-            margin-bottom: 8px;
+            margin: 0;
         }
 
-        .header-subtitle {
-            font-size: 16px;
+        .page-subtitle {
+            font-size: 14px;
             color: #8a6a50;
+            margin-top: 4px;
         }
 
         .trainer-card {
@@ -233,18 +239,25 @@
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
             border: 1px solid transparent;
         }
 
-        .time-slot:hover:not(.booked) {
+        .time-slot:hover:not(.booked):not(.selected) {
             opacity: 0.8;
             border-color: #ff6b00;
         }
 
         .time-slot.booked {
-            background-color: #ff6b00;
+            background-color: #1a0f0a;
             cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .time-slot.selected {
+            background-color: #ff6b00;
+            cursor: pointer;
+            border-color: #ff6b00;
         }
 
         .time-slot-info {
@@ -279,7 +292,12 @@
         }
 
         .time-slot.booked .time-status {
+            color: #8a6a50;
+        }
+
+        .time-slot.selected .time-status {
             color: #1a0f0a;
+            font-weight: 700;
         }
 
         .time-range {
@@ -289,6 +307,10 @@
         }
 
         .time-slot.booked .time-range {
+            color: #6a5a50;
+        }
+
+        .time-slot.selected .time-range {
             color: #5a3820;
         }
 
@@ -328,6 +350,9 @@
             cursor: pointer;
             transition: opacity 0.2s;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .submit-button:hover {
@@ -341,10 +366,12 @@
             left: 0;
             right: 0;
             bottom: 0;
+            width: 100%;
+            height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
         }
 
         .modal.show {
@@ -352,12 +379,15 @@
         }
 
         .modal-content {
-            background-color: #1a0f0a;
-            border: 1px solid #ff6b00;
-            border-radius: 10px;
-            padding: 24px;
-            max-width: 510px;
+            background: linear-gradient(180deg, #1a0f0a 0%, #0a0a0a 100%);
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 600px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
         }
 
         .modal-header {
@@ -532,9 +562,15 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="page-intro">
-            <h1>PT 예약</h1>
-            <p>나의 퍼스널 트레이닝 일정을 관리하세요</p>
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <button class="back-button" onclick="history.back()">←</button>
+                <div class="page-title-wrapper">
+                    <h1 class="page-title">PT 예약</h1>
+                    <div class="page-subtitle">나의 퍼스널 트레이닝 일정을 관리하세요</div>
+                </div>
+            </div>
         </div>
 
         <div class="trainer-card">
@@ -694,7 +730,17 @@
 
         timeSlots.forEach(function(slot) {
             const timeSlot = document.createElement('div');
-            timeSlot.className = 'time-slot' + (slot.isBooked ? ' booked' : '');
+            
+            // 클래스 설정: 예약된 시간, 선택된 시간, 빈 시간 구분
+            var slotClass = 'time-slot';
+            if (slot.isBooked) {
+                slotClass += ' booked';
+            }
+            if (selectedTime === slot.time) {
+                slotClass += ' selected';
+            }
+            timeSlot.className = slotClass;
+            
             timeSlot.onclick = function() {
                 selectTime(slot.time, slot.isBooked);
             };
@@ -706,9 +752,9 @@
             timeIcon.className = 'time-icon';
 
             const clockImg = document.createElement('img');
-            clockImg.src = '../../../resources/images/icon/clock.png';  // 경로 주의! (현재 JS 기준 상대경로)
-            clockImg.alt = '시계 아이콘';     // 접근성용 (선택)
-            clockImg.style.width = '20px';     // 원하는 크기
+            clockImg.src = '../../../resources/images/icon/clock.png';
+            clockImg.alt = '시계 아이콘';
+            clockImg.style.width = '20px';
             clockImg.style.height = '20px';
             timeIcon.appendChild(clockImg);
 
@@ -717,7 +763,15 @@
 
             const timeStatus = document.createElement('div');
             timeStatus.className = 'time-status';
-            timeStatus.textContent = slot.isBooked ? '예약된 시간' : '빈 시간';
+            
+            // 선택된 시간인 경우 '선택한 시간', 예약된 시간은 '예약된 시간', 나머지는 '빈 시간'
+            if (selectedTime === slot.time) {
+                timeStatus.textContent = '선택한 시간';
+            } else if (slot.isBooked) {
+                timeStatus.textContent = '예약된 시간';
+            } else {
+                timeStatus.textContent = '빈 시간';
+            }
 
             const timeRange = document.createElement('div');
             timeRange.className = 'time-range';
@@ -748,6 +802,9 @@
             selectedTime = time;
             document.getElementById('selectedTimeDisplay').style.display = 'flex';
             document.getElementById('selectedTimeText').textContent = time;
+            
+            // 시간 슬롯 다시 렌더링하여 선택된 시간 하이라이트
+            renderTimeSlots();
         }
     }
 

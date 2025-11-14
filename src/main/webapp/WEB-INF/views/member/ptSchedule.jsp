@@ -286,11 +286,22 @@
                     <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="전체 PT" class="stat-icon">
                     <span class="stat-title">전체 PT</span>
                 </div>
-                <div class="stat-value">20회</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 60%"></div>
-                </div>
-                <div class="stat-subtitle">진행률 60%</div>
+                <c:choose>
+                    <c:when test="${not empty ptSummary and ptSummary.totalCount > 0}">
+                        <div class="stat-value">${ptSummary.totalCount}회</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${ptSummary.progressRate}%"></div>
+                        </div>
+                        <div class="stat-subtitle">진행률 ${ptSummary.progressRateLabel}</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="stat-value">0회</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="stat-subtitle">PT 이용권이 없습니다</div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <div class="stat-card">
@@ -298,8 +309,16 @@
                     <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="사용 완료" class="stat-icon">
                     <span class="stat-title">사용 완료</span>
                 </div>
-                <div class="stat-value">8회</div>
-                <div class="stat-subtitle">10월 기준</div>
+                <c:choose>
+                    <c:when test="${not empty ptSummary}">
+                        <div class="stat-value">${ptSummary.usedCount}회</div>
+                        <div class="stat-subtitle">예약 확정 기준</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="stat-value">0회</div>
+                        <div class="stat-subtitle">예약 확정 기준</div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <div class="stat-card">
@@ -307,8 +326,16 @@
                     <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="남은 횟수" class="stat-icon">
                     <span class="stat-title">남은 횟수</span>
                 </div>
-                <div class="stat-value">12회</div>
-                <div class="stat-subtitle">만료일: 2025.12.31</div>
+                <c:choose>
+                    <c:when test="${not empty ptSummary}">
+                        <div class="stat-value">${ptSummary.remainingCount}회</div>
+                        <div class="stat-subtitle">만료일: ${ptSummary.endDateLabel}</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="stat-value">0회</div>
+                        <div class="stat-subtitle">만료일: -</div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 

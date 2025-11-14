@@ -3,8 +3,10 @@ package com.kh.gymhub.controller;
 import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.model.vo.PtScheduleSummary;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
+import com.kh.gymhub.service.PtScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -31,12 +33,14 @@ public class MemberController {
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
+    private final PtScheduleService ptScheduleService;
 
     @Autowired
-    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
+    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService, PtScheduleService ptScheduleService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.ptScheduleService = ptScheduleService;
     }
 
     @GetMapping("/dashboard.me")
@@ -73,7 +77,19 @@ public class MemberController {
     public String memberNotice() { return "notice/noticeList"; }
 
     @GetMapping("/schedule.me")
-    public String memberPtSchedule() { return "member/ptSchedule"; }
+    public String memberPtSchedule(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null) {
+            return "redirect:/";
+        }
+        
+        // PT 스케줄 요약 정보 조회
+        PtScheduleSummary ptSummary = ptScheduleService.getPtScheduleSummary(loginMember.getMemberNo());
+        model.addAttribute("ptSummary", ptSummary);
+        
+        return "member/ptSchedule";
+    }
 
     @GetMapping("/ptBooking.me")
     public String memberptBookingForm() { return "member/ptBookingForm"; }
