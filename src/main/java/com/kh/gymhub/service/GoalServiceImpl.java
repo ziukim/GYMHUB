@@ -51,23 +51,30 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     @Transactional
-    public boolean deleteGoal(int memberNo, int goalManageNo) {
+    public boolean deleteGoal(int goalManageNo, int memberNo) {
+        // 1. goalManageNo로 goalNo 조회
         Integer goalNo = goalMapper.selectGoalNoByManageNo(goalManageNo);
         if (goalNo == null) {
             return false;
         }
 
-        int deletedManage = goalMapper.deleteGoalManage(goalManageNo, memberNo);
-        if (deletedManage <= 0) {
+        // 2. GOAL_MANAGE 삭제 (본인 소유 확인)
+        int deletedCount = goalMapper.deleteGoalManage(goalManageNo, memberNo);
+        if (deletedCount <= 0) {
             return false;
         }
 
-        int remainCount = goalMapper.countGoalManageByGoalNo(goalNo);
-        if (remainCount == 0) {
+        // 3. 해당 GOAL_NO를 참조하는 다른 GOAL_MANAGE가 있는지 확인
+        int remainingCount = goalMapper.countGoalManageByGoalNo(goalNo);
+        if (remainingCount == 0) {
+            // 다른 참조가 없으면 GOAL 테이블에서도 삭제
             goalMapper.deleteGoal(goalNo);
         }
 
         return true;
     }
+
 }
+
+
 

@@ -438,20 +438,27 @@
             flex-shrink: 0;
         }
 
-        .goal-delete-btn {
+        .delete-goal-btn {
             background: transparent;
-            border: 1px solid #8a6a50;
-            color: #8a6a50;
-            padding: 6px 12px;
-            border-radius: 8px;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s;
+            flex-shrink: 0;
         }
 
-        .goal-delete-btn:hover {
-            border-color: #ff6b00;
-            color: #ff6b00;
+        .delete-goal-btn:hover {
+            opacity: 0.7;
         }
+
+        .delete-goal-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
 
         .empty-goal-message {
             text-align: center;
@@ -904,17 +911,12 @@
                     <c:when test="${not empty goals}">
                         <c:forEach var="goal" items="${goals}" varStatus="status">
                             <c:if test="${status.index < 5}">
-                                <div class="goal-item" data-goal-manage-no="${goal.goalManageNo}">
+                                <div class="goal-item">
                                     <div class="goal-text">
                                         <div class="goal-title ${goal.goalStatus eq '달성' ? 'completed' : ''}">${goal.goalTitle}</div>
                                         <div class="goal-subtitle">${goal.goalDate}</div>
                                     </div>
-                                    <button type="button"
-                                            class="goal-delete-btn"
-                                            data-goal-manage-no="${goal.goalManageNo}"
-                                            data-goal-title="${goal.goalTitle}">
-                                        삭제
-                                    </button>
+
                                 </div>
                             </c:if>
                         </c:forEach>
@@ -1268,6 +1270,7 @@
                 const goalClass = goal.goalStatus === '달성' ? 'completed' : '';
                 const title = escapeHtml(goal.goalTitle || '');
                 const date = escapeHtml(goal.goalDate || '');
+                const manageNo = goal.goalManageNo || '';
                 return ''
                     + '<div class="goal-item">'
                     + '    <div class="goal-text">'
@@ -1276,19 +1279,6 @@
                     + '    </div>'
                     + '</div>';
             }).join('');
-        }
-
-        function renderModalGoals() {
-            if (!goalsTab || !completedTab) {
-                return;
-            }
-            const { active, completed } = partitionGoals(goalState.items);
-            goalsTab.innerHTML = active.length
-                ? active.map(createModalGoalItem).join('')
-                : `<div class="empty-goal-message">진행 중인 목표가 없습니다.</div>`;
-            completedTab.innerHTML = completed.length
-                ? completed.map(createModalGoalItem).join('')
-                : `<div class="empty-goal-message">달성한 목표가 없습니다.</div>`;
         }
 
         function createModalGoalItem(goal) {
@@ -1302,10 +1292,59 @@
                 + '        <div class="modal-goal-title ' + goalClass + '">' + title + '</div>'
                 + '        <div class="modal-goal-date">' + date + '</div>'
                 + '    </div>'
-                + '    <button type="button" class="goal-delete-btn" data-goal-manage-no="' + manageNo + '" data-goal-title="' + title + '">'
-                + '        삭제'
+                + '    <button class="delete-goal-btn" data-goal-manage-no="' + manageNo + '" title="삭제">'
+                + '        <img src="' + contextPath + '/resources/images/icon/delete.png" alt="삭제" class="modal-goal-icon">'
                 + '    </button>'
                 + '</div>';
+        }
+
+        function renderModalGoals() {
+            if (!goalsTab || !completedTab) {
+                return;
+            }
+            const { active, completed } = partitionGoals(goalState.items);
+            goalsTab.innerHTML = active.length
+                ? active.map(createModalGoalItem).join('')
+                : `<div class="empty-goal-message">진행 중인 목표가 없습니다.</div>`;
+            completedTab.innerHTML = completed.length
+                ? completed.map(createModalGoalItem).join('')
+                : `<div class="empty-goal-message">달성한 목표가 없습니다.</div>`;
+            
+            // 삭제 버튼 이벤트 리스너 추가
+            attachDeleteListeners();
+        }
+
+        function attachDeleteListeners() {
+            const deleteButtons = document.querySelectorAll('.delete-goal-btn');
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const goalManageNo = btn.getAttribute('data-goal-manage-no');
+                    if (!goalManageNo) return;
+                    
+                    if (!confirm('정말 이 목표를 삭제하시겠습니까?')) {
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`${contextPath}/goals/delete.me`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ goalManageNo: goalManageNo })
+                        });
+                        const data = await response.json().catch(() => ({}));
+                        if (!response.ok || !data.success) {
+                            alert((data && data.message) || '목표 삭제에 실패했습니다.');
+                            return;
+                        }
+                        alert('목표가 삭제되었습니다.');
+                        await fetchGoals(false);
+                    } catch (error) {
+                        console.error('Failed to delete goal', error);
+                        alert('목표 삭제 중 오류가 발생했습니다.');
+                    }
+                });
+            });
         }
 
         async function handleAddGoal() {
@@ -1343,31 +1382,6 @@
             } finally {
                 isSubmittingGoal = false;
                 submitAddGoalBtn.disabled = false;
-            }
-        }
-
-        async function handleDeleteGoal(goalManageNo, goalTitle) {
-            if (!goalManageNo) {
-                return;
-            }
-            const confirmDelete = confirm(`"${goalTitle}" 목표를 삭제하시겠습니까?`);
-            if (!confirmDelete) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${contextPath}/goals.me?goalManageNo=${goalManageNo}`, {
-                    method: 'DELETE'
-                });
-                const data = await response.json().catch(() => ({}));
-                if (!response.ok || !data.success) {
-                    alert((data && data.message) || '목표 삭제에 실패했습니다.');
-                    return;
-                }
-                await fetchGoals(false);
-            } catch (error) {
-                console.error('Failed to delete goal', error);
-                alert('목표 삭제 중 오류가 발생했습니다.');
             }
         }
 
@@ -1450,13 +1464,6 @@
             });
         }
 
-        document.addEventListener('click', (e) => {
-            if (e.target && e.target.classList.contains('goal-delete-btn')) {
-                const goalManageNo = e.target.dataset.goalManageNo;
-                const goalTitle = e.target.dataset.goalTitle || '선택한';
-                handleDeleteGoal(goalManageNo, goalTitle);
-            }
-        });
 
         const videoCards = document.querySelectorAll('.video-card');
         videoCards.forEach((card) => {

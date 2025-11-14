@@ -13,8 +13,10 @@ public interface GoalMapper {
     int insertGoal(MemberGoal memberGoal);
     int insertGoalManage(MemberGoal memberGoal);
     Integer selectGoalNoByManageNo(@Param("goalManageNo") int goalManageNo);
-    int deleteGoalManage(@Param("goalManageNo") int goalManageNo, @Param("memberNo") int memberNo);
     int countGoalManageByGoalNo(@Param("goalNo") int goalNo);
+    int deleteGoalManage(@Param("goalManageNo") int goalManageNo, @Param("memberNo") int memberNo);
     int deleteGoal(@Param("goalNo") int goalNo);
 }
+
+
 

@@ -22,3 +22,5 @@ public class MemberGoal {
     private String goalDate;
 }
 
+
+

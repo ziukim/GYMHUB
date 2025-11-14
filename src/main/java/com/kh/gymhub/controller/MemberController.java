@@ -16,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -139,7 +138,7 @@ public class MemberController {
         }
     }
 
-    @DeleteMapping("/goals.me")
+    @PostMapping("/goals/delete.me")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteGoal(@RequestParam int goalManageNo, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
@@ -151,14 +150,22 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        boolean deleted = goalService.deleteGoal(loginMember.getMemberNo(), goalManageNo);
-        if (deleted) {
-            response.put("success", true);
-            return ResponseEntity.ok(response);
-        } else {
+        try {
+            boolean deleted = goalService.deleteGoal(goalManageNo, loginMember.getMemberNo());
+            if (deleted) {
+                response.put("success", true);
+                response.put("message", "목표가 삭제되었습니다.");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "목표 삭제에 실패했습니다. 권한이 없거나 존재하지 않는 목표입니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             response.put("success", false);
-            response.put("message", "삭제할 목표를 찾을 수 없습니다.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            response.put("message", "목표 삭제 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

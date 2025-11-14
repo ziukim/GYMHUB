@@ -16,19 +16,19 @@
 
     <select id="selectMemberGoals" parameterType="int" resultMap="memberGoalResultMap">
         SELECT
-            GM.GOAL_MANAGE_NO AS goalManageNo,
-            GM.MEMBER_NO AS memberNo,
-            G.GOAL_NO AS goalNo,
-            G.GOAL_TITLE AS goalTitle,
-            G.GOAL_STATUS AS goalStatus,
-            TO_CHAR(GM.GOAL_ENROLL_DATE, 'YYYY.MM.DD') AS goalDate
+        GM.GOAL_MANAGE_NO AS goalManageNo,
+        GM.MEMBER_NO AS memberNo,
+        G.GOAL_NO AS goalNo,
+        G.GOAL_TITLE AS goalTitle,
+        G.GOAL_STATUS AS goalStatus,
+        TO_CHAR(GM.GOAL_ENROLL_DATE, 'YYYY.MM.DD') AS goalDate
         FROM GOAL_MANAGE GM
         JOIN GOAL G ON GM.GOAL_NO = G.GOAL_NO
         WHERE GM.MEMBER_NO = #{memberNo}
         ORDER BY
-            CASE WHEN G.GOAL_STATUS = '미달성' THEN 0 ELSE 1 END,
-            GM.GOAL_ENROLL_DATE DESC,
-            GM.GOAL_MANAGE_NO DESC
+        CASE WHEN G.GOAL_STATUS = '미달성' THEN 0 ELSE 1 END,
+        GM.GOAL_ENROLL_DATE DESC,
+        GM.GOAL_MANAGE_NO DESC
     </select>
 
     <select id="selectGoalByManageNo" parameterType="int" resultMap="memberGoalResultMap">
@@ -66,17 +66,17 @@
         WHERE GOAL_MANAGE_NO = #{goalManageNo}
     </select>
 
-    <delete id="deleteGoalManage">
-        DELETE FROM GOAL_MANAGE
-        WHERE GOAL_MANAGE_NO = #{goalManageNo}
-          AND MEMBER_NO = #{memberNo}
-    </delete>
-
     <select id="countGoalManageByGoalNo" parameterType="int" resultType="int">
         SELECT COUNT(*)
         FROM GOAL_MANAGE
         WHERE GOAL_NO = #{goalNo}
     </select>
+
+    <delete id="deleteGoalManage">
+        DELETE FROM GOAL_MANAGE
+        WHERE GOAL_MANAGE_NO = #{goalManageNo}
+        AND MEMBER_NO = #{memberNo}
+    </delete>
 
     <delete id="deleteGoal" parameterType="int">
         DELETE FROM GOAL

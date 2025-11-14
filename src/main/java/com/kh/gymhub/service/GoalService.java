@@ -7,6 +7,8 @@ import java.util.List;
 public interface GoalService {
     List<MemberGoal> getGoalsByMember(int memberNo);
     MemberGoal addGoal(int memberNo, String goalTitle);
-    boolean deleteGoal(int memberNo, int goalManageNo);
+    boolean deleteGoal(int goalManageNo, int memberNo);
 }
+
+
 
