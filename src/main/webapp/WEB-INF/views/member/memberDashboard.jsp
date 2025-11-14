@@ -408,10 +408,12 @@
             align-items: center;
             gap: 12px;
             min-height: 83px;
+            justify-content: space-between;
         }
 
         .modal-goal-text {
             flex: 1;
+            margin-right: 12px;
         }
 
         .modal-goal-title {
@@ -434,6 +436,30 @@
             width: 20px;
             height: 20px;
             flex-shrink: 0;
+        }
+
+        .goal-delete-btn {
+            background: transparent;
+            border: 1px solid #8a6a50;
+            color: #8a6a50;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .goal-delete-btn:hover {
+            border-color: #ff6b00;
+            color: #ff6b00;
+        }
+
+        .empty-goal-message {
+            text-align: center;
+            padding: 20px;
+            color: #8a6a50;
+            border: 1px solid #2d1810;
+            border-radius: 10px;
+            background: #1a0f0a;
         }
 
         /* Goal Input */
@@ -878,11 +904,17 @@
                     <c:when test="${not empty goals}">
                         <c:forEach var="goal" items="${goals}" varStatus="status">
                             <c:if test="${status.index < 5}">
-                                <div class="goal-item">
+                                <div class="goal-item" data-goal-manage-no="${goal.goalManageNo}">
                                     <div class="goal-text">
                                         <div class="goal-title ${goal.goalStatus eq '달성' ? 'completed' : ''}">${goal.goalTitle}</div>
                                         <div class="goal-subtitle">${goal.goalDate}</div>
                                     </div>
+                                    <button type="button"
+                                            class="goal-delete-btn"
+                                            data-goal-manage-no="${goal.goalManageNo}"
+                                            data-goal-title="${goal.goalTitle}">
+                                        삭제
+                                    </button>
                                 </div>
                             </c:if>
                         </c:forEach>
@@ -1135,18 +1167,17 @@
 </div>
 
 <script>
-    // 기존 스크립트에 추가할 내용
     document.addEventListener('DOMContentLoaded', function() {
-        // ========== 기존 코드 시작 ==========
-        // Modal 관련 요소
-        const modal = document.getElementById('goalModal');
-        const openBtn = document.getElementById('goalManagementBtn');
-        const closeBtn = document.getElementById('closeModalBtn');
+        const contextPath = '${pageContext.request.contextPath}';
+
+        const goalModal = document.getElementById('goalModal');
+        const goalManagementBtn = document.getElementById('goalManagementBtn');
+        const closeGoalModalBtn = document.getElementById('closeModalBtn');
         const tabButtons = document.querySelectorAll('.tab-button');
         const goalsTab = document.getElementById('goalsTab');
         const completedTab = document.getElementById('completedTab');
+        const dashboardGoalsList = document.getElementById('dashboardGoalsList');
 
-        // Add Goal Modal 관련 요소
         const addGoalModal = document.getElementById('addGoalModal');
         const addGoalBtn = document.getElementById('addGoalBtn');
         const closeAddGoalBtn = document.getElementById('closeAddGoalBtn');
@@ -1154,43 +1185,228 @@
         const submitAddGoalBtn = document.getElementById('submitAddGoalBtn');
         const goalInput = document.getElementById('goalInput');
 
-        // Video Detail Modal 관련 요소
         const videoDetailModal = document.getElementById('videoDetailModal');
         const closeVideoDetailBtn = document.getElementById('closeVideoDetailBtn');
-        const videoCards = document.querySelectorAll('.video-card');
+        const videoPlayerFrame = document.getElementById('videoPlayerFrame');
+        const videoListModal = document.getElementById('videoListModal');
+        const videoListBtn = document.getElementById('videoListBtn');
+        const closeVideoListBtn = document.getElementById('closeVideoListBtn');
 
-        // 목표 관리 모달 열기
-        if (openBtn) {
-            openBtn.addEventListener('click', function() {
-                modal.classList.add('active');
+        const goalState = {
+            items: []
+        };
+        let isSubmittingGoal = false;
+
+        async function fetchGoals(showError = true) {
+            if (!dashboardGoalsList) return;
+            try {
+                const response = await fetch(`${contextPath}/goals.me`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json().catch(() => []);
+                if (!response.ok) {
+                    if (showError) {
+                        alert((data && data.message) || '목표를 불러오지 못했습니다.');
+                    }
+                    return;
+                }
+                goalState.items = sortGoals(Array.isArray(data) ? data : []);
+                renderDashboardGoals();
+                renderModalGoals();
+            } catch (error) {
+                console.error('Failed to load goals', error);
+                if (showError) {
+                    alert('목표를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            }
+        }
+
+        function partitionGoals(goals) {
+            return goals.reduce((acc, goal) => {
+                if (goal.goalStatus === '달성') {
+                    acc.completed.push(goal);
+                } else {
+                    acc.active.push(goal);
+                }
+                return acc;
+            }, { active: [], completed: [] });
+        }
+
+        function sortGoals(goals) {
+            return [...goals].sort((a, b) => {
+                const aStatus = a.goalStatus === '달성' ? 1 : 0;
+                const bStatus = b.goalStatus === '달성' ? 1 : 0;
+                if (aStatus !== bStatus) {
+                    return aStatus - bStatus;
+                }
+
+                const aTime = parseGoalDate(a.goalDate);
+                const bTime = parseGoalDate(b.goalDate);
+                return bTime - aTime;
             });
         }
 
-        // 목표 관리 모달 닫기
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                modal.classList.remove('active');
-            });
+        function parseGoalDate(dateStr) {
+            if (!dateStr) return 0;
+            const normalized = dateStr.replace(/\./g, '-');
+            const time = Date.parse(normalized);
+            return Number.isNaN(time) ? 0 : time;
         }
 
-        // 목표 관리 모달 오버레이 클릭시 닫기
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
+        function renderDashboardGoals() {
+            if (!dashboardGoalsList) return;
+            const displayGoals = goalState.items.slice(0, 5);
+            if (displayGoals.length === 0) {
+                dashboardGoalsList.innerHTML = ''
+                    + '<div style="text-align: center; padding: 60px 20px; color: #8a6a50;">'
+                    + '    <p style="margin: 0;">등록된 운동 목표가 없습니다</p>'
+                    + '</div>';
+                return;
+            }
+
+            dashboardGoalsList.innerHTML = displayGoals.map(goal => {
+                const goalClass = goal.goalStatus === '달성' ? 'completed' : '';
+                const title = escapeHtml(goal.goalTitle || '');
+                const date = escapeHtml(goal.goalDate || '');
+                return ''
+                    + '<div class="goal-item">'
+                    + '    <div class="goal-text">'
+                    + '        <div class="goal-title ' + goalClass + '">' + title + '</div>'
+                    + '        <div class="goal-subtitle">' + date + '</div>'
+                    + '    </div>'
+                    + '</div>';
+            }).join('');
+        }
+
+        function renderModalGoals() {
+            if (!goalsTab || !completedTab) {
+                return;
+            }
+            const { active, completed } = partitionGoals(goalState.items);
+            goalsTab.innerHTML = active.length
+                ? active.map(createModalGoalItem).join('')
+                : `<div class="empty-goal-message">진행 중인 목표가 없습니다.</div>`;
+            completedTab.innerHTML = completed.length
+                ? completed.map(createModalGoalItem).join('')
+                : `<div class="empty-goal-message">달성한 목표가 없습니다.</div>`;
+        }
+
+        function createModalGoalItem(goal) {
+            const goalClass = goal.goalStatus === '달성' ? 'completed' : '';
+            const title = escapeHtml(goal.goalTitle || '');
+            const date = escapeHtml(goal.goalDate || '');
+            const manageNo = goal.goalManageNo || '';
+            return ''
+                + '<div class="modal-goal-item" data-goal-manage-no="' + manageNo + '">'
+                + '    <div class="modal-goal-text">'
+                + '        <div class="modal-goal-title ' + goalClass + '">' + title + '</div>'
+                + '        <div class="modal-goal-date">' + date + '</div>'
+                + '    </div>'
+                + '    <button type="button" class="goal-delete-btn" data-goal-manage-no="' + manageNo + '" data-goal-title="' + title + '">'
+                + '        삭제'
+                + '    </button>'
+                + '</div>';
+        }
+
+        async function handleAddGoal() {
+            if (!goalInput || isSubmittingGoal) {
+                return;
+            }
+            const title = goalInput.value.trim();
+            if (!title) {
+                alert('목표를 입력해주세요.');
+                goalInput.focus();
+                return;
+            }
+
+            isSubmittingGoal = true;
+            submitAddGoalBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${contextPath}/goals.me`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ goalTitle: title })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || !data.success) {
+                    alert((data && data.message) || '목표 추가에 실패했습니다.');
+                    return;
+                }
+                alert('새로운 목표가 등록되었습니다.');
+                goalInput.value = '';
+                addGoalModal.classList.remove('active');
+                await fetchGoals(false);
+            } catch (error) {
+                console.error('Failed to add goal', error);
+                alert('목표 추가 중 오류가 발생했습니다.');
+            } finally {
+                isSubmittingGoal = false;
+                submitAddGoalBtn.disabled = false;
+            }
+        }
+
+        async function handleDeleteGoal(goalManageNo, goalTitle) {
+            if (!goalManageNo) {
+                return;
+            }
+            const confirmDelete = confirm(`"${goalTitle}" 목표를 삭제하시겠습니까?`);
+            if (!confirmDelete) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${contextPath}/goals.me?goalManageNo=${goalManageNo}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || !data.success) {
+                    alert((data && data.message) || '목표 삭제에 실패했습니다.');
+                    return;
+                }
+                await fetchGoals(false);
+            } catch (error) {
+                console.error('Failed to delete goal', error);
+                alert('목표 삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        function closeGoalModal() {
+            if (goalModal) {
+                goalModal.classList.remove('active');
+            }
+        }
+
+        function closeAddGoalModal() {
+            if (addGoalModal) {
+                addGoalModal.classList.remove('active');
+                if (goalInput) {
+                    goalInput.value = '';
+                }
+            }
+        }
+
+        if (goalManagementBtn && goalModal) {
+            goalManagementBtn.addEventListener('click', () => {
+                fetchGoals(false);
+                goalModal.classList.add('active');
+            });
+        }
+        if (closeGoalModalBtn) {
+            closeGoalModalBtn.addEventListener('click', closeGoalModal);
+        }
+        if (goalModal) {
+            goalModal.addEventListener('click', (e) => {
+                if (e.target === goalModal) {
+                    closeGoalModal();
                 }
             });
         }
-
-        // 탭 전환
-        tabButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                tabButtons.forEach(function(btn) {
-                    btn.classList.remove('active');
-                });
+        tabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach((btn) => btn.classList.remove('active'));
                 button.classList.add('active');
-
-                const tab = button.getAttribute('data-tab');
+                const tab = button.dataset.tab;
                 if (tab === 'goals') {
                     goalsTab.style.display = 'block';
                     completedTab.style.display = 'none';
@@ -1201,268 +1417,150 @@
             });
         });
 
-        // 목표 추가 모달 열기
-        if (addGoalBtn) {
-            addGoalBtn.addEventListener('click', function() {
+        if (addGoalBtn && addGoalModal) {
+            addGoalBtn.addEventListener('click', () => {
                 addGoalModal.classList.add('active');
                 if (goalInput) {
                     goalInput.focus();
                 }
             });
         }
-
-        // 목표 추가 모달 닫기
         if (closeAddGoalBtn) {
-            closeAddGoalBtn.addEventListener('click', function() {
-                addGoalModal.classList.remove('active');
-                if (goalInput) {
-                    goalInput.value = '';
-                }
-            });
+            closeAddGoalBtn.addEventListener('click', closeAddGoalModal);
         }
-
         if (cancelAddGoalBtn) {
-            cancelAddGoalBtn.addEventListener('click', function() {
-                addGoalModal.classList.remove('active');
-                if (goalInput) {
-                    goalInput.value = '';
-                }
-            });
+            cancelAddGoalBtn.addEventListener('click', closeAddGoalModal);
         }
-
-        // 목표 추가 모달 오버레이 클릭시 닫기
         if (addGoalModal) {
-            addGoalModal.addEventListener('click', function(e) {
+            addGoalModal.addEventListener('click', (e) => {
                 if (e.target === addGoalModal) {
-                    addGoalModal.classList.remove('active');
-                    if (goalInput) {
-                        goalInput.value = '';
-                    }
+                    closeAddGoalModal();
                 }
             });
         }
-
-        // 목표 제출
         if (submitAddGoalBtn) {
-            submitAddGoalBtn.addEventListener('click', function() {
-                if (goalInput) {
-                    const goal = goalInput.value.trim();
-                    if (goal) {
-                        console.log('새 목표:', goal);
-                        alert('목표가 추가되었습니다: ' + goal);
-                        addGoalModal.classList.remove('active');
-                        goalInput.value = '';
-                    } else {
-                        alert('목표를 입력해주세요.');
-                    }
-                }
-            });
+            submitAddGoalBtn.addEventListener('click', handleAddGoal);
         }
-
-        // Enter 키로 제출
         if (goalInput) {
-            goalInput.addEventListener('keypress', function(e) {
+            goalInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    submitAddGoalBtn.click();
+                    e.preventDefault();
+                    handleAddGoal();
                 }
             });
         }
 
-        // 비디오 카드 클릭시 모달 열기
-        videoCards.forEach(function(card) {
-            card.addEventListener('click', function() {
-                var title = card.querySelector('.video-title').textContent;
-                var author = card.querySelector('.video-author').textContent;
-                var videoUrl = card.getAttribute('data-video-url');
-
-                document.getElementById('videoModalTitle').textContent = title;
-                document.getElementById('videoModalAuthor').textContent = author;
-
-                // YouTube 영상 재생
-                var embedUrl = convertToEmbedUrl(videoUrl);
-                if (embedUrl) {
-                    document.getElementById('videoPlayerFrame').src = embedUrl;
-                } else {
-                    alert('유효하지 않은 YouTube URL입니다.');
-                    return;
-                }
-
-                videoDetailModal.classList.add('active');
-            });
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.classList.contains('goal-delete-btn')) {
+                const goalManageNo = e.target.dataset.goalManageNo;
+                const goalTitle = e.target.dataset.goalTitle || '선택한';
+                handleDeleteGoal(goalManageNo, goalTitle);
+            }
         });
 
-        // 비디오 상세 모달 닫기
-        if (closeVideoDetailBtn) {
-            closeVideoDetailBtn.addEventListener('click', function() {
-                videoDetailModal.classList.remove('active');
-                // iframe 비워서 영상 중지
-                document.getElementById('videoPlayerFrame').src = '';
-            });
-        }
-
-        // 비디오 상세 모달 오버레이 클릭시 닫기
-        if (videoDetailModal) {
-            videoDetailModal.addEventListener('click', function(e) {
-                if (e.target === videoDetailModal) {
-                    videoDetailModal.classList.remove('active');
-                    // iframe 비워서 영상 중지
-                    document.getElementById('videoPlayerFrame').src = '';
-                }
-            });
-        }
-
-        // 목표 체크박스 기능
-        const goalCheckboxes = document.querySelectorAll('.goal-checkbox');
-        goalCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                const circlePath = this.querySelector('.circle-path');
-                const checkPath = this.querySelector('.check-path');
-                const goalItem = this.closest('.modal-goal-item');
-                const goalTitle = goalItem.querySelector('.modal-goal-title');
-                const goalsTab = document.getElementById('goalsTab');
-                const completedTab = document.getElementById('completedTab');
-
-                const isChecked = checkPath.style.display === 'block';
-
-                if (isChecked) {
-                    // 체크 해제
-                    checkPath.style.display = 'none';
-                    circlePath.setAttribute('stroke', '#8A6A50');
-                    goalTitle.classList.remove('completed');
-
-                    // 달성한 목표 탭에서 해당 목표 찾아서 삭제
-                    const completedItems = completedTab.querySelectorAll('.modal-goal-item');
-                    completedItems.forEach(function(item) {
-                        if (item.querySelector('.modal-goal-title').textContent === goalTitle.textContent) {
-                            item.remove();
-                        }
-                    });
-                } else {
-                    // 체크 (목표 달성)
-                    checkPath.style.display = 'block';
-                    circlePath.setAttribute('stroke', '#FF6B00');
-                    goalTitle.classList.add('completed');
-                    goalsTab.appendChild(goalItem);
-
-                    // 달성한 목표 탭으로 복사
-                    const clonedItem = goalItem.cloneNode(true);
-                    completedTab.appendChild(clonedItem);
-
-                    // 복사된 항목의 체크박스에 이벤트 리스너 추가
-                    const newCheckbox = clonedItem.querySelector('.goal-checkbox');
-                    addCheckboxEvent(newCheckbox);
+        const videoCards = document.querySelectorAll('.video-card');
+        videoCards.forEach((card) => {
+            card.addEventListener('click', () => {
+                openVideoDetail(card);
+                if (videoListModal && card.closest('#videoListModal')) {
+                    videoListModal.classList.remove('active');
                 }
             });
         });
 
-        // 체크박스 이벤트를 추가하는 함수 (달성한 목표 탭용)
-        function addCheckboxEvent(checkbox) {
-            checkbox.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                const goalItem = this.closest('.modal-goal-item');
-                const goalTitle = goalItem.querySelector('.modal-goal-title');
-
-                // 달성한 목표에서 삭제
-                if (confirm('이 목표를 삭제하시겠습니까?')) {
-                    goalItem.remove();
-
-                    // 목표 탭에서도 완전히 삭제
-                    const goalsTab = document.getElementById('goalsTab');
-                    const goalItems = goalsTab.querySelectorAll('.modal-goal-item');
-                    goalItems.forEach(function(item) {
-                        const title = item.querySelector('.modal-goal-title');
-                        if (title.textContent === goalTitle.textContent) {
-                            item.remove();
-                        }
-                    });
-                }
-            });
-        }
-        // ========== 기존 코드 끝 ==========
-
-        // ========== 추가된 코드: 운동 영상 리스트 모달 ==========
-        const videoListModal = document.getElementById('videoListModal');
-        const videoListBtn = document.getElementById('videoListBtn');
-        const closeVideoListBtn = document.getElementById('closeVideoListBtn');
-
-        // 운동 영상 리스트 모달 열기
-        if (videoListBtn) {
-            videoListBtn.addEventListener('click', function() {
+        if (videoListBtn && videoListModal) {
+            videoListBtn.addEventListener('click', () => {
                 videoListModal.classList.add('active');
             });
         }
-
-        // 운동 영상 리스트 모달 닫기
         if (closeVideoListBtn) {
-            closeVideoListBtn.addEventListener('click', function() {
+            closeVideoListBtn.addEventListener('click', () => {
                 videoListModal.classList.remove('active');
             });
         }
-
-        // 운동 영상 리스트 모달 오버레이 클릭시 닫기
         if (videoListModal) {
-            videoListModal.addEventListener('click', function(e) {
+            videoListModal.addEventListener('click', (e) => {
                 if (e.target === videoListModal) {
                     videoListModal.classList.remove('active');
                 }
             });
         }
 
-        // 리스트 모달 안의 비디오 카드 클릭시 상세 모달 열기
-        var videoListModalCards = videoListModal.querySelectorAll('.video-card');
-        videoListModalCards.forEach(function(card) {
-            card.addEventListener('click', function() {
-                var title = card.querySelector('.video-title').textContent;
-                var author = card.querySelector('.video-author').textContent;
-                var videoUrl = card.getAttribute('data-video-url');
+        function openVideoDetail(card) {
+            if (!videoDetailModal || !card) {
+                return;
+            }
+            const title = card.querySelector('.video-title')?.textContent || '';
+            const author = card.querySelector('.video-author')?.textContent || '';
+            const videoUrl = card.getAttribute('data-video-url');
 
-                document.getElementById('videoModalTitle').textContent = title;
-                document.getElementById('videoModalAuthor').textContent = author;
+            document.getElementById('videoModalTitle').textContent = title;
+            document.getElementById('videoModalAuthor').textContent = author;
 
-                // YouTube 영상 재생
-                var embedUrl = convertToEmbedUrl(videoUrl);
-                if (embedUrl) {
-                    document.getElementById('videoPlayerFrame').src = embedUrl;
-                } else {
-                    alert('유효하지 않은 YouTube URL입니다.');
-                    return;
-                }
+            const embedUrl = convertToEmbedUrl(videoUrl);
+            if (!embedUrl) {
+                alert('유효하지 않은 YouTube URL입니다.');
+                return;
+            }
+            videoPlayerFrame.src = embedUrl;
+            videoDetailModal.classList.add('active');
+        }
 
-                videoListModal.classList.remove('active');
-                videoDetailModal.classList.add('active');
+        if (closeVideoDetailBtn && videoDetailModal) {
+            closeVideoDetailBtn.addEventListener('click', () => {
+                videoDetailModal.classList.remove('active');
+                videoPlayerFrame.src = '';
             });
-        });
+        }
+        if (videoDetailModal) {
+            videoDetailModal.addEventListener('click', (e) => {
+                if (e.target === videoDetailModal) {
+                    videoDetailModal.classList.remove('active');
+                    videoPlayerFrame.src = '';
+                }
+            });
+        }
 
-        // ESC 키로 모달 닫기 (모든 모달 포함)
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (modal && modal.classList.contains('active')) {
-                    modal.classList.remove('active');
-                }
-                if (addGoalModal && addGoalModal.classList.contains('active')) {
-                    addGoalModal.classList.remove('active');
-                    if (goalInput) {
-                        goalInput.value = '';
-                    }
-                }
+                closeGoalModal();
+                closeAddGoalModal();
                 if (videoDetailModal && videoDetailModal.classList.contains('active')) {
                     videoDetailModal.classList.remove('active');
-                    document.getElementById('videoPlayerFrame').src = '';
+                    videoPlayerFrame.src = '';
                 }
                 if (videoListModal && videoListModal.classList.contains('active')) {
                     videoListModal.classList.remove('active');
                 }
             }
         });
+
+        document.querySelectorAll('.video-thumbnail-img').forEach((img) => {
+            const videoUrl = img.getAttribute('data-video-url');
+            if (videoUrl) {
+                img.src = getYouTubeThumbnail(videoUrl);
+            }
+        });
+
+        fetchGoals(false);
     });
-    // YouTube 썸네일 설정 함수
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function getYouTubeThumbnail(url) {
         if (!url) return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
 
-        var videoId = '';
+        let videoId = '';
         if (url.includes('youtube.com/watch?v=')) {
             videoId = url.split('v=')[1].split('&')[0];
         } else if (url.includes('youtu.be/')) {
@@ -1475,11 +1573,10 @@
         return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
     }
 
-    // YouTube URL을 embed URL로 변환
     function convertToEmbedUrl(url) {
         if (!url) return '';
 
-        var videoId = '';
+        let videoId = '';
         if (url.includes('youtube.com/watch?v=')) {
             videoId = url.split('v=')[1].split('&')[0];
         } else if (url.includes('youtu.be/')) {
@@ -1493,15 +1590,7 @@
         }
         return '';
     }
-
-    // 모든 비디오 썸네일 이미지에 대해 YouTube 썸네일 설정
-    var thumbnailImgs = document.querySelectorAll('.video-thumbnail-img');
-    thumbnailImgs.forEach(function(img) {
-        var videoUrl = img.getAttribute('data-video-url');
-        if (videoUrl) {
-            img.src = getYouTubeThumbnail(videoUrl);
-        }
-    });
 </script>
 </body>
 </html>
+

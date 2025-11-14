@@ -41,7 +41,7 @@
     <!-- 현재 혼잡도 조회 -->
     <select id="selectCongestionInfo" resultType="hashmap">
         SELECT
-        NVL(COUNT(DISTINCT MEMBER_NO), 0) AS currentCount,
+        COUNT(DISTINCT MEMBER_NO) AS currentCount,
         TO_CHAR(SYSDATE, 'YYYY"년" MM"월" DD"일"') AS currentDate,
         TO_CHAR(SYSDATE, 'HH24:MI') AS currentTime
         FROM ATTENDANCE

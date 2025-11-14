@@ -3,20 +3,26 @@ package com.kh.gymhub.controller;
 import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.model.vo.MemberGoal;
+import com.kh.gymhub.service.GoalService;
 import com.kh.gymhub.service.DashboardService;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
+import com.kh.gymhub.service.AttendanceService;
 
 import java.io.File;
 import java.sql.Date;
@@ -34,13 +40,22 @@ public class MemberController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
     private final DashboardService dashboardService;
+    private final GoalService goalService;
+    private final AttendanceService attendanceService;
 
     @Autowired
-    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService,  DashboardService dashboardService) {
+    public MemberController(MemberService memberService,
+                            BCryptPasswordEncoder bCryptPasswordEncoder,
+                            InbodyService inbodyService,
+                            DashboardService dashboardService,
+                            GoalService goalService,
+                            AttendanceService attendanceService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.dashboardService = dashboardService;
+        this.goalService = goalService;
+        this.attendanceService = attendanceService;
     }
 
     @GetMapping("/dashboard.me")
@@ -74,7 +89,77 @@ public class MemberController {
             model.addAttribute("hasGym", false);
         }
 
+        List<MemberGoal> goals = goalService.getGoalsByMember(loginMember.getMemberNo());
+        model.addAttribute("goals", goals);
+
         return "member/memberDashboard";
+    }
+
+    @GetMapping("/goals.me")
+    @ResponseBody
+    public ResponseEntity<?> getGoals(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        List<MemberGoal> goals = goalService.getGoalsByMember(loginMember.getMemberNo());
+        return ResponseEntity.ok(goals);
+    }
+
+    @PostMapping("/goals.me")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addGoal(@RequestParam String goalTitle, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            MemberGoal newGoal = goalService.addGoal(loginMember.getMemberNo(), goalTitle);
+            response.put("success", true);
+            response.put("goal", newGoal);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "목표 추가 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @DeleteMapping("/goals.me")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteGoal(@RequestParam int goalManageNo, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        boolean deleted = goalService.deleteGoal(loginMember.getMemberNo(), goalManageNo);
+        if (deleted) {
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("success", false);
+            response.put("message", "삭제할 목표를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     @GetMapping("/videoList.me")
@@ -107,6 +192,15 @@ public class MemberController {
                     dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
             model.addAttribute("membership", dashboardData.get("membership"));
             model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+
+            // 출석 통계 데이터 추가
+            Map<String, Object> attendanceStats =
+                    attendanceService.getAttendanceStats(loginMember.getMemberNo(), gymNo);
+            List<Map<String, Object>> attendanceList =
+                    attendanceService.getAttendanceList(loginMember.getMemberNo(), gymNo);
+
+            model.addAttribute("attendanceStats", attendanceStats);
+            model.addAttribute("attendanceList", attendanceList);
 
         } else {
             model.addAttribute("hasGym", false);

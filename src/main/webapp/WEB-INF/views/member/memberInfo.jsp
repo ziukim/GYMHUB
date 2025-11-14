@@ -373,56 +373,67 @@
 
         <!-- 출석 통계 탭 -->
         <section id="attendanceTab" class="tab-content">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-card-label">총 출석 일수</div>
-                    <div class="stat-card-value">124일</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-label">이번 달 출석</div>
-                    <div class="stat-card-value">18일</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-label">주 평균 출석</div>
-                    <div class="stat-card-value">4.5회</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-label">총 운동 시간</div>
-                    <div class="stat-card-value">186시간</div>
-                </div>
-            </div>
-            <div class="section">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>출석일</th>
-                        <th>입장 시간</th>
-                        <th>퇴장 시간</th>
-                        <th>운동 시간</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>2025. 11. 5.</td>
-                        <td style="color: #4caf50;">18:23</td>
-                        <td style="color: #ff4444;">20:45</td>
-                        <td style="color: #ffa366;">2시간 22분</td>
-                    </tr>
-                    <tr>
-                        <td>2025. 11. 4.</td>
-                        <td style="color: #4caf50;">07:15</td>
-                        <td style="color: #ff4444;">09:30</td>
-                        <td style="color: #ffa366;">2시간 15분</td>
-                    </tr>
-                    <tr>
-                        <td>2025. 11. 3.</td>
-                        <td style="color: #4caf50;">19:00</td>
-                        <td style="color: #ff4444;">21:10</td>
-                        <td style="color: #ffa366;">2시간 10분</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <c:choose>
+                <c:when test="${not empty attendanceStats}">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">총 출석 일수</div>
+                            <div class="stat-card-value">${attendanceStats.TOTAL_DAYS}일</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">이번 달 출석</div>
+                            <div class="stat-card-value">${attendanceStats.THIS_MONTH_DAYS}일</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">주 평균 출석</div>
+                            <div class="stat-card-value">${attendanceStats.WEEKLY_AVG}회</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">총 운동 시간</div>
+                            <div class="stat-card-value">${attendanceStats.TOTAL_HOURS}시간</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>출석일</th>
+                                <th>입장 시간</th>
+                                <th>퇴장 시간</th>
+                                <th>운동 시간</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:choose>
+                                <c:when test="${not empty attendanceList}">
+                                    <c:forEach var="att" items="${attendanceList}">
+                                        <tr>
+                                            <td>${att.ATTENDANCE_DATE}</td>
+                                            <td style="color: #4caf50;">${att.CHECK_IN_TIME != null ? att.CHECK_IN_TIME : '-'}</td>
+                                            <td style="color: #ff4444;">${att.CHECK_OUT_TIME != null ? att.CHECK_OUT_TIME : '-'}</td>
+                                            <td style="color: #ffa366;">${att.EXERCISE_DURATION}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: #8a6a50; padding: 40px;">
+                                            출석 기록이 없습니다.
+                                        </td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div style="text-align: center; padding: 40px; color: #8a6a50;">
+                        <p>헬스장에 등록되지 않았거나 출석 기록이 없습니다.</p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </section>
     </div>
 </div>
