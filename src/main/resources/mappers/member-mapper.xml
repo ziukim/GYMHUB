@@ -239,4 +239,6 @@
         MEMBER_UPDATEAT = SYSDATE
         WHERE MEMBER_NO = #{memberNo}
     </update>
+
+
 </mapper>

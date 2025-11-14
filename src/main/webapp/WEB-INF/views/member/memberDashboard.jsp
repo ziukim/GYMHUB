@@ -172,6 +172,13 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .play-button {
@@ -186,6 +193,8 @@
             color: #ff6b00;
             font-size: 20px;
             transition: background 0.3s;
+            position: relative;
+            z-index: 1;
         }
 
         .play-button:hover {
@@ -538,119 +547,315 @@
 
         <!-- Top Cards -->
         <div class="card-grid">
-            <!-- Membership Card -->
-            <div class="card">
-                <div class="card-title">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
-                    </span>
-                    회원권 정보
-                    <span style="margin-left: auto; color: #8a6a50; font-size: 14px;">남은 기간</span>
-                    <span style="color: #ff6b00; font-size: 14px;">89일</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">이용권</span>
-                    <span class="info-value">6개월 회원권</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">시작일</span>
-                    <span class="info-value">2025.08.01</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">종료일</span>
-                    <span class="info-value">2026.01.31</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">락커 번호</span>
-                    <span class="info-value highlight">12번</span>
-                </div>
-            </div>
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <!-- 회원권 정보 카드 -->
+                    <div class="card">
+                        <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                        </span>
+                            회원권 정보
+                            <c:if test="${not empty membership}">
+                                <span style="margin-left: auto; color: #8a6a50; font-size: 14px;">남은 기간</span>
+                                <span style="color: #ff6b00; font-size: 14px;">${membership.REMAININGDAYS}일</span>
+                            </c:if>
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty membership}">
+                                <div class="info-row">
+                                    <span class="info-label">이용권</span>
+                                    <span class="info-value">${membership.MEMBERSHIPNAME}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">시작일</span>
+                                    <span class="info-value">${membership.STARTDATE}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">종료일</span>
+                                    <span class="info-value">${membership.ENDDATE}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">락커 번호</span>
+                                    <span class="info-value highlight">${membership.LOCKERNO}번</span>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                    <p style="margin: 0;">회원권을 등록해주세요</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
 
-            <!-- Attendance Card -->
-            <div class="card">
-                <div class="card-title">
+                    <!-- 출석 카드 -->
+                    <div class="card">
+                        <div class="card-title">
                     <span class="card-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="출석 아이콘">
                     </span>
-                    이번 달 출석
-                </div>
-                <div class="attendance-display">
-                    <div class="attendance-number">18일</div>
-                    <div class="attendance-label">이번 달 총 출석일</div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">목표 달성률</span>
-                    <span class="info-value highlight">72%</span>
-                </div>
-            </div>
+                            이번 달 출석
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty attendance}">
+                                <div class="attendance-display">
+                                    <div class="attendance-number">${attendance.ATTENDANCECOUNT}일</div>
+                                    <div class="attendance-label">이번 달 총 출석일</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${attendance.ACHIEVEMENTRATE}%;"></div>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">목표 달성률</span>
+                                    <span class="info-value highlight">${attendance.ACHIEVEMENTRATE}%</span>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                    <p style="margin: 0;">출석 기록이 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
 
-            <!-- PT Info Card -->
-            <div class="card">
-                <div class="card-title">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 아이콘">
-                    </span>
-                    PT 정보
-                </div>
-                <div class="info-row">
-                    <span class="info-label">담당 트레이너</span>
-                    <span class="info-value">김철수 코치</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">다음 예약 일정</span>
-                    <span class="info-value">10월 28일 14:00</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">남은 횟수</span>
-                    <span class="info-value highlight">12회 / 20회</span>
-                </div>
-            </div>
+                    <!-- PT Info Card -->
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 아이콘">
+                            </span>
+                            PT 정보
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty ptInfo}">
+                                <div class="info-row">
+                                    <span class="info-label">담당 트레이너</span>
+                                    <span class="info-value">${ptInfo.TRAINERNAME} 코치</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">다음 예약 일정</span>
+                                    <span class="info-value">${ptInfo.NEXTSCHEDULE}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">남은 횟수</span>
+                                    <span class="info-value highlight">${ptInfo.REMAININGCOUNT}회 / ${ptInfo.TOTALCOUNT}회</span>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                    <p style="margin: 0;">등록된 PT 정보가 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때: 회원권 정보 카드 -->
+                    <div class="card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                        </span>
+                                회원권 정보
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">이용권</span>
+                                <span class="info-value">정보 없음</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">시작일</span>
+                                <span class="info-value">----</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">종료일</span>
+                                <span class="info-value">----</span>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>헬스장의 정보를 받아보세요!
+                        </div>
+                    </div>
+
+                    <!-- gym_no가 없을 때: 출석 카드 -->
+                    <div class="card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="출석 아이콘">
+                        </span>
+                                이번 달 출석
+                            </div>
+                            <div class="attendance-display">
+                                <div class="attendance-number">0일</div>
+                                <div class="attendance-label">이번 달 총 출석일</div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>출석 정보를 확인하세요!
+                        </div>
+                    </div>
+
+                    <!-- gym_no가 없을 때: PT 정보 카드 -->
+                    <div class="card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 아이콘">
+                        </span>
+                                PT 정보
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">담당 트레이너</span>
+                                <span class="info-value">정보 없음</span>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>PT 정보를 확인하세요!
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Two Column Section -->
         <div class="two-column">
-            <!-- Congestion Card -->
-            <div class="large-card">
-                <div class="card-title">
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <!-- Congestion Card -->
+                    <div class="large-card">
+                        <div class="card-title">
                     <span class="card-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="혼잡도 아이콘">
                     </span>
-                    현재 혼잡도
-                </div>
-                <div class="center-content">
-                    <div class="large-text">2025년 10월 30일</div>
-                    <div class="large-text">14:00</div>
-                    <div class="medium-text">현재 이용인원</div>
-                    <div class="large-text">12 명</div>
-                </div>
-            </div>
+                            현재 혼잡도
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty congestion}">
+                                <div class="center-content">
+                                    <div class="large-text">${congestion.CURRENTDATE}</div>
+                                    <div class="large-text">${congestion.CURRENTTIME}</div>
+                                    <div class="medium-text">현재 이용인원</div>
+                                    <div class="large-text">${congestion.CURRENTCOUNT} 명</div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="center-content">
+                                    <div style="color: #8a6a50; text-align: center;">
+                                        혼잡도 정보를 불러올 수 없습니다
+                                    </div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
 
-            <!-- My Gym Card -->
-            <div class="large-card">
-                <div class="card-title">
+                    <!-- My Gym Card -->
+                    <div class="large-card">
+                        <div class="card-title">
                     <span class="card-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 아이콘">
                     </span>
-                    나의 헬스장
-                </div>
-                <div class="center-content">
-                    <div class="large-text">헬스보이짐 판교역점</div>
-                </div>
-                <div class="notice-list">
-                    <div class="notice-item">
-                        <span class="notice-badge">중요</span>
-                        <div class="notice-title">추석 연휴 운영시간 안내</div>
-                        <div class="notice-date">2025.10.25</div>
+                            나의 헬스장
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty gymInfo}">
+                                <div class="center-content">
+                                    <div class="large-text">${gymInfo.GYMNAME}</div>
+                                </div>
+                                <div class="notice-list">
+                                    <c:choose>
+                                        <c:when test="${not empty notices}">
+                                            <c:forEach var="notice" items="${notices}">
+                                                <div class="notice-item">
+                                                    <c:if test="${notice.ISIMPORTANT == 'Y'}">
+                                                        <span class="notice-badge">중요</span>
+                                                    </c:if>
+                                                    <div class="notice-title">${notice.NOTICETITLE}</div>
+                                                    <div class="notice-date">${notice.NOTICEDATE}</div>
+                                                </div>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div style="text-align: center; padding: 20px; color: #8a6a50;">
+                                                등록된 공지사항이 없습니다
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="center-content">
+                                    <div style="color: #8a6a50; text-align: center;">
+                                        헬스장 정보를 불러올 수 없습니다
+                                    </div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    <div class="notice-item">
-                        <div class="notice-title">신규 GX 프로그램 오픈</div>
-                        <div class="notice-date">2025.10.23</div>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때: Congestion Card -->
+                    <div class="large-card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="혼잡도 아이콘">
+                        </span>
+                                현재 혼잡도
+                            </div>
+                            <div class="center-content">
+                                <div class="large-text">2025년 10월 30일</div>
+                                <div class="large-text">14:00</div>
+                                <div class="medium-text">현재 이용인원</div>
+                                <div class="large-text">0 명</div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>실시간 혼잡도를 확인하세요!
+                        </div>
                     </div>
-                </div>
-            </div>
+
+                    <!-- gym_no가 없을 때: My Gym Card -->
+                    <div class="large-card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 아이콘">
+                        </span>
+                                나의 헬스장
+                            </div>
+                            <div class="center-content">
+                                <div class="large-text">헬스장 이름</div>
+                            </div>
+                            <div class="notice-list">
+                                <div class="notice-item">
+                                    <span class="notice-badge">중요</span>
+                                    <div class="notice-title">공지사항 제목</div>
+                                    <div class="notice-date">2025.10.25</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>헬스장 정보와 공지사항을 확인하세요!
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Goals Section -->
@@ -708,41 +913,82 @@
                         운동 영상 라이브러리
                     </div>
                 </div>
-                <!-- form 대신 button으로 변경 -->
-                <button type="button" class="search-btn" id="videoListBtn">+ 더보기</button>
+                <c:if test="${hasGym && not empty videos}">
+                    <button type="button" class="search-btn" id="videoListBtn">+ 더보기</button>
+                </c:if>
             </div>
 
-            <div class="video-grid">
-                <div class="video-card">
-                    <div class="video-thumbnail">
-                        <div class="play-button">▶</div>
-                    </div>
-                    <div class="video-info">
-                        <div class="video-title">올바른 스쿼트 자세</div>
-                        <div class="video-author">김트레이너</div>
-                    </div>
-                </div>
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <c:choose>
+                        <c:when test="${not empty videos}">
+                            <div class="video-grid">
+                                <c:forEach var="video" items="${videos}">
+                                    <div class="video-card" data-video-url="${video.VIDEOURL}">
+                                        <div class="video-thumbnail">
+                                            <img src="" alt="${video.VIDEOTITLE}" class="video-thumbnail-img" data-video-url="${video.VIDEOURL}" onerror="this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop'" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                                            <div class="play-button" style="position: relative; z-index: 1;">▶</div>
+                                        </div>
+                                        <div class="video-info">
+                                            <div class="video-title">${video.VIDEOTITLE}</div>
+                                            <div class="video-author">${video.VIDEOAUTHOR}</div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                <p style="margin: 0; font-size: 16px;">등록된 운동 영상이 없습니다</p>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때 블러 처리 -->
+                    <div style="position: relative; min-height: 200px;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="video-grid">
+                                <div class="video-card">
+                                    <div class="video-thumbnail">
+                                        <div class="play-button">▶</div>
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">올바른 스쿼트 자세</div>
+                                        <div class="video-author">김트레이너</div>
+                                    </div>
+                                </div>
 
-                <div class="video-card">
-                    <div class="video-thumbnail">
-                        <div class="play-button">▶</div>
-                    </div>
-                    <div class="video-info">
-                        <div class="video-title">데드리프트 마스터</div>
-                        <div class="video-author">이코치</div>
-                    </div>
-                </div>
+                                <div class="video-card">
+                                    <div class="video-thumbnail">
+                                        <div class="play-button">▶</div>
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">데드리프트 마스터</div>
+                                        <div class="video-author">이코치</div>
+                                    </div>
+                                </div>
 
-                <div class="video-card">
-                    <div class="video-thumbnail">
-                        <div class="play-button">▶</div>
+                                <div class="video-card">
+                                    <div class="video-thumbnail">
+                                        <div class="play-button">▶</div>
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">어깨 운동 루틴</div>
+                                        <div class="video-author">박강사</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 25px 30px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 15px; line-height: 1.6; z-index: 10; white-space: nowrap;">
+                            헬스장을 등록하고<br>트레이너 추천 영상을 확인하세요!
+                        </div>
                     </div>
-                    <div class="video-info">
-                        <div class="video-title">어깨 운동 루틴</div>
-                        <div class="video-author">박강사</div>
-                    </div>
-                </div>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- 운동 영상 리스트 모달 추가 (기존 모달들 다음에 추가) -->
@@ -762,99 +1008,30 @@
                     <p style="color: #8a6a50; font-size: 14px; margin-top: 8px;">트레이너 추천 운동 영상을 확인하세요</p>
                 </div>
 
-                <!-- Body -->
                 <div class="modal-body">
-                    <div class="video-grid" style="grid-template-columns: repeat(4, 1fr); gap: 20px;">
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
+                    <c:choose>
+                        <c:when test="${not empty allVideos}">
+                            <div class="video-grid" style="grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                                <c:forEach var="video" items="${allVideos}">
+                                    <div class="video-card" data-video-url="${video.VIDEOURL}">
+                                        <div class="video-thumbnail">
+                                            <img src="" alt="${video.VIDEOTITLE}" class="video-thumbnail-img" data-video-url="${video.VIDEOURL}" onerror="this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop'" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                                            <div class="play-button" style="position: relative; z-index: 1;">▶</div>
+                                        </div>
+                                        <div class="video-info">
+                                            <div class="video-title">${video.VIDEOTITLE}</div>
+                                            <div class="video-author">${video.VIDEOAUTHOR}</div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
                             </div>
-                            <div class="video-info">
-                                <div class="video-title">올바른 스쿼트 자세</div>
-                                <div class="video-author">김트레이너</div>
+                        </c:when>
+                        <c:otherwise>
+                            <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                <p style="margin: 0; font-size: 16px;">등록된 운동 영상이 없습니다</p>
                             </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">데드리프트 마스터</div>
-                                <div class="video-author">이코치</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">어깨 운동 루틴</div>
-                                <div class="video-author">박강사</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">가슴 운동 완벽 가이드</div>
-                                <div class="video-author">최트레이너</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">등 운동 집중 프로그램</div>
-                                <div class="video-author">정코치</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">팔 운동 루틴</div>
-                                <div class="video-author">강트레이너</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">복근 만들기</div>
-                                <div class="video-author">김코치</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">하체 강화 운동</div>
-                                <div class="video-author">이트레이너</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">전신 운동 프로그램</div>
-                                <div class="video-author">박코치</div>
-                            </div>
-                        </div>
-                    </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
@@ -1009,8 +1186,8 @@
         <!-- Body -->
         <div style="padding: 16px 25px 25px;">
             <!-- Video Player -->
-            <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                <div class="play-button" style="width: 64px; height: 64px; font-size: 24px;">▶</div>
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #1a0f0a;">
+                <iframe id="videoPlayerFrame" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -1153,11 +1330,21 @@
         // 비디오 카드 클릭시 모달 열기
         videoCards.forEach(function(card) {
             card.addEventListener('click', function() {
-                const title = card.querySelector('.video-title').textContent;
-                const author = card.querySelector('.video-author').textContent;
+                var title = card.querySelector('.video-title').textContent;
+                var author = card.querySelector('.video-author').textContent;
+                var videoUrl = card.getAttribute('data-video-url');
 
                 document.getElementById('videoModalTitle').textContent = title;
                 document.getElementById('videoModalAuthor').textContent = author;
+
+                // YouTube 영상 재생
+                var embedUrl = convertToEmbedUrl(videoUrl);
+                if (embedUrl) {
+                    document.getElementById('videoPlayerFrame').src = embedUrl;
+                } else {
+                    alert('유효하지 않은 YouTube URL입니다.');
+                    return;
+                }
 
                 videoDetailModal.classList.add('active');
             });
@@ -1167,6 +1354,8 @@
         if (closeVideoDetailBtn) {
             closeVideoDetailBtn.addEventListener('click', function() {
                 videoDetailModal.classList.remove('active');
+                // iframe 비워서 영상 중지
+                document.getElementById('videoPlayerFrame').src = '';
             });
         }
 
@@ -1175,6 +1364,8 @@
             videoDetailModal.addEventListener('click', function(e) {
                 if (e.target === videoDetailModal) {
                     videoDetailModal.classList.remove('active');
+                    // iframe 비워서 영상 중지
+                    document.getElementById('videoPlayerFrame').src = '';
                 }
             });
         }
@@ -1280,14 +1471,24 @@
         }
 
         // 리스트 모달 안의 비디오 카드 클릭시 상세 모달 열기
-        const videoListModalCards = videoListModal.querySelectorAll('.video-card');
+        var videoListModalCards = videoListModal.querySelectorAll('.video-card');
         videoListModalCards.forEach(function(card) {
             card.addEventListener('click', function() {
-                const title = card.querySelector('.video-title').textContent;
-                const author = card.querySelector('.video-author').textContent;
+                var title = card.querySelector('.video-title').textContent;
+                var author = card.querySelector('.video-author').textContent;
+                var videoUrl = card.getAttribute('data-video-url');
 
                 document.getElementById('videoModalTitle').textContent = title;
                 document.getElementById('videoModalAuthor').textContent = author;
+
+                // YouTube 영상 재생
+                var embedUrl = convertToEmbedUrl(videoUrl);
+                if (embedUrl) {
+                    document.getElementById('videoPlayerFrame').src = embedUrl;
+                } else {
+                    alert('유효하지 않은 YouTube URL입니다.');
+                    return;
+                }
 
                 videoListModal.classList.remove('active');
                 videoDetailModal.classList.add('active');
@@ -1308,12 +1509,57 @@
                 }
                 if (videoDetailModal && videoDetailModal.classList.contains('active')) {
                     videoDetailModal.classList.remove('active');
+                    document.getElementById('videoPlayerFrame').src = '';
                 }
                 if (videoListModal && videoListModal.classList.contains('active')) {
                     videoListModal.classList.remove('active');
                 }
             }
         });
+    });
+    // YouTube 썸네일 설정 함수
+    function getYouTubeThumbnail(url) {
+        if (!url) return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
+
+        var videoId = '';
+        if (url.includes('youtube.com/watch?v=')) {
+            videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        }
+
+        if (videoId) {
+            return 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
+        }
+        return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
+    }
+
+    // YouTube URL을 embed URL로 변환
+    function convertToEmbedUrl(url) {
+        if (!url) return '';
+
+        var videoId = '';
+        if (url.includes('youtube.com/watch?v=')) {
+            videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('youtube.com/embed/')) {
+            return url;
+        }
+
+        if (videoId) {
+            return 'https://www.youtube.com/embed/' + videoId;
+        }
+        return '';
+    }
+
+    // 모든 비디오 썸네일 이미지에 대해 YouTube 썸네일 설정
+    var thumbnailImgs = document.querySelectorAll('.video-thumbnail-img');
+    thumbnailImgs.forEach(function(img) {
+        var videoUrl = img.getAttribute('data-video-url');
+        if (videoUrl) {
+            img.src = getYouTubeThumbnail(videoUrl);
+        }
     });
 </script>
 </body>

@@ -3,6 +3,7 @@ package com.kh.gymhub.controller;
 import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.service.DashboardService;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,17 +32,45 @@ public class MemberController {
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
+    private final DashboardService dashboardService;
 
     @Autowired
-    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
+    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService,  DashboardService dashboardService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.dashboardService = dashboardService;
     }
 
     @GetMapping("/dashboard.me")
-    public String memberDashboardPage(HttpSession session) {
-        // 로그인 체크 (선택사항 - 필요시 추가)
+    public String memberDashboardPage(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if(loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        Integer gymNo = loginMember.getGymNo();
+
+        if(gymNo != null && gymNo > 0) {
+            // gym_no가 있는 경우: 헬스장 관련 정보 조회
+            Map<String, Object> dashboardData = dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
+
+            model.addAttribute("hasGym", true);
+            model.addAttribute("membership", dashboardData.get("membership"));
+            model.addAttribute("attendance", dashboardData.get("attendance"));
+            model.addAttribute("congestion", dashboardData.get("congestion"));
+            model.addAttribute("gymInfo", dashboardData.get("gymInfo"));
+            model.addAttribute("notices", dashboardData.get("notices"));
+            model.addAttribute("videos", dashboardData.get("videos"));
+            model.addAttribute("allVideos", dashboardData.get("allVideos"));
+            model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+        } else {
+            // gym_no가 없는 경우
+            model.addAttribute("hasGym", false);
+        }
+
         return "member/memberDashboard";
     }
 
