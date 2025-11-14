@@ -78,8 +78,8 @@ public class MemberController {
     @GetMapping("/ptBooking.me")
     public String memberptBookingForm() { return "member/ptBookingForm"; }
 
-    @GetMapping("/booking.me")
-    public String Booking() { return "booking/booking"; }
+    // ⭐ /booking.me 매핑은 BookingController로 이동됨
+    // BookingController에서 헬스장 정보 조회, 예약자 정보 설정, 기존 예약 확인 등 모든 비즈니스 로직을 처리합니다.
 
     // ====================================== 회원가입 ======================================================
     @GetMapping("/signup/checkId")
@@ -417,21 +417,21 @@ public class MemberController {
     // ====================================== 로그인 ======================================================
     @PostMapping("/login.me")
     public String login(@RequestParam String id,
-                       @RequestParam String password,
-                       HttpSession session) {
-        
+                        @RequestParam String password,
+                        HttpSession session) {
+
         Member loginMember = memberService.login(id, password);
-        
+
         if (loginMember != null) {
             // 세션에 로그인 정보 저장
             session.setAttribute("loginMember", loginMember);
-            
+
             // 멤버 타입 3(헬스장 운영자)이면 관리자 선택 페이지로 이동
             if (loginMember.getMemberType() == 3) {
                 session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
                 return "redirect:/adminSelect.gym";
             }
-            
+
             session.setAttribute("alertMsg", loginMember.getMemberName() + "님 환영합니다!");
             return "redirect:/";
         } else {
