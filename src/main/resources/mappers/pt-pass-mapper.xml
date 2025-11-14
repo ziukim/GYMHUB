@@ -38,5 +38,30 @@
         )
     </insert>
 
+    <!-- 회원번호로 PT 이용권 조회 -->
+    <select id="selectPtPassByMemberNo" resultMap="ptPassResultMap">
+        SELECT 
+            PT_PASS_NO,
+            PURCHASE_NO,
+            MEMBER_NO,
+            GYM_NO,
+            PT_START,
+            PT_END,
+            PT_USED_COUNT,
+            PT_TOTAL_COUNT
+        FROM PT_PASS
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND ROWNUM = 1
+        ORDER BY PT_PASS_NO DESC
+    </select>
+
+    <!-- PT 이용권 횟수 추가 -->
+    <update id="updatePtPassCount">
+        UPDATE PT_PASS
+        SET PT_TOTAL_COUNT = PT_TOTAL_COUNT + #{additionalCount}
+        WHERE PT_PASS_NO = #{ptPassNo}
+    </update>
+
 </mapper>
 
