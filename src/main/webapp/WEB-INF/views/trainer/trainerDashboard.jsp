@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -14,25 +15,69 @@
             background-color: #0a0a0a;
             color: #ffa366;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
         }
 
-        /* Main Content - padding과 background-color만 오버라이드 */
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* App Container 오버라이드 */
+        .app-container {
+            display: block;
+            height: 100vh;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Main Content - 화면에 꽉 차도록 설정 */
         .main-content {
+            margin-left: 255px;
+            width: calc(100% - 255px);
+            height: 100vh;
             padding: 29px;
             background-color: #0a0a0a;
+            overflow-y: auto;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
-        .page-title {
+        .page-intro {
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+
+        .page-intro h1 {
             font-size: 32px;
-            margin-bottom: 56px;
+            color: #ff6b00;
+            margin-bottom: 8px;
+        }
+
+        .page-intro p {
+            font-size: 16px;
+            color: #8a6a50;
         }
 
         /* Cards Container */
         .cards-row {
             display: flex;
             gap: 17px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* 나의 헬스장 카드가 남은 공간 채우기 */
+        .main-content > .card.gym-card {
+            flex: 1;
+            min-height: 0;
         }
 
         .card {
@@ -41,6 +86,7 @@
             border-radius: 14px;
             padding: 25px;
             position: relative;
+            box-sizing: border-box;
         }
 
         /* card-title은 common.css에 있으므로 추가 속성만 정의 */
@@ -69,7 +115,8 @@
         /* 트레이너 정보 Card - flex로 균등 분배 */
         .trainer-card {
             flex: 1;
-            min-width: 0;
+            min-width: 300px;
+            max-width: calc(50% - 9px);
         }
 
         .trainer-buttons {
@@ -258,8 +305,10 @@
         /* 이번 달 출석 Card - flex로 균등 분배 */
         .attendance-card {
             flex: 1;
-            min-width: 0;
-            height: 232px;
+            min-width: 300px;
+            max-width: calc(50% - 9px);
+            height: auto;
+            min-height: 232px;
         }
 
 
@@ -315,10 +364,13 @@
             font-size: 14px;
         }
 
-        /* 나의 헬스장 Card - max-width 제거로 전체 너비 사용 */
+        /* 나의 헬스장 Card - 전체 너비 사용, 남은 공간 채우기 */
         .gym-card {
             width: 100%;
-            min-height: 317px;
+            min-height: 400px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
 
         .gym-card .card-title span {
@@ -329,7 +381,8 @@
             color: #ff6b00;
             font-size: 30px;
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 30px;
+            flex-shrink: 0;
         }
 
         .notices {
@@ -337,12 +390,45 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .notices::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notices::-webkit-scrollbar-track {
+            background: #1a0f0a;
+            border-radius: 3px;
+        }
+
+        .notices::-webkit-scrollbar-thumb {
+            background: #ff6b00;
+            border-radius: 3px;
+        }
+
+        .notices::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
         }
 
         .notice-item {
             background-color: #2d1810;
             border-radius: 10px;
             padding: 17px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .notice-item:hover {
+            background-color: #3d2810;
+            border-color: #ffa366;
+            transform: translateY(-2px);
         }
 
         .notice-item.important {
@@ -643,7 +729,7 @@
         /* Responsive */
         @media (max-width: 1200px) {
             .main-content {
-                max-width: none;
+                width: calc(100% - 255px);
             }
 
             .cards-row {
@@ -653,6 +739,7 @@
             .trainer-card,
             .attendance-card {
                 width: 100%;
+                max-width: 100%;
             }
 
             .trainer-buttons {
@@ -661,14 +748,10 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
             .main-content {
-                margin-left: 200px;
-                width: calc(100% - 200px);
-                padding: 15px;
+                margin-left: 255px;
+                width: calc(100% - 255px);
+                padding: 20px;
             }
 
             .form-grid {
@@ -678,12 +761,22 @@
             .info-modal .modal-content {
                 width: 95vw;
             }
+
+            .trainer-card,
+            .attendance-card {
+                min-width: 100%;
+            }
         }
 
         @media (max-width: 576px) {
             .main-content {
-                margin-left: 60px;
-                width: calc(100% - 60px);
+                margin-left: 255px;
+                width: calc(100% - 255px);
+                padding: 15px;
+            }
+
+            .page-intro h1 {
+                font-size: 24px;
             }
         }
     </style>
@@ -854,24 +947,39 @@
             <p class="gym-name">헬스보이짐 판교역점</p>
 
             <div class="notices">
-                <!-- 중요 공지 -->
-                <div class="notice-item important">
-                    <div class="notice-header">
-                        <span class="notice-badge">중요</span>
-                        <div class="notice-content">
-                            <p class="notice-title">추석 연휴 운영시간 안내</p>
-                            <p class="notice-date">2025.10.25</p>
+                <c:choose>
+                    <c:when test="${not empty notices}">
+                        <c:forEach var="notice" items="${notices}">
+                            <div class="notice-item ${notice.noticeFixStatus == 'Y' ? 'important' : ''}" 
+                                 onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=${notice.noticeNo}'">
+                                <c:if test="${notice.noticeFixStatus == 'Y'}">
+                                    <div class="notice-header">
+                                        <span class="notice-badge">중요</span>
+                                        <div class="notice-content">
+                                            <p class="notice-title">${notice.noticeTitle}</p>
+                                            <p class="notice-date">
+                                                <fmt:formatDate value="${notice.noticeDate}" pattern="yyyy.MM.dd"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </c:if>
+                                <c:if test="${notice.noticeFixStatus != 'Y'}">
+                                    <div class="notice-content">
+                                        <p class="notice-title">${notice.noticeTitle}</p>
+                                        <p class="notice-date">
+                                            <fmt:formatDate value="${notice.noticeDate}" pattern="yyyy.MM.dd"/>
+                                        </p>
+                                    </div>
+                                </c:if>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="notice-item" style="text-align: center; color: #8a6a50; cursor: default;">
+                            등록된 공지사항이 없습니다.
                         </div>
-                    </div>
-                </div>
-
-                <!-- 일반 공지 -->
-                <div class="notice-item">
-                    <div class="notice-content">
-                        <p class="notice-title">신규 GX 프로그램 오픈</p>
-                        <p class="notice-date">2025.10.23</p>
-                    </div>
-                </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>

@@ -117,7 +117,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     cal.add(Calendar.DAY_OF_MONTH, lockerPeriod);
                     Date lockerEndDate = cal.getTime();
 
-                    LockerPass lockerPass = LockerPass.builder()
+                    LockerPass lockerPass = LockerPass.builder() 
                             .purchaseNo(purchase.getPurchaseNo())
                             .lockerNo(lockerInfo.getLockerNo())
                             .memberNo(member.getMemberNo())

@@ -20,6 +20,11 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+    public Member getTrainerByPhoneAndGymNo(String phone, int gymNo) {
+        return attendanceMapper.selectTrainerByPhoneAndGymNo(phone, gymNo);
+    }
+
+    @Override
     public Attendance getTodayCheckIn(int gymNo, int memberNo) {
         return attendanceMapper.selectTodayCheckIn(gymNo, memberNo);
     }
@@ -32,6 +37,11 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public int insertAttendance(Attendance attendance) {
         return attendanceMapper.insertAttendance(attendance);
+    }
+
+    @Override
+    public Integer getTodayAttendanceCountByGymNo(int gymNo) {
+        return attendanceMapper.selectTodayAttendanceCountByGymNo(gymNo);
     }
 }
 

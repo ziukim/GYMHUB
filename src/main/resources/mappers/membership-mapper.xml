@@ -190,6 +190,20 @@
     </select>
 
     <!-- 회원번호로 회원권 조회 -->
+    <!-- 회원의 활성 회원권 GYM_NO 조회 (가장 최근 활성 회원권) -->
+    <select id="selectActiveGymNoByMemberNo" parameterType="_int" resultType="_int">
+        SELECT GYM_NO
+        FROM (
+            SELECT GYM_NO
+            FROM MEMBERSHIP
+            WHERE MEMBER_NO = #{memberNo}
+              AND MEMBERSHIP_STATUS != '만료'
+              AND END_DATE >= TRUNC(SYSDATE)
+            ORDER BY START_DATE DESC
+        )
+        WHERE ROWNUM = 1
+    </select>
+
     <select id="selectMembershipByMemberNo" resultMap="membershipResultMap">
         SELECT 
             MEMBERSHIP_NO,

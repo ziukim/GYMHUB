@@ -13,6 +13,14 @@ public interface AttendanceService {
     Member getMemberByPhoneAndGymNo(String phone, int gymNo);
     
     /**
+     * 전화번호와 헬스장 번호로 트레이너 조회 (MEMBER_TYPE=2, GYM_NO 매칭)
+     * @param phone 전화번호
+     * @param gymNo 헬스장 번호
+     * @return 트레이너 정보
+     */
+    Member getTrainerByPhoneAndGymNo(String phone, int gymNo);
+    
+    /**
      * 오늘 날짜의 입실 기록 조회
      * @param gymNo 헬스장 번호
      * @param memberNo 회원 번호
@@ -34,5 +42,12 @@ public interface AttendanceService {
      * @return 삽입된 행 수
      */
     int insertAttendance(Attendance attendance);
+    
+    /**
+     * 오늘 날짜의 현재 혼잡도 조회 (입실만 있고 퇴실이 없는 회원 수)
+     * @param gymNo 헬스장 번호
+     * @return 현재 이용 인원 수
+     */
+    Integer getTodayAttendanceCountByGymNo(int gymNo);
 }
 

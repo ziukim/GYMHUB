@@ -1521,6 +1521,15 @@ public class GymController {
             
             // 전화번호로 회원 조회 (gym_no 매칭, 만료되지 않은 회원권 보유자만)
             Member member = attendanceService.getMemberByPhoneAndGymNo(phone, gymNo);
+            boolean isTrainer = false;
+            
+            // 회원 조회 실패 시 트레이너 조회 시도
+            if (member == null) {
+                member = attendanceService.getTrainerByPhoneAndGymNo(phone, gymNo);
+                if (member != null) {
+                    isTrainer = true;
+                }
+            }
             
             if (member == null) {
                 result.put("success", false);
@@ -1528,27 +1537,31 @@ public class GymController {
                 return result;
             }
             
-            // 회원권 정보 조회 (PURCHASE_NO를 통해 PURCHASE_ITEM 조회)
-            Membership membership = membershipMapper.selectMembershipByMemberNo(member.getMemberNo(), gymNo);
+            // 회원권 정보 조회 (트레이너인 경우 회원권 정보 없음)
             String membershipInfo = "";
             
-            if (membership != null) {
-                PurchaseItem purchaseItem = purchaseItemMapper.selectPurchaseItemByPurchaseNo(membership.getPurchaseNo());
-                if (purchaseItem != null) {
-                    // 회원권 정보 문자열 생성 (예: "이용권 30일 + 락커 30일 + PT 10회")
-                    java.util.List<String> productList = new java.util.ArrayList<>();
-                    
-                    if (purchaseItem.getMembershipPeriod() > 0) {
-                        productList.add("이용권 " + purchaseItem.getMembershipPeriod() + "일");
+            if (!isTrainer) {
+                // 회원인 경우에만 회원권 정보 조회
+                Membership membership = membershipMapper.selectMembershipByMemberNo(member.getMemberNo(), gymNo);
+                
+                if (membership != null) {
+                    PurchaseItem purchaseItem = purchaseItemMapper.selectPurchaseItemByPurchaseNo(membership.getPurchaseNo());
+                    if (purchaseItem != null) {
+                        // 회원권 정보 문자열 생성 (예: "이용권 30일 + 락커 30일 + PT 10회")
+                        java.util.List<String> productList = new java.util.ArrayList<>();
+                        
+                        if (purchaseItem.getMembershipPeriod() > 0) {
+                            productList.add("이용권 " + purchaseItem.getMembershipPeriod() + "일");
+                        }
+                        if (purchaseItem.getLockerPeriod() != null && purchaseItem.getLockerPeriod() > 0) {
+                            productList.add("락커 " + purchaseItem.getLockerPeriod() + "일");
+                        }
+                        if (purchaseItem.getPtCount() != null && purchaseItem.getPtCount() > 0) {
+                            productList.add("PT " + purchaseItem.getPtCount() + "회");
+                        }
+                        
+                        membershipInfo = String.join(" + ", productList);
                     }
-                    if (purchaseItem.getLockerPeriod() != null && purchaseItem.getLockerPeriod() > 0) {
-                        productList.add("락커 " + purchaseItem.getLockerPeriod() + "일");
-                    }
-                    if (purchaseItem.getPtCount() != null && purchaseItem.getPtCount() > 0) {
-                        productList.add("PT " + purchaseItem.getPtCount() + "회");
-                    }
-                    
-                    membershipInfo = String.join(" + ", productList);
                 }
             }
             

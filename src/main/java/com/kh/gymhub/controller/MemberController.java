@@ -1,8 +1,10 @@
 package com.kh.gymhub.controller;
 
+import com.kh.gymhub.model.mapper.MembershipMapper;
 import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.InbodyRecord;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.service.AttendanceService;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +36,60 @@ public class MemberController {
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InbodyService inbodyService;
+    private final AttendanceService attendanceService;
+    private final MembershipMapper membershipMapper;
 
     @Autowired
-    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService) {
+    public MemberController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, InbodyService inbodyService, AttendanceService attendanceService, MembershipMapper membershipMapper) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.attendanceService = attendanceService;
+        this.membershipMapper = membershipMapper;
     }
 
     @GetMapping("/dashboard.me")
-    public String memberDashboardPage(HttpSession session) {
-        // 로그인 체크 (선택사항 - 필요시 추가)
+    public String memberDashboardPage(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember != null) {
+            // 회원의 활성 회원권 GYM_NO 조회
+            Integer gymNo = membershipMapper.selectActiveGymNoByMemberNo(loginMember.getMemberNo());
+            
+            if (gymNo != null) {
+                // 현재 혼잡도 조회 (입실만 있고 퇴실이 없는 인원 수)
+                Integer currentCongestion = attendanceService.getTodayAttendanceCountByGymNo(gymNo);
+                if (currentCongestion == null) {
+                    currentCongestion = 0;
+                }
+                model.addAttribute("currentCongestion", currentCongestion);
+                
+                // 현재 날짜와 시간
+                LocalDate today = LocalDate.now();
+                LocalTime now = LocalTime.now();
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일");
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+                model.addAttribute("currentDate", today.format(dateFormatter));
+                model.addAttribute("currentTime", now.format(timeFormatter));
+            } else {
+                model.addAttribute("currentCongestion", 0);
+                LocalDate today = LocalDate.now();
+                LocalTime now = LocalTime.now();
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일");
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+                model.addAttribute("currentDate", today.format(dateFormatter));
+                model.addAttribute("currentTime", now.format(timeFormatter));
+            }
+        } else {
+            model.addAttribute("currentCongestion", 0);
+            LocalDate today = LocalDate.now();
+            LocalTime now = LocalTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            model.addAttribute("currentDate", today.format(dateFormatter));
+            model.addAttribute("currentTime", now.format(timeFormatter));
+        }
+        
         return "member/memberDashboard";
     }
 
