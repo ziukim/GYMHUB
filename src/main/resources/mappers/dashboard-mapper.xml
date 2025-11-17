@@ -5,12 +5,11 @@
 
 <mapper namespace="com.kh.gymhub.model.mapper.DashboardMapper">
 
-    <!-- 회원권 정보 조회 (프로그레스 바용 컬럼 추가) -->
     <select id="selectMembershipInfo" resultType="hashmap">
         SELECT
         CASE
-        WHEN TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) = 0 THEN '1개월 회원권'
-        ELSE TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) || '개월 회원권'
+        WHEN ROUND(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) &lt;= 1 THEN '1개월 회원권'
+        ELSE ROUND(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) || '개월 회원권'
         END AS membershipName,
         TO_CHAR(M.START_DATE, 'YYYY.MM.DD') AS startDate,
         TO_CHAR(M.END_DATE, 'YYYY.MM.DD') AS endDate,
