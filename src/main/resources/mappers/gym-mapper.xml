@@ -22,34 +22,31 @@
             SELECT SEQ_GYM_NO.NEXTVAL FROM DUAL
         </selectKey>
         INSERT INTO GYM (
-        GYM_NO,
-        GYM_NAME,
-        GYM_OWNER,
-        GYM_PHONE,
-        GYM_ADDRESS,
-        ATT_CACHE_NO
+            GYM_NO,
+            GYM_NAME,
+            GYM_OWNER,
+            GYM_PHONE,
+            GYM_ADDRESS
         ) VALUES (
-        #{gymNo},
-        #{gymName},
-        #{gymOwner},
-        #{gymPhone},
-        #{gymAddress},
-        #{attCacheNo}
+            #{gymNo},
+            #{gymName},
+            #{gymOwner},
+            #{gymPhone},
+            #{gymAddress}
         )
     </insert>
 
     <select id="selectGymByNo" parameterType="_int" resultMap="gymResultMap">
         SELECT
-        GYM_NO,
-        GYM_NAME,
-        GYM_OWNER,
-        GYM_PHONE,
-        GYM_ADDRESS,
-        STATUS,
-        GYM_CREATEAT,
-        GYM_UPDATEAT,
-        GYM_PHOTO_PATH,
-        ATT_CACHE_NO
+            GYM_NO,
+            GYM_NAME,
+            GYM_OWNER,
+            GYM_PHONE,
+            GYM_ADDRESS,
+            STATUS,
+            GYM_CREATEAT,
+            GYM_UPDATEAT,
+            GYM_PHOTO_PATH
         FROM GYM
         WHERE GYM_NO = #{gymNo}
         AND STATUS = 'Y'
@@ -57,16 +54,15 @@
 
     <select id="selectAllGyms" resultMap="gymResultMap">
         SELECT
-        GYM_NO,
-        GYM_NAME,
-        GYM_OWNER,
-        GYM_PHONE,
-        GYM_ADDRESS,
-        STATUS,
-        GYM_CREATEAT,
-        GYM_UPDATEAT,
-        GYM_PHOTO_PATH,
-        ATT_CACHE_NO
+            GYM_NO,
+            GYM_NAME,
+            GYM_OWNER,
+            GYM_PHONE,
+            GYM_ADDRESS,
+            STATUS,
+            GYM_CREATEAT,
+            GYM_UPDATEAT,
+            GYM_PHOTO_PATH
         FROM GYM
         WHERE STATUS = 'Y'
         ORDER BY GYM_NO DESC
@@ -84,7 +80,6 @@
         G.GYM_CREATEAT,
         G.GYM_UPDATEAT,
         G.GYM_PHOTO_PATH,
-        G.ATT_CACHE_NO
         FROM GYM G
         LEFT JOIN (
         SELECT
