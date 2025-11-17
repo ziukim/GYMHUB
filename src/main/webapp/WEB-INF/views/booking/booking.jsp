@@ -1217,6 +1217,10 @@
 
     // 예약 확정 (폼 제출)
     function confirmBooking() {
+        // sessionStorage에 예약 완료 플래그 저장
+        sessionStorage.setItem('visitReserved', 'true');
+
+        // 폼 제출
         document.getElementById('bookingForm').submit();
     }
 

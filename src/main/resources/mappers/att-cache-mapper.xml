@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.AttCacheMapper">
+    <resultMap id="attCacheResultMap" type="AttCache">
+        <id column="CACHE_DETAIL_NO" property="cacheDetailNo"/>
+        <result column="GYM_NO" property="gymNo"/>
+        <result column="CACHE_DATE" property="cacheDate"/>
+        <result column="TIME_SLOT" property="timeSlot"/>
+        <result column="MEMBER_COUNT" property="memberCount"/>
+    </resultMap>
+
+    <!-- 혼잡도 캐시 데이터 삽입 -->
+    <insert id="insertAttCache" parameterType="AttCache">
+        <selectKey keyProperty="cacheDetailNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_ATT_CACHE_DETAIL_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO ATT_CACHE (
+            CACHE_DETAIL_NO,
+            GYM_NO,
+            CACHE_DATE,
+            TIME_SLOT,
+            MEMBER_COUNT
+        ) VALUES (
+            #{cacheDetailNo},
+            #{gymNo},
+            #{cacheDate},
+            #{timeSlot},
+            #{memberCount}
+        )
+    </insert>
+
+    <!-- 특정 헬스장의 시간대별 혼잡도 조회 (최근 N일 평균) -->
+    <select id="selectCongestionByGymNo" resultType="map">
+        SELECT
+            TIME_SLOT,
+            ROUND(AVG(MEMBER_COUNT)) AS AVG_COUNT
+        FROM ATT_CACHE
+        WHERE GYM_NO = #{gymNo}
+        AND TRUNC(CACHE_DATE) >= TRUNC(SYSDATE) - #{days}
+        GROUP BY TIME_SLOT
+        ORDER BY TIME_SLOT
+    </select>
+
+    <!-- 특정 헬스장의 특정 날짜의 시간대별 혼잡도 조회 -->
+    <select id="selectCongestionByGymNoAndDate" resultMap="attCacheResultMap">
+        SELECT
+            CACHE_DETAIL_NO,
+            GYM_NO,
+            CACHE_DATE,
+            TIME_SLOT,
+            MEMBER_COUNT
+        FROM ATT_CACHE
+        WHERE GYM_NO = #{gymNo}
+        AND TRUNC(CACHE_DATE) = TRUNC(#{cacheDate})
+        ORDER BY TIME_SLOT
+    </select>
+
+    <!-- 특정 헬스장의 특정 시간대의 평균 혼잡도 계산 (ATTENDANCE 테이블 기반) -->
+    <!-- 입실/퇴실 쌍을 찾아서 해당 시간대와 겹치는지 계산 -->
+    <select id="calculateAverageCountByTimeSlot" resultType="_int">
+        WITH ATTENDANCE_PAIRS AS (
+            -- 입실/퇴실 쌍 찾기 (같은 날짜, 같은 회원, 입실 후 퇴실)
+            SELECT
+                a1.MEMBER_NO,
+                a1.ATTENDANCE_DATE AS CHECK_IN_TIME,
+                MIN(a2.ATTENDANCE_DATE) AS CHECK_OUT_TIME
+            FROM ATTENDANCE a1
+            INNER JOIN ATTENDANCE a2 ON (
+                a1.GYM_NO = a2.GYM_NO
+                AND a1.MEMBER_NO = a2.MEMBER_NO
+                AND TRUNC(a1.ATTENDANCE_DATE) = TRUNC(a2.ATTENDANCE_DATE)
+                AND a2.ATTENDANCE_DATE > a1.ATTENDANCE_DATE
+                AND a2.CHECK_IN_INFO = '퇴실'
+            )
+            WHERE a1.GYM_NO = #{gymNo}
+            AND a1.CHECK_IN_INFO = '입실'
+            AND TRUNC(a1.ATTENDANCE_DATE) = TRUNC(#{startDate})
+            GROUP BY a1.MEMBER_NO, a1.ATTENDANCE_DATE
+        ),
+        TIME_SLOT_COUNTS AS (
+            -- 각 입실/퇴실 쌍이 해당 시간대와 겹치는지 확인하여 카운트
+            SELECT
+                COUNT(*) AS MEMBER_COUNT
+            FROM ATTENDANCE_PAIRS
+            WHERE CHECK_IN_TIME &lt; #{endDate}  -- 입실 시간이 시간대 종료 전
+            AND CHECK_OUT_TIME > #{startDate}     -- 퇴실 시간이 시간대 시작 후
+        )
+        SELECT
+            NVL(MEMBER_COUNT, 0) AS AVG_COUNT
+        FROM TIME_SLOT_COUNTS
+    </select>
+</mapper>
+

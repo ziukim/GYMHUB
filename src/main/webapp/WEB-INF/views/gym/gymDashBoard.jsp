@@ -55,6 +55,25 @@
             gap: 4px;
         }
 
+        /* 통계 카드 하단 텍스트 색상 통일 */
+        .stat-label {
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        .stat-change.negative {
+            color: #b0b0b0;
+        }
+
+        .stat-change.positive {
+            color: #b0b0b0;
+        }
+
         /* Monthly Stats Section */
         .monthly-stats {
             background-color: #2d1810;
@@ -106,6 +125,12 @@
         .monthly-removed {
             font-size: 14px;
             color: #ff6467;
+            margin-top: 4px;
+        }
+
+        .monthly-added {
+            font-size: 14px;
+            color: #05df72;
             margin-top: 4px;
         }
 
@@ -166,17 +191,61 @@
             box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
         }
 
+        .reservation-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
         .reservation-name {
             font-size: 14px;
             color: white;
             font-weight: 700;
-            margin-bottom: 8px;
+        }
+
+        .reservation-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .reservation-status.status-completed {
+            background-color: #05df72;
+            color: white;
+        }
+
+        .reservation-status.status-approved {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .reservation-status.status-pending {
+            background-color: #ff6b00;
+            color: white;
+        }
+
+        .reservation-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .reservation-time {
             font-size: 12px;
             color: #b0b0b0;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .reservation-phone {
+            font-size: 12px;
+            color: #b0b0b0;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
         }
 
         /* PT Reserve Items */
@@ -560,7 +629,7 @@
                                         <div class="stat-value">
                                             <fmt:formatNumber value="${stat.memberCount}" pattern="#,###" />명
                                         </div>
-                                        <div class="stat-change positive">등록 <fmt:formatNumber value="${stat.newCount}" pattern="#,###" />명</div>
+                                        <div class="monthly-added">등록 <fmt:formatNumber value="${stat.newCount}" pattern="#,###" />명</div>
                                         <div class="monthly-removed">만료 <fmt:formatNumber value="${stat.expiredCount}" pattern="#,###" />명</div>
                                     </div>
                                 </div>
@@ -576,7 +645,7 @@
                                     <div class="stat-info">
                                         <div class="stat-label">-</div>
                                         <div class="stat-value">0명</div>
-                                        <div class="stat-change positive">등록 0명</div>
+                                        <div class="monthly-added">등록 0명</div>
                                         <div class="monthly-removed">만료 0명</div>
                                     </div>
                                 </div>
@@ -608,14 +677,30 @@
                             <c:when test="${not empty reservationList}">
                                 <c:forEach var="reservation" items="${reservationList}">
                                     <div class="reservation-item">
-                                        <div class="reservation-name">${reservation.memberName}</div>
-                                        <div class="reservation-time">
-                                            <c:choose>
-                                                <c:when test="${not empty reservation.visitDatetime}">
-                                                    <fmt:formatDate value="${reservation.visitDatetime}" pattern="MM월 dd일 HH:mm" />
-                                                </c:when>
-                                                <c:otherwise>-</c:otherwise>
-                                            </c:choose>
+                                        <div class="reservation-header-info">
+                                            <div class="reservation-name">${reservation.memberName}</div>
+                                            <c:if test="${not empty reservation.inquiryStatus}">
+                                                <div class="reservation-status ${reservation.inquiryStatus == '완료' ? 'status-completed' : reservation.inquiryStatus == '승인됨' ? 'status-approved' : 'status-pending'}">
+                                                    ${reservation.inquiryStatus}
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                        <div class="reservation-details">
+                                            <div class="reservation-time">
+                                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" style="width: 14px; height: 14px; margin-right: 4px;">
+                                                <c:choose>
+                                                    <c:when test="${not empty reservation.visitDatetime}">
+                                                        <fmt:formatDate value="${reservation.visitDatetime}" pattern="MM월 dd일 HH:mm" />
+                                                    </c:when>
+                                                    <c:otherwise>-</c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                            <c:if test="${not empty reservation.memberPhone}">
+                                                <div class="reservation-phone">
+                                                    <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" style="width: 14px; height: 14px; margin-right: 4px;">
+                                                    ${reservation.memberPhone}
+                                                </div>
+                                            </c:if>
                                         </div>
                                     </div>
                                 </c:forEach>

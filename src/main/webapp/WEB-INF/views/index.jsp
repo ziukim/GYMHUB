@@ -1521,23 +1521,18 @@
                     <line x1="0" y1="46.5" x2="345" y2="46.5" stroke="#4A3020" stroke-dasharray="3 3"/>
                     <line x1="0" y1="0.5" x2="345" y2="0.5" stroke="#4A3020" stroke-dasharray="3 3"/>
 
-                    <!-- 바 차트 -->
-                    <rect x="16" y="152" width="30" height="37" rx="8" fill="#FF6B00"/>
-                    <rect x="54" y="105" width="30" height="83" rx="8" fill="#FF6B00"/>
-                    <rect x="92" y="133" width="30" height="56" rx="8" fill="#FF6B00"/>
-                    <rect x="130" y="87" width="30" height="102" rx="8" fill="#FF6B00"/>
-                    <rect x="168" y="124" width="30" height="65" rx="8" fill="#FF6B00"/>
-                    <rect x="206" y="115" width="30" height="74" rx="8" fill="#FF6B00"/>
-                    <rect x="244" y="32" width="30" height="157" rx="8" fill="#FF6B00"/>
-                    <rect x="282" y="51" width="30" height="138" rx="8" fill="#FF6B00"/>
-                    <rect x="320" y="97" width="30" height="92" rx="8" fill="#FF6B00"/>
+                    <!-- 바 차트는 JavaScript로 동적 생성됩니다 -->
 
-                    <!-- X축 레이블 -->
-                    <text x="30" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">06:00</text>
-                    <text x="106" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">10:00</text>
-                    <text x="183" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">14:00</text>
-                    <text x="259" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">18:00</text>
-                    <text x="335" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">22:00</text>
+                    <!-- X축 레이블 (시간대별) -->
+                    <text x="31" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">06</text>
+                    <text x="69" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">08</text>
+                    <text x="107" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">10</text>
+                    <text x="145" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">12</text>
+                    <text x="183" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">14</text>
+                    <text x="221" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">16</text>
+                    <text x="259" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">18</text>
+                    <text x="297" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">20</text>
+                    <text x="335" y="210" fill="#8A6A50" font-size="12" text-anchor="middle">22</text>
 
                     <!-- Y축 레이블 -->
                     <text x="380" y="190" fill="#8A6A50" font-size="12" text-anchor="end">0</text>
@@ -2001,6 +1996,9 @@
 
                     loadGymMachines(gymNo);
 
+                    // 혼잡도 데이터 로드 및 차트 업데이트
+                    loadCongestionChart(gymNo);
+
                     // 모달 열기
                     document.getElementById('gymDetailModal').style.display = 'flex';
                 } else {
@@ -2211,6 +2209,127 @@
         }
     });
 
+    // 혼잡도 차트 로드 및 업데이트 함수
+    function loadCongestionChart(gymNo) {
+        fetch(window.contextPath + '/gym/congestion.ajax?gymNo=' + gymNo + '&days=7')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success && data.congestionData && data.congestionData.length > 0) {
+                    updateCongestionChart(data.congestionData);
+                } else {
+                    // 데이터가 없을 경우 기본값으로 차트 초기화
+                    updateCongestionChart([]);
+                }
+            })
+            .catch(function(error) {
+                console.error('혼잡도 데이터 조회 오류:', error);
+                // 오류 발생 시 기본값으로 차트 초기화
+                updateCongestionChart([]);
+            });
+    }
+
+    // 혼잡도 차트 업데이트 함수
+    function updateCongestionChart(congestionData) {
+        const svg = document.querySelector('.chart-container svg');
+        if (!svg) return;
+
+        // 시간대별 데이터 맵 생성 (빠른 조회를 위해)
+        const dataMap = {};
+        if (congestionData && congestionData.length > 0) {
+            congestionData.forEach(function(item) {
+                dataMap[item.TIME_SLOT] = item.AVG_COUNT || 0;
+            });
+        }
+
+        // 시간대 목록 (순서대로)
+        const timeSlots = ['06-08', '08-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'];
+
+        // 최대값 계산 (차트 스케일링을 위해)
+        let maxValue = 0;
+        timeSlots.forEach(function(timeSlot) {
+            const value = dataMap[timeSlot] || 0;
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        });
+
+        // 최대값이 0이면 기본값 100으로 설정
+        if (maxValue === 0) {
+            maxValue = 100;
+        }
+
+        // 차트 높이 설정 (SVG viewBox 기준)
+        const chartHeight = 184; // 224 - 40 (하단 여백)
+        const chartBaseY = 184; // 바 차트의 기준 Y 좌표
+
+        // 바 차트 X 위치 (9개)
+        const barPositions = [16, 54, 92, 130, 168, 206, 244, 282, 320];
+        const barWidth = 30;
+        const barRadius = 8;
+
+        // 기존 바 차트 제거
+        const existingBars = svg.querySelectorAll('rect[data-bar="true"]');
+        existingBars.forEach(function(bar) {
+            bar.remove();
+        });
+
+        // 새로운 바 차트 생성
+        timeSlots.forEach(function(timeSlot, index) {
+            const value = dataMap[timeSlot] || 0;
+            const barHeight = maxValue > 0 ? Math.round((value / maxValue) * chartHeight) : 0;
+            const barY = chartBaseY - barHeight;
+            const barX = barPositions[index];
+
+            // 바 차트 생성
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', barX);
+            rect.setAttribute('y', barY);
+            rect.setAttribute('width', barWidth);
+            rect.setAttribute('height', barHeight);
+            rect.setAttribute('rx', barRadius);
+            rect.setAttribute('fill', '#FF6B00');
+            rect.setAttribute('data-bar', 'true');
+            rect.setAttribute('data-time-slot', timeSlot);
+            rect.setAttribute('data-value', value);
+
+            // 툴팁을 위한 title 추가
+            const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+            title.textContent = timeSlot + ': 평균 ' + value + '명';
+            rect.appendChild(title);
+
+            // 그리드 라인 다음에 삽입 (그리드 라인 위에 표시되도록)
+            const gridLines = svg.querySelectorAll('line[stroke="#4A3020"]');
+            if (gridLines.length > 0) {
+                svg.insertBefore(rect, gridLines[0]);
+            } else {
+                svg.appendChild(rect);
+            }
+        });
+
+        // Y축 레이블 업데이트 (최대값에 맞게 조정)
+        const yAxisLabels = svg.querySelectorAll('text[text-anchor="end"]');
+        if (yAxisLabels.length >= 5) {
+            // Y축 레이블 위치: 380, y=190, 145, 97, 50, 10
+            const yPositions = [190, 145, 97, 50, 10];
+            const yValues = [
+                0,
+                Math.round(maxValue * 0.25),
+                Math.round(maxValue * 0.5),
+                Math.round(maxValue * 0.75),
+                maxValue
+            ];
+
+            yAxisLabels.forEach(function(label, index) {
+                if (index < yValues.length) {
+                    label.textContent = yValues[index];
+                }
+            });
+        }
+    }
+
+
 </script>
 
 <!-- 로그인 성공/실패 메시지 표시 -->
@@ -2223,6 +2342,36 @@
         alert('${errorMsg}');
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
+
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('visitReserved') === 'true') {
+            alert('방문 예약이 완료되었습니다!');
+            sessionStorage.removeItem('visitReserved');
+        }
+    });
+
+    var filterSelect = document.querySelector('.filter-select');
+
+    // 정렬 변경 시 서버에 재요청
+    if (filterSelect) {
+        filterSelect.addEventListener('change', function() {
+            var sortType = this.value;
+
+            if (sortType) {
+                // 정렬 파라미터와 함께 페이지 새로고침
+                window.location.href = '${pageContext.request.contextPath}/?sort=' + sortType;
+            } else {
+                // 정렬 없이 기본 페이지로
+                window.location.href = '${pageContext.request.contextPath}/';
+            }
+        });
+
+        // 페이지 로드 시 현재 정렬 상태 유지
+        var currentSort = '${currentSort}';
+        if (currentSort && currentSort !== 'null' && currentSort !== '') {
+            filterSelect.value = currentSort;
+        }
+    }
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>

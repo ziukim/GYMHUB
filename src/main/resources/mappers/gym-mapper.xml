@@ -26,15 +26,13 @@
             GYM_NAME,
             GYM_OWNER,
             GYM_PHONE,
-            GYM_ADDRESS,
-            ATT_CACHE_NO
+            GYM_ADDRESS
         ) VALUES (
             #{gymNo},
             #{gymName},
             #{gymOwner},
             #{gymPhone},
-            #{gymAddress},
-            #{attCacheNo}
+            #{gymAddress}
         )
     </insert>
 
@@ -48,8 +46,7 @@
             STATUS,
             GYM_CREATEAT,
             GYM_UPDATEAT,
-            GYM_PHOTO_PATH,
-            ATT_CACHE_NO
+            GYM_PHOTO_PATH
         FROM GYM
         WHERE GYM_NO = #{gymNo}
         AND STATUS = 'Y'
@@ -65,17 +62,56 @@
             STATUS,
             GYM_CREATEAT,
             GYM_UPDATEAT,
-            GYM_PHOTO_PATH,
-            ATT_CACHE_NO
+            GYM_PHOTO_PATH
         FROM GYM
         WHERE STATUS = 'Y'
         ORDER BY GYM_NO DESC
     </select>
 
+    <!-- 1개월 회원권 가격 기준으로 정렬된 헬스장 목록 조회 -->
+    <select id="selectAllGymsWithSort" parameterType="string" resultMap="gymResultMap">
+        SELECT
+        G.GYM_NO,
+        G.GYM_NAME,
+        G.GYM_OWNER,
+        G.GYM_PHONE,
+        G.GYM_ADDRESS,
+        G.STATUS,
+        G.GYM_CREATEAT,
+        G.GYM_UPDATEAT,
+        G.GYM_PHOTO_PATH,
+        FROM GYM G
+        LEFT JOIN (
+        SELECT
+        GYM_NO,
+        PRODUCT_PRICE
+        FROM PRODUCT
+        WHERE PRODUCT_TYPE = '회원권'
+        AND DURATION_MONTHS = 30
+        ) P ON G.GYM_NO = P.GYM_NO
+        WHERE G.STATUS = 'Y'
+        ORDER BY
+        CASE
+        WHEN P.PRODUCT_PRICE IS NULL THEN 1
+        ELSE 0
+        END,
+        <choose>
+            <when test="sortType == 'price-low'">
+                P.PRODUCT_PRICE ASC NULLS LAST
+            </when>
+            <when test="sortType == 'price-high'">
+                P.PRODUCT_PRICE DESC NULLS LAST
+            </when>
+            <otherwise>
+                G.GYM_NO DESC
+            </otherwise>
+        </choose>
+    </select>
+
     <update id="updateProfileImage">
         UPDATE GYM
         SET GYM_PHOTO_PATH = #{photoPath},
-            GYM_UPDATEAT = SYSDATE
+        GYM_UPDATEAT = SYSDATE
         WHERE GYM_NO = #{gymNo}
     </update>
 
