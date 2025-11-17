@@ -38,9 +38,12 @@ ul, li {
 
 .main-content {
     margin-left: 255px;
+    width: calc(100% - 255px);
     padding: 24px;
     min-height: 100vh;
+    height: 100vh;
     overflow-y: auto;
+    box-sizing: border-box;
 }
 
 /* ========================================
@@ -359,6 +362,65 @@ header .logo-icon {
 .card-header h3 {
     font-size: 16px;
     color: #ff6b00;
+}
+
+/* 카드 타이틀과 아이콘 */
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: 16px;
+    color: #ff6b00;
+    font-weight: 600;
+}
+
+.card-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 정보 행 (info-row) */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #4a3020;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 14px;
+    color: #8a6a50;
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 14px;
+    color: #ffa366;
+    font-weight: 500;
+}
+
+.info-value.highlight {
+    color: #ff6b00;
+    font-weight: 700;
 }
 
 /* ========================================
@@ -1165,5 +1227,90 @@ button {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #ff8800;
+}
+
+/* ========================================
+   컨텐츠 컨테이너 (gym 페이지들)
+   ======================================== */
+
+.content-container {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin-top: 0;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #2d1810;
+}
+
+.header-info h2 {
+    font-size: 20px;
+    color: #ff6b00;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.header-info p {
+    font-size: 14px;
+    color: #b0b0b0;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-btn {
+    background-color: transparent;
+    border: 1px solid #8a6a50;
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #8a6a50;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.filter-btn:hover {
+    background-color: rgba(138, 106, 80, 0.1);
+    border-color: #ff6b00;
+    color: #ff6b00;
+}
+
+.add-btn,
+.add-member-btn {
+    background-color: #ff6b00;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.add-btn:hover,
+.add-member-btn:hover {
+    background-color: #ff8500;
+    box-shadow: 0 0 12px rgba(255, 107, 0, 0.4);
+}
+
+.add-member-btn span:first-child {
+    font-size: 18px;
+    font-weight: bold;
 }
 

@@ -36,13 +36,9 @@
 
         /* Main Content - 화면에 꽉 차도록 설정 */
         .main-content {
-            margin-left: 255px;
-            width: calc(100% - 255px);
             height: 100vh;
             padding: 29px;
             background-color: #0a0a0a;
-            overflow-y: auto;
-            box-sizing: border-box;
             position: relative;
             display: flex;
             flex-direction: column;

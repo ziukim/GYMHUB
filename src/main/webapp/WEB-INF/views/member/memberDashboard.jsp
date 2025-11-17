@@ -10,10 +10,7 @@
     <style>
         /* 회원 대시보드 전용 스타일 */
         .main-content {
-            margin-left: 255px;
-            width: calc(100% - 255px);
             padding: 40px 40px 40px 20px;
-            min-height: 100vh;
         }
 
         /* Welcome Message */
