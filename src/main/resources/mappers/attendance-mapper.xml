@@ -113,4 +113,77 @@
         )
     </insert>
 
+    <!-- 출석 통계 데이터 조회 -->
+    <select id="getAttendanceStats" resultType="map">
+        WITH ATTENDANCE_PAIRS AS (
+            SELECT
+                TRUNC(ATTENDANCE_DATE) AS ATT_DATE,
+                MIN(CASE WHEN CHECK_IN_INFO = '입실' THEN ATTENDANCE_DATE END) AS CHECK_IN,
+                MAX(CASE WHEN CHECK_IN_INFO = '퇴실' THEN ATTENDANCE_DATE END) AS CHECK_OUT
+            FROM ATTENDANCE
+            WHERE MEMBER_NO = #{memberNo}
+              AND GYM_NO = #{gymNo}
+            GROUP BY TRUNC(ATTENDANCE_DATE)
+        ),
+             STATS AS (
+                 SELECT
+                     COUNT(DISTINCT ATT_DATE) AS TOTAL_DAYS,
+                     COUNT(DISTINCT CASE
+                                        WHEN EXTRACT(YEAR FROM ATT_DATE) = EXTRACT(YEAR FROM SYSDATE)
+                                            AND EXTRACT(MONTH FROM ATT_DATE) = EXTRACT(MONTH FROM SYSDATE)
+                                            THEN ATT_DATE
+                         END) AS THIS_MONTH_DAYS,
+                     ROUND(
+                             COUNT(DISTINCT ATT_DATE) /
+                             NULLIF(TRUNC((SYSDATE - MIN(ATT_DATE)) / 7), 0),
+                             1
+                     ) AS WEEKLY_AVG,
+                     ROUND(
+                             SUM(
+                                     CASE
+                                         WHEN CHECK_OUT IS NOT NULL AND CHECK_IN IS NOT NULL
+                                             THEN (CHECK_OUT - CHECK_IN) * 24
+                                         ELSE 0
+                                         END
+                             ),
+                             0
+                     ) AS TOTAL_HOURS
+                 FROM ATTENDANCE_PAIRS
+             )
+        SELECT
+            NVL(TOTAL_DAYS, 0) AS TOTAL_DAYS,
+            NVL(THIS_MONTH_DAYS, 0) AS THIS_MONTH_DAYS,
+            NVL(WEEKLY_AVG, 0) AS WEEKLY_AVG,
+            NVL(TOTAL_HOURS, 0) AS TOTAL_HOURS
+        FROM STATS
+    </select>
+
+    <!-- 출석 목록 조회 (최근 20개) -->
+    <select id="getAttendanceList" resultType="map">
+        WITH ATTENDANCE_PAIRS AS (
+            SELECT
+                TRUNC(ATTENDANCE_DATE) AS ATT_DATE,
+                MIN(CASE WHEN CHECK_IN_INFO = '입실' THEN ATTENDANCE_DATE END) AS CHECK_IN,
+                MAX(CASE WHEN CHECK_IN_INFO = '퇴실' THEN ATTENDANCE_DATE END) AS CHECK_OUT
+            FROM ATTENDANCE
+            WHERE MEMBER_NO = #{memberNo}
+              AND GYM_NO = #{gymNo}
+            GROUP BY TRUNC(ATTENDANCE_DATE)
+        )
+        SELECT
+            TO_CHAR(ATT_DATE, 'YYYY. MM. DD.') AS ATTENDANCE_DATE,
+            TO_CHAR(CHECK_IN, 'HH24:MI') AS CHECK_IN_TIME,
+            TO_CHAR(CHECK_OUT, 'HH24:MI') AS CHECK_OUT_TIME,
+            CASE
+                WHEN CHECK_OUT IS NOT NULL AND CHECK_IN IS NOT NULL THEN
+                    TRUNC((CHECK_OUT - CHECK_IN) * 24) || '시간 ' ||
+                    TRUNC(MOD((CHECK_OUT - CHECK_IN) * 24 * 60, 60)) || '분'
+                ELSE '-'
+                END AS EXERCISE_DURATION
+        FROM ATTENDANCE_PAIRS
+        WHERE CHECK_IN IS NOT NULL
+        ORDER BY ATT_DATE DESC
+            FETCH FIRST 20 ROWS ONLY
+    </select>
+
 </mapper>

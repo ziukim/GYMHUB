@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.DashboardMapper">
+
+    <!-- 회원권 정보 조회 (MEMBERSHIP 테이블 사용) -->
+    <select id="selectMembershipInfo" resultType="hashmap">
+        SELECT
+        CASE
+            WHEN TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) = 0 THEN '1개월 회원권'
+            ELSE TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) || '개월 회원권'
+        END AS membershipName,
+        TO_CHAR(M.START_DATE, 'YYYY.MM.DD') AS startDate,
+        TO_CHAR(M.END_DATE, 'YYYY.MM.DD') AS endDate,
+        NVL(L.LOCKER_REAL_NUM, '미배정') AS lockerNo,
+        TO_CHAR(LP.LOCKER_END, 'YYYY.MM.DD') AS lockerEndDate,
+        TRUNC(M.END_DATE - SYSDATE) AS remainingDays
+        FROM MEMBERSHIP M
+        LEFT JOIN LOCKER_PASS LP ON M.MEMBER_NO = LP.MEMBER_NO
+        AND LP.LOCKER_PASS_STATUS = '정상'
+        LEFT JOIN LOCKER L ON LP.LOCKER_NO = L.LOCKER_NO
+        WHERE M.MEMBER_NO = #{memberNo}
+        AND M.GYM_NO = #{gymNo}
+        AND M.MEMBERSHIP_STATUS = '정상'
+        AND M.END_DATE >= SYSDATE
+        ORDER BY M.START_DATE DESC
+        FETCH FIRST 1 ROW ONLY
+    </select>
+
+    <!-- 이번 달 출석 정보 조회 -->
+    <select id="selectAttendanceInfo" resultType="hashmap">
+        SELECT
+        NVL(COUNT(DISTINCT TRUNC(ATTENDANCE_DATE)), 0) AS attendanceCount,
+        ROUND(NVL(COUNT(DISTINCT TRUNC(ATTENDANCE_DATE)), 0) * 100.0 / 25, 0) AS achievementRate
+        FROM ATTENDANCE
+        WHERE MEMBER_NO = #{memberNo}
+        AND GYM_NO = #{gymNo}
+        AND TO_CHAR(ATTENDANCE_DATE, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+        AND CHECK_IN_INFO = '입실'
+    </select>
+
+    <!-- 현재 혼잡도 조회 -->
+    <select id="selectCongestionInfo" resultType="hashmap">
+        SELECT
+        COUNT(DISTINCT MEMBER_NO) AS currentCount,
+        TO_CHAR(SYSDATE, 'YYYY"년" MM"월" DD"일"') AS currentDate,
+        TO_CHAR(SYSDATE, 'HH24:MI') AS currentTime
+        FROM ATTENDANCE
+        WHERE GYM_NO = #{gymNo}
+        AND TRUNC(ATTENDANCE_DATE) = TRUNC(SYSDATE)
+        AND CHECK_IN_INFO = '입실'
+        AND NOT EXISTS (
+        SELECT 1
+        FROM ATTENDANCE A2
+        WHERE A2.MEMBER_NO = ATTENDANCE.MEMBER_NO
+        AND A2.GYM_NO = #{gymNo}
+        AND A2.CHECK_IN_INFO = '퇴실'
+        AND A2.ATTENDANCE_DATE > ATTENDANCE.ATTENDANCE_DATE
+        AND TRUNC(A2.ATTENDANCE_DATE) = TRUNC(SYSDATE)
+        )
+    </select>
+
+    <!-- 헬스장 정보 조회 -->
+    <select id="selectGymInfo" resultType="hashmap">
+        SELECT
+        GYM_NAME AS gymName
+        FROM GYM
+        WHERE GYM_NO = #{gymNo}
+    </select>
+
+    <!-- 공지사항 조회 (최신 2개) -->
+    <select id="selectNotices" resultType="hashmap">
+        SELECT
+        NOTICE_NO AS noticeNo,
+        NOTICE_TITLE AS noticeTitle,
+        TO_CHAR(NOTICE_DATE, 'YYYY.MM.DD') AS noticeDate,
+        CASE WHEN NOTICE_FIX_STATUS = 'Y' THEN 'Y' ELSE 'N' END AS isImportant
+        FROM GYM_NOTICE
+        WHERE GYM_NO = #{gymNo}
+        ORDER BY NOTICE_FIX_STATUS DESC, NOTICE_DATE DESC
+        FETCH FIRST 2 ROWS ONLY
+    </select>
+
+    <!-- 운동 영상 조회 (최신 4개) - YOUTUBE_URL 테이블 사용 -->
+    <select id="selectVideos" resultType="hashmap">
+        SELECT
+        YOUTUBE_URL_NO AS videoNo,
+        YOUTUBE_URL_TITLE AS videoTitle,
+        YOUTUBE_URL_WRITER AS videoAuthor,
+        YOUTUBE_URL AS videoUrl
+        FROM YOUTUBE_URL
+        WHERE GYM_NO = #{gymNo}
+        ORDER BY YOUTUBE_URL_NO DESC
+        FETCH FIRST 3 ROWS ONLY
+    </select>
+
+    <!-- 운동 영상 전체 조회 (더보기용) - 추가 -->
+    <select id="selectAllVideos" resultType="hashmap">
+        SELECT
+        YOUTUBE_URL_NO AS videoNo,
+        YOUTUBE_URL_TITLE AS videoTitle,
+        YOUTUBE_URL_WRITER AS videoAuthor,
+        YOUTUBE_URL AS videoUrl
+        FROM YOUTUBE_URL
+        WHERE GYM_NO = #{gymNo}
+        ORDER BY YOUTUBE_URL_NO DESC
+    </select>
+
+    <!-- PT 정보 조회 -->
+    <select id="selectPtInfo" resultType="hashmap">
+        SELECT
+        M.MEMBER_NAME AS trainerName,
+        TO_CHAR(PR.PT_RESERVE_TIME, 'MM"월" DD"일" HH24:MI') AS nextSchedule,
+        (PP.PT_TOTAL_COUNT - PP.PT_USED_COUNT) AS remainingCount,
+        PP.PT_TOTAL_COUNT AS totalCount
+        FROM PT_PASS PP
+        LEFT JOIN (
+        SELECT PR1.PT_PASS_NO, PR1.PT_RESERVE_TIME, PR1.PT_TRAINER_NO
+        FROM PT_RESERVE PR1
+        WHERE PR1.PT_RESERVE_TIME > SYSDATE
+        AND (PR1.PT_RESERVE_STATUS = 'Y' OR PR1.PT_RESERVE_STATUS IS NULL)
+        AND PR1.PT_RESERVE_TIME = (
+        SELECT MIN(PR2.PT_RESERVE_TIME)
+        FROM PT_RESERVE PR2
+        WHERE PR2.PT_PASS_NO = PR1.PT_PASS_NO
+        AND PR2.PT_RESERVE_TIME > SYSDATE
+        AND (PR2.PT_RESERVE_STATUS = 'Y' OR PR2.PT_RESERVE_STATUS IS NULL)
+        )
+        ) PR ON PP.PT_PASS_NO = PR.PT_PASS_NO
+        LEFT JOIN MEMBER M ON PR.PT_TRAINER_NO = M.MEMBER_NO
+        WHERE PP.MEMBER_NO = #{memberNo}
+        AND PP.GYM_NO = #{gymNo}
+        AND PP.PT_END >= SYSDATE
+        ORDER BY PP.PT_END DESC
+        FETCH FIRST 1 ROW ONLY
+    </select>
+
+    <!-- 공지사항 상세 조회 -->
+    <select id="selectNoticeDetail" resultType="hashmap">
+        SELECT
+        NOTICE_NO as noticeNo,
+        NOTICE_TITLE as noticeTitle,
+        NOTICE_CONTENT as noticeContent,
+        TO_CHAR(NOTICE_DATE, 'YYYY.MM.DD') as noticeDate,
+        NOTICE_WRITER as noticeWriter,
+        NOTICE_CATEGORY as noticeCategory,
+        NOTICE_FILE_PATH as noticeFilePath,
+        CASE WHEN NOTICE_FIX_STATUS = 'Y' THEN 'Y' ELSE 'N' END as isImportant,
+        GYM_NO as gymNo
+        FROM GYM_NOTICE
+        WHERE NOTICE_NO = #{noticeNo}
+    </select>
+
+</mapper>

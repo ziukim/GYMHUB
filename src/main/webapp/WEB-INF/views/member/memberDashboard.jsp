@@ -10,7 +10,10 @@
     <style>
         /* 회원 대시보드 전용 스타일 */
         .main-content {
+            margin-left: 255px;
+            width: calc(100% - 255px);
             padding: 40px 40px 40px 20px;
+            min-height: 100vh;
         }
 
         /* Welcome Message */
@@ -90,7 +93,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 200px;
+            min-height: 80px;
+            margin-bottom: 20px;
         }
 
         .large-text {
@@ -107,7 +111,27 @@
 
         /* Notice */
         .notice-list {
-            margin-top: 80px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notice-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notice-list::-webkit-scrollbar-track {
+            background: #2d1810;
+            border-radius: 3px;
+        }
+
+        .notice-list::-webkit-scrollbar-thumb {
+            background: #ff6b00;
+            border-radius: 3px;
+        }
+
+        .notice-list::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
         }
 
         .notice-item {
@@ -169,6 +193,13 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .play-button {
@@ -183,6 +214,8 @@
             color: #ff6b00;
             font-size: 20px;
             transition: background 0.3s;
+            position: relative;
+            z-index: 1;
         }
 
         .play-button:hover {
@@ -396,10 +429,12 @@
             align-items: center;
             gap: 12px;
             min-height: 83px;
+            justify-content: space-between;
         }
 
         .modal-goal-text {
             flex: 1;
+            margin-right: 12px;
         }
 
         .modal-goal-title {
@@ -422,6 +457,37 @@
             width: 20px;
             height: 20px;
             flex-shrink: 0;
+        }
+
+        .delete-goal-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s;
+            flex-shrink: 0;
+        }
+
+        .delete-goal-btn:hover {
+            opacity: 0.7;
+        }
+
+        .delete-goal-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        .empty-goal-message {
+            text-align: center;
+            padding: 20px;
+            color: #8a6a50;
+            border: 1px solid #2d1810;
+            border-radius: 10px;
+            background: #1a0f0a;
         }
 
         /* Goal Input */
@@ -535,128 +601,338 @@
 
         <!-- Top Cards -->
         <div class="card-grid">
-            <!-- Membership Card -->
-            <div class="card">
-                <div class="card-title">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
-                    </span>
-                    회원권 정보
-                    <span style="margin-left: auto; color: #8a6a50; font-size: 14px;">남은 기간</span>
-                    <span style="color: #ff6b00; font-size: 14px;">89일</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">이용권</span>
-                    <span class="info-value">6개월 회원권</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">시작일</span>
-                    <span class="info-value">2025.08.01</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">종료일</span>
-                    <span class="info-value">2026.01.31</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">락커 번호</span>
-                    <span class="info-value highlight">12번</span>
-                </div>
-            </div>
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <!-- 회원권 정보 카드 -->
+                    <div class="card">
+                        <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                        </span>
+                            회원권 정보
+                            <c:if test="${not empty membership}">
+                                <span style="margin-left: auto; color: #8a6a50; font-size: 14px;">남은 기간</span>
+                                <span style="color: #ff6b00; font-size: 14px;">${membership.REMAININGDAYS}일</span>
+                            </c:if>
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty membership}">
+                                <div class="info-row">
+                                    <span class="info-label">이용권</span>
+                                    <span class="info-value">${membership.MEMBERSHIPNAME}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">시작일</span>
+                                    <span class="info-value">${membership.STARTDATE}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">종료일</span>
+                                    <span class="info-value">${membership.ENDDATE}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">락커 번호</span>
+                                    <span class="info-value highlight">${membership.LOCKERNO}번</span>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                    <p style="margin: 0;">회원권을 등록해주세요</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
 
-            <!-- Attendance Card -->
-            <div class="card">
-                <div class="card-title">
+                    <!-- 출석 카드 -->
+                    <div class="card">
+                        <div class="card-title">
                     <span class="card-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="출석 아이콘">
                     </span>
-                    이번 달 출석
-                </div>
-                <div class="attendance-display">
-                    <div class="attendance-number">18일</div>
-                    <div class="attendance-label">이번 달 총 출석일</div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">목표 달성률</span>
-                    <span class="info-value highlight">72%</span>
-                </div>
-            </div>
+                            이번 달 출석
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty attendance}">
+                                <div class="attendance-display">
+                                    <div class="attendance-number">${attendance.ATTENDANCECOUNT}일</div>
+                                    <div class="attendance-label">이번 달 총 출석일</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${attendance.ACHIEVEMENTRATE}%;"></div>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">목표 달성률</span>
+                                    <span class="info-value highlight">${attendance.ACHIEVEMENTRATE}%</span>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                    <p style="margin: 0;">출석 기록이 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
 
-            <!-- PT Info Card -->
-            <div class="card">
-                <div class="card-title">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 아이콘">
-                    </span>
-                    PT 정보
-                </div>
-                <div class="info-row">
-                    <span class="info-label">담당 트레이너</span>
-                    <span class="info-value">김철수 코치</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">다음 예약 일정</span>
-                    <span class="info-value">10월 28일 14:00</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">남은 횟수</span>
-                    <span class="info-value highlight">12회 / 20회</span>
-                </div>
-            </div>
+                    <!-- PT Info Card -->
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 아이콘">
+                            </span>
+                            PT 정보
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty ptInfo}">
+                                <c:if test="${not empty ptInfo.TRAINERNAME}">
+                                    <div class="info-row">
+                                        <span class="info-label">담당 트레이너</span>
+                                        <span class="info-value">${ptInfo.TRAINERNAME} 코치</span>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty ptInfo.NEXTSCHEDULE}">
+                                    <div class="info-row">
+                                        <span class="info-label">다음 예약 일정</span>
+                                        <span class="info-value">${ptInfo.NEXTSCHEDULE}</span>
+                                    </div>
+                                </c:if>
+                                <c:if test="${empty ptInfo.NEXTSCHEDULE}">
+                                    <div class="info-row">
+                                        <span class="info-label">다음 예약 일정</span>
+                                        <span class="info-value">예약 없음</span>
+                                    </div>
+                                </c:if>
+                                <div class="info-row">
+                                    <span class="info-label">남은 횟수</span>
+                                    <span class="info-value highlight">${ptInfo.REMAININGCOUNT}회 / ${ptInfo.TOTALCOUNT}회</span>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                    <p style="margin: 0;">등록된 PT 정보가 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때: 회원권 정보 카드 -->
+                    <div class="card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                        </span>
+                                회원권 정보
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">이용권</span>
+                                <span class="info-value">정보 없음</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">시작일</span>
+                                <span class="info-value">----</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">종료일</span>
+                                <span class="info-value">----</span>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>헬스장의 정보를 받아보세요!
+                        </div>
+                    </div>
+
+                    <!-- gym_no가 없을 때: 출석 카드 -->
+                    <div class="card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="출석 아이콘">
+                        </span>
+                                이번 달 출석
+                            </div>
+                            <div class="attendance-display">
+                                <div class="attendance-number">0일</div>
+                                <div class="attendance-label">이번 달 총 출석일</div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>출석 정보를 확인하세요!
+                        </div>
+                    </div>
+
+                    <!-- gym_no가 없을 때: PT 정보 카드 -->
+                    <div class="card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 아이콘">
+                        </span>
+                                PT 정보
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">담당 트레이너</span>
+                                <span class="info-value">정보 없음</span>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>PT 정보를 확인하세요!
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Two Column Section -->
         <div class="two-column">
-            <!-- Congestion Card -->
-            <div class="large-card">
-                <div class="card-title">
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <!-- Congestion Card -->
+                    <div class="large-card">
+                        <div class="card-title">
                     <span class="card-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="혼잡도 아이콘">
                     </span>
-                    현재 혼잡도
-                </div>
-                <div class="center-content">
-                    <div class="large-text">${currentDate}</div>
-                    <div class="large-text">${currentTime}</div>
-                    <div class="medium-text">현재 이용인원</div>
-                    <div class="large-text">${currentCongestion} 명</div>
-                </div>
-            </div>
+                            현재 혼잡도
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty congestion}">
+                                <div class="center-content">
+                                    <div class="large-text">${congestion.CURRENTDATE}</div>
+                                    <div class="large-text">${congestion.CURRENTTIME}</div>
+                                    <div class="medium-text">현재 이용인원</div>
+                                    <div class="large-text">${congestion.CURRENTCOUNT} 명</div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="center-content">
+                                    <div style="color: #8a6a50; text-align: center;">
+                                        혼잡도 정보를 불러올 수 없습니다
+                                    </div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
 
-            <!-- My Gym Card -->
-            <div class="large-card">
-                <div class="card-title">
+                    <!-- My Gym Card -->
+                    <div class="large-card">
+                        <div class="card-title">
                     <span class="card-icon">
                         <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 아이콘">
                     </span>
-                    나의 헬스장
-                </div>
-                <div class="center-content">
-                    <div class="large-text">헬스보이짐 판교역점</div>
-                </div>
-                <div class="notice-list">
-                    <div class="notice-item">
-                        <span class="notice-badge">중요</span>
-                        <div class="notice-title">추석 연휴 운영시간 안내</div>
-                        <div class="notice-date">2025.10.25</div>
+                            나의 헬스장
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty gymInfo}">
+                                <div class="center-content">
+                                    <div class="large-text">${gymInfo.GYMNAME}</div>
+                                </div>
+                                <div class="notice-list">
+                                    <c:choose>
+                                        <c:when test="${not empty notices}">
+                                            <c:forEach var="notice" items="${notices}">
+                                                <c:set var="noticeNo" value="${notice.NOTICENO != null ? notice.NOTICENO : (notice.noticeNo != null ? notice.noticeNo : '')}" />
+                                                <c:set var="noticeTitle" value="${notice.NOTICETITLE != null ? notice.NOTICETITLE : (notice.noticeTitle != null ? notice.noticeTitle : '')}" />
+                                                <c:set var="noticeDate" value="${notice.NOTICEDATE != null ? notice.NOTICEDATE : (notice.noticeDate != null ? notice.noticeDate : '')}" />
+                                                <c:set var="isImportant" value="${notice.ISIMPORTANT != null ? notice.ISIMPORTANT : (notice.isImportant != null ? notice.isImportant : 'N')}" />
+                                                <div class="notice-item" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.me?noticeNo=${noticeNo}'" style="cursor: pointer;">
+                                                    <c:if test="${isImportant == 'Y'}">
+                                                        <span class="notice-badge">중요</span>
+                                                    </c:if>
+                                                    <div class="notice-title">${noticeTitle}</div>
+                                                    <div class="notice-date">${noticeDate}</div>
+                                                </div>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div style="text-align: center; padding: 20px; color: #8a6a50;">
+                                                등록된 공지사항이 없습니다
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="center-content">
+                                    <div style="color: #8a6a50; text-align: center;">
+                                        헬스장 정보를 불러올 수 없습니다
+                                    </div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    <div class="notice-item">
-                        <div class="notice-title">신규 GX 프로그램 오픈</div>
-                        <div class="notice-date">2025.10.23</div>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때: Congestion Card -->
+                    <div class="large-card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="혼잡도 아이콘">
+                        </span>
+                                현재 혼잡도
+                            </div>
+                            <div class="center-content">
+                                <div class="large-text">2025년 10월 30일</div>
+                                <div class="large-text">14:00</div>
+                                <div class="medium-text">현재 이용인원</div>
+                                <div class="large-text">0 명</div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>실시간 혼잡도를 확인하세요!
+                        </div>
                     </div>
-                </div>
-            </div>
+
+                    <!-- gym_no가 없을 때: My Gym Card -->
+                    <div class="large-card" style="position: relative;">
+                        <div style="filter: blur(5px);">
+                            <div class="card-title">
+                        <span class="card-icon">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 아이콘">
+                        </span>
+                                나의 헬스장
+                            </div>
+                            <div class="center-content">
+                                <div class="large-text">헬스장 이름</div>
+                            </div>
+                            <div class="notice-list">
+                                <div class="notice-item">
+                                    <span class="notice-badge">중요</span>
+                                    <div class="notice-title">공지사항 제목</div>
+                                    <div class="notice-date">2025.10.25</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap;">
+                            헬스장을 등록하고<br>헬스장 정보와 공지사항을 확인하세요!
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Goals Section -->
         <div class="large-card">
             <div class="goals-header">
                 <div class="card-title">
-                    <span class="card-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="목표 아이콘">
-                    </span>
+            <span class="card-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/target.png" alt="목표 아이콘">
+            </span>
                     운동 목표
                 </div>
                 <div class="btn-group">
@@ -665,32 +941,27 @@
                 </div>
             </div>
 
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title completed">벤치 프레스 100KG 달성</div>
-                    <div class="goal-subtitle">벤치프레스</div>
-                </div>
-            </div>
+            <div id="dashboardGoalsList">
+                <c:choose>
+                    <c:when test="${not empty goals}">
+                        <c:forEach var="goal" items="${goals}" varStatus="status">
+                            <c:if test="${status.index < 5}">
+                                <div class="goal-item">
+                                    <div class="goal-text">
+                                        <div class="goal-title ${goal.goalStatus eq '달성' ? 'completed' : ''}">${goal.goalTitle}</div>
+                                        <div class="goal-subtitle">${goal.goalDate}</div>
+                                    </div>
 
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title completed">스쿼트 160KG 달성</div>
-                    <div class="goal-subtitle">1RM</div>
-                </div>
-            </div>
-
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title">데드리프트 200KG 달성</div>
-                    <div class="goal-subtitle">1RM</div>
-                </div>
-            </div>
-
-            <div class="goal-item">
-                <div class="goal-text">
-                    <div class="goal-title">체지방 12% 미만 달성</div>
-                    <div class="goal-subtitle">3세트 x 최대</div>
-                </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                            <p style="margin: 0;">등록된 운동 목표가 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -705,41 +976,82 @@
                         운동 영상 라이브러리
                     </div>
                 </div>
-                <!-- form 대신 button으로 변경 -->
-                <button type="button" class="search-btn" id="videoListBtn">+ 더보기</button>
+                <c:if test="${hasGym && not empty videos}">
+                    <button type="button" class="search-btn" id="videoListBtn">+ 더보기</button>
+                </c:if>
             </div>
 
-            <div class="video-grid">
-                <div class="video-card">
-                    <div class="video-thumbnail">
-                        <div class="play-button">▶</div>
-                    </div>
-                    <div class="video-info">
-                        <div class="video-title">올바른 스쿼트 자세</div>
-                        <div class="video-author">김트레이너</div>
-                    </div>
-                </div>
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <c:choose>
+                        <c:when test="${not empty videos}">
+                            <div class="video-grid">
+                                <c:forEach var="video" items="${videos}">
+                                    <div class="video-card" data-video-url="${video.VIDEOURL}">
+                                        <div class="video-thumbnail">
+                                            <img src="" alt="${video.VIDEOTITLE}" class="video-thumbnail-img" data-video-url="${video.VIDEOURL}" onerror="this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop'" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                                            <div class="play-button" style="position: relative; z-index: 1;">▶</div>
+                                        </div>
+                                        <div class="video-info">
+                                            <div class="video-title">${video.VIDEOTITLE}</div>
+                                            <div class="video-author">${video.VIDEOAUTHOR}</div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                <p style="margin: 0; font-size: 16px;">등록된 운동 영상이 없습니다</p>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때 블러 처리 -->
+                    <div style="position: relative; min-height: 200px;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="video-grid">
+                                <div class="video-card">
+                                    <div class="video-thumbnail">
+                                        <div class="play-button">▶</div>
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">올바른 스쿼트 자세</div>
+                                        <div class="video-author">김트레이너</div>
+                                    </div>
+                                </div>
 
-                <div class="video-card">
-                    <div class="video-thumbnail">
-                        <div class="play-button">▶</div>
-                    </div>
-                    <div class="video-info">
-                        <div class="video-title">데드리프트 마스터</div>
-                        <div class="video-author">이코치</div>
-                    </div>
-                </div>
+                                <div class="video-card">
+                                    <div class="video-thumbnail">
+                                        <div class="play-button">▶</div>
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">데드리프트 마스터</div>
+                                        <div class="video-author">이코치</div>
+                                    </div>
+                                </div>
 
-                <div class="video-card">
-                    <div class="video-thumbnail">
-                        <div class="play-button">▶</div>
+                                <div class="video-card">
+                                    <div class="video-thumbnail">
+                                        <div class="play-button">▶</div>
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">어깨 운동 루틴</div>
+                                        <div class="video-author">박강사</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 25px 30px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 15px; line-height: 1.6; z-index: 10; white-space: nowrap;">
+                            헬스장을 등록하고<br>트레이너 추천 영상을 확인하세요!
+                        </div>
                     </div>
-                    <div class="video-info">
-                        <div class="video-title">어깨 운동 루틴</div>
-                        <div class="video-author">박강사</div>
-                    </div>
-                </div>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- 운동 영상 리스트 모달 추가 (기존 모달들 다음에 추가) -->
@@ -759,99 +1071,30 @@
                     <p style="color: #8a6a50; font-size: 14px; margin-top: 8px;">트레이너 추천 운동 영상을 확인하세요</p>
                 </div>
 
-                <!-- Body -->
                 <div class="modal-body">
-                    <div class="video-grid" style="grid-template-columns: repeat(4, 1fr); gap: 20px;">
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
+                    <c:choose>
+                        <c:when test="${not empty allVideos}">
+                            <div class="video-grid" style="grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                                <c:forEach var="video" items="${allVideos}">
+                                    <div class="video-card" data-video-url="${video.VIDEOURL}">
+                                        <div class="video-thumbnail">
+                                            <img src="" alt="${video.VIDEOTITLE}" class="video-thumbnail-img" data-video-url="${video.VIDEOURL}" onerror="this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop'" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                                            <div class="play-button" style="position: relative; z-index: 1;">▶</div>
+                                        </div>
+                                        <div class="video-info">
+                                            <div class="video-title">${video.VIDEOTITLE}</div>
+                                            <div class="video-author">${video.VIDEOAUTHOR}</div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
                             </div>
-                            <div class="video-info">
-                                <div class="video-title">올바른 스쿼트 자세</div>
-                                <div class="video-author">김트레이너</div>
+                        </c:when>
+                        <c:otherwise>
+                            <div style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                                <p style="margin: 0; font-size: 16px;">등록된 운동 영상이 없습니다</p>
                             </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">데드리프트 마스터</div>
-                                <div class="video-author">이코치</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">어깨 운동 루틴</div>
-                                <div class="video-author">박강사</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">가슴 운동 완벽 가이드</div>
-                                <div class="video-author">최트레이너</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">등 운동 집중 프로그램</div>
-                                <div class="video-author">정코치</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">팔 운동 루틴</div>
-                                <div class="video-author">강트레이너</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">복근 만들기</div>
-                                <div class="video-author">김코치</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">하체 강화 운동</div>
-                                <div class="video-author">이트레이너</div>
-                            </div>
-                        </div>
-
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <div class="play-button">▶</div>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">전신 운동 프로그램</div>
-                                <div class="video-author">박코치</div>
-                            </div>
-                        </div>
-                    </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
@@ -881,60 +1124,7 @@
             <div class="modal-body">
                 <!-- Goals Tab -->
                 <div id="goalsTab" class="tab-content">
-
-
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">데드리프트 200KG 달성</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">체지방 12% 미만 달성</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">주 3회 꾸준히 운동 3개월 유지</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">체중 65kg → 58kg</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
-                    <div class="modal-goal-item">
-                        <div class="modal-goal-text">
-                            <div class="modal-goal-title">5km 러닝 25분 이내 완주</div>
-                            <div class="modal-goal-date">2025.09.09</div>
-                        </div>
-                        <svg class="modal-goal-icon goal-checkbox" fill="none" viewBox="0 0 20 20" style="cursor: pointer;">
-                            <path class="circle-path" d="M10 18.3334C14.6024 18.3334 18.3333 14.6025 18.3333 10.0001C18.3333 5.39771 14.6024 1.66675 10 1.66675C5.39763 1.66675 1.66667 5.39771 1.66667 10.0001C1.66667 14.6025 5.39763 18.3334 10 18.3334Z" stroke="#8A6A50" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                            <path class="check-path" d="M6.66667 10L9.16667 12.5L13.3333 8.33333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667" style="display: none;"/>
-                        </svg>
-                    </div>
+                    <!-- JavaScript로 동적으로 채워질 영역 -->
                 </div>
 
                 <!-- Completed Tab -->
@@ -1006,26 +1196,25 @@
         <!-- Body -->
         <div style="padding: 16px 25px 25px;">
             <!-- Video Player -->
-            <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                <div class="play-button" style="width: 64px; height: 64px; font-size: 24px;">▶</div>
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #1a0f0a;">
+                <iframe id="videoPlayerFrame" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 기존 스크립트에 추가할 내용
     document.addEventListener('DOMContentLoaded', function() {
-        // ========== 기존 코드 시작 ==========
-        // Modal 관련 요소
-        const modal = document.getElementById('goalModal');
-        const openBtn = document.getElementById('goalManagementBtn');
-        const closeBtn = document.getElementById('closeModalBtn');
+        const contextPath = '${pageContext.request.contextPath}';
+
+        const goalModal = document.getElementById('goalModal');
+        const goalManagementBtn = document.getElementById('goalManagementBtn');
+        const closeGoalModalBtn = document.getElementById('closeModalBtn');
         const tabButtons = document.querySelectorAll('.tab-button');
         const goalsTab = document.getElementById('goalsTab');
         const completedTab = document.getElementById('completedTab');
+        const dashboardGoalsList = document.getElementById('dashboardGoalsList');
 
-        // Add Goal Modal 관련 요소
         const addGoalModal = document.getElementById('addGoalModal');
         const addGoalBtn = document.getElementById('addGoalBtn');
         const closeAddGoalBtn = document.getElementById('closeAddGoalBtn');
@@ -1033,43 +1222,240 @@
         const submitAddGoalBtn = document.getElementById('submitAddGoalBtn');
         const goalInput = document.getElementById('goalInput');
 
-        // Video Detail Modal 관련 요소
         const videoDetailModal = document.getElementById('videoDetailModal');
         const closeVideoDetailBtn = document.getElementById('closeVideoDetailBtn');
-        const videoCards = document.querySelectorAll('.video-card');
+        const videoPlayerFrame = document.getElementById('videoPlayerFrame');
+        const videoListModal = document.getElementById('videoListModal');
+        const videoListBtn = document.getElementById('videoListBtn');
+        const closeVideoListBtn = document.getElementById('closeVideoListBtn');
 
-        // 목표 관리 모달 열기
-        if (openBtn) {
-            openBtn.addEventListener('click', function() {
-                modal.classList.add('active');
+        const goalState = {
+            items: []
+        };
+        let isSubmittingGoal = false;
+
+        async function fetchGoals(showError = true) {
+            if (!dashboardGoalsList) return;
+            try {
+                const response = await fetch(`${contextPath}/goals.me`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json().catch(() => []);
+                if (!response.ok) {
+                    if (showError) {
+                        alert((data && data.message) || '목표를 불러오지 못했습니다.');
+                    }
+                    return;
+                }
+                goalState.items = sortGoals(Array.isArray(data) ? data : []);
+                renderDashboardGoals();
+                renderModalGoals();
+            } catch (error) {
+                console.error('Failed to load goals', error);
+                if (showError) {
+                    alert('목표를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            }
+        }
+
+        function partitionGoals(goals) {
+            return goals.reduce((acc, goal) => {
+                if (goal.goalStatus === '달성') {
+                    acc.completed.push(goal);
+                } else {
+                    acc.active.push(goal);
+                }
+                return acc;
+            }, { active: [], completed: [] });
+        }
+
+        function sortGoals(goals) {
+            return [...goals].sort((a, b) => {
+                const aStatus = a.goalStatus === '달성' ? 1 : 0;
+                const bStatus = b.goalStatus === '달성' ? 1 : 0;
+                if (aStatus !== bStatus) {
+                    return aStatus - bStatus;
+                }
+
+                const aTime = parseGoalDate(a.goalDate);
+                const bTime = parseGoalDate(b.goalDate);
+                return bTime - aTime;
             });
         }
 
-        // 목표 관리 모달 닫기
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                modal.classList.remove('active');
+        function parseGoalDate(dateStr) {
+            if (!dateStr) return 0;
+            const normalized = dateStr.replace(/\./g, '-');
+            const time = Date.parse(normalized);
+            return Number.isNaN(time) ? 0 : time;
+        }
+
+        function renderDashboardGoals() {
+            if (!dashboardGoalsList) return;
+            const displayGoals = goalState.items.slice(0, 5);
+            if (displayGoals.length === 0) {
+                dashboardGoalsList.innerHTML = ''
+                    + '<div style="text-align: center; padding: 60px 20px; color: #8a6a50;">'
+                    + '    <p style="margin: 0;">등록된 운동 목표가 없습니다</p>'
+                    + '</div>';
+                return;
+            }
+
+            dashboardGoalsList.innerHTML = displayGoals.map(goal => {
+                const goalClass = goal.goalStatus === '달성' ? 'completed' : '';
+                const title = escapeHtml(goal.goalTitle || '');
+                const date = escapeHtml(goal.goalDate || '');
+                const manageNo = goal.goalManageNo || '';
+                return ''
+                    + '<div class="goal-item">'
+                    + '    <div class="goal-text">'
+                    + '        <div class="goal-title ' + goalClass + '">' + title + '</div>'
+                    + '        <div class="goal-subtitle">' + date + '</div>'
+                    + '    </div>'
+                    + '</div>';
+            }).join('');
+        }
+
+        function createModalGoalItem(goal) {
+            const goalClass = goal.goalStatus === '달성' ? 'completed' : '';
+            const title = escapeHtml(goal.goalTitle || '');
+            const date = escapeHtml(goal.goalDate || '');
+            const manageNo = goal.goalManageNo || '';
+            return ''
+                + '<div class="modal-goal-item" data-goal-manage-no="' + manageNo + '">'
+                + '    <div class="modal-goal-text">'
+                + '        <div class="modal-goal-title ' + goalClass + '">' + title + '</div>'
+                + '        <div class="modal-goal-date">' + date + '</div>'
+                + '    </div>'
+                + '    <button class="delete-goal-btn" data-goal-manage-no="' + manageNo + '" title="삭제">'
+                + '        <img src="' + contextPath + '/resources/images/icon/delete.png" alt="삭제" class="modal-goal-icon">'
+                + '    </button>'
+                + '</div>';
+        }
+
+        function renderModalGoals() {
+            if (!goalsTab || !completedTab) {
+                return;
+            }
+            const { active, completed } = partitionGoals(goalState.items);
+            goalsTab.innerHTML = active.length
+                ? active.map(createModalGoalItem).join('')
+                : `<div class="empty-goal-message">진행 중인 목표가 없습니다.</div>`;
+            completedTab.innerHTML = completed.length
+                ? completed.map(createModalGoalItem).join('')
+                : `<div class="empty-goal-message">달성한 목표가 없습니다.</div>`;
+            
+            // 삭제 버튼 이벤트 리스너 추가
+            attachDeleteListeners();
+        }
+
+        function attachDeleteListeners() {
+            const deleteButtons = document.querySelectorAll('.delete-goal-btn');
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const goalManageNo = btn.getAttribute('data-goal-manage-no');
+                    if (!goalManageNo) return;
+                    
+                    if (!confirm('정말 이 목표를 삭제하시겠습니까?')) {
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`${contextPath}/goals/delete.me`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ goalManageNo: goalManageNo })
+                        });
+                        const data = await response.json().catch(() => ({}));
+                        if (!response.ok || !data.success) {
+                            alert((data && data.message) || '목표 삭제에 실패했습니다.');
+                            return;
+                        }
+                        alert('목표가 삭제되었습니다.');
+                        await fetchGoals(false);
+                    } catch (error) {
+                        console.error('Failed to delete goal', error);
+                        alert('목표 삭제 중 오류가 발생했습니다.');
+                    }
+                });
             });
         }
 
-        // 목표 관리 모달 오버레이 클릭시 닫기
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
+        async function handleAddGoal() {
+            if (!goalInput || isSubmittingGoal) {
+                return;
+            }
+            const title = goalInput.value.trim();
+            if (!title) {
+                alert('목표를 입력해주세요.');
+                goalInput.focus();
+                return;
+            }
+
+            isSubmittingGoal = true;
+            submitAddGoalBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${contextPath}/goals.me`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ goalTitle: title })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || !data.success) {
+                    alert((data && data.message) || '목표 추가에 실패했습니다.');
+                    return;
+                }
+                alert('새로운 목표가 등록되었습니다.');
+                goalInput.value = '';
+                addGoalModal.classList.remove('active');
+                await fetchGoals(false);
+            } catch (error) {
+                console.error('Failed to add goal', error);
+                alert('목표 추가 중 오류가 발생했습니다.');
+            } finally {
+                isSubmittingGoal = false;
+                submitAddGoalBtn.disabled = false;
+            }
+        }
+
+        function closeGoalModal() {
+            if (goalModal) {
+                goalModal.classList.remove('active');
+            }
+        }
+
+        function closeAddGoalModal() {
+            if (addGoalModal) {
+                addGoalModal.classList.remove('active');
+                if (goalInput) {
+                    goalInput.value = '';
+                }
+            }
+        }
+
+        if (goalManagementBtn && goalModal) {
+            goalManagementBtn.addEventListener('click', () => {
+                fetchGoals(false);
+                goalModal.classList.add('active');
+            });
+        }
+        if (closeGoalModalBtn) {
+            closeGoalModalBtn.addEventListener('click', closeGoalModal);
+        }
+        if (goalModal) {
+            goalModal.addEventListener('click', (e) => {
+                if (e.target === goalModal) {
+                    closeGoalModal();
                 }
             });
         }
-
-        // 탭 전환
-        tabButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                tabButtons.forEach(function(btn) {
-                    btn.classList.remove('active');
-                });
+        tabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach((btn) => btn.classList.remove('active'));
                 button.classList.add('active');
-
-                const tab = button.getAttribute('data-tab');
+                const tab = button.dataset.tab;
                 if (tab === 'goals') {
                     goalsTab.style.display = 'block';
                     completedTab.style.display = 'none';
@@ -1080,238 +1466,173 @@
             });
         });
 
-        // 목표 추가 모달 열기
-        if (addGoalBtn) {
-            addGoalBtn.addEventListener('click', function() {
+        if (addGoalBtn && addGoalModal) {
+            addGoalBtn.addEventListener('click', () => {
                 addGoalModal.classList.add('active');
                 if (goalInput) {
                     goalInput.focus();
                 }
             });
         }
-
-        // 목표 추가 모달 닫기
         if (closeAddGoalBtn) {
-            closeAddGoalBtn.addEventListener('click', function() {
-                addGoalModal.classList.remove('active');
-                if (goalInput) {
-                    goalInput.value = '';
-                }
-            });
+            closeAddGoalBtn.addEventListener('click', closeAddGoalModal);
         }
-
         if (cancelAddGoalBtn) {
-            cancelAddGoalBtn.addEventListener('click', function() {
-                addGoalModal.classList.remove('active');
-                if (goalInput) {
-                    goalInput.value = '';
-                }
-            });
+            cancelAddGoalBtn.addEventListener('click', closeAddGoalModal);
         }
-
-        // 목표 추가 모달 오버레이 클릭시 닫기
         if (addGoalModal) {
-            addGoalModal.addEventListener('click', function(e) {
+            addGoalModal.addEventListener('click', (e) => {
                 if (e.target === addGoalModal) {
-                    addGoalModal.classList.remove('active');
-                    if (goalInput) {
-                        goalInput.value = '';
-                    }
+                    closeAddGoalModal();
                 }
             });
         }
-
-        // 목표 제출
         if (submitAddGoalBtn) {
-            submitAddGoalBtn.addEventListener('click', function() {
-                if (goalInput) {
-                    const goal = goalInput.value.trim();
-                    if (goal) {
-                        console.log('새 목표:', goal);
-                        alert('목표가 추가되었습니다: ' + goal);
-                        addGoalModal.classList.remove('active');
-                        goalInput.value = '';
-                    } else {
-                        alert('목표를 입력해주세요.');
-                    }
-                }
-            });
+            submitAddGoalBtn.addEventListener('click', handleAddGoal);
         }
-
-        // Enter 키로 제출
         if (goalInput) {
-            goalInput.addEventListener('keypress', function(e) {
+            goalInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    submitAddGoalBtn.click();
+                    e.preventDefault();
+                    handleAddGoal();
                 }
             });
         }
 
-        // 비디오 카드 클릭시 모달 열기
-        videoCards.forEach(function(card) {
-            card.addEventListener('click', function() {
-                const title = card.querySelector('.video-title').textContent;
-                const author = card.querySelector('.video-author').textContent;
 
-                document.getElementById('videoModalTitle').textContent = title;
-                document.getElementById('videoModalAuthor').textContent = author;
-
-                videoDetailModal.classList.add('active');
-            });
-        });
-
-        // 비디오 상세 모달 닫기
-        if (closeVideoDetailBtn) {
-            closeVideoDetailBtn.addEventListener('click', function() {
-                videoDetailModal.classList.remove('active');
-            });
-        }
-
-        // 비디오 상세 모달 오버레이 클릭시 닫기
-        if (videoDetailModal) {
-            videoDetailModal.addEventListener('click', function(e) {
-                if (e.target === videoDetailModal) {
-                    videoDetailModal.classList.remove('active');
-                }
-            });
-        }
-
-        // 목표 체크박스 기능
-        const goalCheckboxes = document.querySelectorAll('.goal-checkbox');
-        goalCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                const circlePath = this.querySelector('.circle-path');
-                const checkPath = this.querySelector('.check-path');
-                const goalItem = this.closest('.modal-goal-item');
-                const goalTitle = goalItem.querySelector('.modal-goal-title');
-                const goalsTab = document.getElementById('goalsTab');
-                const completedTab = document.getElementById('completedTab');
-
-                const isChecked = checkPath.style.display === 'block';
-
-                if (isChecked) {
-                    // 체크 해제
-                    checkPath.style.display = 'none';
-                    circlePath.setAttribute('stroke', '#8A6A50');
-                    goalTitle.classList.remove('completed');
-
-                    // 달성한 목표 탭에서 해당 목표 찾아서 삭제
-                    const completedItems = completedTab.querySelectorAll('.modal-goal-item');
-                    completedItems.forEach(function(item) {
-                        if (item.querySelector('.modal-goal-title').textContent === goalTitle.textContent) {
-                            item.remove();
-                        }
-                    });
-                } else {
-                    // 체크 (목표 달성)
-                    checkPath.style.display = 'block';
-                    circlePath.setAttribute('stroke', '#FF6B00');
-                    goalTitle.classList.add('completed');
-                    goalsTab.appendChild(goalItem);
-
-                    // 달성한 목표 탭으로 복사
-                    const clonedItem = goalItem.cloneNode(true);
-                    completedTab.appendChild(clonedItem);
-
-                    // 복사된 항목의 체크박스에 이벤트 리스너 추가
-                    const newCheckbox = clonedItem.querySelector('.goal-checkbox');
-                    addCheckboxEvent(newCheckbox);
+        const videoCards = document.querySelectorAll('.video-card');
+        videoCards.forEach((card) => {
+            card.addEventListener('click', () => {
+                openVideoDetail(card);
+                if (videoListModal && card.closest('#videoListModal')) {
+                    videoListModal.classList.remove('active');
                 }
             });
         });
 
-        // 체크박스 이벤트를 추가하는 함수 (달성한 목표 탭용)
-        function addCheckboxEvent(checkbox) {
-            checkbox.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                const goalItem = this.closest('.modal-goal-item');
-                const goalTitle = goalItem.querySelector('.modal-goal-title');
-
-                // 달성한 목표에서 삭제
-                if (confirm('이 목표를 삭제하시겠습니까?')) {
-                    goalItem.remove();
-
-                    // 목표 탭에서도 완전히 삭제
-                    const goalsTab = document.getElementById('goalsTab');
-                    const goalItems = goalsTab.querySelectorAll('.modal-goal-item');
-                    goalItems.forEach(function(item) {
-                        const title = item.querySelector('.modal-goal-title');
-                        if (title.textContent === goalTitle.textContent) {
-                            item.remove();
-                        }
-                    });
-                }
-            });
-        }
-        // ========== 기존 코드 끝 ==========
-
-        // ========== 추가된 코드: 운동 영상 리스트 모달 ==========
-        const videoListModal = document.getElementById('videoListModal');
-        const videoListBtn = document.getElementById('videoListBtn');
-        const closeVideoListBtn = document.getElementById('closeVideoListBtn');
-
-        // 운동 영상 리스트 모달 열기
-        if (videoListBtn) {
-            videoListBtn.addEventListener('click', function() {
+        if (videoListBtn && videoListModal) {
+            videoListBtn.addEventListener('click', () => {
                 videoListModal.classList.add('active');
             });
         }
-
-        // 운동 영상 리스트 모달 닫기
         if (closeVideoListBtn) {
-            closeVideoListBtn.addEventListener('click', function() {
+            closeVideoListBtn.addEventListener('click', () => {
                 videoListModal.classList.remove('active');
             });
         }
-
-        // 운동 영상 리스트 모달 오버레이 클릭시 닫기
         if (videoListModal) {
-            videoListModal.addEventListener('click', function(e) {
+            videoListModal.addEventListener('click', (e) => {
                 if (e.target === videoListModal) {
                     videoListModal.classList.remove('active');
                 }
             });
         }
 
-        // 리스트 모달 안의 비디오 카드 클릭시 상세 모달 열기
-        const videoListModalCards = videoListModal.querySelectorAll('.video-card');
-        videoListModalCards.forEach(function(card) {
-            card.addEventListener('click', function() {
-                const title = card.querySelector('.video-title').textContent;
-                const author = card.querySelector('.video-author').textContent;
+        function openVideoDetail(card) {
+            if (!videoDetailModal || !card) {
+                return;
+            }
+            const title = card.querySelector('.video-title')?.textContent || '';
+            const author = card.querySelector('.video-author')?.textContent || '';
+            const videoUrl = card.getAttribute('data-video-url');
 
-                document.getElementById('videoModalTitle').textContent = title;
-                document.getElementById('videoModalAuthor').textContent = author;
+            document.getElementById('videoModalTitle').textContent = title;
+            document.getElementById('videoModalAuthor').textContent = author;
 
-                videoListModal.classList.remove('active');
-                videoDetailModal.classList.add('active');
+            const embedUrl = convertToEmbedUrl(videoUrl);
+            if (!embedUrl) {
+                alert('유효하지 않은 YouTube URL입니다.');
+                return;
+            }
+            videoPlayerFrame.src = embedUrl;
+            videoDetailModal.classList.add('active');
+        }
+
+        if (closeVideoDetailBtn && videoDetailModal) {
+            closeVideoDetailBtn.addEventListener('click', () => {
+                videoDetailModal.classList.remove('active');
+                videoPlayerFrame.src = '';
             });
-        });
+        }
+        if (videoDetailModal) {
+            videoDetailModal.addEventListener('click', (e) => {
+                if (e.target === videoDetailModal) {
+                    videoDetailModal.classList.remove('active');
+                    videoPlayerFrame.src = '';
+                }
+            });
+        }
 
-        // ESC 키로 모달 닫기 (모든 모달 포함)
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (modal && modal.classList.contains('active')) {
-                    modal.classList.remove('active');
-                }
-                if (addGoalModal && addGoalModal.classList.contains('active')) {
-                    addGoalModal.classList.remove('active');
-                    if (goalInput) {
-                        goalInput.value = '';
-                    }
-                }
+                closeGoalModal();
+                closeAddGoalModal();
                 if (videoDetailModal && videoDetailModal.classList.contains('active')) {
                     videoDetailModal.classList.remove('active');
+                    videoPlayerFrame.src = '';
                 }
                 if (videoListModal && videoListModal.classList.contains('active')) {
                     videoListModal.classList.remove('active');
                 }
             }
         });
+
+        document.querySelectorAll('.video-thumbnail-img').forEach((img) => {
+            const videoUrl = img.getAttribute('data-video-url');
+            if (videoUrl) {
+                img.src = getYouTubeThumbnail(videoUrl);
+            }
+        });
+
+        fetchGoals(false);
     });
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function getYouTubeThumbnail(url) {
+        if (!url) return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
+
+        let videoId = '';
+        if (url.includes('youtube.com/watch?v=')) {
+            videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        }
+
+        if (videoId) {
+            return 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
+        }
+        return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop';
+    }
+
+    function convertToEmbedUrl(url) {
+        if (!url) return '';
+
+        let videoId = '';
+        if (url.includes('youtube.com/watch?v=')) {
+            videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('youtube.com/embed/')) {
+            return url;
+        }
+
+        if (videoId) {
+            return 'https://www.youtube.com/embed/' + videoId;
+        }
+        return '';
+    }
 </script>
 </body>
 </html>
+

@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -15,65 +14,25 @@
             background-color: #0a0a0a;
             color: #ffa366;
             overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
         }
 
-        html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* App Container 오버라이드 */
-        .app-container {
-            display: block;
-            height: 100vh;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        /* Main Content - 화면에 꽉 차도록 설정 */
+        /* Main Content - padding과 background-color만 오버라이드 */
         .main-content {
-            height: 100vh;
             padding: 29px;
             background-color: #0a0a0a;
-            position: relative;
-            display: flex;
-            flex-direction: column;
         }
 
-        .page-intro {
-            margin-bottom: 30px;
-            flex-shrink: 0;
-        }
-
-        .page-intro h1 {
+        .page-title {
             font-size: 32px;
-            color: #ff6b00;
-            margin-bottom: 8px;
-        }
-
-        .page-intro p {
-            font-size: 16px;
-            color: #8a6a50;
+            margin-bottom: 56px;
         }
 
         /* Cards Container */
         .cards-row {
             display: flex;
             gap: 17px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
-            width: 100%;
-            flex-shrink: 0;
-        }
-
-        /* 나의 헬스장 카드가 남은 공간 채우기 */
-        .main-content > .card.gym-card {
-            flex: 1;
-            min-height: 0;
         }
 
         .card {
@@ -82,7 +41,6 @@
             border-radius: 14px;
             padding: 25px;
             position: relative;
-            box-sizing: border-box;
         }
 
         /* card-title은 common.css에 있으므로 추가 속성만 정의 */
@@ -111,8 +69,7 @@
         /* 트레이너 정보 Card - flex로 균등 분배 */
         .trainer-card {
             flex: 1;
-            min-width: 300px;
-            max-width: calc(50% - 9px);
+            min-width: 0;
         }
 
         .trainer-buttons {
@@ -301,10 +258,8 @@
         /* 이번 달 출석 Card - flex로 균등 분배 */
         .attendance-card {
             flex: 1;
-            min-width: 300px;
-            max-width: calc(50% - 9px);
-            height: auto;
-            min-height: 232px;
+            min-width: 0;
+            height: 232px;
         }
 
 
@@ -360,81 +315,59 @@
             font-size: 14px;
         }
 
-        /* 나의 헬스장 Card - 전체 너비 사용, 남은 공간 채우기 */
-        .gym-card {
+        /* 나의 헬스장 Card */
+        .large-card {
             width: 100%;
-            min-height: 400px;
-            box-sizing: border-box;
+            background-color: #1a0f0a;
+            border: 1px solid #ff6b00;
+            border-radius: 14px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .large-card .card-title {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 16px;
+            color: white;
         }
 
-        .gym-card .card-title span {
-            color: #ff6b00;
+        .large-card .card-icon img {
+            width: 20px;
+            height: 20px;
         }
 
-        .gym-name {
+        .center-content {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .large-text {
             color: #ff6b00;
             font-size: 30px;
-            text-align: center;
-            margin-bottom: 30px;
-            flex-shrink: 0;
+            margin: 20px 0;
         }
 
-        .notices {
-            padding: 0 21px;
+        .notice-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-        }
-
-        .notices::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .notices::-webkit-scrollbar-track {
-            background: #1a0f0a;
-            border-radius: 3px;
-        }
-
-        .notices::-webkit-scrollbar-thumb {
-            background: #ff6b00;
-            border-radius: 3px;
-        }
-
-        .notices::-webkit-scrollbar-thumb:hover {
-            background: #ff8800;
         }
 
         .notice-item {
             background-color: #2d1810;
             border-radius: 10px;
             padding: 17px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            flex-shrink: 0;
-            min-height: 80px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
         }
 
         .notice-item:hover {
-            background-color: #3d2810;
-            border-color: #ffa366;
-            transform: translateY(-2px);
-        }
-
-        .notice-item.important {
-            border: 1px solid #ff6b00;
-        }
-
-        .notice-header {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
+            background-color: #3d2010;
         }
 
         .notice-badge {
@@ -443,35 +376,19 @@
             padding: 3px 9px;
             color: #0a0a0a;
             font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .notice-content {
-            flex: 1;
+            width: fit-content;
         }
 
         .notice-title {
             color: #ffa366;
             font-size: 14px;
-            margin-bottom: 4px;
+            margin: 0;
         }
 
         .notice-date {
             color: #8a6a50;
             font-size: 12px;
-        }
-
-        .btn-notice {
-            position: absolute;
-            top: 26px;
-            right: 26px;
-            background-color: #ff6b00;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
+            margin: 0;
         }
 
         /* Modal Styles */
@@ -725,7 +642,7 @@
         /* Responsive */
         @media (max-width: 1200px) {
             .main-content {
-                width: calc(100% - 255px);
+                max-width: none;
             }
 
             .cards-row {
@@ -735,7 +652,6 @@
             .trainer-card,
             .attendance-card {
                 width: 100%;
-                max-width: 100%;
             }
 
             .trainer-buttons {
@@ -744,10 +660,14 @@
         }
 
         @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
             .main-content {
-                margin-left: 255px;
-                width: calc(100% - 255px);
-                padding: 20px;
+                margin-left: 200px;
+                width: calc(100% - 200px);
+                padding: 15px;
             }
 
             .form-grid {
@@ -757,22 +677,12 @@
             .info-modal .modal-content {
                 width: 95vw;
             }
-
-            .trainer-card,
-            .attendance-card {
-                min-width: 100%;
-            }
         }
 
         @media (max-width: 576px) {
             .main-content {
-                margin-left: 255px;
-                width: calc(100% - 255px);
-                padding: 15px;
-            }
-
-            .page-intro h1 {
-                font-size: 24px;
+                margin-left: 60px;
+                width: calc(100% - 60px);
             }
         }
     </style>
@@ -913,66 +823,73 @@
                     </svg>
                     <span>이번 달 출석</span>
                 </div>
-
-                <div class="attendance-content">
-                    <p class="attendance-days">18일</p>
-                    <p class="attendance-label">이번 달 총 출석일</p>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 72%"></div>
-                    </div>
-
-                    <div class="progress-info">
-                        <span class="label">이번 달 출석률</span>
-                        <span class="value">72%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 나의 헬스장 Card -->
-        <div class="card gym-card">
-            <div class="card-title">
-                <svg fill="none" viewBox="0 0 20 20">
-                    <path d="M13.3333 5.83333H18.3333V10.8333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                    <path d="M18.3333 5.83333L11.25 12.9167L7.08333 8.75L1.66667 14.1667" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                </svg>
-                <span>나의 헬스장</span>
-            </div>
-
-            <p class="gym-name">헬스보이짐 판교역점</p>
-
-            <div class="notices">
                 <c:choose>
-                    <c:when test="${not empty notices}">
-                        <c:forEach var="notice" items="${notices}">
-                            <div class="notice-item ${notice.noticeFixStatus == 'Y' ? 'important' : ''}" 
-                                 onclick="location.href='${pageContext.request.contextPath}/noticeDetail.no?id=${notice.noticeNo}'">
-                                <c:if test="${notice.noticeFixStatus == 'Y'}">
-                                    <div class="notice-header">
-                                        <span class="notice-badge">중요</span>
-                                        <div class="notice-content">
-                                            <p class="notice-title">${notice.noticeTitle}</p>
-                                            <p class="notice-date">
-                                                <fmt:formatDate value="${notice.noticeDate}" pattern="yyyy.MM.dd"/>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </c:if>
-                                <c:if test="${notice.noticeFixStatus != 'Y'}">
-                                    <div class="notice-content">
-                                        <p class="notice-title">${notice.noticeTitle}</p>
-                                        <p class="notice-date">
-                                            <fmt:formatDate value="${notice.noticeDate}" pattern="yyyy.MM.dd"/>
-                                        </p>
-                                    </div>
-                                </c:if>
+                    <c:when test="${not empty attendance}">
+                        <div class="attendance-content">
+                            <p class="attendance-days">${attendance.ATTENDANCECOUNT}일</p>
+                            <p class="attendance-label">이번 달 총 출석일</p>
+
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${attendance.ACHIEVEMENTRATE}%"></div>
                             </div>
-                        </c:forEach>
+
+                            <div class="progress-info">
+                                <span class="label">목표 달성률</span>
+                                <span class="value">${attendance.ACHIEVEMENTRATE}%</span>
+                            </div>
+                        </div>
                     </c:when>
                     <c:otherwise>
-                        <div class="notice-item" style="text-align: center; color: #8a6a50; cursor: default;">
-                            등록된 공지사항이 없습니다.
+                        <div class="attendance-content" style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                            <p style="margin: 0;">출석 기록이 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <!-- My Gym Card -->
+            <div class="large-card">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 아이콘">
+                    </span>
+                    나의 헬스장
+                </div>
+                <c:choose>
+                    <c:when test="${not empty gymInfo}">
+                        <div class="center-content">
+                            <div class="large-text">${gymInfo.GYMNAME}</div>
+                        </div>
+                        <div class="notice-list">
+                            <c:choose>
+                                <c:when test="${not empty notices}">
+                                    <c:forEach var="notice" items="${notices}">
+                                        <c:set var="noticeNo" value="${notice.NOTICENO != null ? notice.NOTICENO : (notice.noticeNo != null ? notice.noticeNo : '')}" />
+                                        <c:set var="noticeTitle" value="${notice.NOTICETITLE != null ? notice.NOTICETITLE : (notice.noticeTitle != null ? notice.noticeTitle : '')}" />
+                                        <c:set var="noticeDate" value="${notice.NOTICEDATE != null ? notice.NOTICEDATE : (notice.noticeDate != null ? notice.noticeDate : '')}" />
+                                        <c:set var="isImportant" value="${notice.ISIMPORTANT != null ? notice.ISIMPORTANT : (notice.isImportant != null ? notice.isImportant : 'N')}" />
+                                        <div class="notice-item" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.me?noticeNo=${noticeNo}'" style="cursor: pointer;">
+                                            <c:if test="${isImportant == 'Y'}">
+                                                <span class="notice-badge">중요</span>
+                                            </c:if>
+                                            <div class="notice-title">${noticeTitle}</div>
+                                            <div class="notice-date">${noticeDate}</div>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <div style="text-align: center; padding: 20px; color: #8a6a50;">
+                                        등록된 공지사항이 없습니다
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="center-content">
+                            <div style="color: #8a6a50; text-align: center;">
+                                헬스장 정보를 불러올 수 없습니다
+                            </div>
                         </div>
                     </c:otherwise>
                 </c:choose>

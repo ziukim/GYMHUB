@@ -230,9 +230,14 @@ public class GymController {
             List<com.kh.gymhub.model.vo.InquiryReserve> reservationList = inquiryService.getReservationsByGymNo(gymNo);
             if (reservationList != null) {
                 // 승인됨 상태만 필터링
-                reservationList = reservationList.stream()
-                    .filter(r -> "승인됨".equals(r.getInquiryStatus()))
-                    .collect(java.util.stream.Collectors.toList());
+                List<com.kh.gymhub.model.vo.InquiryReserve> approvedList = new ArrayList<>();
+                for (int i = 0; i < reservationList.size(); i++) {
+                    com.kh.gymhub.model.vo.InquiryReserve r = reservationList.get(i);
+                    if (r != null && "승인됨".equals(r.getInquiryStatus())) {
+                        approvedList.add(r);
+                    }
+                }
+                reservationList = approvedList;
             }
             model.addAttribute("reservationList", reservationList != null ? reservationList : new ArrayList<>());
             
@@ -1492,7 +1497,7 @@ public class GymController {
                 checkIn.setGymNo(gymNo);
                 checkIn.setMemberNo(member.getMemberNo());
                 checkIn.setCheckInInfo("입실");
-                checkIn.setAttendanceDate(new java.util.Date());
+                checkIn.setAttendanceDate(new java.sql.Date(new java.util.Date().getTime()));
                 
                 int insertResult = attendanceService.insertAttendance(checkIn);
                 
@@ -1522,7 +1527,7 @@ public class GymController {
                     checkOut.setGymNo(gymNo);
                     checkOut.setMemberNo(member.getMemberNo());
                     checkOut.setCheckInInfo("퇴실");
-                    checkOut.setAttendanceDate(new java.util.Date());
+                    checkOut.setAttendanceDate(new java.sql.Date(new java.util.Date().getTime()));
                     
                     int insertResult = attendanceService.insertAttendance(checkOut);
                     
@@ -2152,10 +2157,14 @@ public class GymController {
                     int maxDays = 0;
                     
                     for (Integer productNo : productNos) {
-                        Product product = allProducts.stream()
-                            .filter(p -> p.getProductNo() == productNo)
-                            .findFirst()
-                            .orElse(null);
+                        Product product = null;
+                        for (int i = 0; i < allProducts.size(); i++) {
+                            Product p = allProducts.get(i);
+                            if (p != null && p.getProductNo() == productNo) {
+                                product = p;
+                                break;
+                            }
+                        }
                         
                         if (product != null && ("회원권".equals(product.getProductType()) || "락커".equals(product.getProductType()))) {
                             // durationMonths는 실제로 일 수를 저장함

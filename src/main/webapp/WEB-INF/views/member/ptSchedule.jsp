@@ -19,14 +19,14 @@
         .main-content {
             padding: 40px 40px 40px 20px;
         }
-        
+
         /* header는 common.css에 있음 */
-        
+
         /* header-title은 common.css에 있으므로 font-family만 추가 */
         .header-title h1 {
             font-family: 'Abhaya Libre', 'Noto Sans KR', sans-serif;
         }
-        
+
         /* btn-primary는 common.css에 있으므로 추가 속성만 정의 */
         .btn-primary {
             display: flex;
@@ -60,12 +60,12 @@
         }
 
         /* stat-icon, stat-value는 common.css에 있음 */
-        
+
         .stat-title {
             font-size: 16px;
             color: #ff6b00;
         }
-        
+
         /* stat-value는 common.css에 있으므로 margin-bottom만 추가 */
         .stat-value {
             margin-bottom: 8px;
@@ -486,13 +486,13 @@
                                 <div class="trainer-avatar">
                                     <c:choose>
                                         <c:when test="${not empty ptSummary.upcomingReservation.desiredTrainerPhotoPath}">
-                                            <img src="${pageContext.request.contextPath}${ptSummary.upcomingReservation.desiredTrainerPhotoPath}" 
-                                                 alt="${ptSummary.upcomingReservation.desiredTrainerName}" 
+                                            <img src="${pageContext.request.contextPath}${ptSummary.upcomingReservation.desiredTrainerPhotoPath}"
+                                                 alt="${ptSummary.upcomingReservation.desiredTrainerName}"
                                                  style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                                         </c:when>
                                         <c:otherwise>
-                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" 
-                                                 alt="트레이너" 
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png"
+                                                 alt="트레이너"
                                                  style="width: 32px; height: 32px;">
                                         </c:otherwise>
                                     </c:choose>
@@ -519,13 +519,13 @@
                                 <div class="trainer-avatar">
                                     <c:choose>
                                         <c:when test="${not empty ptSummary.upcomingReservation.confirmedTrainerPhotoPath}">
-                                            <img src="${pageContext.request.contextPath}${ptSummary.upcomingReservation.confirmedTrainerPhotoPath}" 
-                                                 alt="${ptSummary.upcomingReservation.confirmedTrainerName}" 
+                                            <img src="${pageContext.request.contextPath}${ptSummary.upcomingReservation.confirmedTrainerPhotoPath}"
+                                                 alt="${ptSummary.upcomingReservation.confirmedTrainerName}"
                                                  style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                                         </c:when>
                                         <c:otherwise>
-                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" 
-                                                 alt="트레이너" 
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png"
+                                                 alt="트레이너"
                                                  style="width: 32px; height: 32px;">
                                         </c:otherwise>
                                     </c:choose>
@@ -606,41 +606,41 @@
     // 데이터 저장
     var upcomingData = [];
     var completedData = [];
-    
+
     // 서버에서 전달받은 데이터 초기화
     <c:if test="${not empty ptSummary.scheduledPtList}">
-        upcomingData = [
-            <c:forEach var="schedule" items="${ptSummary.scheduledPtList}" varStatus="status">
-                {
-                    reserveTimeLabel: '${schedule.reserveTimeLabel}',
-                    reserveDateLabel: '${schedule.reserveDateLabel}',
-                    reserveHourLabel: '${schedule.reserveHourLabel}',
-                    trainerName: '${schedule.confirmedTrainerName}',
-                    trainerPhone: '${schedule.confirmedTrainerPhone}'
-                }<c:if test="${!status.last}">,</c:if>
-            </c:forEach>
-        ];
+    upcomingData = [
+        <c:forEach var="schedule" items="${ptSummary.scheduledPtList}" varStatus="status">
+        {
+            reserveTimeLabel: '${schedule.reserveTimeLabel}',
+            reserveDateLabel: '${schedule.reserveDateLabel}',
+            reserveHourLabel: '${schedule.reserveHourLabel}',
+            trainerName: '${schedule.confirmedTrainerName}',
+            trainerPhone: '${schedule.confirmedTrainerPhone}'
+        }<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
     </c:if>
-    
+
     <c:if test="${not empty ptSummary.completedPtList}">
-        completedData = [
-            <c:forEach var="completed" items="${ptSummary.completedPtList}" varStatus="status">
-                {
-                    reserveTimeLabel: '${completed.reserveTimeLabel}',
-                    reserveDateLabel: '${completed.reserveDateLabel}',
-                    reserveHourLabel: '${completed.reserveHourLabel}',
-                    trainerName: '${completed.confirmedTrainerName}',
-                    trainerPhone: '${completed.confirmedTrainerPhone}'
-                }<c:if test="${!status.last}">,</c:if>
-            </c:forEach>
-        ];
+    completedData = [
+        <c:forEach var="completed" items="${ptSummary.completedPtList}" varStatus="status">
+        {
+            reserveTimeLabel: '${completed.reserveTimeLabel}',
+            reserveDateLabel: '${completed.reserveDateLabel}',
+            reserveHourLabel: '${completed.reserveHourLabel}',
+            trainerName: '${completed.confirmedTrainerName}',
+            trainerPhone: '${completed.confirmedTrainerPhone}'
+        }<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
     </c:if>
-    
+
     // 페이징 변수
     var upcomingCurrentPage = 1;
     var completedCurrentPage = 1;
     var itemsPerPage = 10;
-    
+
     // 페이지 로드 시 초기화
     window.addEventListener('load', function() {
         if (upcomingData.length > 0) {
@@ -650,40 +650,40 @@
             renderPtList('completed', completedData, completedCurrentPage);
         }
     });
-    
+
     // PT 목록 렌더링
     function renderPtList(type, data, currentPage) {
         var listId = type === 'upcoming' ? 'upcomingList' : 'completedList';
         var paginationId = type === 'upcoming' ? 'upcomingPagination' : 'completedPagination';
         var badgeText = type === 'upcoming' ? '예정' : '완료';
-        
+
         var listContainer = document.getElementById(listId);
         var paginationContainer = document.getElementById(paginationId);
-        
+
         if (!listContainer || !paginationContainer) return;
-        
+
         // 페이징 계산
         var totalPages = Math.ceil(data.length / itemsPerPage);
         var startIndex = (currentPage - 1) * itemsPerPage;
         var endIndex = Math.min(startIndex + itemsPerPage, data.length);
         var pageData = data.slice(startIndex, endIndex);
-        
+
         // 목록 렌더링
         listContainer.innerHTML = '';
         pageData.forEach(function(item) {
             var card = document.createElement('div');
             card.className = 'pt-history-card';
-            
-            var phoneHtml = item.trainerPhone 
+
+            var phoneHtml = item.trainerPhone
                 ? '<div class="pt-history-meta-item">' +
-                  '<img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" style="width: 16px; height: 16px;">' +
-                  '<span>' + item.trainerPhone + '</span>' +
-                  '</div>'
+                '<img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" style="width: 16px; height: 16px;">' +
+                '<span>' + item.trainerPhone + '</span>' +
+                '</div>'
                 : '';
-            
+
             var badgeClass = type === 'upcoming' ? 'scheduled' : 'completed';
-            
-            card.innerHTML = 
+
+            card.innerHTML =
                 '<div class="pt-history-header">' +
                 '<span class="pt-history-badge ' + badgeClass + '">' + badgeText + '</span>' +
                 '<div class="pt-history-time">' + item.reserveTimeLabel + '</div>' +
@@ -695,26 +695,26 @@
                 '</div>' +
                 phoneHtml +
                 '</div>';
-            
+
             listContainer.appendChild(card);
         });
-        
+
         // 페이징 렌더링
         renderPagination(type, totalPages, currentPage);
     }
-    
+
     // 페이징 버튼 렌더링
     function renderPagination(type, totalPages, currentPage) {
         var paginationId = type === 'upcoming' ? 'upcomingPagination' : 'completedPagination';
         var paginationContainer = document.getElementById(paginationId);
-        
+
         if (!paginationContainer || totalPages <= 1) {
             paginationContainer.innerHTML = '';
             return;
         }
-        
+
         paginationContainer.innerHTML = '';
-        
+
         // 이전 버튼
         var prevBtn = document.createElement('button');
         prevBtn.textContent = '◀';
@@ -723,15 +723,15 @@
             goToPage(type, currentPage - 1);
         };
         paginationContainer.appendChild(prevBtn);
-        
+
         // 페이지 번호 버튼 (최대 5개 표시)
         var startPage = Math.max(1, currentPage - 2);
         var endPage = Math.min(totalPages, startPage + 4);
-        
+
         if (endPage - startPage < 4) {
             startPage = Math.max(1, endPage - 4);
         }
-        
+
         for (var i = startPage; i <= endPage; i++) {
             var pageBtn = document.createElement('button');
             pageBtn.textContent = i;
@@ -745,7 +745,7 @@
             })(i);
             paginationContainer.appendChild(pageBtn);
         }
-        
+
         // 다음 버튼
         var nextBtn = document.createElement('button');
         nextBtn.textContent = '▶';
@@ -755,7 +755,7 @@
         };
         paginationContainer.appendChild(nextBtn);
     }
-    
+
     // 페이지 이동
     function goToPage(type, page) {
         if (type === 'upcoming') {
@@ -766,7 +766,7 @@
             renderPtList('completed', completedData, page);
         }
     }
-    
+
     function changeTab(tabName) {
         // Hide all tabs
         document.getElementById('upcoming').classList.add('hidden');

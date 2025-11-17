@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.gymhub.model.mapper.GoalMapper">
+
+    <resultMap id="memberGoalResultMap" type="com.kh.gymhub.model.vo.MemberGoal">
+        <result property="goalManageNo" column="goalManageNo"/>
+        <result property="memberNo" column="memberNo"/>
+        <result property="goalNo" column="goalNo"/>
+        <result property="goalTitle" column="goalTitle"/>
+        <result property="goalStatus" column="goalStatus"/>
+        <result property="goalDate" column="goalDate"/>
+    </resultMap>
+
+    <select id="selectMemberGoals" parameterType="int" resultMap="memberGoalResultMap">
+        SELECT
+        GM.GOAL_MANAGE_NO AS goalManageNo,
+        GM.MEMBER_NO AS memberNo,
+        G.GOAL_NO AS goalNo,
+        G.GOAL_TITLE AS goalTitle,
+        G.GOAL_STATUS AS goalStatus,
+        TO_CHAR(GM.GOAL_ENROLL_DATE, 'YYYY.MM.DD') AS goalDate
+        FROM GOAL_MANAGE GM
+        JOIN GOAL G ON GM.GOAL_NO = G.GOAL_NO
+        WHERE GM.MEMBER_NO = #{memberNo}
+        ORDER BY
+        CASE WHEN G.GOAL_STATUS = '미달성' THEN 0 ELSE 1 END,
+        GM.GOAL_ENROLL_DATE DESC,
+        GM.GOAL_MANAGE_NO DESC
+    </select>
+
+    <select id="selectGoalByManageNo" parameterType="int" resultMap="memberGoalResultMap">
+        SELECT
+            GM.GOAL_MANAGE_NO AS goalManageNo,
+            GM.MEMBER_NO AS memberNo,
+            G.GOAL_NO AS goalNo,
+            G.GOAL_TITLE AS goalTitle,
+            G.GOAL_STATUS AS goalStatus,
+            TO_CHAR(GM.GOAL_ENROLL_DATE, 'YYYY.MM.DD') AS goalDate
+        FROM GOAL_MANAGE GM
+        JOIN GOAL G ON GM.GOAL_NO = G.GOAL_NO
+        WHERE GM.GOAL_MANAGE_NO = #{goalManageNo}
+    </select>
+
+    <insert id="insertGoal" parameterType="com.kh.gymhub.model.vo.MemberGoal">
+        <selectKey resultType="int" keyProperty="goalNo" order="BEFORE">
+            SELECT SEQ_GOAL_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO GOAL (GOAL_NO, GOAL_TITLE, GOAL_STATUS)
+        VALUES (#{goalNo}, #{goalTitle}, #{goalStatus})
+    </insert>
+
+    <insert id="insertGoalManage" parameterType="com.kh.gymhub.model.vo.MemberGoal">
+        <selectKey resultType="int" keyProperty="goalManageNo" order="BEFORE">
+            SELECT SEQ_GOAL_MANAGE_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO GOAL_MANAGE (GOAL_MANAGE_NO, MEMBER_NO, GOAL_NO, GOAL_ENROLL_DATE)
+        VALUES (#{goalManageNo}, #{memberNo}, #{goalNo}, SYSDATE)
+    </insert>
+
+    <select id="selectGoalNoByManageNo" parameterType="int" resultType="int">
+        SELECT GOAL_NO
+        FROM GOAL_MANAGE
+        WHERE GOAL_MANAGE_NO = #{goalManageNo}
+    </select>
+
+    <select id="countGoalManageByGoalNo" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM GOAL_MANAGE
+        WHERE GOAL_NO = #{goalNo}
+    </select>
+
+    <delete id="deleteGoalManage">
+        DELETE FROM GOAL_MANAGE
+        WHERE GOAL_MANAGE_NO = #{goalManageNo}
+        AND MEMBER_NO = #{memberNo}
+    </delete>
+
+    <delete id="deleteGoal" parameterType="int">
+        DELETE FROM GOAL
+        WHERE GOAL_NO = #{goalNo}
+    </delete>
+
+</mapper>
+
