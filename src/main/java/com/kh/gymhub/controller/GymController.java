@@ -97,10 +97,17 @@ public class GymController {
     
     // 메인 페이지 - 헬스장 목록 조회
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@RequestParam(value = "sort", required = false) String sortType, Model model) {
         try {
             // 모든 헬스장 조회
-            List<Gym> gyms = gymService.getAllGyms();
+            List<Gym> gyms;
+
+            // 정렬 타입이 있으면 정렬된 목록 조회, 없으면 기본 목록 조회
+            if (sortType != null && !sortType.isEmpty()) {
+                gyms = gymService.getAllGymsWithSort(sortType);
+            } else {
+                gyms = gymService.getAllGyms();
+            }
             
             // 각 헬스장에 대해 GymDetail 조회하여 합치기
             List<Map<String, Object>> gymList = new ArrayList<>();
@@ -133,6 +140,7 @@ public class GymController {
             }
             
             model.addAttribute("gymList", gymList);
+            model.addAttribute("currentSort", sortType);
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("gymList", new ArrayList<>());

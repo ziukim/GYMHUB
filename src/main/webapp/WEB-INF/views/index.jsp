@@ -2211,6 +2211,7 @@
         }
     });
 
+
 </script>
 
 <!-- 로그인 성공/실패 메시지 표시 -->
@@ -2223,6 +2224,36 @@
         alert('${errorMsg}');
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
+
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('visitReserved') === 'true') {
+            alert('방문 예약이 완료되었습니다!');
+            sessionStorage.removeItem('visitReserved');
+        }
+    });
+
+    var filterSelect = document.querySelector('.filter-select');
+
+    // 정렬 변경 시 서버에 재요청
+    if (filterSelect) {
+        filterSelect.addEventListener('change', function() {
+            var sortType = this.value;
+
+            if (sortType) {
+                // 정렬 파라미터와 함께 페이지 새로고침
+                window.location.href = '${pageContext.request.contextPath}/?sort=' + sortType;
+            } else {
+                // 정렬 없이 기본 페이지로
+                window.location.href = '${pageContext.request.contextPath}/';
+            }
+        });
+
+        // 페이지 로드 시 현재 정렬 상태 유지
+        var currentSort = '${currentSort}';
+        if (currentSort && currentSort !== 'null' && currentSort !== '') {
+            filterSelect.value = currentSort;
+        }
+    }
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>

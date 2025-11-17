@@ -35,6 +35,11 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
+    public List<Gym> getAllGymsWithSort(String sortType) {
+        return gymMapper.selectAllGymsWithSort(sortType);
+    }
+
+    @Override
     @Transactional
     public int updateProfileImage(int gymNo, String photoPath) {
         return gymMapper.updateProfileImage(gymNo, photoPath);
