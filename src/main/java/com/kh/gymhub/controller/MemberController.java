@@ -530,7 +530,6 @@ public class MemberController {
             gym.setGymOwner(representative != null ? representative : "미등록");
             gym.setGymPhone(phone);
             gym.setGymAddress(address != null ? address : "미등록");
-            gym.setAttCacheNo(1); // 기본값
 
             // memberType=3일 때만 addGymOwner 사용 (GYM 테이블 INSERT)
             int result = memberService.addGymOwner(member, gym);

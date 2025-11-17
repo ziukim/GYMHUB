@@ -368,12 +368,17 @@
             padding: 24px;
             border-bottom: 2px solid #ff6b00;
             position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-title-group {
+            flex: 1;
+            padding-right: 16px;
         }
 
         .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             background: transparent;
             border: none;
             color: white;
@@ -386,6 +391,7 @@
             justify-content: center;
             border-radius: 4px;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .modal-close:hover {
@@ -916,9 +922,11 @@
 <div class="modal-overlay" id="editMachineModal" onclick="closeModalOnOverlay(event, 'editMachineModal')">
     <div class="modal-container" onclick="event.stopPropagation()">
         <div class="modal-header">
+            <div class="modal-title-group">
+                <h2 class="modal-title">기구 정보 수정</h2>
+                <p class="modal-subtitle" id="modalMachineName"></p>
+            </div>
             <button class="modal-close" onclick="closeModal('editMachineModal')">×</button>
-            <h2 class="modal-title">기구 정보 수정</h2>
-            <p class="modal-subtitle" id="modalMachineName"></p>
         </div>
         <div class="modal-body">
             <input type="hidden" id="editMachineManageNo">
@@ -959,9 +967,11 @@
 <div class="modal-overlay" id="addLockerModal" onclick="closeModalOnOverlay(event, 'addLockerModal')">
     <div class="modal-container" onclick="event.stopPropagation()">
         <div class="modal-header">
+            <div class="modal-title-group">
+                <h2 class="modal-title">신규 락커 추가</h2>
+                <p class="modal-subtitle">새로운 빈 락커를 시스템에 등록합니다.</p>
+            </div>
             <button class="modal-close" onclick="closeModal('addLockerModal')">×</button>
-            <h2 class="modal-title">신규 락커 추가</h2>
-            <p class="modal-subtitle">새로운 빈 락커를 시스템에 등록합니다.</p>
         </div>
         <div class="modal-body">
             <div class="modal-form-group">
@@ -982,9 +992,11 @@
 <div class="modal-overlay" id="editLockerModal" onclick="closeModalOnOverlay(event, 'editLockerModal')">
     <div class="modal-container" onclick="event.stopPropagation()">
         <div class="modal-header">
+            <div class="modal-title-group">
+                <h2 class="modal-title">락커 상태 변경</h2>
+                <p class="modal-subtitle" id="modalLockerNumber"></p>
+            </div>
             <button class="modal-close" onclick="closeModal('editLockerModal')">×</button>
-            <h2 class="modal-title">락커 상태 변경</h2>
-            <p class="modal-subtitle" id="modalLockerNumber"></p>
         </div>
         <div class="modal-body">
             <input type="hidden" id="editLockerNo">
