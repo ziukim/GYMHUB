@@ -10,10 +10,7 @@
     <style>
         /* 회원 대시보드 전용 스타일 */
         .main-content {
-            margin-left: 255px;
-            width: calc(100% - 255px);
             padding: 40px 40px 40px 20px;
-            min-height: 100vh;
         }
 
         /* Welcome Message */
@@ -621,10 +618,10 @@
                     현재 혼잡도
                 </div>
                 <div class="center-content">
-                    <div class="large-text">2025년 10월 30일</div>
-                    <div class="large-text">14:00</div>
+                    <div class="large-text">${currentDate}</div>
+                    <div class="large-text">${currentTime}</div>
                     <div class="medium-text">현재 이용인원</div>
-                    <div class="large-text">12 명</div>
+                    <div class="large-text">${currentCongestion} 명</div>
                 </div>
             </div>
 

@@ -9,6 +9,7 @@ import java.util.List;
 @Mapper
 public interface NoticeMapper {
     List<GymNotice> selectNoticesByGymNo(@Param("gymNo") int gymNo);
+    List<GymNotice> selectLatestNoticesByGymNo(@Param("gymNo") int gymNo);
     GymNotice selectNoticeByNo(@Param("noticeNo") int noticeNo);
     int insertNotice(GymNotice notice);
     int updateNotice(GymNotice notice);

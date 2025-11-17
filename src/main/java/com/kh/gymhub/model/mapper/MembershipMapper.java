@@ -27,6 +27,9 @@ public interface MembershipMapper {
     // 특정 월에 만료된 회원 수 조회
     Integer selectExpiredMemberCountByGymNoAndMonth(@Param("gymNo") int gymNo, @Param("year") int year, @Param("month") int month);
     
+    // 회원의 활성 회원권 GYM_NO 조회 (가장 최근 활성 회원권)
+    Integer selectActiveGymNoByMemberNo(@Param("memberNo") int memberNo);
+    
     // 회원번호로 회원권 조회
     Membership selectMembershipByMemberNo(@Param("memberNo") int memberNo, @Param("gymNo") int gymNo);
     

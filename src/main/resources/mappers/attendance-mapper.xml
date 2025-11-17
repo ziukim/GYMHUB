@@ -60,6 +60,17 @@
         FETCH FIRST 1 ROWS ONLY
     </select>
 
+    <!-- 전화번호와 헬스장 번호로 트레이너 조회 (MEMBER_TYPE=2, GYM_NO 매칭) -->
+    <select id="selectTrainerByPhoneAndGymNo" resultMap="memberResultMap">
+        SELECT M.*
+        FROM MEMBER M
+        WHERE M.MEMBER_PHONE = #{phone}
+          AND M.GYM_NO = #{gymNo}
+          AND M.MEMBER_TYPE = 2
+          AND M.STATUS = 'Y'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
     <!-- 오늘 날짜의 입실 기록 조회 -->
     <select id="selectTodayCheckIn" resultMap="attendanceResultMap">
         SELECT *

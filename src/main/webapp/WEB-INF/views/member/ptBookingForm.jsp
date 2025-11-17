@@ -31,10 +31,7 @@
         }
 
         .main-content {
-            flex: 1;
             padding: 24px;
-            min-height: 100vh;
-            margin-left: 255px;
         }
 
         .page-header {
@@ -364,18 +361,18 @@
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-color: rgba(0, 0, 0, 0.8);
             z-index: 3000;
-            align-items: center;
-            justify-content: center;
+            margin: 0;
+            padding: 0;
         }
 
         .modal.show {
             display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
@@ -388,6 +385,8 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
+            position: relative;
+            margin: 0;
         }
 
         .modal-header {

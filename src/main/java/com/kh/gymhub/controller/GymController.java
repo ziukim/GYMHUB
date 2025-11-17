@@ -2,22 +2,34 @@ package com.kh.gymhub.controller;
 
 import com.kh.gymhub.model.mapper.MemberMapper;
 import com.kh.gymhub.model.mapper.MembershipMapper;
+import com.kh.gymhub.model.mapper.PurchaseItemMapper;
+import com.kh.gymhub.model.mapper.PtPassMapper;
+import com.kh.gymhub.model.mapper.LockerMapper;
+import com.kh.gymhub.model.vo.Attendance;
 import com.kh.gymhub.model.vo.Gym;
 import com.kh.gymhub.model.vo.GymDetail;
+import com.kh.gymhub.model.vo.Locker;
 import com.kh.gymhub.model.vo.LockerPass;
 import com.kh.gymhub.model.vo.MachineManage;
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.model.vo.MemberWithMembership;
+import com.kh.gymhub.model.vo.Membership;
 import com.kh.gymhub.model.vo.Product;
+import com.kh.gymhub.model.vo.PtPass;
+import com.kh.gymhub.model.vo.PurchaseItem;
 import com.kh.gymhub.model.vo.YoutubeUrl;
+import com.kh.gymhub.service.AttendanceService;
 import com.kh.gymhub.service.GymDetailService;
 import com.kh.gymhub.service.GymService;
+import com.kh.gymhub.service.InquiryService;
 import com.kh.gymhub.service.LockerService;
 import com.kh.gymhub.service.MachineService;
 import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.ProductService;
+import com.kh.gymhub.service.PtReserveService;
 import com.kh.gymhub.service.PurchaseService;
 import com.kh.gymhub.service.SalesService;
+import com.kh.gymhub.service.StockService;
 import com.kh.gymhub.service.YoutubeUrlService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -53,9 +65,16 @@ public class GymController {
     private final GymService gymService;
     private final GymDetailService gymDetailService;
     private final MachineService machineService;
+    private final AttendanceService attendanceService;
+    private final PurchaseItemMapper purchaseItemMapper;
+    private final PtPassMapper ptPassMapper;
+    private final LockerMapper lockerMapper;
+    private final InquiryService inquiryService;
+    private final PtReserveService ptReserveService;
+    private final StockService stockService;
     
     @Autowired
-    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper, GymService gymService, GymDetailService gymDetailService, MachineService machineService) {
+    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper, GymService gymService, GymDetailService gymDetailService, MachineService machineService, AttendanceService attendanceService, PurchaseItemMapper purchaseItemMapper, PtPassMapper ptPassMapper, LockerMapper lockerMapper, InquiryService inquiryService, PtReserveService ptReserveService, StockService stockService) {
         this.productService = productService;
         this.youtubeUrlService = youtubeUrlService;
         this.memberService = memberService;
@@ -67,6 +86,13 @@ public class GymController {
         this.gymService = gymService;
         this.gymDetailService = gymDetailService;
         this.machineService = machineService;
+        this.attendanceService = attendanceService;
+        this.purchaseItemMapper = purchaseItemMapper;
+        this.ptPassMapper = ptPassMapper;
+        this.lockerMapper = lockerMapper;
+        this.inquiryService = inquiryService;
+        this.ptReserveService = ptReserveService;
+        this.stockService = stockService;
     }
     
     // 메인 페이지 - 헬스장 목록 조회
@@ -116,12 +142,220 @@ public class GymController {
     }
 
     @GetMapping("/dashboard.gym")
-    public String gymDashboard() {
+    public String gymDashboard(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            // 현재 날짜 기준으로 연도와 월 가져오기
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            int year = cal.get(java.util.Calendar.YEAR);
+            int month = cal.get(java.util.Calendar.MONTH) + 1; // Calendar.MONTH는 0부터 시작
+            
+            // 1. 이번 달 매출
+            int totalSales = salesService.getTotalSalesByGymNoAndMonth(gymNo, year, month);
+            model.addAttribute("totalSales", totalSales);
+            model.addAttribute("month", month);
+            
+            // 2. 전체 회원 수 (활성 회원권 보유자)
+            List<MemberWithMembership> members = membershipMapper.selectMembersWithMembershipByGymNo(gymNo);
+            int totalMembers = members != null ? members.size() : 0;
+            model.addAttribute("totalMembers", totalMembers);
+            
+            // 3. 신규 회원 수 (이번 달 가입)
+            int newMembers = 0;
+            if (members != null) {
+                for (MemberWithMembership member : members) {
+                    if (member.getStartDate() != null) {
+                        java.util.Calendar startCal = java.util.Calendar.getInstance();
+                        startCal.setTime(member.getStartDate());
+                        if (startCal.get(java.util.Calendar.YEAR) == year && 
+                            startCal.get(java.util.Calendar.MONTH) + 1 == month) {
+                            newMembers++;
+                        }
+                    }
+                }
+            }
+            model.addAttribute("newMembers", newMembers);
+            
+            // 4. 오늘 출석 수
+            Integer todayAttendance = attendanceService.getTodayAttendanceCountByGymNo(gymNo);
+            model.addAttribute("todayAttendance", todayAttendance != null ? todayAttendance : 0);
+            
+            // 5. 만료 예정 회원 (7일 이내)
+            int expiringMembers = 0;
+            if (members != null) {
+                java.util.Date sevenDaysLater = new java.util.Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000);
+                for (MemberWithMembership member : members) {
+                    if (member.getEndDate() != null) {
+                        if (member.getEndDate().before(sevenDaysLater) &&
+                            member.getEndDate().after(new java.util.Date())) {
+                            expiringMembers++;
+                        }
+                    }
+                }
+            }
+            model.addAttribute("expiringMembers", expiringMembers);
+            
+            // 6. 최근 5개월 회원수 통계 (간단한 구현)
+            List<Map<String, Object>> monthlyStats = new ArrayList<>();
+            for (int i = 4; i >= 0; i--) {
+                java.util.Calendar monthCal = java.util.Calendar.getInstance();
+                monthCal.add(java.util.Calendar.MONTH, -i);
+                int statYear = monthCal.get(java.util.Calendar.YEAR);
+                int statMonth = monthCal.get(java.util.Calendar.MONTH) + 1;
+                
+                Map<String, Object> stat = new HashMap<>();
+                stat.put("month", statMonth);
+                stat.put("memberCount", totalMembers); // 간단히 전체 회원 수로 설정 (실제로는 월별 조회 필요)
+                stat.put("newCount", i == 0 ? newMembers : 0); // 이번 달만 신규 회원 수
+                stat.put("expiredCount", 0); // 만료 수는 별도 조회 필요
+                monthlyStats.add(stat);
+            }
+            model.addAttribute("monthlyStats", monthlyStats);
+            
+            // 7. 예약 상담 (승인됨 상태)
+            List<com.kh.gymhub.model.vo.InquiryReserve> reservationList = inquiryService.getReservationsByGymNo(gymNo);
+            if (reservationList != null) {
+                // 승인됨 상태만 필터링
+                reservationList = reservationList.stream()
+                    .filter(r -> "승인됨".equals(r.getInquiryStatus()))
+                    .collect(java.util.stream.Collectors.toList());
+            }
+            model.addAttribute("reservationList", reservationList != null ? reservationList : new ArrayList<>());
+            
+            // 8. 재고 현황
+            List<com.kh.gymhub.model.vo.Stock> stockList = stockService.selectStockListByGymNo(gymNo);
+            model.addAttribute("stockList", stockList != null ? stockList : new ArrayList<>());
+            
+            // 9. 락커 현황
+            List<LockerPass> lockerPassList = lockerService.selectLockerPassListByGymNo(gymNo);
+            int totalLockers = 0;
+            int usedLockers = 0;
+            int expiringLockers = 0;
+            int expiredLockers = 0;
+            int brokenLockers = 0;
+            java.util.Set<Integer> lockerNoSet = new java.util.HashSet<>();
+            
+            if (lockerPassList != null) {
+                java.util.Date sevenDaysLater = new java.util.Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000);
+                java.util.Date now = new java.util.Date();
+                
+                for (LockerPass pass : lockerPassList) {
+                    // 전체 락커 수 계산 (고유한 lockerNo 개수)
+                    if (pass.getLockerNo() > 0) {
+                        lockerNoSet.add(pass.getLockerNo());
+                    }
+                    
+                    // 락커 상태 확인
+                    if ("고장".equals(pass.getLockerStatus())) {
+                        brokenLockers++;
+                    }
+                    
+                    // 락커 이용권 상태 확인
+                    if (pass.getLockerEnd() != null) {
+                        if (pass.getLockerEnd().after(now)) {
+                            usedLockers++;
+                            if (pass.getLockerEnd().before(sevenDaysLater)) {
+                                expiringLockers++;
+                            }
+                        } else {
+                            expiredLockers++;
+                        }
+                    }
+                }
+                
+                totalLockers = lockerNoSet.size();
+            }
+            
+            int availableLockers = totalLockers - usedLockers - brokenLockers;
+            
+            model.addAttribute("totalLockers", totalLockers);
+            model.addAttribute("usedLockers", usedLockers);
+            model.addAttribute("expiringLockers", expiringLockers);
+            model.addAttribute("expiredLockers", expiredLockers);
+            model.addAttribute("brokenLockers", brokenLockers);
+            model.addAttribute("availableLockers", availableLockers);
+            
+            // 10. PT 신청관리
+            List<com.kh.gymhub.model.vo.PtReserve> pendingPtReserves = ptReserveService.getPendingPtReservesByGymNo(gymNo);
+            List<com.kh.gymhub.model.vo.PtReserve> approvedOrRejectedPtReserves = ptReserveService.getApprovedOrRejectedPtReservesByGymNo(gymNo);
+            
+            model.addAttribute("pendingPtReserves", pendingPtReserves != null ? pendingPtReserves : new ArrayList<>());
+            model.addAttribute("approvedOrRejectedPtReserves", approvedOrRejectedPtReserves != null ? approvedOrRejectedPtReserves : new ArrayList<>());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 기본값 설정
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            int month = cal.get(java.util.Calendar.MONTH) + 1;
+            model.addAttribute("totalSales", 0);
+            model.addAttribute("month", month);
+            model.addAttribute("totalMembers", 0);
+            model.addAttribute("newMembers", 0);
+            model.addAttribute("todayAttendance", 0);
+            model.addAttribute("expiringMembers", 0);
+            model.addAttribute("monthlyStats", new ArrayList<>());
+            model.addAttribute("reservationList", new ArrayList<>());
+            model.addAttribute("stockList", new ArrayList<>());
+            model.addAttribute("totalLockers", 0);
+            model.addAttribute("usedLockers", 0);
+            model.addAttribute("expiringLockers", 0);
+            model.addAttribute("expiredLockers", 0);
+            model.addAttribute("brokenLockers", 0);
+            model.addAttribute("availableLockers", 0);
+            model.addAttribute("pendingPtReserves", new ArrayList<>());
+            model.addAttribute("approvedOrRejectedPtReserves", new ArrayList<>());
+        }
+        
         return "gym/gymDashBoard";
     }
 
     @GetMapping("/ptBoard.gym")
-    public String ptBoard() {
+    public String ptBoard(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            // 대기중인 PT 예약 조회
+            List<com.kh.gymhub.model.vo.PtReserve> pendingPtReserves = ptReserveService.getPendingPtReservesByGymNo(gymNo);
+            
+            // 승인/거절된 PT 예약 조회
+            List<com.kh.gymhub.model.vo.PtReserve> approvedOrRejectedPtReserves = ptReserveService.getApprovedOrRejectedPtReservesByGymNo(gymNo);
+            
+            model.addAttribute("pendingPtReserves", pendingPtReserves != null ? pendingPtReserves : new ArrayList<>());
+            model.addAttribute("approvedOrRejectedPtReserves", approvedOrRejectedPtReserves != null ? approvedOrRejectedPtReserves : new ArrayList<>());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("pendingPtReserves", new ArrayList<>());
+            model.addAttribute("approvedOrRejectedPtReserves", new ArrayList<>());
+        }
+        
         return "gym/gymPtBoard";
     }
 
@@ -1173,6 +1407,137 @@ public class GymController {
         
         return "admin/attendanceCheck";
     }
+    
+    // 출석 체크 처리 (AJAX)
+    @PostMapping("/attendance/check.ajax")
+    @ResponseBody
+    public Map<String, Object> checkAttendance(@RequestBody Map<String, Object> requestData, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 확인
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 전화번호 추출 (하이픈 제거)
+            String phone = requestData.get("phone").toString().replace("-", "");
+            
+            if (phone == null || phone.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "전화번호를 입력해주세요.");
+                return result;
+            }
+            
+            // 전화번호로 회원 조회 (gym_no 매칭, 만료되지 않은 회원권 보유자만)
+            Member member = attendanceService.getMemberByPhoneAndGymNo(phone, gymNo);
+            
+            if (member == null) {
+                result.put("success", false);
+                result.put("message", "등록된 회원이 아니거나 만료된 회원권입니다.");
+                return result;
+            }
+            
+            // 회원권 정보 조회 (PURCHASE_NO를 통해 PURCHASE_ITEM 조회)
+            Membership membership = membershipMapper.selectMembershipByMemberNo(member.getMemberNo(), gymNo);
+            String membershipInfo = "";
+            
+            if (membership != null) {
+                PurchaseItem purchaseItem = purchaseItemMapper.selectPurchaseItemByPurchaseNo(membership.getPurchaseNo());
+                if (purchaseItem != null) {
+                    // 회원권 정보 문자열 생성 (예: "이용권 30일 + 락커 30일 + PT 10회")
+                    java.util.List<String> productList = new java.util.ArrayList<>();
+                    
+                    if (purchaseItem.getMembershipPeriod() > 0) {
+                        productList.add("이용권 " + purchaseItem.getMembershipPeriod() + "일");
+                    }
+                    if (purchaseItem.getLockerPeriod() != null && purchaseItem.getLockerPeriod() > 0) {
+                        productList.add("락커 " + purchaseItem.getLockerPeriod() + "일");
+                    }
+                    if (purchaseItem.getPtCount() != null && purchaseItem.getPtCount() > 0) {
+                        productList.add("PT " + purchaseItem.getPtCount() + "회");
+                    }
+                    
+                    membershipInfo = String.join(" + ", productList);
+                }
+            }
+            
+            // 오늘 날짜의 입실 기록 조회
+            Attendance todayCheckIn = attendanceService.getTodayCheckIn(gymNo, member.getMemberNo());
+            
+            if (todayCheckIn == null) {
+                // 입실 기록이 없으면 입실 처리
+                Attendance checkIn = new Attendance();
+                checkIn.setGymNo(gymNo);
+                checkIn.setMemberNo(member.getMemberNo());
+                checkIn.setCheckInInfo("입실");
+                checkIn.setAttendanceDate(new java.util.Date());
+                
+                int insertResult = attendanceService.insertAttendance(checkIn);
+                
+                if (insertResult > 0) {
+                    result.put("success", true);
+                    result.put("type", "입실");
+                    result.put("message", "입실 처리되었습니다.");
+                    result.put("memberName", member.getMemberName());
+                    result.put("memberPhone", member.getMemberPhone());
+                    result.put("membershipInfo", membershipInfo);
+                } else {
+                    result.put("success", false);
+                    result.put("message", "입실 처리에 실패했습니다.");
+                }
+            } else {
+                // 입실 기록이 있으면 퇴실 기록 INSERT
+                // 오늘 날짜에 이미 퇴실 기록이 있는지 확인
+                Attendance todayCheckOut = attendanceService.getTodayCheckOut(gymNo, member.getMemberNo());
+                
+                if (todayCheckOut != null) {
+                    // 이미 퇴실 기록이 있음
+                    result.put("success", false);
+                    result.put("message", "이미 오늘 퇴실 처리되었습니다.");
+                } else {
+                    // 퇴실 기록 INSERT
+                    Attendance checkOut = new Attendance();
+                    checkOut.setGymNo(gymNo);
+                    checkOut.setMemberNo(member.getMemberNo());
+                    checkOut.setCheckInInfo("퇴실");
+                    checkOut.setAttendanceDate(new java.util.Date());
+                    
+                    int insertResult = attendanceService.insertAttendance(checkOut);
+                    
+                    if (insertResult > 0) {
+                        result.put("success", true);
+                        result.put("type", "퇴실");
+                        result.put("message", "퇴실 처리되었습니다.");
+                        result.put("memberName", member.getMemberName());
+                        result.put("memberPhone", member.getMemberPhone());
+                        result.put("membershipInfo", membershipInfo);
+                    } else {
+                        result.put("success", false);
+                        result.put("message", "퇴실 처리에 실패했습니다.");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "출석 체크 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
 
     // 관리자 메인 페이지
     @GetMapping("/adminMain.gym")
@@ -1487,6 +1852,223 @@ public class GymController {
             e.printStackTrace();
             return "fail";
         }
+    }
+
+    // AJAX: 회원 상세 정보 조회 (회원 수정용)
+    @GetMapping("/member/detail.ajax")
+    @ResponseBody
+    public Map<String, Object> getMemberDetail(@RequestParam("memberNo") int memberNo, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 회원 기본 정보 조회
+            Member member = memberMapper.getMemberByNo(memberNo);
+            if (member == null) {
+                result.put("success", false);
+                result.put("message", "회원 정보를 찾을 수 없습니다.");
+                return result;
+            }
+            
+            // 회원권 정보 조회
+            Membership membership = membershipMapper.selectMembershipByMemberNo(memberNo, gymNo);
+            
+            // PT 이용권 정보 조회
+            PtPass ptPass = ptPassMapper.selectPtPassByMemberNo(memberNo, gymNo);
+            
+            // 락커 이용권 정보 조회
+            LockerPass lockerPass = lockerMapper.selectLockerPassByMemberNo(memberNo, gymNo);
+            
+            // 결과 구성
+            Map<String, Object> memberDetail = new HashMap<>();
+            memberDetail.put("memberNo", member.getMemberNo());
+            memberDetail.put("memberId", member.getMemberId());
+            memberDetail.put("memberName", member.getMemberName());
+            memberDetail.put("memberPhone", member.getMemberPhone());
+            memberDetail.put("memberEmail", member.getMemberEmail());
+            memberDetail.put("memberAddress", member.getMemberAddress());
+            memberDetail.put("memberPhotoPath", member.getMemberPhotoPath());
+            
+            if (membership != null) {
+                memberDetail.put("membershipNo", membership.getMembershipNo());
+                memberDetail.put("endDate", membership.getEndDate());
+            }
+            
+            if (ptPass != null) {
+                memberDetail.put("ptPassNo", ptPass.getPtPassNo());
+                memberDetail.put("ptEnd", ptPass.getPtEnd());
+            }
+            
+            if (lockerPass != null) {
+                memberDetail.put("lockerPassNo", lockerPass.getLockerPassNo());
+                memberDetail.put("lockerEnd", lockerPass.getLockerEnd());
+            }
+            
+            result.put("success", true);
+            result.put("member", memberDetail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "회원 정보 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    // AJAX: 회원 정보 수정 (이용권 연장, 락커 재배정)
+    @PostMapping("/member/update.ajax")
+    @ResponseBody
+    public Map<String, Object> updateMemberInfo(@RequestBody Map<String, Object> requestData, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            int memberNo = Integer.parseInt(requestData.get("memberNo").toString());
+            
+            // productNos 파싱 (JSON 배열이 Object 리스트로 올 수 있음)
+            List<Integer> productNos = null;
+            Object productNosObj = requestData.get("productNos");
+            if (productNosObj != null) {
+                if (productNosObj instanceof List) {
+                    List<?> productNosList = (List<?>) productNosObj;
+                    productNos = new java.util.ArrayList<>();
+                    for (Object item : productNosList) {
+                        if (item instanceof Integer) {
+                            productNos.add((Integer) item);
+                        } else if (item instanceof Number) {
+                            productNos.add(((Number) item).intValue());
+                        } else {
+                            productNos.add(Integer.parseInt(item.toString()));
+                        }
+                    }
+                }
+            }
+            
+            String lockerRealNum = requestData.get("lockerRealNum") != null ? requestData.get("lockerRealNum").toString() : null;
+            String originalLockerRealNum = requestData.get("originalLockerRealNum") != null ? requestData.get("originalLockerRealNum").toString() : null;
+            
+            // 이용권 연장 처리
+            if (productNos != null && !productNos.isEmpty()) {
+                // 회원권 정보 조회
+                Membership membership = membershipMapper.selectMembershipByMemberNo(memberNo, gymNo);
+                
+                if (membership != null) {
+                    // 상품 정보 조회하여 기간 계산
+                    List<Product> allProducts = productService.getProductsByGymNo(gymNo);
+                    int maxDays = 0;
+                    
+                    for (Integer productNo : productNos) {
+                        Product product = allProducts.stream()
+                            .filter(p -> p.getProductNo() == productNo)
+                            .findFirst()
+                            .orElse(null);
+                        
+                        if (product != null && ("회원권".equals(product.getProductType()) || "락커".equals(product.getProductType()))) {
+                            // durationMonths는 실제로 일 수를 저장함
+                            int days = product.getDurationMonths();
+                            maxDays = Math.max(maxDays, days);
+                        }
+                    }
+                    
+                    if (maxDays > 0) {
+                        // 기존 만료일에서 기간 추가
+                        java.util.Date currentEndDate = membership.getEndDate();
+                        if (currentEndDate != null) {
+                            java.util.Calendar cal = java.util.Calendar.getInstance();
+                            cal.setTime(currentEndDate);
+                            cal.add(java.util.Calendar.DAY_OF_MONTH, maxDays);
+                            java.util.Date newEndDate = cal.getTime();
+                            
+                            // 회원권 만료일 연장
+                            int updateResult = membershipMapper.updateMembershipEndDate(membership.getMembershipNo(), new java.sql.Date(newEndDate.getTime()));
+                            
+                            if (updateResult > 0) {
+                                result.put("extensionApplied", true);
+                                result.put("extensionDays", maxDays);
+                            }
+                        }
+                    }
+                } else {
+                    result.put("message", "활성 회원권을 찾을 수 없습니다.");
+                }
+            }
+            
+            // 락커 재배정 처리
+            if (lockerRealNum != null && !lockerRealNum.trim().isEmpty()) {
+                // 기존 락커 이용권 조회 (만료된 것 포함)
+                LockerPass existingLockerPass = lockerMapper.selectLockerPassByMemberNoIncludingExpired(memberNo, gymNo);
+                
+                if (existingLockerPass != null) {
+                    // 새로운 락커 조회
+                    Locker newLocker = lockerMapper.selectLockerByRealNumAndGymNo(lockerRealNum, gymNo);
+                    
+                    if (newLocker != null) {
+                        // 기존 락커 상태 변경 (사용 가능으로)
+                        if (existingLockerPass.getLockerNo() > 0) {
+                            lockerMapper.updateLockerStatus(existingLockerPass.getLockerNo(), "사용가능");
+                        }
+                        
+                        // 락커 이용권의 락커번호 변경
+                        lockerMapper.updateLockerPassLockerNo(existingLockerPass.getLockerPassNo(), newLocker.getLockerNo());
+                        
+                        // 만료된 락커 이용권이면 상태를 '정상'으로 변경
+                        if ("만료".equals(existingLockerPass.getLockerPassStatus())) {
+                            lockerMapper.updateLockerPassStatusToActive(existingLockerPass.getLockerPassNo());
+                        }
+                        
+                        // 새로운 락커 상태 변경 (사용 중으로)
+                        lockerMapper.updateLockerStatus(newLocker.getLockerNo(), "사용중");
+                    }
+                } else {
+                    // 락커 이용권이 없으면 새로 생성 (이 경우는 일반적으로 발생하지 않지만 안전을 위해)
+                    // 여기서는 기존 로직을 따르지 않고 에러 처리
+                    result.put("success", false);
+                    result.put("message", "락커 이용권이 없습니다.");
+                    return result;
+                }
+            }
+            
+            result.put("success", true);
+            result.put("message", "회원 정보가 수정되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "회원 정보 수정 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
     }
 
 }

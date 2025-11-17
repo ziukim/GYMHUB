@@ -34,6 +34,38 @@
             NOTICE_DATE DESC
     </select>
 
+    <!-- 헬스장 공지사항 최신 2개 조회 -->
+    <select id="selectLatestNoticesByGymNo" parameterType="int" resultMap="noticeResultMap">
+        SELECT 
+            NOTICE_NO,
+            NOTICE_TITLE,
+            NOTICE_WRITER,
+            NOTICE_CATEGORY,
+            NOTICE_CONTENT,
+            NOTICE_DATE,
+            NOTICE_FIX_STATUS,
+            NOTICE_FILE_PATH,
+            GYM_NO
+        FROM (
+            SELECT 
+                NOTICE_NO,
+                NOTICE_TITLE,
+                NOTICE_WRITER,
+                NOTICE_CATEGORY,
+                NOTICE_CONTENT,
+                NOTICE_DATE,
+                NOTICE_FIX_STATUS,
+                NOTICE_FILE_PATH,
+                GYM_NO
+            FROM GYM_NOTICE
+            WHERE GYM_NO = #{gymNo}
+            ORDER BY 
+                CASE WHEN NOTICE_FIX_STATUS = 'Y' THEN 0 ELSE 1 END,
+                NOTICE_DATE DESC
+        )
+        WHERE ROWNUM &lt;= 2
+    </select>
+
     <select id="selectNoticeByNo" parameterType="int" resultMap="noticeResultMap">
         SELECT 
             NOTICE_NO,

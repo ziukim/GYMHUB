@@ -10,13 +10,40 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
         /* gymMemberManagement 전용 스타일 */
-        /* content-container, content-header, header-info, header-buttons, filter-btn는 common.css에 있음 */
-        /* add-member-btn은 add-btn 클래스를 사용하거나 동일한 스타일을 적용할 수 있음 */
+        /* content-container, content-header, header-info, header-buttons, filter-btn, add-btn는 common.css에 있음 */
 
-        /* Table */
+        /* Content Container - 대시보드와 동일한 스타일 */
+        .content-container {
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            margin-top: 0;
+        }
+
+        /* Content Header - 카드 스타일 적용 */
+        .content-header {
+            background-color: #2d1810;
+            border: 2px solid #ff6b00;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
+            border-bottom: 2px solid #ff6b00; /* common.css의 border-bottom 오버라이드 */
+            padding-bottom: 24px; /* common.css의 padding-bottom 오버라이드 */
+        }
+
+        /* Table Container - 카드 스타일 적용 */
         .table-container {
+            background-color: #2d1810;
+            border: 2px solid #ff6b00;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
             overflow-x: auto;
         }
+
+        /* Table */
 
         table {
             width: 100%;
@@ -2369,6 +2396,9 @@
         editStartDateSelected = null;
         editStartDateTempSelected = null;
         editStartDateCurrentMonth = new Date();
+        // 플래그 초기화
+        window.selectedProductNosForExtension = null;
+        window.isEditingMembership = false;
     }
 
     // 이용권 수정
@@ -2481,13 +2511,15 @@
             return;
         }
 
-        // 이용권 연장인지 확인 (기존 이용권이 있고, 연장 버튼을 눌렀는지)
-        const isExtension = window.isEditingMembership && window.selectedProductNosForExtension;
+        // 이용권 연장인지 확인 (연장용 상품 번호가 있는지 확인)
+        const isExtension = window.selectedProductNosForExtension && 
+                           Array.isArray(window.selectedProductNosForExtension) && 
+                           window.selectedProductNosForExtension.length > 0;
         
         // 요청 데이터 구성
         const requestData = {
             memberNo: currentEditingMember.memberNo,
-            productNos: isExtension && window.selectedProductNosForExtension ? window.selectedProductNosForExtension : [],
+            productNos: isExtension ? window.selectedProductNosForExtension : [],
             lockerRealNum: locker || null,
             originalLockerRealNum: currentEditingMember.locker && currentEditingMember.locker !== '-' ? currentEditingMember.locker : null
         };
@@ -2503,13 +2535,16 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                if (isExtension && window.selectedProductNosForExtension && window.selectedProductNosForExtension.length > 0) {
+                if (isExtension) {
                     alert('이용권이 연장되었습니다!');
                 } else if (locker && locker !== currentEditingMember.locker) {
                     alert('락커가 재배정되었습니다!');
                 } else {
                     alert('회원 정보가 수정되었습니다!');
                 }
+                // 플래그 초기화
+                window.selectedProductNosForExtension = null;
+                window.isEditingMembership = false;
                 // 페이지 새로고침
                 location.reload();
             } else {
