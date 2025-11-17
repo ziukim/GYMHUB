@@ -18,21 +18,6 @@
             box-shadow: 0px 0px 20px 0px rgba(255,107,0,0.4);
         }
 
-        /* 페이지 헤더 */
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-header h1 {
-            font-size: 28px;
-            color: #ff6b00;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-header p {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
 
         /* 3단 그리드 레이아웃 */
         .products-grid {
@@ -281,7 +266,8 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="page-header">
+        <!-- Header -->
+        <div class="page-intro">
             <h1>이용권 관리</h1>
             <p>헬스장 이용권, PT, 락커를 관리합니다</p>
         </div>
