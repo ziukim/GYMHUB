@@ -416,62 +416,101 @@
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="전체 PT" class="stat-icon">
-                    <span class="stat-title">전체 PT</span>
-                </div>
-                <c:choose>
-                    <c:when test="${not empty ptSummary and ptSummary.totalCount > 0}">
+            <c:choose>
+                <c:when test="${not empty ptSummary and ptSummary.totalCount > 0}">
+                    <!-- 전체 PT 카드 -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="전체 PT" class="stat-icon">
+                            <span class="stat-title">전체 PT</span>
+                        </div>
                         <div class="stat-value">${ptSummary.totalCount}회</div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${ptSummary.progressRate}%"></div>
                         </div>
                         <div class="stat-subtitle">진행률 ${ptSummary.progressRateLabel}</div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="stat-value">0회</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <div class="stat-subtitle">PT 이용권이 없습니다</div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                    </div>
 
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="사용 완료" class="stat-icon">
-                    <span class="stat-title">사용 완료</span>
-                </div>
-                <c:choose>
-                    <c:when test="${not empty ptSummary}">
+                    <!-- 사용 완료 카드 -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="사용 완료" class="stat-icon">
+                            <span class="stat-title">사용 완료</span>
+                        </div>
                         <div class="stat-value">${ptSummary.usedCount}회</div>
                         <div class="stat-subtitle">예약 확정 기준</div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="stat-value">0회</div>
-                        <div class="stat-subtitle">예약 확정 기준</div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                    </div>
 
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="남은 횟수" class="stat-icon">
-                    <span class="stat-title">남은 횟수</span>
-                </div>
-                <c:choose>
-                    <c:when test="${not empty ptSummary}">
+                    <!-- 남은 횟수 카드 -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="남은 횟수" class="stat-icon">
+                            <span class="stat-title">남은 횟수</span>
+                        </div>
                         <div class="stat-value">${ptSummary.remainingCount}회</div>
                         <div class="stat-subtitle">만료일: ${ptSummary.endDateLabel}</div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="stat-value">0회</div>
-                        <div class="stat-subtitle">만료일: -</div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <!-- PT 이용권이 없을 때: 블러 처리 -->
+                    <!-- 전체 PT 카드 (블러) -->
+                    <div class="stat-card" style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="stat-card-header">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="전체 PT" class="stat-icon">
+                                <span class="stat-title">전체 PT</span>
+                            </div>
+                            <div class="stat-value">20회</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 50%"></div>
+                            </div>
+                            <div class="stat-subtitle">진행률 50%</div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: rgba(26, 15, 10, 0.95); padding: 15px; border-radius: 10px;
+                    border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                    font-size: 12px; white-space: nowrap; z-index: 10; width: 80%;">
+                            헬스장을<br>등록해주세요!
+                        </div>
+                    </div>
+
+                    <!-- 사용 완료 카드 (블러) -->
+                    <div class="stat-card" style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="stat-card-header">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/done.png" alt="사용 완료" class="stat-icon">
+                                <span class="stat-title">사용 완료</span>
+                            </div>
+                            <div class="stat-value">10회</div>
+                            <div class="stat-subtitle">예약 확정 기준</div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: rgba(26, 15, 10, 0.95); padding: 15px; border-radius: 10px;
+                    border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                    font-size: 12px; white-space: nowrap; z-index: 10; width: 80%;">
+                            헬스장을<br>등록해주세요!
+                        </div>
+                    </div>
+
+                    <!-- 남은 횟수 카드 (블러) -->
+                    <div class="stat-card" style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="stat-card-header">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="남은 횟수" class="stat-icon">
+                                <span class="stat-title">남은 횟수</span>
+                            </div>
+                            <div class="stat-value">10회</div>
+                            <div class="stat-subtitle">만료일: 2025.12.31</div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: rgba(26, 15, 10, 0.95); padding: 15px; border-radius: 10px;
+                    border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                    font-size: 12px; white-space: nowrap; z-index: 10; width: 80%;">
+                            헬스장을<br>등록해주세요!
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Trainer Card -->
@@ -548,9 +587,34 @@
                     </c:choose>
                 </c:when>
                 <c:otherwise>
-                    <div class="trainer-card-title">예약 정보</div>
-                    <div class="trainer-info" style="justify-content: center; padding: 20px;">
-                        <p style="color: #8a6a50; text-align: center;">PT 예약을 진행해주세요</p>
+                    <!-- PT 예약이 없을 때: 블러 처리 -->
+                    <div style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="trainer-card-title">배정된 트레이너</div>
+                            <div class="trainer-info">
+                                <div class="trainer-avatar">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/person.png"
+                                         alt="트레이너"
+                                         style="width: 32px; height: 32px;">
+                                </div>
+                                <div>
+                                    <div class="trainer-details">
+                                        <h3>김트레이너</h3>
+                                        <p>예약 시간: 2025.01.20 14:00</p>
+                                    </div>
+                                    <div class="trainer-contact">
+                                        <p>전화번호: 010-1234-5678</p>
+                                        <p>이메일: trainer@gym.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                    border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                    font-size: 14px; white-space: nowrap; z-index: 10;">
+                            PT예약을 먼저 진행해주세요!
+                        </div>
                     </div>
                 </c:otherwise>
             </c:choose>
