@@ -1945,15 +1945,24 @@
                     facilityGrid.innerHTML = ''; // 기존 시설 아이콘 초기화
 
                     // 시설 아이콘 매핑 (facilitiesInfo의 값에 따라 아이콘 선택)
+                    // gymInfoManagement.jsp의 data-facility 값과 일치시킴
                     const facilityIcons = {
-                        '주차': 'parking.png',
-                        '샤워실': 'shower.png',
-                        '락커': 'locker.png',
-                        '최신기구': 'machine.png',
-                        'GX': 'machine.png',
-                        'PT': 'machine.png',
                         '24시간': 'clock.png',
-                        '와이파이': 'machine.png',
+                        '주차가능': 'parking.png',
+                        '주차': 'parking.png', // 호환성을 위해 유지
+                        '샤워실': 'shower.png',
+                        '락커실': 'locker.png',
+                        '락커': 'locker.png', // 호환성을 위해 유지
+                        '무료 WiFi': 'wifi.png',
+                        '와이파이': 'wifi.png', // 호환성을 위해 유지
+                        'PT': 'person.png',
+                        'GX 프로그램': 'people.png',
+                        'GX': 'people.png', // 호환성을 위해 유지
+                        '카페': 'people.png',
+                        '수영장': 'people.png',
+                        '필라테스': 'people.png',
+                        '사우나': 'people.png',
+                        '최신기구': 'machine.png',
                         '운동복': 'locker.png',
                         '수건': 'shower.png'
                     };
