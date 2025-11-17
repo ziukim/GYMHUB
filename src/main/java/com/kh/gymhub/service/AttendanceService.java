@@ -1,9 +1,10 @@
 package com.kh.gymhub.service;
 
-import java.util.List;
-import java.util.Map;
 import com.kh.gymhub.model.vo.Attendance;
 import com.kh.gymhub.model.vo.Member;
+
+import java.util.List;
+import java.util.Map;
 
 public interface AttendanceService {
     Map<String, Object> getAttendanceStats(int memberNo, int gymNo);
