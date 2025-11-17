@@ -1,8 +1,10 @@
 package com.kh.gymhub.controller;
 
+import com.kh.gymhub.model.vo.GymNotice;
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.DashboardService;
+import com.kh.gymhub.service.NoticeService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -21,12 +24,14 @@ public class TrainerController {
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final DashboardService dashboardService;
+    private final NoticeService noticeService;
 
     @Autowired
-    public TrainerController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, DashboardService dashboardService) {
+    public TrainerController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, DashboardService dashboardService, NoticeService noticeService) {
         this.memberService = memberService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.dashboardService = dashboardService;
+        this.noticeService = noticeService;
     }
 
     // 트레이너 대시보드
@@ -60,9 +65,25 @@ public class TrainerController {
 
     // 트레이너 공지사항
     @GetMapping("/noticeList.tr")
-    public String trainerNoticeList() {
+    public String trainerNoticeList(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getGymNo() == null) {
+            // 로그인하지 않았거나 gym_no가 없는 경우 빈 리스트 전달
+            model.addAttribute("notices", new java.util.ArrayList<>());
+            return "notice/noticeList";
+        }
+
+        // 헬스장 번호로 공지사항 조회
+        int gymNo = loginMember.getGymNo();
+        List<GymNotice> notices = noticeService.getNoticesByGymNo(gymNo);
+
+        model.addAttribute("notices", notices != null ? notices : new java.util.ArrayList<>());
+
         return "notice/noticeList";
     }
+    
 
     // 트레이너 비밀번호 변경
     @PostMapping("/updatePassword.tr")

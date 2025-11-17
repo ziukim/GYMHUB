@@ -234,6 +234,7 @@ public class MemberController {
 
 
         if (gymNo != null && gymNo > 0) {
+            model.addAttribute("hasGym", true);
             Map<String, Object> dashboardData =
                     dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
             model.addAttribute("membership", dashboardData.get("membership"));
@@ -255,7 +256,24 @@ public class MemberController {
     }
 
     @GetMapping("/notice.me")
-    public String memberNotice() { return "notice/noticeList"; }
+    public String memberNotice(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getGymNo() == null) {
+            // 로그인하지 않았거나 gym_no가 없는 경우 빈 리스트 전달
+            model.addAttribute("notices", new java.util.ArrayList<>());
+            return "notice/noticeList";
+        }
+
+        // 헬스장 번호로 공지사항 조회
+        int gymNo = loginMember.getGymNo();
+        List<GymNotice> notices = noticeService.getNoticesByGymNo(gymNo);
+
+        model.addAttribute("notices", notices != null ? notices : new java.util.ArrayList<>());
+
+        return "notice/noticeList";
+    }
 
     @GetMapping("/noticeDetail.me")
     public String noticeDetail(@RequestParam(required = false) String noticeNo,
