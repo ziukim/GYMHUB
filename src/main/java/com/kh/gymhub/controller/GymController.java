@@ -31,6 +31,7 @@ import com.kh.gymhub.service.PurchaseService;
 import com.kh.gymhub.service.SalesService;
 import com.kh.gymhub.service.StockService;
 import com.kh.gymhub.service.YoutubeUrlService;
+import com.kh.gymhub.service.AttCacheService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -72,9 +73,10 @@ public class GymController {
     private final InquiryService inquiryService;
     private final PtReserveService ptReserveService;
     private final StockService stockService;
+    private final AttCacheService attCacheService;
     
     @Autowired
-    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper, GymService gymService, GymDetailService gymDetailService, MachineService machineService, AttendanceService attendanceService, PurchaseItemMapper purchaseItemMapper, PtPassMapper ptPassMapper, LockerMapper lockerMapper, InquiryService inquiryService, PtReserveService ptReserveService, StockService stockService) {
+    public GymController(ProductService productService, YoutubeUrlService youtubeUrlService, MemberService memberService, LockerService lockerService, PurchaseService purchaseService, MembershipMapper membershipMapper, SalesService salesService, MemberMapper memberMapper, GymService gymService, GymDetailService gymDetailService, MachineService machineService, AttendanceService attendanceService, PurchaseItemMapper purchaseItemMapper, PtPassMapper ptPassMapper, LockerMapper lockerMapper, InquiryService inquiryService, PtReserveService ptReserveService, StockService stockService, AttCacheService attCacheService) {
         this.productService = productService;
         this.youtubeUrlService = youtubeUrlService;
         this.memberService = memberService;
@@ -93,6 +95,7 @@ public class GymController {
         this.inquiryService = inquiryService;
         this.ptReserveService = ptReserveService;
         this.stockService = stockService;
+        this.attCacheService = attCacheService;
     }
     
     // 메인 페이지 - 헬스장 목록 조회
@@ -226,19 +229,8 @@ public class GymController {
             }
             model.addAttribute("monthlyStats", monthlyStats);
             
-            // 7. 예약 상담 (승인됨 상태)
+            // 7. 예약 상담 (모든 상태)
             List<com.kh.gymhub.model.vo.InquiryReserve> reservationList = inquiryService.getReservationsByGymNo(gymNo);
-            if (reservationList != null) {
-                // 승인됨 상태만 필터링
-                List<com.kh.gymhub.model.vo.InquiryReserve> approvedList = new ArrayList<>();
-                for (int i = 0; i < reservationList.size(); i++) {
-                    com.kh.gymhub.model.vo.InquiryReserve r = reservationList.get(i);
-                    if (r != null && "승인됨".equals(r.getInquiryStatus())) {
-                        approvedList.add(r);
-                    }
-                }
-                reservationList = approvedList;
-            }
             model.addAttribute("reservationList", reservationList != null ? reservationList : new ArrayList<>());
             
             // 8. 재고 현황
@@ -1955,6 +1947,42 @@ public class GymController {
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "기구 목록 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+    // 헬스장 시간대별 혼잡도 조회 (AJAX)
+    @GetMapping("/gym/congestion.ajax")
+    @ResponseBody
+    public Map<String, Object> getGymCongestion(@RequestParam("gymNo") int gymNo,
+                                                 @RequestParam(value = "days", defaultValue = "7") int days) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<Map<String, Object>> congestionData = attCacheService.getCongestionByGymNo(gymNo, days);
+
+            if (congestionData != null && !congestionData.isEmpty()) {
+                result.put("success", true);
+                result.put("congestionData", congestionData);
+            } else {
+                // 데이터가 없을 경우 기본값 반환 (모든 시간대를 0으로)
+                List<Map<String, Object>> defaultData = new ArrayList<>();
+                String[] timeSlots = {"06-08", "08-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24"};
+                for (String timeSlot : timeSlots) {
+                    Map<String, Object> timeData = new HashMap<>();
+                    timeData.put("TIME_SLOT", timeSlot);
+                    timeData.put("AVG_COUNT", 0);
+                    defaultData.add(timeData);
+                }
+                result.put("success", true);
+                result.put("congestionData", defaultData);
+                result.put("message", "혼잡도 데이터가 없습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "혼잡도 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
 
         return result;

@@ -515,10 +515,6 @@
         return `
             <form class="edit-form" onsubmit="saveEdit(event, \${product.id})">
                 <div class="form-field">
-                    <label class="form-label">상품명</label>
-                    <input type="text" class="form-input" id="name-\${product.id}" value="\${product.name}" required>
-                </div>
-                <div class="form-field">
                     <label class="form-label">가격 (원)</label>
                     <input type="number" class="form-input" id="price-\${product.id}" value="\${product.price}" required>
                 </div>
@@ -542,15 +538,10 @@
 
     // 추가 폼 생성
     function createAddForm(category) {
-        const categoryName = category === 'membership' ? '이용권' : category === 'pt' ? 'PT' : '락커';
         const durationLabel = category === 'pt' ? '횟수' : '유효기간';
         const durationPlaceholder = category === 'pt' ? '예: 10회, 20회' : '예: 30일, 60일, 365일';
         return `
             <form class="edit-form" onsubmit="saveAdd(event, '\${category}')">
-                <div class="form-field">
-                    <label class="form-label">상품명</label>
-                    <input type="text" class="form-input" id="add-name" placeholder="\${categoryName} 이름을 입력하세요" required>
-                </div>
                 <div class="form-field">
                     <label class="form-label">가격 (원)</label>
                     <input type="number" class="form-input" id="add-price" required>
@@ -604,7 +595,6 @@
     function saveEdit(event, id) {
         event.preventDefault();
 
-        const name = document.getElementById('name-' + id).value;
         const price = parseInt(document.getElementById('price-' + id).value);
         const duration = document.getElementById('duration-' + id).value;
 
@@ -617,7 +607,6 @@
         // AJAX로 서버에 수정 요청
         const requestData = {
             productNo: id,
-            name: name,
             price: price,
             duration: duration,
             category: product.category
@@ -737,11 +726,10 @@
     function saveAdd(event, category) {
         event.preventDefault();
 
-        const name = document.getElementById('add-name').value;
         const price = parseInt(document.getElementById('add-price').value);
         const duration = document.getElementById('add-duration').value;
 
-        if (!name || !price || !duration) {
+        if (!price || !duration) {
             alert('모든 필수 항목을 입력해주세요.');
             return;
         }
@@ -749,7 +737,6 @@
         // AJAX로 서버에 추가 요청
         const requestData = {
             category: category,
-            name: name,
             price: price,
             duration: duration
         };
