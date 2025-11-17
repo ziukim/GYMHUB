@@ -10,7 +10,19 @@
         /* gymMachineEnrollForm 전용 스타일 */
         /* main-content는 common.css에 있음 */
 
-        /* page-header, header-left는 common.css에 있음 */
+        /* Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
         .page-title-group h1 {
             font-size: 24px;
@@ -28,17 +40,21 @@
             background-color: #ff6b00;
             border: none;
             border-radius: 8px;
-            padding: 12px 24px;
+            padding: 8px 20px;
             color: white;
             font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
             transition: all 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
         }
 
         .save-button:hover {
-            box-shadow: 0 0 25px rgba(255, 107, 0, 0.6);
-            transform: translateY(-2px);
+            background-color: #ff8500;
+            box-shadow: 0 0 12px rgba(255, 107, 0, 0.4);
         }
 
         /* 기구 추가 버튼 */

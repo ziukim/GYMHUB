@@ -12,9 +12,18 @@
         /* gymStockManagement 전용 스타일 */
         /* main-content, page-header는 common.css에 있음 */
         
-        /* page-header는 justify-content만 오버라이드 */
+        /* Header */
         .page-header {
-            justify-content: flex-end;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         /* Stats Grid */
@@ -328,8 +337,11 @@
                 <p>헬스장의 회원권과 재고를 등록하고 관리하세요</p>
             </div>
             <div class="page-header">
-                <button class="add-button" onclick="openAddModal()">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 재고 추가
+                <div class="header-left">
+                </div>
+                <button class="add-btn" onclick="openAddModal()">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
+                    <span>재고 추가</span>
                 </button>
             </div>
 
