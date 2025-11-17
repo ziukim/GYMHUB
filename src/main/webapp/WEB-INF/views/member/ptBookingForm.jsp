@@ -356,37 +356,26 @@
             opacity: 0.9;
         }
 
-        .modal {
+        .modal-content {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 3000;
-            margin: 0;
-            padding: 0;
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: linear-gradient(180deg, #1a0f0a 0%, #0a0a0a 100%);
             border: 2px solid #ff6b00;
             border-radius: 12px;
             padding: 25px;
             max-width: 600px;
-            width: 90%;
+            width: 90vw;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
-            position: relative;
-            margin: 0;
+            z-index: 3000;
+        }
+
+        .modal-content.show {
+            display: block;
         }
 
         .modal-header {
@@ -468,10 +457,10 @@
             font-size: 16px;
             font-weight: 700;
         }
-         .trainer-select-container {
-             position: relative;
-             width: 100%;
-         }
+        .trainer-select-container {
+            position: relative;
+            width: 100%;
+        }
 
         .trainer-select {
             width: 100%;
@@ -634,48 +623,6 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">PT 신청</div>
-                <div class="modal-description">선택한 시간으로 PT를 신청하시겠습니까?</div>
-            </div>
-
-            <div class="modal-info">
-                <div class="info-item">
-                    <span class="info-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="캘린더 아이콘">
-                    </span>
-                    <span id="modalDateDisplay">2025년 11월 4일</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사람 아이콘">
-                    </span>
-                    <span id="modalTrainerName">트레이너</span>
-                </div>
-            </div>
-
-            <div class="modal-time-slot">
-                <div class="time-slot-info">
-                    <div class="time-icon">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시계 아이콘">
-                    </div>
-                    <div class="time-text-container">
-                        <div class="time-status">예약 시간</div>
-                        <div class="time-range" id="modalTimeRange">17:00 - 18:00</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="modal-button cancel" onclick="closeModal()">취소</button>
-                <button class="modal-button confirm" onclick="confirmBooking()">신청 확정하기</button>
-            </div>
-        </div>
-    </div>
-
     <!-- 달력 팝업 -->
     <div class="calendar-overlay" id="ptDateCalendarOverlay" onclick="closePtCalendarOnOverlay(event)">
         <div class="calendar-popup" onclick="event.stopPropagation()">
@@ -699,6 +646,46 @@
 
             <button type="button" class="calendar-close-btn" onclick="closePtDateCalendar()">확인</button>
         </div>
+    </div>
+</div>
+
+<!-- Modal (app-container 밖으로 이동) -->
+<div class="modal-content" id="bookingModal">
+    <div class="modal-header">
+        <div class="modal-title">PT 신청</div>
+        <div class="modal-description">선택한 시간으로 PT를 신청하시겠습니까?</div>
+    </div>
+
+    <div class="modal-info">
+        <div class="info-item">
+            <span class="info-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="캘린더 아이콘">
+            </span>
+            <span id="modalDateDisplay">2025년 11월 4일</span>
+        </div>
+        <div class="info-item">
+            <span class="info-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="사람 아이콘">
+            </span>
+            <span id="modalTrainerName">트레이너</span>
+        </div>
+    </div>
+
+    <div class="modal-time-slot">
+        <div class="time-slot-info">
+            <div class="time-icon">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/clock.png" alt="시계 아이콘">
+            </div>
+            <div class="time-text-container">
+                <div class="time-status">예약 시간</div>
+                <div class="time-range" id="modalTimeRange">17:00 - 18:00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-actions">
+        <button class="modal-button cancel" onclick="closeModal()">취소</button>
+        <button class="modal-button confirm" onclick="confirmBooking()">신청 확정하기</button>
     </div>
 </div>
 
@@ -729,10 +716,10 @@
 
         timeSlots.forEach(function(slot) {
             const timeSlot = document.createElement('div');
-            
+
             // 클래스 설정: 예약된 시간, 선택된 시간, 빈 시간 구분
             var slotClass = 'time-slot';
-            
+
             // 날짜가 선택되지 않았으면 비활성화
             if (!selectedDate) {
                 slotClass += ' booked';
@@ -744,12 +731,12 @@
                 if (selectedTime === slot.time) {
                     slotClass += ' selected';
                 }
-                
+
                 timeSlot.onclick = function() {
                     selectTime(slot.time, slot.isBooked);
                 };
             }
-            
+
             timeSlot.className = slotClass;
 
             const timeSlotInfo = document.createElement('div');
@@ -770,7 +757,7 @@
 
             const timeStatus = document.createElement('div');
             timeStatus.className = 'time-status';
-            
+
             // 선택된 시간인 경우 '선택한 시간', 예약된 시간은 '예약된 시간', 나머지는 '빈 시간'
             if (selectedTime === slot.time) {
                 timeStatus.textContent = '선택한 시간';
@@ -809,7 +796,7 @@
             selectedTime = time;
             document.getElementById('selectedTimeDisplay').style.display = 'flex';
             document.getElementById('selectedTimeText').textContent = time;
-            
+
             // 시간 슬롯 다시 렌더링하여 선택된 시간 하이라이트
             renderTimeSlots();
         }
@@ -820,7 +807,7 @@
             alert('날짜를 먼저 선택해주세요.');
             return;
         }
-        
+
         if (!selectedTime) {
             alert('시간을 먼저 선택해주세요.');
             return;
@@ -841,19 +828,19 @@
             alert('모든 정보를 선택해주세요.');
             return;
         }
-        
+
         // 날짜 포맷 (yyyy-MM-dd)
         var year = selectedDate.getFullYear();
         var month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         var day = String(selectedDate.getDate()).padStart(2, '0');
         var dateStr = year + '-' + month + '-' + day;
-        
+
         // 시간 추출 ("10:00 - 11:00" -> "10:00")
         var timeOnly = selectedTime.split(' - ')[0];
-        
+
         // 예약 날짜시간 조합
         var reserveDateTime = dateStr + ' ' + timeOnly;
-        
+
         // AJAX로 PT 예약 신청
         fetch('${pageContext.request.contextPath}/pt/reserve.do', {
             method: 'POST',
@@ -862,22 +849,22 @@
             },
             body: 'trainerNo=' + selectedTrainer.id + '&reserveDateTime=' + encodeURIComponent(reserveDateTime)
         })
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            if (data.success) {
-                alert('PT 예약이 신청되었습니다!');
-                closeModal();
-                location.href = '${pageContext.request.contextPath}/schedule.me';
-            } else {
-                alert(data.message || 'PT 예약 신청에 실패했습니다.');
-            }
-        })
-        .catch(function(error) {
-            console.error('PT 예약 신청 오류:', error);
-            alert('예약 처리 중 오류가 발생했습니다.');
-        });
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    alert('PT 예약이 신청되었습니다!');
+                    closeModal();
+                    location.href = '${pageContext.request.contextPath}/schedule.me';
+                } else {
+                    alert(data.message || 'PT 예약 신청에 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('PT 예약 신청 오류:', error);
+                alert('예약 처리 중 오류가 발생했습니다.');
+            });
     }
 
     // ========================================
@@ -900,25 +887,25 @@
             loadBookedTimeSlots();
         }
     }
-    
+
     // 예약된 시간 조회 함수
     function loadBookedTimeSlots() {
         if (!selectedTrainer || !selectedDate) {
             console.log('loadBookedTimeSlots 취소: 트레이너 또는 날짜 미선택');
             return;
         }
-        
+
         var year = selectedDate.getFullYear();
         var month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         var day = String(selectedDate.getDate()).padStart(2, '0');
         var dateStr = year + '-' + month + '-' + day;
-        
+
         console.log('예약 시간 조회 요청:', {
             trainerNo: selectedTrainer.id,
             trainerName: selectedTrainer.name,
             date: dateStr
         });
-        
+
         fetch('${pageContext.request.contextPath}/pt/bookedSlots.ajax?trainerNo=' + selectedTrainer.id + '&date=' + dateStr)
             .then(function(response) {
                 return response.json();
@@ -935,7 +922,7 @@
                 console.error('예약 시간 조회 오류:', error);
             });
     }
-    
+
     // 시간 슬롯 예약 상태 업데이트
     function updateTimeSlots(bookedSlots) {
         console.log('updateTimeSlots 실행, bookedSlots:', bookedSlots);
@@ -1028,18 +1015,11 @@
             const month = selectedDate.getMonth() + 1;
             const day = selectedDate.getDate();
             const dateText = year + '년 ' + month + '월 ' + day + '일';
-            
+
             document.getElementById('selectedDateDisplay').textContent = dateText;
             document.getElementById('dateInput').value = dateText;
         }
     }
-
-    // 모달 외부 클릭 시 닫기
-    document.getElementById('bookingModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
 
     // 페이지 로드 시 타임슬롯 렌더링
     window.onload = function() {
@@ -1048,19 +1028,19 @@
     // 트레이너 목록 데이터 (DB에서 가져오기)
     var trainers = [];
     <c:choose>
-        <c:when test="${not empty bookingData and not empty bookingData.trainerList}">
-            <c:forEach var="trainer" items="${bookingData.trainerList}">
-            trainers.push({
-                id: ${trainer.memberNo},
-                name: '${trainer.memberName}',
-                avatar: 'T',
-                specialty: '${not empty trainer.trainerLicense ? trainer.trainerLicense : "-"}',
-                experience: '${not empty trainer.trainerCareer ? trainer.trainerCareer : "-"}'
-            });
-            </c:forEach>
-        </c:when>
+    <c:when test="${not empty bookingData and not empty bookingData.trainerList}">
+    <c:forEach var="trainer" items="${bookingData.trainerList}">
+    trainers.push({
+        id: ${trainer.memberNo},
+        name: '${trainer.memberName}',
+        avatar: 'T',
+        specialty: '${not empty trainer.trainerLicense ? trainer.trainerLicense : "-"}',
+        experience: '${not empty trainer.trainerCareer ? trainer.trainerCareer : "-"}'
+    });
+    </c:forEach>
+    </c:when>
     </c:choose>
-    
+
     // 트레이너가 없으면 기본값
     if (trainers.length === 0) {
         trainers = [{
@@ -1107,7 +1087,7 @@
         document.getElementById('selectedTrainerName').textContent = trainer.name;
         document.getElementById('selectedTrainerSpecialty').textContent = '전문 분야: ' + trainer.specialty;
         document.getElementById('selectedTrainerExperience').textContent = '경력: ' + trainer.experience;
-        
+
         // 일정 선택 카드의 트레이너 이름도 업데이트
         document.getElementById('scheduleTrainerName').textContent = trainer.name;
 
@@ -1137,14 +1117,14 @@
     // 페이지 로드 시 트레이너 드롭다운 초기화 및 첫 번째 트레이너 표시
     window.addEventListener('load', function() {
         initTrainerDropdown();
-        
+
         // 첫 번째 트레이너 정보를 화면에 표시
         if (selectedTrainer && selectedTrainer.id !== 0) {
             document.getElementById('selectedTrainerName').textContent = selectedTrainer.name;
-            document.getElementById('trainerAvatar').textContent = selectedTrainer.avatar;
-            document.getElementById('trainerSpecialty').textContent = selectedTrainer.specialty;
-            document.getElementById('trainerExperience').textContent = selectedTrainer.experience;
-            
+            document.getElementById('selectedTrainerAvatar').textContent = selectedTrainer.avatar;
+            document.getElementById('selectedTrainerSpecialty').textContent = '전문 분야: ' + selectedTrainer.specialty;
+            document.getElementById('selectedTrainerExperience').textContent = '경력: ' + selectedTrainer.experience;
+
             // 일정 선택 카드의 트레이너 이름도 업데이트
             document.getElementById('scheduleTrainerName').textContent = selectedTrainer.name;
         }

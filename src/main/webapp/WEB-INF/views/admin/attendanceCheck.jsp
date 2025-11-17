@@ -535,14 +535,18 @@
             timeLabel.textContent = '출석시간';
             resultIcon.classList.remove('checkout');
             resultIcon.classList.add('checkin');
+            document.getElementById('resultName').textContent = member.name + '님 환영합니다!';
+
         } else {
             resultTitle.textContent = '퇴장이 완료되었습니다!';
             timeLabel.textContent = '퇴실시간';
             resultIcon.classList.remove('checkin');
             resultIcon.classList.add('checkout');
+
+            document.getElementById('resultName').textContent = member.name + '님 수고하셨습니다!';
         }
 
-        document.getElementById('resultName').textContent = member.name + '님 환영합니다!';
+
         document.getElementById('infoName').textContent = member.name;
         document.getElementById('infoTime').textContent = time;
 
