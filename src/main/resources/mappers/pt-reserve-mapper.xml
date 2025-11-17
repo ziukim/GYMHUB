@@ -68,7 +68,7 @@
         ORDER BY PR.PT_RESERVE_TIME ASC
     </select>
 
-    <!-- PT 예약 승인 (트레이너 배정) -->
+    <!-- PT 예약 승인 -->
     <update id="updatePtReserveApprove">
         UPDATE PT_RESERVE
         SET PT_TRAINER_NO = #{ptTrainerNo},

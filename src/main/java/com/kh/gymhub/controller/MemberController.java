@@ -96,7 +96,7 @@ public class MemberController {
             // gym_no가 있는 경우: 헬스장 관련 정보 조회
             Map<String, Object> dashboardData = dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
 
-
+            PtScheduleSummary ptSummary = ptScheduleService.getPtScheduleSummary(loginMember.getMemberNo());
             model.addAttribute("hasGym", true);
             model.addAttribute("membership", dashboardData.get("membership"));
             model.addAttribute("attendance", dashboardData.get("attendance"));
@@ -106,6 +106,7 @@ public class MemberController {
             model.addAttribute("videos", dashboardData.get("videos"));
             model.addAttribute("allVideos", dashboardData.get("allVideos"));
             model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+            model.addAttribute("ptSummary", ptSummary);
 
             // 현재 날짜와 시간
             LocalDate today = LocalDate.now();
@@ -208,6 +209,40 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/goals/toggle.me")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleGoalStatus(
+            @RequestParam int goalManageNo,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            boolean result = goalService.toggleGoalStatus(goalManageNo, loginMember.getMemberNo());
+            if (result) {
+                response.put("success", true);
+                response.put("message", "목표 상태가 변경되었습니다.");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "목표 상태 변경에 실패했습니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "목표 상태 변경 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @GetMapping("/videoList.me")
     public String memberVideoList() { return "member/memberVideoList"; }
 
@@ -234,10 +269,13 @@ public class MemberController {
 
 
         if (gymNo != null && gymNo > 0) {
+            model.addAttribute("hasGym", true);
             Map<String, Object> dashboardData =
                     dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
             model.addAttribute("membership", dashboardData.get("membership"));
             model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+            PtScheduleSummary ptSummary = ptScheduleService.getPtScheduleSummary(loginMember.getMemberNo());
+            model.addAttribute("ptSummary", ptSummary);
 
             // 출석 통계 데이터 추가
             Map<String, Object> attendanceStats =
@@ -255,7 +293,24 @@ public class MemberController {
     }
 
     @GetMapping("/notice.me")
-    public String memberNotice() { return "notice/noticeList"; }
+    public String memberNotice(HttpSession session, Model model) {
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getGymNo() == null) {
+            // 로그인하지 않았거나 gym_no가 없는 경우 빈 리스트 전달
+            model.addAttribute("notices", new java.util.ArrayList<>());
+            return "notice/noticeList";
+        }
+
+        // 헬스장 번호로 공지사항 조회
+        int gymNo = loginMember.getGymNo();
+        List<GymNotice> notices = noticeService.getNoticesByGymNo(gymNo);
+
+        model.addAttribute("notices", notices != null ? notices : new java.util.ArrayList<>());
+
+        return "notice/noticeList";
+    }
 
     @GetMapping("/noticeDetail.me")
     public String noticeDetail(@RequestParam(required = false) String noticeNo,

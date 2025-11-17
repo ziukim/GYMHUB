@@ -74,7 +74,20 @@ public class GoalServiceImpl implements GoalService {
         return true;
     }
 
+    @Override
+    @Transactional
+    public boolean toggleGoalStatus(int goalManageNo, int memberNo) {
+        MemberGoal goal = goalMapper.selectGoalByManageNo(goalManageNo);
+        if (goal == null || goal.getMemberNo() != memberNo) {
+            return false;
+        }
+
+        String newStatus = "미달성".equals(goal.getGoalStatus()) ? "달성" : "미달성";
+
+        return goalMapper.updateGoalStatus(goal.getGoalNo(), newStatus) > 0;
+    }
 }
+
 
 
 

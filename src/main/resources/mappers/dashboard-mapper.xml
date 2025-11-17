@@ -5,18 +5,28 @@
 
 <mapper namespace="com.kh.gymhub.model.mapper.DashboardMapper">
 
-    <!-- 회원권 정보 조회 (MEMBERSHIP 테이블 사용) -->
     <select id="selectMembershipInfo" resultType="hashmap">
         SELECT
         CASE
-            WHEN TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) = 0 THEN '1개월 회원권'
-            ELSE TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) || '개월 회원권'
+        WHEN ROUND(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) &lt;= 1 THEN '1개월 회원권'
+        ELSE ROUND(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) || '개월 회원권'
         END AS membershipName,
         TO_CHAR(M.START_DATE, 'YYYY.MM.DD') AS startDate,
         TO_CHAR(M.END_DATE, 'YYYY.MM.DD') AS endDate,
         NVL(L.LOCKER_REAL_NUM, '미배정') AS lockerNo,
         TO_CHAR(LP.LOCKER_END, 'YYYY.MM.DD') AS lockerEndDate,
-        TRUNC(M.END_DATE - SYSDATE) AS remainingDays
+        TRUNC(M.END_DATE - SYSDATE) AS remainingDays,
+        -- 프로그레스 바용 추가
+        TRUNC(SYSDATE - M.START_DATE) AS usedDays,
+        TRUNC(M.END_DATE - M.START_DATE) AS totalDays,
+        ROUND(
+        CASE
+        WHEN (M.END_DATE - M.START_DATE) > 0
+        THEN ((SYSDATE - M.START_DATE) / (M.END_DATE - M.START_DATE)) * 100
+        ELSE 0
+        END,
+        0
+        ) AS achievementRate
         FROM MEMBERSHIP M
         LEFT JOIN LOCKER_PASS LP ON M.MEMBER_NO = LP.MEMBER_NO
         AND LP.LOCKER_PASS_STATUS = '정상'
@@ -108,25 +118,35 @@
         ORDER BY YOUTUBE_URL_NO DESC
     </select>
 
-    <!-- PT 정보 조회 -->
+    <!-- PT 정보 조회 (프로그레스 바용 컬럼 추가) -->
     <select id="selectPtInfo" resultType="hashmap">
         SELECT
         M.MEMBER_NAME AS trainerName,
-        TO_CHAR(PR.PT_RESERVE_TIME, 'MM"월" DD"일" HH24:MI') AS nextSchedule,
+        TO_CHAR(PR.PT_RESERVE_TIME, 'YYYY.MM.DD HH24:MI') AS nextSchedule,
         (PP.PT_TOTAL_COUNT - PP.PT_USED_COUNT) AS remainingCount,
-        PP.PT_TOTAL_COUNT AS totalCount
+        PP.PT_TOTAL_COUNT AS totalCount,
+        -- 프로그레스 바용 추가
+        PP.PT_USED_COUNT AS usedCount,
+        ROUND(
+        CASE
+        WHEN PP.PT_TOTAL_COUNT > 0
+        THEN (PP.PT_USED_COUNT / PP.PT_TOTAL_COUNT) * 100
+        ELSE 0
+        END,
+        0
+        ) AS achievementRate
         FROM PT_PASS PP
         LEFT JOIN (
         SELECT PR1.PT_PASS_NO, PR1.PT_RESERVE_TIME, PR1.PT_TRAINER_NO
         FROM PT_RESERVE PR1
         WHERE PR1.PT_RESERVE_TIME > SYSDATE
-        AND (PR1.PT_RESERVE_STATUS = 'Y' OR PR1.PT_RESERVE_STATUS IS NULL)
+        AND PR1.PT_RESERVE_STATUS = '승인됨'
         AND PR1.PT_RESERVE_TIME = (
         SELECT MIN(PR2.PT_RESERVE_TIME)
         FROM PT_RESERVE PR2
         WHERE PR2.PT_PASS_NO = PR1.PT_PASS_NO
         AND PR2.PT_RESERVE_TIME > SYSDATE
-        AND (PR2.PT_RESERVE_STATUS = 'Y' OR PR2.PT_RESERVE_STATUS IS NULL)
+        AND PR2.PT_RESERVE_STATUS = '승인됨'
         )
         ) PR ON PP.PT_PASS_NO = PR.PT_PASS_NO
         LEFT JOIN MEMBER M ON PR.PT_TRAINER_NO = M.MEMBER_NO

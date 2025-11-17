@@ -16,7 +16,9 @@ public interface GoalMapper {
     int countGoalManageByGoalNo(@Param("goalNo") int goalNo);
     int deleteGoalManage(@Param("goalManageNo") int goalManageNo, @Param("memberNo") int memberNo);
     int deleteGoal(@Param("goalNo") int goalNo);
+    int updateGoalStatus(@Param("goalNo") int goalNo, @Param("goalStatus") String goalStatus);
 }
+
 
 
 

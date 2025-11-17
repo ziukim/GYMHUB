@@ -702,7 +702,7 @@
                                 </c:if>
                                 <div class="info-row">
                                     <span class="info-label">남은 횟수</span>
-                                    <span class="info-value highlight">${ptInfo.REMAININGCOUNT}회 / ${ptInfo.TOTALCOUNT}회</span>
+                                    <span class="info-value highlight">${ptSummary.remainingCount}회 / ${ptSummary.totalCount}회</span>
                                 </div>
                             </c:when>
                             <c:otherwise>
@@ -1258,6 +1258,66 @@
             }
         }
 
+        // 목표 상태 변경 시
+        async function toggleGoalStatus(goalManageNo, checkboxElement) {
+            const contextPath = '${pageContext.request.contextPath}';
+            const originalChecked = checkboxElement.checked;
+
+            try {
+                const response = await fetch(`${contextPath}/goals/toggle.me`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ goalManageNo: goalManageNo })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok || !data.success) {
+                    checkboxElement.checked = originalChecked;
+                    alert(data.message || '목표 상태 변경에 실패했습니다.');
+                    return;
+                }
+
+                console.log('목표 상태가 변경되었습니다.');
+
+                // 목표 목록 다시 불러오기 (대시보드 + 모달 모두 갱신)
+                await fetchGoals(false);
+
+            } catch (error) {
+                console.error('Failed to toggle goal status', error);
+                checkboxElement.checked = originalChecked;
+                alert('목표 상태 변경 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 대시보드 페이지에서
+        function updateDashboard() {
+            const contextPath = '${pageContext.request.contextPath}';
+
+            fetch(`${contextPath}/dashboard/summary.me`)
+                .then(response => response.json())
+                .then(data => {
+                    // 대시보드 통계 업데이트
+                    if (data.success) {
+                        document.querySelector('.total-goals').textContent = data.totalGoals || 0;
+                        document.querySelector('.completed-goals').textContent = data.completedGoals || 0;
+                        document.querySelector('.in-progress-goals').textContent = data.inProgressGoals || 0;
+
+                        // 진행률 업데이트
+                        const completionRate = data.totalGoals > 0
+                            ? Math.round((data.completedGoals / data.totalGoals) * 100)
+                            : 0;
+                        document.querySelector('.completion-rate').textContent = completionRate + '%';
+                    }
+                })
+                .catch(error => console.error('Failed to update dashboard', error));
+        }
+
+        // 이벤트 리스너 등록 (대시보드 페이지에서)
+        window.addEventListener('goalStatusChanged', function(e) {
+            updateDashboard();
+        });
+
         function partitionGoals(goals) {
             return goals.reduce((acc, goal) => {
                 if (goal.goalStatus === '달성') {
@@ -1306,14 +1366,29 @@
                 const title = escapeHtml(goal.goalTitle || '');
                 const date = escapeHtml(goal.goalDate || '');
                 const manageNo = goal.goalManageNo || '';
+                const isCompleted = goal.goalStatus === '달성';
+
                 return ''
                     + '<div class="goal-item">'
+                    + '    <input type="checkbox" class="checkbox" data-goal-manage-no="' + manageNo + '" '
+                    + (isCompleted ? 'checked' : '') + '>'
                     + '    <div class="goal-text">'
                     + '        <div class="goal-title ' + goalClass + '">' + title + '</div>'
                     + '        <div class="goal-subtitle">' + date + '</div>'
                     + '    </div>'
                     + '</div>';
             }).join('');
+
+            // 체크박스 이벤트 리스너 추가
+            const checkboxes = dashboardGoalsList.querySelectorAll('.checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const goalManageNo = this.getAttribute('data-goal-manage-no');
+                    if (goalManageNo) {
+                        toggleGoalStatus(goalManageNo, this);
+                    }
+                });
+            });
         }
 
         function createModalGoalItem(goal) {
@@ -1321,8 +1396,12 @@
             const title = escapeHtml(goal.goalTitle || '');
             const date = escapeHtml(goal.goalDate || '');
             const manageNo = goal.goalManageNo || '';
+            const isCompleted = goal.goalStatus === '달성';
+
             return ''
                 + '<div class="modal-goal-item" data-goal-manage-no="' + manageNo + '">'
+                + '    <input type="checkbox" class="checkbox" data-goal-manage-no="' + manageNo + '" '
+                + (isCompleted ? 'checked' : '') + '>'
                 + '    <div class="modal-goal-text">'
                 + '        <div class="modal-goal-title ' + goalClass + '">' + title + '</div>'
                 + '        <div class="modal-goal-date">' + date + '</div>'
@@ -1344,9 +1423,20 @@
             completedTab.innerHTML = completed.length
                 ? completed.map(createModalGoalItem).join('')
                 : `<div class="empty-goal-message">달성한 목표가 없습니다.</div>`;
-            
+
             // 삭제 버튼 이벤트 리스너 추가
             attachDeleteListeners();
+
+            // 체크박스 이벤트 리스너 추가
+            const allCheckboxes = document.querySelectorAll('#goalsTab .checkbox, #completedTab .checkbox');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const goalManageNo = this.getAttribute('data-goal-manage-no');
+                    if (goalManageNo) {
+                        toggleGoalStatus(goalManageNo, this);
+                    }
+                });
+            });
         }
 
         function attachDeleteListeners() {
@@ -1632,6 +1722,7 @@
         }
         return '';
     }
+
 </script>
 </body>
 </html>
