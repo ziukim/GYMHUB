@@ -8,6 +8,8 @@ import com.kh.gymhub.service.GoalService;
 import com.kh.gymhub.service.DashboardService;
 import com.kh.gymhub.service.InbodyService;
 import com.kh.gymhub.service.MemberService;
+import com.kh.gymhub.service.NoticeService;
+import com.kh.gymhub.model.vo.GymNotice;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -41,6 +43,7 @@ public class MemberController {
     private final DashboardService dashboardService;
     private final GoalService goalService;
     private final AttendanceService attendanceService;
+    private final NoticeService noticeService;
 
     @Autowired
     public MemberController(MemberService memberService,
@@ -48,13 +51,15 @@ public class MemberController {
                             InbodyService inbodyService,
                             DashboardService dashboardService,
                             GoalService goalService,
-                            AttendanceService attendanceService) {
+                            AttendanceService attendanceService,
+                            NoticeService noticeService) {
         this.memberService = memberService;
         this.inbodyService = inbodyService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.dashboardService = dashboardService;
         this.goalService = goalService;
         this.attendanceService = attendanceService;
+        this.noticeService = noticeService;
     }
 
     @GetMapping("/dashboard.me")
@@ -217,6 +222,53 @@ public class MemberController {
 
     @GetMapping("/notice.me")
     public String memberNotice() { return "notice/noticeList"; }
+
+    @GetMapping("/noticeDetail.me")
+    public String noticeDetail(@RequestParam(required = false) String noticeNo,
+                               HttpSession session,
+                               Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if(loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // noticeNo가 없거나 빈 값인 경우
+        if(noticeNo == null || noticeNo.trim().isEmpty()) {
+            session.setAttribute("errorMsg", "공지사항 번호가 필요합니다.");
+            return "redirect:/dashboard.me";
+        }
+
+        try {
+            int noticeNoInt = Integer.parseInt(noticeNo);
+            
+            // DB에서 공지사항 조회
+            GymNotice notice = noticeService.getNoticeByNo(noticeNoInt);
+            
+            if (notice == null) {
+                session.setAttribute("errorMsg", "공지사항을 찾을 수 없습니다.");
+                return "redirect:/dashboard.me";
+            }
+            
+            // 같은 헬스장의 공지사항인지 확인
+            if (loginMember.getGymNo() != null && notice.getGymNo() != loginMember.getGymNo()) {
+                session.setAttribute("errorMsg", "접근 권한이 없습니다.");
+                return "redirect:/dashboard.me";
+            }
+            
+            model.addAttribute("notice", notice);
+            return "notice/noticeDetail";
+            
+        } catch (NumberFormatException e) {
+            session.setAttribute("errorMsg", "잘못된 공지사항 번호입니다.");
+            return "redirect:/dashboard.me";
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("errorMsg", "공지사항 조회 중 오류가 발생했습니다.");
+            return "redirect:/dashboard.me";
+        }
+    }
 
     @GetMapping("/schedule.me")
     public String memberPtSchedule() { return "member/ptSchedule"; }

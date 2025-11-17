@@ -315,25 +315,42 @@
             font-size: 14px;
         }
 
-        /* 나의 헬스장 Card - max-width 제거로 전체 너비 사용 */
-        .gym-card {
+        /* 나의 헬스장 Card */
+        .large-card {
             width: 100%;
-            min-height: 317px;
+            background-color: #1a0f0a;
+            border: 1px solid #ff6b00;
+            border-radius: 14px;
+            padding: 25px;
+            position: relative;
         }
 
-        .gym-card .card-title span {
-            color: #ff6b00;
+        .large-card .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 16px;
+            color: white;
         }
 
-        .gym-name {
+        .large-card .card-icon img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .center-content {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .large-text {
             color: #ff6b00;
             font-size: 30px;
-            text-align: center;
-            margin-bottom: 60px;
+            margin: 20px 0;
         }
 
-        .notices {
-            padding: 0 21px;
+        .notice-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -343,16 +360,14 @@
             background-color: #2d1810;
             border-radius: 10px;
             padding: 17px;
-        }
-
-        .notice-item.important {
-            border: 1px solid #ff6b00;
-        }
-
-        .notice-header {
             display: flex;
+            flex-direction: column;
             gap: 8px;
-            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .notice-item:hover {
+            background-color: #3d2010;
         }
 
         .notice-badge {
@@ -361,35 +376,19 @@
             padding: 3px 9px;
             color: #0a0a0a;
             font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .notice-content {
-            flex: 1;
+            width: fit-content;
         }
 
         .notice-title {
             color: #ffa366;
             font-size: 14px;
-            margin-bottom: 4px;
+            margin: 0;
         }
 
         .notice-date {
             color: #8a6a50;
             font-size: 12px;
-        }
-
-        .btn-notice {
-            position: absolute;
-            top: 26px;
-            right: 26px;
-            background-color: #ff6b00;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
+            margin: 0;
         }
 
         /* Modal Styles */
@@ -824,56 +823,77 @@
                     </svg>
                     <span>이번 달 출석</span>
                 </div>
+                <c:choose>
+                    <c:when test="${not empty attendance}">
+                        <div class="attendance-content">
+                            <p class="attendance-days">${attendance.ATTENDANCECOUNT}일</p>
+                            <p class="attendance-label">이번 달 총 출석일</p>
 
-                <div class="attendance-content">
-                    <p class="attendance-days">18일</p>
-                    <p class="attendance-label">이번 달 총 출석일</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${attendance.ACHIEVEMENTRATE}%"></div>
+                            </div>
 
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 72%"></div>
-                    </div>
-
-                    <div class="progress-info">
-                        <span class="label">이번 달 출석률</span>
-                        <span class="value">72%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 나의 헬스장 Card -->
-        <div class="card gym-card">
-            <div class="card-title">
-                <svg fill="none" viewBox="0 0 20 20">
-                    <path d="M13.3333 5.83333H18.3333V10.8333" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                    <path d="M18.3333 5.83333L11.25 12.9167L7.08333 8.75L1.66667 14.1667" stroke="#FF6B00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.66667"/>
-                </svg>
-                <span>나의 헬스장</span>
-            </div>
-
-            <p class="gym-name">헬스보이짐 판교역점</p>
-
-            <div class="notices">
-                <!-- 중요 공지 -->
-                <div class="notice-item important">
-                    <div class="notice-header">
-                        <span class="notice-badge">중요</span>
-                        <div class="notice-content">
-                            <p class="notice-title">추석 연휴 운영시간 안내</p>
-                            <p class="notice-date">2025.10.25</p>
+                            <div class="progress-info">
+                                <span class="label">목표 달성률</span>
+                                <span class="value">${attendance.ACHIEVEMENTRATE}%</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 일반 공지 -->
-                <div class="notice-item">
-                    <div class="notice-content">
-                        <p class="notice-title">신규 GX 프로그램 오픈</p>
-                        <p class="notice-date">2025.10.23</p>
-                    </div>
-                </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="attendance-content" style="text-align: center; padding: 60px 20px; color: #8a6a50;">
+                            <p style="margin: 0;">출석 기록이 없습니다</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
-        </div>
+
+            <!-- My Gym Card -->
+            <div class="large-card">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/company.png" alt="헬스장 아이콘">
+                    </span>
+                    나의 헬스장
+                </div>
+                <c:choose>
+                    <c:when test="${not empty gymInfo}">
+                        <div class="center-content">
+                            <div class="large-text">${gymInfo.GYMNAME}</div>
+                        </div>
+                        <div class="notice-list">
+                            <c:choose>
+                                <c:when test="${not empty notices}">
+                                    <c:forEach var="notice" items="${notices}">
+                                        <c:set var="noticeNo" value="${notice.NOTICENO != null ? notice.NOTICENO : (notice.noticeNo != null ? notice.noticeNo : '')}" />
+                                        <c:set var="noticeTitle" value="${notice.NOTICETITLE != null ? notice.NOTICETITLE : (notice.noticeTitle != null ? notice.noticeTitle : '')}" />
+                                        <c:set var="noticeDate" value="${notice.NOTICEDATE != null ? notice.NOTICEDATE : (notice.noticeDate != null ? notice.noticeDate : '')}" />
+                                        <c:set var="isImportant" value="${notice.ISIMPORTANT != null ? notice.ISIMPORTANT : (notice.isImportant != null ? notice.isImportant : 'N')}" />
+                                        <div class="notice-item" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.me?noticeNo=${noticeNo}'" style="cursor: pointer;">
+                                            <c:if test="${isImportant == 'Y'}">
+                                                <span class="notice-badge">중요</span>
+                                            </c:if>
+                                            <div class="notice-title">${noticeTitle}</div>
+                                            <div class="notice-date">${noticeDate}</div>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <div style="text-align: center; padding: 20px; color: #8a6a50;">
+                                        등록된 공지사항이 없습니다
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="center-content">
+                            <div style="color: #8a6a50; text-align: center;">
+                                헬스장 정보를 불러올 수 없습니다
+                            </div>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
     </div>
 </div>
 

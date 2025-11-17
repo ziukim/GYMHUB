@@ -16,4 +16,5 @@ public interface DashboardMapper {
     List<Map<String, Object>> selectVideos(@Param("gymNo") int gymNo);
     List<Map<String, Object>> selectAllVideos(@Param("gymNo") int gymNo);
     Map<String, Object> selectPtInfo(@Param("memberNo") int memberNo, @Param("gymNo") int gymNo);
+    Map<String, Object> selectNoticeDetail(@Param("noticeNo") int noticeNo);
 }

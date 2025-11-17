@@ -93,7 +93,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 200px;
+            min-height: 80px;
+            margin-bottom: 20px;
         }
 
         .large-text {
@@ -110,7 +111,27 @@
 
         /* Notice */
         .notice-list {
-            margin-top: 80px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notice-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notice-list::-webkit-scrollbar-track {
+            background: #2d1810;
+            border-radius: 3px;
+        }
+
+        .notice-list::-webkit-scrollbar-thumb {
+            background: #ff6b00;
+            border-radius: 3px;
+        }
+
+        .notice-list::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
         }
 
         .notice-item {
@@ -661,14 +682,24 @@
                         </div>
                         <c:choose>
                             <c:when test="${not empty ptInfo}">
-                                <div class="info-row">
-                                    <span class="info-label">담당 트레이너</span>
-                                    <span class="info-value">${ptInfo.TRAINERNAME} 코치</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">다음 예약 일정</span>
-                                    <span class="info-value">${ptInfo.NEXTSCHEDULE}</span>
-                                </div>
+                                <c:if test="${not empty ptInfo.TRAINERNAME}">
+                                    <div class="info-row">
+                                        <span class="info-label">담당 트레이너</span>
+                                        <span class="info-value">${ptInfo.TRAINERNAME} 코치</span>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty ptInfo.NEXTSCHEDULE}">
+                                    <div class="info-row">
+                                        <span class="info-label">다음 예약 일정</span>
+                                        <span class="info-value">${ptInfo.NEXTSCHEDULE}</span>
+                                    </div>
+                                </c:if>
+                                <c:if test="${empty ptInfo.NEXTSCHEDULE}">
+                                    <div class="info-row">
+                                        <span class="info-label">다음 예약 일정</span>
+                                        <span class="info-value">예약 없음</span>
+                                    </div>
+                                </c:if>
                                 <div class="info-row">
                                     <span class="info-label">남은 횟수</span>
                                     <span class="info-value highlight">${ptInfo.REMAININGCOUNT}회 / ${ptInfo.TOTALCOUNT}회</span>
@@ -808,12 +839,16 @@
                                     <c:choose>
                                         <c:when test="${not empty notices}">
                                             <c:forEach var="notice" items="${notices}">
-                                                <div class="notice-item">
-                                                    <c:if test="${notice.ISIMPORTANT == 'Y'}">
+                                                <c:set var="noticeNo" value="${notice.NOTICENO != null ? notice.NOTICENO : (notice.noticeNo != null ? notice.noticeNo : '')}" />
+                                                <c:set var="noticeTitle" value="${notice.NOTICETITLE != null ? notice.NOTICETITLE : (notice.noticeTitle != null ? notice.noticeTitle : '')}" />
+                                                <c:set var="noticeDate" value="${notice.NOTICEDATE != null ? notice.NOTICEDATE : (notice.noticeDate != null ? notice.noticeDate : '')}" />
+                                                <c:set var="isImportant" value="${notice.ISIMPORTANT != null ? notice.ISIMPORTANT : (notice.isImportant != null ? notice.isImportant : 'N')}" />
+                                                <div class="notice-item" onclick="location.href='${pageContext.request.contextPath}/noticeDetail.me?noticeNo=${noticeNo}'" style="cursor: pointer;">
+                                                    <c:if test="${isImportant == 'Y'}">
                                                         <span class="notice-badge">중요</span>
                                                     </c:if>
-                                                    <div class="notice-title">${notice.NOTICETITLE}</div>
-                                                    <div class="notice-date">${notice.NOTICEDATE}</div>
+                                                    <div class="notice-title">${noticeTitle}</div>
+                                                    <div class="notice-date">${noticeDate}</div>
                                                 </div>
                                             </c:forEach>
                                         </c:when>

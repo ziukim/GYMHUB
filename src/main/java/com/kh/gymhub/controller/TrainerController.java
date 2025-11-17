@@ -2,6 +2,7 @@ package com.kh.gymhub.controller;
 
 import com.kh.gymhub.model.vo.Member;
 import com.kh.gymhub.service.MemberService;
+import com.kh.gymhub.service.DashboardService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -12,26 +13,48 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
+import java.util.Map;
 
 @Controller
 public class TrainerController {
 
     private final MemberService memberService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final DashboardService dashboardService;
 
     @Autowired
-    public TrainerController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public TrainerController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, DashboardService dashboardService) {
         this.memberService = memberService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.dashboardService = dashboardService;
     }
 
     // 트레이너 대시보드
     @GetMapping("/dashboard.tr")
     public String trainerDashboard(HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("loginMember");
-        if (loginMember != null) {
-            model.addAttribute("loginMember", loginMember);
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
         }
+
+        Integer gymNo = loginMember.getGymNo();
+
+        if (gymNo != null && gymNo > 0) {
+            // gym_no가 있는 경우: 헬스장 관련 정보 조회 (한 번만 호출)
+            Map<String, Object> dashboardData = dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
+
+            model.addAttribute("hasGym", true);
+            model.addAttribute("attendance", dashboardData.get("attendance"));
+            model.addAttribute("gymInfo", dashboardData.get("gymInfo"));
+            model.addAttribute("notices", dashboardData.get("notices"));
+
+        } else {
+            // gym_no가 없는 경우
+            model.addAttribute("hasGym", false);
+        }
+
         return "trainer/trainerDashboard";
     }
 

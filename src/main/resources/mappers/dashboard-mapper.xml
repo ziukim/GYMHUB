@@ -8,7 +8,10 @@
     <!-- 회원권 정보 조회 (MEMBERSHIP 테이블 사용) -->
     <select id="selectMembershipInfo" resultType="hashmap">
         SELECT
-        'N개월 회원권' AS membershipName,
+        CASE
+            WHEN TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) = 0 THEN '1개월 회원권'
+            ELSE TRUNC(MONTHS_BETWEEN(M.END_DATE, M.START_DATE)) || '개월 회원권'
+        END AS membershipName,
         TO_CHAR(M.START_DATE, 'YYYY.MM.DD') AS startDate,
         TO_CHAR(M.END_DATE, 'YYYY.MM.DD') AS endDate,
         NVL(L.LOCKER_REAL_NUM, '미배정') AS lockerNo,
@@ -113,16 +116,41 @@
         (PP.PT_TOTAL_COUNT - PP.PT_USED_COUNT) AS remainingCount,
         PP.PT_TOTAL_COUNT AS totalCount
         FROM PT_PASS PP
-        JOIN PT_RESERVE PR ON PP.PT_PASS_NO = PR.PT_PASS_NO
-        JOIN MEMBER M ON PR.TRAINER_MEMBER_NO = M.MEMBER_NO
+        LEFT JOIN (
+            SELECT PR1.PT_PASS_NO, PR1.PT_RESERVE_TIME, PR1.TRAINER_MEMBER_NO
+            FROM PT_RESERVE PR1
+            WHERE PR1.PT_RESERVE_TIME > SYSDATE
+            AND (PR1.PT_RESERVE_STATUS = 'Y' OR PR1.PT_RESERVE_STATUS IS NULL)
+            AND PR1.PT_RESERVE_TIME = (
+                SELECT MIN(PR2.PT_RESERVE_TIME)
+                FROM PT_RESERVE PR2
+                WHERE PR2.PT_PASS_NO = PR1.PT_PASS_NO
+                AND PR2.PT_RESERVE_TIME > SYSDATE
+                AND (PR2.PT_RESERVE_STATUS = 'Y' OR PR2.PT_RESERVE_STATUS IS NULL)
+            )
+        ) PR ON PP.PT_PASS_NO = PR.PT_PASS_NO
+        LEFT JOIN MEMBER M ON PR.TRAINER_MEMBER_NO = M.MEMBER_NO
         WHERE PP.MEMBER_NO = #{memberNo}
         AND PP.GYM_NO = #{gymNo}
         AND PP.PT_END >= SYSDATE
-        AND PR.PT_RESERVE_TIME > SYSDATE
-        AND PR.PT_RESERVE_STATUS = 'Y'
-        ORDER BY PR.PT_RESERVE_TIME ASC
+        ORDER BY PP.PT_END DESC
         FETCH FIRST 1 ROW ONLY
     </select>
 
+    <!-- 공지사항 상세 조회 -->
+    <select id="selectNoticeDetail" resultType="hashmap">
+        SELECT
+        NOTICE_NO as noticeNo,
+        NOTICE_TITLE as noticeTitle,
+        NOTICE_CONTENT as noticeContent,
+        TO_CHAR(NOTICE_DATE, 'YYYY.MM.DD') as noticeDate,
+        NOTICE_WRITER as noticeWriter,
+        NOTICE_CATEGORY as noticeCategory,
+        NOTICE_FILE_PATH as noticeFilePath,
+        CASE WHEN NOTICE_FIX_STATUS = 'Y' THEN 'Y' ELSE 'N' END as isImportant,
+        GYM_NO as gymNo
+        FROM GYM_NOTICE
+        WHERE NOTICE_NO = #{noticeNo}
+    </select>
 
 </mapper>

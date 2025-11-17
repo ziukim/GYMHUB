@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface DashboardService {
     Map<String, Object> getDashboardData(int memberNo, int gymNo);
+    Map<String, Object> getNoticeDetail(int noticeNo);
 }

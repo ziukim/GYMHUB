@@ -35,5 +35,10 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
+    @Override
+    public Map<String, Object> getNoticeDetail(int noticeNo) {
+        return dashboardMapper.selectNoticeDetail(noticeNo);
+    }
+
 
 }
