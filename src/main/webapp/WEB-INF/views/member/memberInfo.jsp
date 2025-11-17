@@ -286,108 +286,196 @@
 
         <!-- 정보 카드들 -->
         <section class="info-cards">
+            <c:choose>
+                <c:when test="${hasGym}">
+                    <!-- 회원권 카드 -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                            </span>
+                            <h3>회원권</h3>
+                        </div>
 
-            <!-- 회원권 카드 -->
-            <div class="info-card">
-                <div class="card-header">
-        <span class="card-icon">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
-        </span>
-                    <h3>회원권</h3>
-                </div>
+                        <c:choose>
+                            <c:when test="${not empty membership}">
+                                <div class="card-content">
+                                    <span class="badge">${membership.MEMBERSHIPNAME}</span>
 
-                <c:choose>
-                    <c:when test="${not empty membership}">
-                        <div class="card-content">
-                            <span class="badge">${membership.MEMBERSHIPNAME}</span>
+                                    <div class="membership-dates">
+                                        <p><span class="date-label">시작:</span> ${membership.STARTDATE}</p>
+                                        <p><span class="date-label">만료:</span> ${membership.ENDDATE}</p>
+                                    </div>
 
-                            <div class="membership-dates">
-                                <p><span class="date-label">시작:</span> ${membership.STARTDATE}</p>
-                                <p><span class="date-label">만료:</span> ${membership.ENDDATE}</p>
+                                    <div class="progress-bar">
+                                        <c:set var="usedDays" value="${membership.USEDDAYS != null ? membership.USEDDAYS : (membership.usedDays != null ? membership.usedDays : 0)}" />
+                                        <c:set var="totalDays" value="${membership.TOTALDAYS != null ? membership.TOTALDAYS : (membership.totalDays != null ? membership.totalDays : 1)}" />
+                                        <c:set var="progressRate" value="${totalDays > 0 ? (usedDays * 100.0 / totalDays) : 0}" />
+                                        <div class="progress-fill" style="width: ${progressRate}%"></div>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                        <span style="font-size: 14px; color: #8a6a50;">진행률</span>
+                                        <span style="font-size: 14px; color: #ff6b00;">
+                                            <fmt:formatNumber value="${progressRate}" pattern="#" />%
+                                        </span>
+                                    </div>
+
+                                    <p class="remaining-days">${membership.REMAININGDAYS}일 남음</p>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="card-content" style="text-align:center; color:#8a6a50;">
+                                    <p>등록된 회원권이 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+
+                    <!-- PT 정보 카드 -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT정보 아이콘">
+                            </span>
+                            <h3>PT 정보</h3>
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty ptInfo}">
+                                <div class="card-content">
+                                    <p class="pt-count">${ptInfo.REMAININGCOUNT} / ${ptInfo.TOTALCOUNT}회</p>
+
+                                    <div class="progress-bar">
+                                        <c:set var="usedCount" value="${ptInfo.TOTALCOUNT - ptInfo.REMAININGCOUNT}" />
+                                        <c:set var="ptRate" value="${(usedCount / ptInfo.TOTALCOUNT) * 100}" />
+                                        <div class="progress-fill" style="width: ${ptRate}%"></div>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                        <span style="font-size: 14px; color: #8a6a50;">진행률</span>
+                                        <span style="font-size: 14px; color: #ff6b00;">${ptRate}%</span>
+                                    </div>
+
+                                    <p class="pt-remaining">남은 PT: ${ptInfo.REMAININGCOUNT}회</p>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="card-content" style="text-align:center; color:#8a6a50;">
+                                    <p>등록된 PT 정보가 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+
+                    <!-- 락커 정보 카드 -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커 아이콘">
+                            </span>
+                            <h3>락커</h3>
+                        </div>
+                        <c:choose>
+                            <c:when test="${not empty membership}">
+                                <div class="card-content">
+                                    <p class="locker-number">${membership.LOCKERNO}번</p>
+                                    <p class="locker-expire">만료일: ${membership.LOCKERENDDATE}</p>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="card-content" style="text-align:center; color:#8a6a50;">
+                                    <p>등록된 락커가 없습니다</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <!-- gym_no가 없을 때: 회원권 카드 (블러 처리) -->
+                    <div class="info-card" style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="card-header">
+                                <span class="card-icon">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                                </span>
+                                <h3>회원권</h3>
                             </div>
-
-                            <div class="progress-bar">
-                                <c:set var="usedDays" value="${membership.USEDDAYS != null ? membership.USEDDAYS : (membership.usedDays != null ? membership.usedDays : 0)}" />
-                                <c:set var="totalDays" value="${membership.TOTALDAYS != null ? membership.TOTALDAYS : (membership.totalDays != null ? membership.totalDays : 1)}" />
-                                <c:set var="progressRate" value="${totalDays > 0 ? (usedDays * 100.0 / totalDays) : 0}" />
-                                <div class="progress-fill" style="width: ${progressRate}%"></div>
+                            <div class="card-content">
+                                <span class="badge">3개월 회원권</span>
+                                <div class="membership-dates">
+                                    <p><span class="date-label">시작:</span> 2025.01.01</p>
+                                    <p><span class="date-label">만료:</span> 2025.04.01</p>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 50%"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                    <span style="font-size: 14px; color: #8a6a50;">진행률</span>
+                                    <span style="font-size: 14px; color: #ff6b00;">50%</span>
+                                </div>
+                                <p class="remaining-days">45일 남음</p>
                             </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap; z-index: 10;">
+                            헬스장을 등록하고<br>회원권 정보를 확인하세요!
+                        </div>
+                    </div>
 
-                            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                <span style="font-size: 14px; color: #8a6a50;">진행률</span>
-                                <span style="font-size: 14px; color: #ff6b00;">
-                        <fmt:formatNumber value="${progressRate}" pattern="#" />%
-                    </span>
+                    <!-- gym_no가 없을 때: PT 정보 카드 (블러 처리) -->
+                    <div class="info-card" style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="card-header">
+                                <span class="card-icon">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT정보 아이콘">
+                                </span>
+                                <h3>PT 정보</h3>
                             </div>
-
-                            <p class="remaining-days">${membership.REMAININGDAYS}일 남음</p>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="card-content" style="text-align:center; color:#8a6a50;">
-                            <p>등록된 회원권이 없습니다</p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
-
-            <!-- PT 정보 카드 -->
-            <div class="info-card">
-                <div class="card-header">
-        <span class="card-icon">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT정보 아이콘">
-        </span>
-                    <h3>PT 정보</h3>
-                </div>
-                <c:choose>
-                    <c:when test="${not empty ptInfo}">
-                        <div class="card-content">
-                            <p class="pt-count">${ptInfo.REMAININGCOUNT} / ${ptInfo.TOTALCOUNT}회</p>
-
-                            <div class="progress-bar">
-                                <c:set var="usedCount" value="${ptInfo.TOTALCOUNT - ptInfo.REMAININGCOUNT}" />
-                                <c:set var="ptRate" value="${(usedCount / ptInfo.TOTALCOUNT) * 100}" />
-                                <div class="progress-fill" style="width: ${ptRate}%"></div>
+                            <div class="card-content">
+                                <p class="pt-count">15 / 20회</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 25%"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                    <span style="font-size: 14px; color: #8a6a50;">진행률</span>
+                                    <span style="font-size: 14px; color: #ff6b00;">25%</span>
+                                </div>
+                                <p class="pt-remaining">남은 PT: 15회</p>
                             </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap; z-index: 10;">
+                            헬스장을 등록하고<br>PT 정보를 확인하세요!
+                        </div>
+                    </div>
 
-                            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                <span style="font-size: 14px; color: #8a6a50;">진행률</span>
-                                <span style="font-size: 14px; color: #ff6b00;">${ptRate}%</span>
+                    <!-- gym_no가 없을 때: 락커 정보 카드 (블러 처리) -->
+                    <div class="info-card" style="position: relative;">
+                        <div style="filter: blur(5px); pointer-events: none;">
+                            <div class="card-header">
+                                <span class="card-icon">
+                                    <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커 아이콘">
+                                </span>
+                                <h3>락커</h3>
                             </div>
-
-                            <p class="pt-remaining">남은 PT: ${ptInfo.REMAININGCOUNT}회</p>
+                            <div class="card-content">
+                                <p class="locker-number">123번</p>
+                                <p class="locker-expire">만료일: 2025.04.01</p>
+                            </div>
                         </div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="card-content" style="text-align:center; color:#8a6a50;">
-                            <p>등록된 PT 정보가 없습니다</p>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                            background: rgba(26, 15, 10, 0.95); padding: 20px; border-radius: 10px;
+                            border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
+                            font-size: 14px; white-space: nowrap; z-index: 10;">
+                            헬스장을 등록하고<br>락커 정보를 확인하세요!
                         </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-            <!-- 락커 정보 카드 -->
-            <div class="info-card">
-                <div class="card-header">
-            <span class="card-icon">
-                <img src="${pageContext.request.contextPath}/resources/images/icon/locker.png" alt="락커 아이콘">
-            </span>
-                    <h3>락커</h3>
-                </div>
-                <c:choose>
-                    <c:when test="${not empty membership}">
-                        <div class="card-content">
-                            <p class="locker-number">${membership.LOCKERNO}번</p>
-                            <p class="locker-expire">만료일: ${membership.LOCKERENDDATE}</p>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="card-content" style="text-align:center; color:#8a6a50;">
-                            <p>등록된 락커가 없습니다</p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </section>
 
 
