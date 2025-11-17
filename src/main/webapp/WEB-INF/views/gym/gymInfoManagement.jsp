@@ -62,21 +62,24 @@
         }
 
         .save-button {
-            background: #ff6b00;
+            background-color: #ff6b00;
             border: none;
             border-radius: 8px;
             padding: 8px 20px;
-            color: #0a0a0a;
+            color: white;
             font-size: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: opacity 0.2s;
+            gap: 8px;
+            transition: all 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 500;
         }
 
         .save-button:hover {
-            opacity: 0.9;
+            background-color: #ff8500;
+            box-shadow: 0 0 12px rgba(255, 107, 0, 0.4);
         }
 
         /* Section */
