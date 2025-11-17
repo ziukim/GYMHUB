@@ -12,6 +12,7 @@
         <result property="memberName" column="MEMBER_NAME"/>
         <result property="memberPhone" column="MEMBER_PHONE"/>
         <result property="trainerName" column="TRAINER_NAME"/>
+        <result property="desiredTrainerName" column="DESIRED_TRAINER_NAME"/>
         <result property="memberNo" column="MEMBER_NO"/>
         <result property="gymNo" column="GYM_NO"/>
     </resultMap>
@@ -28,12 +29,14 @@
             M.MEMBER_NAME,
             M.MEMBER_PHONE,
             T.MEMBER_NAME AS TRAINER_NAME,
+            DT.MEMBER_NAME AS DESIRED_TRAINER_NAME,
             PP.MEMBER_NO,
             PP.GYM_NO
         FROM PT_RESERVE PR
         INNER JOIN PT_PASS PP ON PR.PT_PASS_NO = PP.PT_PASS_NO
         INNER JOIN MEMBER M ON PP.MEMBER_NO = M.MEMBER_NO
         LEFT JOIN MEMBER T ON PR.PT_TRAINER_NO = T.MEMBER_NO
+        LEFT JOIN MEMBER DT ON PR.PT_TRAINER = DT.MEMBER_NO
         WHERE PP.GYM_NO = #{gymNo}
           AND (PR.PT_RESERVE_STATUS IS NULL OR PR.PT_RESERVE_STATUS = '대기중')
         ORDER BY PR.PT_RESERVE_TIME ASC
@@ -51,12 +54,14 @@
             M.MEMBER_NAME,
             M.MEMBER_PHONE,
             T.MEMBER_NAME AS TRAINER_NAME,
+            DT.MEMBER_NAME AS DESIRED_TRAINER_NAME,
             PP.MEMBER_NO,
             PP.GYM_NO
         FROM PT_RESERVE PR
         INNER JOIN PT_PASS PP ON PR.PT_PASS_NO = PP.PT_PASS_NO
         INNER JOIN MEMBER M ON PP.MEMBER_NO = M.MEMBER_NO
         LEFT JOIN MEMBER T ON PR.PT_TRAINER_NO = T.MEMBER_NO
+        LEFT JOIN MEMBER DT ON PR.PT_TRAINER = DT.MEMBER_NO
         WHERE PP.GYM_NO = #{gymNo}
           AND PR.PT_RESERVE_STATUS IN ('승인됨', '거절됨')
           AND PR.PT_RESERVE_TIME >= SYSDATE
@@ -90,12 +95,14 @@
             M.MEMBER_NAME,
             M.MEMBER_PHONE,
             T.MEMBER_NAME AS TRAINER_NAME,
+            DT.MEMBER_NAME AS DESIRED_TRAINER_NAME,
             PP.MEMBER_NO,
             PP.GYM_NO
         FROM PT_RESERVE PR
         INNER JOIN PT_PASS PP ON PR.PT_PASS_NO = PP.PT_PASS_NO
         INNER JOIN MEMBER M ON PP.MEMBER_NO = M.MEMBER_NO
         LEFT JOIN MEMBER T ON PR.PT_TRAINER_NO = T.MEMBER_NO
+        LEFT JOIN MEMBER DT ON PR.PT_TRAINER = DT.MEMBER_NO
         WHERE PR.PT_RESERVE_NO = #{ptReserveNo}
     </select>
 
