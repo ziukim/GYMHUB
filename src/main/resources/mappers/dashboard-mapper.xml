@@ -123,7 +123,7 @@
     <select id="selectPtInfo" resultType="hashmap">
         SELECT
         M.MEMBER_NAME AS trainerName,
-        TO_CHAR(PR.PT_RESERVE_TIME, 'MM"월" DD"일" HH24:MI') AS nextSchedule,
+        TO_CHAR(PR.PT_RESERVE_TIME, 'YYYY.MM.DD HH24:MI') AS nextSchedule,
         (PP.PT_TOTAL_COUNT - PP.PT_USED_COUNT) AS remainingCount,
         PP.PT_TOTAL_COUNT AS totalCount,
         -- 프로그레스 바용 추가
@@ -141,13 +141,13 @@
         SELECT PR1.PT_PASS_NO, PR1.PT_RESERVE_TIME, PR1.PT_TRAINER_NO
         FROM PT_RESERVE PR1
         WHERE PR1.PT_RESERVE_TIME > SYSDATE
-        AND (PR1.PT_RESERVE_STATUS = 'Y' OR PR1.PT_RESERVE_STATUS IS NULL)
+        AND PR1.PT_RESERVE_STATUS = '승인됨'
         AND PR1.PT_RESERVE_TIME = (
         SELECT MIN(PR2.PT_RESERVE_TIME)
         FROM PT_RESERVE PR2
         WHERE PR2.PT_PASS_NO = PR1.PT_PASS_NO
         AND PR2.PT_RESERVE_TIME > SYSDATE
-        AND (PR2.PT_RESERVE_STATUS = 'Y' OR PR2.PT_RESERVE_STATUS IS NULL)
+        AND PR2.PT_RESERVE_STATUS = '승인됨'
         )
         ) PR ON PP.PT_PASS_NO = PR.PT_PASS_NO
         LEFT JOIN MEMBER M ON PR.PT_TRAINER_NO = M.MEMBER_NO

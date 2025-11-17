@@ -96,7 +96,7 @@ public class MemberController {
             // gym_no가 있는 경우: 헬스장 관련 정보 조회
             Map<String, Object> dashboardData = dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
 
-
+            PtScheduleSummary ptSummary = ptScheduleService.getPtScheduleSummary(loginMember.getMemberNo());
             model.addAttribute("hasGym", true);
             model.addAttribute("membership", dashboardData.get("membership"));
             model.addAttribute("attendance", dashboardData.get("attendance"));
@@ -106,6 +106,7 @@ public class MemberController {
             model.addAttribute("videos", dashboardData.get("videos"));
             model.addAttribute("allVideos", dashboardData.get("allVideos"));
             model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+            model.addAttribute("ptSummary", ptSummary);
 
             // 현재 날짜와 시간
             LocalDate today = LocalDate.now();
@@ -273,6 +274,8 @@ public class MemberController {
                     dashboardService.getDashboardData(loginMember.getMemberNo(), gymNo);
             model.addAttribute("membership", dashboardData.get("membership"));
             model.addAttribute("ptInfo", dashboardData.get("ptInfo"));
+            PtScheduleSummary ptSummary = ptScheduleService.getPtScheduleSummary(loginMember.getMemberNo());
+            model.addAttribute("ptSummary", ptSummary);
 
             // 출석 통계 데이터 추가
             Map<String, Object> attendanceStats =

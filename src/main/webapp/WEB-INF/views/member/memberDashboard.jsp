@@ -702,7 +702,7 @@
                                 </c:if>
                                 <div class="info-row">
                                     <span class="info-label">남은 횟수</span>
-                                    <span class="info-value highlight">${ptInfo.REMAININGCOUNT}회 / ${ptInfo.TOTALCOUNT}회</span>
+                                    <span class="info-value highlight">${ptSummary.remainingCount}회 / ${ptSummary.totalCount}회</span>
                                 </div>
                             </c:when>
                             <c:otherwise>

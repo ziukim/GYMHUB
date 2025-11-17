@@ -19,5 +19,6 @@ public interface PtReserveService {
     
     // PT 예약 번호로 조회
     PtReserve getPtReserveByNo(int ptReserveNo);
+
 }
 

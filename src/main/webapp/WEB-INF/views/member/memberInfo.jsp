@@ -291,9 +291,9 @@
                     <!-- 회원권 카드 전체 -->
                     <div class="info-card">
                         <div class="card-header">
-        <span class="card-icon">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
-        </span>
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/ticket.png" alt="회원권 아이콘">
+                            </span>
                             <h3>회원권</h3>
                         </div>
 
@@ -325,28 +325,28 @@
                     <!-- PT 정보 카드 -->
                     <div class="info-card">
                         <div class="card-header">
-        <span class="card-icon">
-            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT정보 아이콘">
-        </span>
+                            <span class="card-icon">
+                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT정보 아이콘">
+                            </span>
                             <h3>PT 정보</h3>
                         </div>
                         <c:choose>
-                            <c:when test="${not empty ptInfo}">
+                            <c:when test="${not empty ptSummary and ptSummary.totalCount > 0}">  <!-- 수정 -->
                                 <div class="card-content">
-                                    <p class="pt-count">${ptInfo.USEDCOUNT} / ${ptInfo.TOTALCOUNT}회</p>
+                                    <p class="pt-count">${ptSummary.usedCount} / ${ptSummary.totalCount}회</p>
 
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${ptInfo.ACHIEVEMENTRATE}%;"></div>
+                                        <div class="progress-fill" style="width: ${ptSummary.progressRate}%"></div>
                                     </div>
 
                                     <div style="display: flex; justify-content: space-between; margin-top: 8px;">
                                         <span style="font-size: 14px; color: #8a6a50;">진행률</span>
                                         <span style="font-size: 14px; color: #ff6b00;">
-                                            ${ptInfo.ACHIEVEMENTRATE}%
-                                        </span>
+                                        ${ptSummary.progressRate}%  <!-- 통일 -->
+                                    </span>
                                     </div>
 
-                                    <p class="pt-remaining">남은 PT: ${ptInfo.REMAININGCOUNT}회</p>
+                                    <p class="pt-remaining">남은 PT: ${ptSummary.remainingCount}회</p>
                                 </div>
                             </c:when>
                             <c:otherwise>
