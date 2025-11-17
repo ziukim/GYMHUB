@@ -85,6 +85,9 @@ public class PtBookingServiceImpl implements PtBookingService {
         }
         
         Integer ptPassNo = getIntegerValue(ptPassInfo.get("PT_PASS_NO"));
+        if (ptPassNo == null || ptPassNo <= 0) {
+            return false;
+        }
         
         // 2. 날짜 시간 파싱
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");

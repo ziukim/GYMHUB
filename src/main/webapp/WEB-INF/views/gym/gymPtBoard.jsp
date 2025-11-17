@@ -376,7 +376,7 @@
                                         <span class="detail-label">
                                             <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:
                                         </span>
-                                        <span class="detail-value">${ptReserve.ptTrainer}번</span>
+                                        <span class="detail-value">${not empty ptReserve.desiredTrainerName ? ptReserve.desiredTrainerName : ptReserve.ptTrainer + '번'}</span>
                                     </div>
                                 </c:if>
                                 <div class="detail-item">
@@ -447,7 +447,7 @@
                                         <span class="detail-label">
                                             <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:
                                         </span>
-                                        <span class="detail-value">${ptReserve.ptTrainer}번</span>
+                                        <span class="detail-value">${not empty ptReserve.desiredTrainerName ? ptReserve.desiredTrainerName : ptReserve.ptTrainer + '번'}</span>
                                     </div>
                                 </c:if>
                                 <div class="detail-item">

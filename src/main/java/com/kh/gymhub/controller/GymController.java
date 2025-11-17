@@ -1673,6 +1673,159 @@ public class GymController {
         return result;
     }
 
+    // AJAX: 트레이너 목록 조회 (헬스장별)
+    @GetMapping("/trainer/list.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> getTrainerList(HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 해당 헬스장의 트레이너 목록 조회
+            List<Member> trainers = memberMapper.selectTrainersByGymNo(gymNo);
+            
+            result.put("success", true);
+            result.put("trainers", trainers != null ? trainers : new java.util.ArrayList<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "트레이너 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    // AJAX: PT 예약 거절
+    @PostMapping("/pt/reject.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> rejectPtReserve(@RequestBody java.util.Map<String, Object> requestData, HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        try {
+            Object ptReserveNoObj = requestData.get("ptReserveNo");
+            int ptReserveNo = 0;
+            
+            if (ptReserveNoObj instanceof Number) {
+                ptReserveNo = ((Number) ptReserveNoObj).intValue();
+            } else if (ptReserveNoObj != null) {
+                ptReserveNo = Integer.parseInt(ptReserveNoObj.toString());
+            }
+            
+            if (ptReserveNo <= 0) {
+                result.put("success", false);
+                result.put("message", "예약 번호가 올바르지 않습니다.");
+                return result;
+            }
+            
+            // PT 예약 거절 처리
+            int updateResult = ptReserveService.rejectPtReserve(ptReserveNo);
+            
+            if (updateResult > 0) {
+                result.put("success", true);
+                result.put("message", "PT 예약이 거절되었습니다.");
+            } else {
+                result.put("success", false);
+                result.put("message", "PT 예약 거절에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "PT 예약 거절 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    // AJAX: PT 예약 승인
+    @PostMapping("/pt/approve.ajax")
+    @ResponseBody
+    public java.util.Map<String, Object> approvePtReserve(@RequestBody java.util.Map<String, Object> requestData, HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        try {
+            Object ptReserveNoObj = requestData.get("ptReserveNo");
+            Object ptTrainerNoObj = requestData.get("ptTrainerNo");
+            
+            int ptReserveNo = 0;
+            int ptTrainerNo = 0;
+            
+            if (ptReserveNoObj instanceof Number) {
+                ptReserveNo = ((Number) ptReserveNoObj).intValue();
+            } else if (ptReserveNoObj != null) {
+                ptReserveNo = Integer.parseInt(ptReserveNoObj.toString());
+            }
+            
+            if (ptTrainerNoObj instanceof Number) {
+                ptTrainerNo = ((Number) ptTrainerNoObj).intValue();
+            } else if (ptTrainerNoObj != null) {
+                ptTrainerNo = Integer.parseInt(ptTrainerNoObj.toString());
+            }
+            
+            if (ptReserveNo <= 0) {
+                result.put("success", false);
+                result.put("message", "예약 번호가 올바르지 않습니다.");
+                return result;
+            }
+            
+            if (ptTrainerNo <= 0) {
+                result.put("success", false);
+                result.put("message", "트레이너를 선택해주세요.");
+                return result;
+            }
+            
+            // PT 예약 승인 처리
+            int updateResult = ptReserveService.approvePtReserve(ptReserveNo, ptTrainerNo);
+            
+            if (updateResult > 0) {
+                result.put("success", true);
+                result.put("message", "PT 예약이 승인되었습니다.");
+            } else {
+                result.put("success", false);
+                result.put("message", "PT 예약 승인에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "PT 예약 승인 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
     // 헬스장 상세 정보 조회 (AJAX)
     @GetMapping("/gym/detail.ajax")
     @ResponseBody

@@ -791,7 +791,7 @@
                                             </div>
                                             <c:if test="${not empty ptReserve.ptTrainer}">
                                                 <div class="pt-reserve-trainer">
-                                                    희망 트레이너: ${ptReserve.ptTrainer}번
+                                                    희망 트레이너: ${not empty ptReserve.desiredTrainerName ? ptReserve.desiredTrainerName : ptReserve.ptTrainer + '번'}
                                                 </div>
                                             </c:if>
                                         </div>
