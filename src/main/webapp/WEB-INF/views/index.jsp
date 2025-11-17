@@ -1995,7 +1995,7 @@
                     }
 
                     loadGymMachines(gymNo);
-                    
+
                     // 혼잡도 데이터 로드 및 차트 업데이트
                     loadCongestionChart(gymNo);
 
@@ -2245,7 +2245,7 @@
 
         // 시간대 목록 (순서대로)
         const timeSlots = ['06-08', '08-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'];
-        
+
         // 최대값 계산 (차트 스케일링을 위해)
         let maxValue = 0;
         timeSlots.forEach(function(timeSlot) {
@@ -2254,34 +2254,34 @@
                 maxValue = value;
             }
         });
-        
+
         // 최대값이 0이면 기본값 100으로 설정
         if (maxValue === 0) {
             maxValue = 100;
         }
-        
+
         // 차트 높이 설정 (SVG viewBox 기준)
         const chartHeight = 184; // 224 - 40 (하단 여백)
         const chartBaseY = 184; // 바 차트의 기준 Y 좌표
-        
+
         // 바 차트 X 위치 (9개)
         const barPositions = [16, 54, 92, 130, 168, 206, 244, 282, 320];
         const barWidth = 30;
         const barRadius = 8;
-        
+
         // 기존 바 차트 제거
         const existingBars = svg.querySelectorAll('rect[data-bar="true"]');
         existingBars.forEach(function(bar) {
             bar.remove();
         });
-        
+
         // 새로운 바 차트 생성
         timeSlots.forEach(function(timeSlot, index) {
             const value = dataMap[timeSlot] || 0;
             const barHeight = maxValue > 0 ? Math.round((value / maxValue) * chartHeight) : 0;
             const barY = chartBaseY - barHeight;
             const barX = barPositions[index];
-            
+
             // 바 차트 생성
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             rect.setAttribute('x', barX);
@@ -2293,12 +2293,12 @@
             rect.setAttribute('data-bar', 'true');
             rect.setAttribute('data-time-slot', timeSlot);
             rect.setAttribute('data-value', value);
-            
+
             // 툴팁을 위한 title 추가
             const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
             title.textContent = timeSlot + ': 평균 ' + value + '명';
             rect.appendChild(title);
-            
+
             // 그리드 라인 다음에 삽입 (그리드 라인 위에 표시되도록)
             const gridLines = svg.querySelectorAll('line[stroke="#4A3020"]');
             if (gridLines.length > 0) {
@@ -2307,7 +2307,7 @@
                 svg.appendChild(rect);
             }
         });
-        
+
         // Y축 레이블 업데이트 (최대값에 맞게 조정)
         const yAxisLabels = svg.querySelectorAll('text[text-anchor="end"]');
         if (yAxisLabels.length >= 5) {
@@ -2320,7 +2320,7 @@
                 Math.round(maxValue * 0.75),
                 maxValue
             ];
-            
+
             yAxisLabels.forEach(function(label, index) {
                 if (index < yValues.length) {
                     label.textContent = yValues[index];
@@ -2328,6 +2328,7 @@
             });
         }
     }
+
 
 </script>
 
@@ -2341,6 +2342,36 @@
         alert('${errorMsg}');
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
+
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('visitReserved') === 'true') {
+            alert('방문 예약이 완료되었습니다!');
+            sessionStorage.removeItem('visitReserved');
+        }
+    });
+
+    var filterSelect = document.querySelector('.filter-select');
+
+    // 정렬 변경 시 서버에 재요청
+    if (filterSelect) {
+        filterSelect.addEventListener('change', function() {
+            var sortType = this.value;
+
+            if (sortType) {
+                // 정렬 파라미터와 함께 페이지 새로고침
+                window.location.href = '${pageContext.request.contextPath}/?sort=' + sortType;
+            } else {
+                // 정렬 없이 기본 페이지로
+                window.location.href = '${pageContext.request.contextPath}/';
+            }
+        });
+
+        // 페이지 로드 시 현재 정렬 상태 유지
+        var currentSort = '${currentSort}';
+        if (currentSort && currentSort !== 'null' && currentSort !== '') {
+            filterSelect.value = currentSort;
+        }
+    }
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/loginform.js"></script>

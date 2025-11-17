@@ -11,8 +11,12 @@
             <div style="margin-bottom: 20px;">
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="margin: 0 auto;">
                     <circle cx="40" cy="40" r="35" stroke="#FF6B00" stroke-width="3" fill="none"/>
-                    <path d="M40 50C47.732 50 54 43.732 54 36C54 28.268 47.732 22 40 22C32.268 22 26 28.268 26 36C26 43.732 32.268 50 40 50Z" stroke="#FF6B00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M27.5 60C27.5 55.8579 29.1437 51.8854 32.0787 48.9504C35.0137 46.0154 38.9862 44.3716 43.1283 44.3716H56.8717C61.0138 44.3716 64.9863 46.0154 67.9213 48.9504C70.8563 51.8854 72.5 55.8579 72.5 60" stroke="#FF6B00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="40" cy="32" r="10" stroke="#FF6B00" stroke-width="3" fill="none"/>
+                    <path d="M 25 55 Q 25 45, 32.5 45 Q 40 45, 47.5 45 Q 55 45, 55 55"
+                          stroke="#FF6B00"
+                          stroke-width="3"
+                          fill="none"
+                          stroke-linecap="round"/>
                 </svg>
             </div>
 
