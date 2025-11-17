@@ -39,7 +39,7 @@
             ROUND(AVG(MEMBER_COUNT)) AS AVG_COUNT
         FROM ATT_CACHE
         WHERE GYM_NO = #{gymNo}
-        AND CACHE_DATE >= TRUNC(SYSDATE) - #{days}
+        AND TRUNC(CACHE_DATE) >= TRUNC(SYSDATE) - #{days}
         GROUP BY TIME_SLOT
         ORDER BY TIME_SLOT
     </select>
