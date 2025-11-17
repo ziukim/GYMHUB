@@ -33,6 +33,11 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    public List<GymNotice> getLatestNoticesByGymNo(int gymNo) {
+        return noticeMapper.selectLatestNoticesByGymNo(gymNo);
+    }
+
+    @Override
     public GymNotice getNoticeByNo(int noticeNo) {
         return noticeMapper.selectNoticeByNo(noticeNo);
     }

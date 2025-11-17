@@ -1854,6 +1854,9 @@
     });
     // 헬스장 상세 모달 열기
     function openGymDetailModal(gymNo) {
+        // gymNo를 모달의 data-gym-no 속성에 저장
+        document.getElementById('gymDetailModal').dataset.gymNo = gymNo;
+
         // AJAX로 헬스장 상세 정보 조회
         fetch('${pageContext.request.contextPath}/gym/detail.ajax?gymNo=' + gymNo)
             .then(response => response.json())

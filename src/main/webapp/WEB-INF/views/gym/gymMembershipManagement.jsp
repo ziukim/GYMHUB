@@ -8,10 +8,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
 
     <style>
-        .main-content {
-            flex: 1;
-            margin-right: 0;
-        }
 
         /* 전체 컨테이너 박스 */
         .products-container {

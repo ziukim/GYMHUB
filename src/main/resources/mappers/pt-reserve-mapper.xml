@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.gymhub.model.mapper.PtReserveMapper">
+
+    <resultMap id="ptReserveResultMap" type="com.kh.gymhub.model.vo.PtReserve">
+        <id property="ptReserveNo" column="PT_RESERVE_NO"/>
+        <result property="ptPassNo" column="PT_PASS_NO"/>
+        <result property="ptReserveTime" column="PT_RESERVE_TIME"/>
+        <result property="ptTrainer" column="PT_TRAINER"/>
+        <result property="ptTrainerNo" column="PT_TRAINER_NO"/>
+        <result property="ptReserveStatus" column="PT_RESERVE_STATUS"/>
+        <result property="memberName" column="MEMBER_NAME"/>
+        <result property="memberPhone" column="MEMBER_PHONE"/>
+        <result property="trainerName" column="TRAINER_NAME"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="gymNo" column="GYM_NO"/>
+    </resultMap>
+
+    <!-- 대기중인 PT 예약 조회 (헬스장별) -->
+    <select id="selectPendingPtReservesByGymNo" resultMap="ptReserveResultMap">
+        SELECT 
+            PR.PT_RESERVE_NO,
+            PR.PT_PASS_NO,
+            PR.PT_RESERVE_TIME,
+            PR.PT_TRAINER,
+            PR.PT_TRAINER_NO,
+            NVL(PR.PT_RESERVE_STATUS, '대기중') AS PT_RESERVE_STATUS,
+            M.MEMBER_NAME,
+            M.MEMBER_PHONE,
+            T.MEMBER_NAME AS TRAINER_NAME,
+            PP.MEMBER_NO,
+            PP.GYM_NO
+        FROM PT_RESERVE PR
+        INNER JOIN PT_PASS PP ON PR.PT_PASS_NO = PP.PT_PASS_NO
+        INNER JOIN MEMBER M ON PP.MEMBER_NO = M.MEMBER_NO
+        LEFT JOIN MEMBER T ON PR.PT_TRAINER_NO = T.MEMBER_NO
+        WHERE PP.GYM_NO = #{gymNo}
+          AND (PR.PT_RESERVE_STATUS IS NULL OR PR.PT_RESERVE_STATUS = '대기중')
+        ORDER BY PR.PT_RESERVE_TIME ASC
+    </select>
+
+    <!-- 승인됨/거절됨 PT 예약 조회 (헬스장별, 미래 날짜만) -->
+    <select id="selectApprovedOrRejectedPtReservesByGymNo" resultMap="ptReserveResultMap">
+        SELECT 
+            PR.PT_RESERVE_NO,
+            PR.PT_PASS_NO,
+            PR.PT_RESERVE_TIME,
+            PR.PT_TRAINER,
+            PR.PT_TRAINER_NO,
+            NVL(PR.PT_RESERVE_STATUS, '대기중') AS PT_RESERVE_STATUS,
+            M.MEMBER_NAME,
+            M.MEMBER_PHONE,
+            T.MEMBER_NAME AS TRAINER_NAME,
+            PP.MEMBER_NO,
+            PP.GYM_NO
+        FROM PT_RESERVE PR
+        INNER JOIN PT_PASS PP ON PR.PT_PASS_NO = PP.PT_PASS_NO
+        INNER JOIN MEMBER M ON PP.MEMBER_NO = M.MEMBER_NO
+        LEFT JOIN MEMBER T ON PR.PT_TRAINER_NO = T.MEMBER_NO
+        WHERE PP.GYM_NO = #{gymNo}
+          AND PR.PT_RESERVE_STATUS IN ('승인됨', '거절됨')
+          AND PR.PT_RESERVE_TIME >= SYSDATE
+        ORDER BY PR.PT_RESERVE_TIME ASC
+    </select>
+
+    <!-- PT 예약 승인 (트레이너 배정) -->
+    <update id="updatePtReserveApprove">
+        UPDATE PT_RESERVE
+        SET PT_TRAINER_NO = #{ptTrainerNo},
+            PT_RESERVE_STATUS = '승인됨'
+        WHERE PT_RESERVE_NO = #{ptReserveNo}
+    </update>
+
+    <!-- PT 예약 거절 -->
+    <update id="updatePtReserveReject">
+        UPDATE PT_RESERVE
+        SET PT_RESERVE_STATUS = '거절됨'
+        WHERE PT_RESERVE_NO = #{ptReserveNo}
+    </update>
+
+    <!-- PT 예약 번호로 조회 -->
+    <select id="selectPtReserveByNo" resultMap="ptReserveResultMap">
+        SELECT 
+            PR.PT_RESERVE_NO,
+            PR.PT_PASS_NO,
+            PR.PT_RESERVE_TIME,
+            PR.PT_TRAINER,
+            PR.PT_TRAINER_NO,
+            NVL(PR.PT_RESERVE_STATUS, '대기중') AS PT_RESERVE_STATUS,
+            M.MEMBER_NAME,
+            M.MEMBER_PHONE,
+            T.MEMBER_NAME AS TRAINER_NAME,
+            PP.MEMBER_NO,
+            PP.GYM_NO
+        FROM PT_RESERVE PR
+        INNER JOIN PT_PASS PP ON PR.PT_PASS_NO = PP.PT_PASS_NO
+        INNER JOIN MEMBER M ON PP.MEMBER_NO = M.MEMBER_NO
+        LEFT JOIN MEMBER T ON PR.PT_TRAINER_NO = T.MEMBER_NO
+        WHERE PR.PT_RESERVE_NO = #{ptReserveNo}
+    </select>
+
+</mapper>
+

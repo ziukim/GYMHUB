@@ -1,81 +1,189 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.gymhub.model.mapper.AttendanceMapper">
+
+    <resultMap id="memberResultMap" type="com.kh.gymhub.model.vo.Member">
+        <id property="memberNo" column="MEMBER_NO"/>
+        <result property="memberType" column="MEMBER_TYPE"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="memberPwd" column="MEMBER_PWD"/>
+        <result property="memberName" column="MEMBER_NAME"/>
+        <result property="memberAddress" column="MEMBER_ADDRESS"/>
+        <result property="memberPhone" column="MEMBER_PHONE"/>
+        <result property="memberBirth" column="MEMBER_BIRTH"/>
+        <result property="status" column="STATUS"/>
+        <result property="memberCreateat" column="MEMBER_CREATEAT"/>
+        <result property="memberUpdateat" column="MEMBER_UPDATEAT"/>
+        <result property="memberEmail" column="MEMBER_EMAIL"/>
+        <result property="memberPhotoPath" column="MEMBER_PHOTO_PATH"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="trainerLicense" column="TRAINER_LICENSE"/>
+        <result property="trainerCareer" column="TRAINER_CAREER"/>
+        <result property="trainerAward" column="TRAINER_AWARD"/>
+    </resultMap>
+
+    <resultMap id="attendanceResultMap" type="com.kh.gymhub.model.vo.Attendance">
+        <id property="attendanceNo" column="ATTENDANCE_NO"/>
+        <result property="gymNo" column="GYM_NO"/>
+        <result property="memberNo" column="MEMBER_NO"/>
+        <result property="checkInInfo" column="CHECK_IN_INFO"/>
+        <result property="attendanceDate" column="ATTENDANCE_DATE"/>
+    </resultMap>
+
+    <!-- 오늘 출석 수 조회 (입실만 있고 퇴실이 없는 회원 수) -->
+    <select id="selectTodayAttendanceCountByGymNo" parameterType="_int" resultType="_int">
+        SELECT COUNT(DISTINCT a1.MEMBER_NO)
+        FROM ATTENDANCE a1
+        WHERE a1.GYM_NO = #{gymNo}
+          AND TRUNC(a1.ATTENDANCE_DATE) = TRUNC(SYSDATE)
+          AND a1.CHECK_IN_INFO = '입실'
+          AND NOT EXISTS (
+              SELECT 1 FROM ATTENDANCE a2
+              WHERE a2.GYM_NO = a1.GYM_NO
+                AND a2.MEMBER_NO = a1.MEMBER_NO
+                AND TRUNC(a2.ATTENDANCE_DATE) = TRUNC(SYSDATE)
+                AND a2.CHECK_IN_INFO = '퇴실'
+                AND a2.ATTENDANCE_DATE > a1.ATTENDANCE_DATE
+          )
+    </select>
+
+    <!-- 전화번호와 헬스장 번호로 회원 조회 (만료되지 않은 회원권 보유자만) -->
+    <select id="selectMemberByPhoneAndGymNo" resultMap="memberResultMap">
+        SELECT DISTINCT M.*
+        FROM MEMBER M
+        INNER JOIN MEMBERSHIP MS ON M.MEMBER_NO = MS.MEMBER_NO
+        WHERE M.MEMBER_PHONE = #{phone}
+          AND MS.GYM_NO = #{gymNo}
+          AND MS.MEMBERSHIP_STATUS != '만료'
+          AND MS.END_DATE >= SYSDATE
+          AND M.STATUS = 'Y'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 전화번호와 헬스장 번호로 트레이너 조회 (MEMBER_TYPE=2, GYM_NO 매칭) -->
+    <select id="selectTrainerByPhoneAndGymNo" resultMap="memberResultMap">
+        SELECT M.*
+        FROM MEMBER M
+        WHERE M.MEMBER_PHONE = #{phone}
+          AND M.GYM_NO = #{gymNo}
+          AND M.MEMBER_TYPE = 2
+          AND M.STATUS = 'Y'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 오늘 날짜의 입실 기록 조회 -->
+    <select id="selectTodayCheckIn" resultMap="attendanceResultMap">
+        SELECT *
+        FROM ATTENDANCE
+        WHERE GYM_NO = #{gymNo}
+          AND MEMBER_NO = #{memberNo}
+          AND TRUNC(ATTENDANCE_DATE) = TRUNC(SYSDATE)
+          AND CHECK_IN_INFO = '입실'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 오늘 날짜의 퇴실 기록 조회 -->
+    <select id="selectTodayCheckOut" resultMap="attendanceResultMap">
+        SELECT *
+        FROM ATTENDANCE
+        WHERE GYM_NO = #{gymNo}
+          AND MEMBER_NO = #{memberNo}
+          AND TRUNC(ATTENDANCE_DATE) = TRUNC(SYSDATE)
+          AND CHECK_IN_INFO = '퇴실'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 출석 기록 삽입 -->
+    <insert id="insertAttendance" parameterType="com.kh.gymhub.model.vo.Attendance">
+        <selectKey keyProperty="attendanceNo" resultType="_int" order="BEFORE">
+            SELECT SEQ_ATTENDANCE_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO ATTENDANCE (
+            ATTENDANCE_NO,
+            GYM_NO,
+            MEMBER_NO,
+            CHECK_IN_INFO,
+            ATTENDANCE_DATE
+        ) VALUES (
+            #{attendanceNo},
+            #{gymNo},
+            #{memberNo},
+            #{checkInInfo},
+            #{attendanceDate}
+        )
+    </insert>
 
     <!-- 출석 통계 데이터 조회 -->
     <select id="getAttendanceStats" resultType="map">
         WITH ATTENDANCE_PAIRS AS (
-        SELECT
-        TRUNC(ATTENDANCE_DATE) AS ATT_DATE,
-        MIN(CASE WHEN CHECK_IN_INFO = '입실' THEN ATTENDANCE_DATE END) AS CHECK_IN,
-        MAX(CASE WHEN CHECK_IN_INFO = '퇴실' THEN ATTENDANCE_DATE END) AS CHECK_OUT
-        FROM ATTENDANCE
-        WHERE MEMBER_NO = #{memberNo}
-        AND GYM_NO = #{gymNo}
-        GROUP BY TRUNC(ATTENDANCE_DATE)
+            SELECT
+                TRUNC(ATTENDANCE_DATE) AS ATT_DATE,
+                MIN(CASE WHEN CHECK_IN_INFO = '입실' THEN ATTENDANCE_DATE END) AS CHECK_IN,
+                MAX(CASE WHEN CHECK_IN_INFO = '퇴실' THEN ATTENDANCE_DATE END) AS CHECK_OUT
+            FROM ATTENDANCE
+            WHERE MEMBER_NO = #{memberNo}
+              AND GYM_NO = #{gymNo}
+            GROUP BY TRUNC(ATTENDANCE_DATE)
         ),
-        STATS AS (
+             STATS AS (
+                 SELECT
+                     COUNT(DISTINCT ATT_DATE) AS TOTAL_DAYS,
+                     COUNT(DISTINCT CASE
+                                        WHEN EXTRACT(YEAR FROM ATT_DATE) = EXTRACT(YEAR FROM SYSDATE)
+                                            AND EXTRACT(MONTH FROM ATT_DATE) = EXTRACT(MONTH FROM SYSDATE)
+                                            THEN ATT_DATE
+                         END) AS THIS_MONTH_DAYS,
+                     ROUND(
+                             COUNT(DISTINCT ATT_DATE) /
+                             NULLIF(TRUNC((SYSDATE - MIN(ATT_DATE)) / 7), 0),
+                             1
+                     ) AS WEEKLY_AVG,
+                     ROUND(
+                             SUM(
+                                     CASE
+                                         WHEN CHECK_OUT IS NOT NULL AND CHECK_IN IS NOT NULL
+                                             THEN (CHECK_OUT - CHECK_IN) * 24
+                                         ELSE 0
+                                         END
+                             ),
+                             0
+                     ) AS TOTAL_HOURS
+                 FROM ATTENDANCE_PAIRS
+             )
         SELECT
-        COUNT(DISTINCT ATT_DATE) AS TOTAL_DAYS,
-        COUNT(DISTINCT CASE
-        WHEN EXTRACT(YEAR FROM ATT_DATE) = EXTRACT(YEAR FROM SYSDATE)
-        AND EXTRACT(MONTH FROM ATT_DATE) = EXTRACT(MONTH FROM SYSDATE)
-        THEN ATT_DATE
-        END) AS THIS_MONTH_DAYS,
-        ROUND(
-        COUNT(DISTINCT ATT_DATE) /
-        NULLIF(TRUNC((SYSDATE - MIN(ATT_DATE)) / 7), 0),
-        1
-        ) AS WEEKLY_AVG,
-        ROUND(
-        SUM(
-        CASE
-        WHEN CHECK_OUT IS NOT NULL AND CHECK_IN IS NOT NULL
-        THEN (CHECK_OUT - CHECK_IN) * 24
-        ELSE 0
-        END
-        ),
-        0
-        ) AS TOTAL_HOURS
-        FROM ATTENDANCE_PAIRS
-        )
-        SELECT
-        NVL(TOTAL_DAYS, 0) AS TOTAL_DAYS,
-        NVL(THIS_MONTH_DAYS, 0) AS THIS_MONTH_DAYS,
-        NVL(WEEKLY_AVG, 0) AS WEEKLY_AVG,
-        NVL(TOTAL_HOURS, 0) AS TOTAL_HOURS
+            NVL(TOTAL_DAYS, 0) AS TOTAL_DAYS,
+            NVL(THIS_MONTH_DAYS, 0) AS THIS_MONTH_DAYS,
+            NVL(WEEKLY_AVG, 0) AS WEEKLY_AVG,
+            NVL(TOTAL_HOURS, 0) AS TOTAL_HOURS
         FROM STATS
     </select>
 
     <!-- 출석 목록 조회 (최근 20개) -->
     <select id="getAttendanceList" resultType="map">
         WITH ATTENDANCE_PAIRS AS (
-        SELECT
-        TRUNC(ATTENDANCE_DATE) AS ATT_DATE,
-        MIN(CASE WHEN CHECK_IN_INFO = '입실' THEN ATTENDANCE_DATE END) AS CHECK_IN,
-        MAX(CASE WHEN CHECK_IN_INFO = '퇴실' THEN ATTENDANCE_DATE END) AS CHECK_OUT
-        FROM ATTENDANCE
-        WHERE MEMBER_NO = #{memberNo}
-        AND GYM_NO = #{gymNo}
-        GROUP BY TRUNC(ATTENDANCE_DATE)
+            SELECT
+                TRUNC(ATTENDANCE_DATE) AS ATT_DATE,
+                MIN(CASE WHEN CHECK_IN_INFO = '입실' THEN ATTENDANCE_DATE END) AS CHECK_IN,
+                MAX(CASE WHEN CHECK_IN_INFO = '퇴실' THEN ATTENDANCE_DATE END) AS CHECK_OUT
+            FROM ATTENDANCE
+            WHERE MEMBER_NO = #{memberNo}
+              AND GYM_NO = #{gymNo}
+            GROUP BY TRUNC(ATTENDANCE_DATE)
         )
         SELECT
-        TO_CHAR(ATT_DATE, 'YYYY. MM. DD.') AS ATTENDANCE_DATE,
-        TO_CHAR(CHECK_IN, 'HH24:MI') AS CHECK_IN_TIME,
-        TO_CHAR(CHECK_OUT, 'HH24:MI') AS CHECK_OUT_TIME,
-        CASE
-        WHEN CHECK_OUT IS NOT NULL AND CHECK_IN IS NOT NULL THEN
-        TRUNC((CHECK_OUT - CHECK_IN) * 24) || '시간 ' ||
-        TRUNC(MOD((CHECK_OUT - CHECK_IN) * 24 * 60, 60)) || '분'
-        ELSE '-'
-        END AS EXERCISE_DURATION
+            TO_CHAR(ATT_DATE, 'YYYY. MM. DD.') AS ATTENDANCE_DATE,
+            TO_CHAR(CHECK_IN, 'HH24:MI') AS CHECK_IN_TIME,
+            TO_CHAR(CHECK_OUT, 'HH24:MI') AS CHECK_OUT_TIME,
+            CASE
+                WHEN CHECK_OUT IS NOT NULL AND CHECK_IN IS NOT NULL THEN
+                    TRUNC((CHECK_OUT - CHECK_IN) * 24) || '시간 ' ||
+                    TRUNC(MOD((CHECK_OUT - CHECK_IN) * 24 * 60, 60)) || '분'
+                ELSE '-'
+                END AS EXERCISE_DURATION
         FROM ATTENDANCE_PAIRS
         WHERE CHECK_IN IS NOT NULL
         ORDER BY ATT_DATE DESC
-        FETCH FIRST 20 ROWS ONLY
+            FETCH FIRST 20 ROWS ONLY
     </select>
 
 </mapper>

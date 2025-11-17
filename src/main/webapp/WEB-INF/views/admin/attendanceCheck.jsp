@@ -416,27 +416,6 @@
 </div>
 
 <script>
-    // 임시 회원 데이터
-    var members = [
-        {
-            phone: '01012345678',
-            name: '홍길동',
-            memberships: ['1개월 이용권', '30일 락커 이용권', 'PT 10회 이용권']
-        },
-        {
-            phone: '01098765432',
-            name: '김철수',
-            memberships: ['3개월 이용권', 'PT 20회 이용권']
-        },
-        {
-            phone: '01055556666',
-            name: '이영희',
-            memberships: ['6개월 이용권', '락커 이용권']
-        }
-    ];
-
-    var attendanceRecords = {}; // 전화번호: {status: 'checkin/checkout', time: '시간'}
-    var todayCount = 0;
     var autoCloseTimer = null;
 
     window.onload = function() {
@@ -476,7 +455,7 @@
     });
 
     function processAttendance() {
-        var phone = document.getElementById('phoneInput').value.trim().replace(/-/g, '');
+        var phone = document.getElementById('phoneInput').value.trim();
         var errorDiv = document.getElementById('errorMessage');
         var submitBtn = document.getElementById('submitBtn');
 
@@ -488,45 +467,60 @@
         submitBtn.disabled = true;
         errorDiv.classList.remove('show');
 
-        setTimeout(function() {
+        // 서버에 AJAX 요청
+        var requestData = {
+            phone: phone
+        };
+
+        fetch('${pageContext.request.contextPath}/attendance/check.ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
             submitBtn.disabled = false;
 
-            // 회원 찾기
-            var member = members.find(m => m.phone === phone);
-
-            if (!member) {
-                showError('등록되지 않은 전화번호입니다.');
-                document.getElementById('phoneInput').value = '';
-                document.getElementById('phoneInput').focus();
-                return;
-            }
-
-            var now = new Date();
-            var timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-
-            // 출석/퇴실 처리
-            if (!attendanceRecords[phone]) {
-                // 출석 처리
-                attendanceRecords[phone] = {
-                    status: 'checkin',
-                    checkinTime: timeStr,
-                    name: member.name,
-                    memberships: member.memberships
+            if (data.success) {
+                var now = new Date();
+                var timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                
+                // 회원 정보 객체 생성
+                var member = {
+                    name: data.memberName,
+                    phone: data.memberPhone,
+                    membershipInfo: data.membershipInfo || ''
                 };
-                todayCount++;
-                document.getElementById('todayCount').textContent = todayCount;
-                showResult(member, 'checkin', timeStr);
-            } else if (attendanceRecords[phone].status === 'checkin') {
-                // 퇴실 처리
-                attendanceRecords[phone].status = 'checkout';
-                attendanceRecords[phone].checkoutTime = timeStr;
-                showResult(member, 'checkout', timeStr);
+                
+                if (data.type === '입실') {
+                    // 오늘 출석 수 업데이트 (페이지 새로고침 없이)
+                    // 실제로는 서버에서 오늘 출석 수를 다시 조회해야 하지만,
+                    // 간단하게 1 증가시킴
+                    var todayCountElement = document.getElementById('todayCount');
+                    var currentCount = parseInt(todayCountElement.textContent) || 0;
+                    todayCountElement.textContent = currentCount + 1;
+                    
+                    showResult(member, 'checkin', timeStr);
+                } else if (data.type === '퇴실') {
+                    showResult(member, 'checkout', timeStr);
+                }
             } else {
-                showError('이미 퇴실 처리되었습니다.');
+                showError(data.message || '출석 체크 처리에 실패했습니다.');
                 document.getElementById('phoneInput').value = '';
                 document.getElementById('phoneInput').focus();
             }
-        }, 300);
+        })
+        .catch(function(error) {
+            submitBtn.disabled = false;
+            console.error('출석 체크 오류:', error);
+            showError('출석 체크 처리 중 오류가 발생했습니다.');
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('phoneInput').focus();
+        });
     }
 
     function showResult(member, type, time) {
@@ -541,23 +535,34 @@
             timeLabel.textContent = '출석시간';
             resultIcon.classList.remove('checkout');
             resultIcon.classList.add('checkin');
+            document.getElementById('resultName').textContent = member.name + '님 환영합니다!';
+
         } else {
             resultTitle.textContent = '퇴장이 완료되었습니다!';
             timeLabel.textContent = '퇴실시간';
             resultIcon.classList.remove('checkin');
             resultIcon.classList.add('checkout');
+
+            document.getElementById('resultName').textContent = member.name + '님 수고하셨습니다!';
         }
 
-        document.getElementById('resultName').textContent = member.name + '님 환영합니다!';
+
         document.getElementById('infoName').textContent = member.name;
         document.getElementById('infoTime').textContent = time;
 
         // 회원권 표시
-        var membershipHtml = '';
-        member.memberships.forEach(function(membership) {
-            membershipHtml += '<div class="badge">' + membership + '</div>';
-        });
-        document.getElementById('membershipInfo').innerHTML = membershipHtml;
+        var membershipInfoElement = document.getElementById('membershipInfo');
+        if (member.membershipInfo && member.membershipInfo.trim() !== '') {
+            // 회원권 정보를 뱃지로 표시
+            var membershipParts = member.membershipInfo.split(' + ');
+            var membershipHtml = '';
+            membershipParts.forEach(function(part) {
+                membershipHtml += '<div class="badge">' + part.trim() + '</div>';
+            });
+            membershipInfoElement.innerHTML = membershipHtml;
+        } else {
+            membershipInfoElement.innerHTML = '';
+        }
 
         // 모달 표시
         document.getElementById('resultModal').classList.add('show');

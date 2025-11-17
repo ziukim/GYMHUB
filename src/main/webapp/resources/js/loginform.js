@@ -380,12 +380,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // 로그인 상태 확인
             const isLoggedIn = window.isLoggedIn || false;
             
+            // 모달에서 gymNo 가져오기
+            const gymDetailModal = document.getElementById('gymDetailModal');
+            const gymNo = gymDetailModal ? gymDetailModal.dataset.gymNo : null;
+
             if (!isLoggedIn) {
                 // 비로그인 상태: 로그인 필요 모달 표시
                 const loginRequiredModal = document.getElementById('loginRequiredModal');
                 if (loginRequiredModal) {
                     // 헬스장 상세 모달 닫기 (index.jsp에서 style.display로 제어하므로 동일하게 처리)
-                    const gymDetailModal = document.getElementById('gymDetailModal');
                     if (gymDetailModal) {
                         gymDetailModal.style.display = 'none';
                     }
@@ -395,9 +398,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 100);
                 }
             } else {
-                // 로그인 상태: 컨트롤러를 통해 booking 페이지로 이동
-                const contextPath = window.contextPath || '';
-                window.location.href = contextPath + '/booking.me';
+                // 로그인 상태: booking 페이지로 이동
+                if (gymNo) {
+                    const contextPath = window.contextPath || '';
+                    window.location.href = contextPath + '/booking.me?gymNo=' + gymNo;
+                } else {
+                    alert('헬스장 정보가 없습니다. 다시 시도해주세요.');
+                    console.error('gymNo를 찾을 수 없습니다.');
+                }
             }
         });
     }

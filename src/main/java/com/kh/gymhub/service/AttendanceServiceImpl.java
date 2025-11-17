@@ -1,6 +1,8 @@
 package com.kh.gymhub.service;
 
 import com.kh.gymhub.model.mapper.AttendanceMapper;
+import com.kh.gymhub.model.vo.Attendance;
+import com.kh.gymhub.model.vo.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,4 +28,35 @@ public class AttendanceServiceImpl implements AttendanceService {
     public List<Map<String, Object>> getAttendanceList(int memberNo, int gymNo) {
         return attendanceMapper.getAttendanceList(memberNo, gymNo);
     }
+
+    @Override
+    public Member getMemberByPhoneAndGymNo(String phone, int gymNo) {
+        return attendanceMapper.selectMemberByPhoneAndGymNo(phone, gymNo);
+    }
+
+    @Override
+    public Member getTrainerByPhoneAndGymNo(String phone, int gymNo) {
+        return attendanceMapper.selectTrainerByPhoneAndGymNo(phone, gymNo);
+    }
+
+    @Override
+    public Attendance getTodayCheckIn(int gymNo, int memberNo) {
+        return attendanceMapper.selectTodayCheckIn(gymNo, memberNo);
+    }
+
+    @Override
+    public Attendance getTodayCheckOut(int gymNo, int memberNo) {
+        return attendanceMapper.selectTodayCheckOut(gymNo, memberNo);
+    }
+
+    @Override
+    public int insertAttendance(Attendance attendance) {
+        return attendanceMapper.insertAttendance(attendance);
+    }
+
+    @Override
+    public Integer getTodayAttendanceCountByGymNo(int gymNo) {
+        return attendanceMapper.selectTodayAttendanceCountByGymNo(gymNo);
+    }
+
 }

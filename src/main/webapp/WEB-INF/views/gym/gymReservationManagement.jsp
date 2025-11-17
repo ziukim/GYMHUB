@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,8 +10,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
         /* gymReservationManagement 전용 스타일 */
-        /* main-content는 common.css에 있음 */
-        
+
         /* Section Container */
         .section {
             background-color: #2d1810;
@@ -161,113 +162,41 @@
             </div>
 
             <div class="consultation-list">
-                <!-- Consultation Item 1 - 상담 예정 -->
-                <div class="consultation-item" onclick="viewConsultation(1)">
-                    <div class="consultation-info">
-                        <div class="consultation-name">홍길지</div>
-                        <div class="consultation-details">
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>10월 29일 15:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>010-1234-5678</span>
-                            </div>
+                <c:choose>
+                    <c:when test="${empty reservationList}">
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <div class="empty-icon">📅</div>
+                            <div class="empty-text">등록된 예약 상담이 없습니다</div>
                         </div>
-                    </div>
-                    <button class="status-button pending" onclick="toggleStatus(event, this)">상담 예정</button>
-                </div>
-
-                <!-- Consultation Item 2 - 상담 예정 -->
-                <div class="consultation-item" onclick="viewConsultation(2)">
-                    <div class="consultation-info">
-                        <div class="consultation-name">김민현</div>
-                        <div class="consultation-details">
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>10월 30일 10:00</span>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="reservation" items="${reservationList}">
+                            <!-- Consultation Item -->
+                            <div class="consultation-item" onclick="viewConsultation('${reservation.memberName}', '<fmt:formatDate value="${reservation.visitDatetime}" pattern="yyyy년 MM월 dd일 HH:mm" />', '${reservation.memberPhone}', '${reservation.inquiryMemo != null ? reservation.inquiryMemo : ""}')">
+                                <div class="consultation-info">
+                                    <div class="consultation-name">${reservation.memberName}</div>
+                                    <div class="consultation-details">
+                                        <div class="detail-item">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
+                                            <span><fmt:formatDate value="${reservation.visitDatetime}" pattern="MM월 dd일 HH:mm" /></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
+                                            <span>${reservation.memberPhone}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="status-button ${reservation.inquiryStatus == '완료' ? 'completed' : 'pending'}"
+                                        onclick="toggleStatus(event, this, ${reservation.inquiryNo})"
+                                        data-inquiry-no="${reservation.inquiryNo}"
+                                        data-status="${reservation.inquiryStatus}">
+                                        ${reservation.inquiryStatus == '완료' ? '상담 완료' : '상담 예정'}
+                                </button>
                             </div>
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>010-2345-6789</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="status-button pending" onclick="toggleStatus(event, this)">상담 예정</button>
-                </div>
-
-                <!-- Consultation Item 3 - 상담 완료 -->
-                <div class="consultation-item" onclick="viewConsultation(3)">
-                    <div class="consultation-info">
-                        <div class="consultation-name">박서준</div>
-                        <div class="consultation-details">
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>10월 28일 14:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>010-3456-7890</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="status-button completed" onclick="toggleStatus(event, this)">상담 완료</button>
-                </div>
-
-                <!-- Consultation Item 4 - 상담 완료 -->
-                <div class="consultation-item" onclick="viewConsultation(4)">
-                    <div class="consultation-info">
-                        <div class="consultation-name">이수진</div>
-                        <div class="consultation-details">
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>10월 27일 16:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>010-4567-8901</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="status-button completed" onclick="toggleStatus(event, this)">상담 완료</button>
-                </div>
-
-                <!-- Consultation Item 5 - 상담 완료 -->
-                <div class="consultation-item" onclick="viewConsultation(5)">
-                    <div class="consultation-info">
-                        <div class="consultation-name">최영희</div>
-                        <div class="consultation-details">
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>10월 26일 11:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>010-5678-9012</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="status-button completed" onclick="toggleStatus(event, this)">상담 완료</button>
-                </div>
-
-                <!-- Consultation Item 6 - 상담 완료 -->
-                <div class="consultation-item" onclick="viewConsultation(6)">
-                    <div class="consultation-info">
-                        <div class="consultation-name">정민수</div>
-                        <div class="consultation-details">
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="날짜" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>10월 25일 13:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <img src="${pageContext.request.contextPath}/resources/images/icon/call.png" alt="전화" class="detail-icon" style="width: 16px; height: 16px;">
-                                <span>010-6789-0123</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="status-button completed" onclick="toggleStatus(event, this)">상담 완료</button>
-                </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>
@@ -275,43 +204,70 @@
 
 <script>
     // 상담 상세 보기
-    function viewConsultation(id) {
-        const item = event.currentTarget;
-        const name = item.querySelector('.consultation-name').textContent;
-        const time = item.querySelector('.consultation-details .detail-item:first-child span:last-child').textContent;
-        const phone = item.querySelector('.consultation-details .detail-item:last-child span:last-child').textContent;
-        
-        alert(`상담 정보\n\n이름: ${name}\n시간: ${time}\n연락처: ${phone}`);
+    function viewConsultation(name, time, phone, memo) {
+        let message = '상담 정보\n\n이름: ' + name + '\n시간: ' + time + '\n연락처: ' + phone;
+        if (memo && memo.trim() !== '') {
+            message += '\n메모: ' + memo;
+        }
+        alert(message);
     }
 
     // 상태 토글
-    function toggleStatus(event, button) {
-        event.stopPropagation(); // 부모 클릭 이벤트 방지
-        
-        if (button.classList.contains('pending')) {
-            if (confirm('상담을 완료 처리하시겠습니까?')) {
-                button.classList.remove('pending');
-                button.classList.add('completed');
-                button.textContent = '상담 완료';
-                
-                // 애니메이션 효과
-                button.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    button.style.transform = 'scale(1)';
-                }, 200);
-            }
+    function toggleStatus(event, button, inquiryNo) {
+        event.stopPropagation();
+
+        const currentStatus = button.dataset.status;
+        let newStatus = '';
+        let confirmMessage = '';
+
+        if (currentStatus === '완료') {
+            newStatus = '대기';
+            confirmMessage = '상담을 예정으로 되돌리시겠습니까?';
         } else {
-            if (confirm('상담을 예정으로 되돌리시겠습니까?')) {
-                button.classList.remove('completed');
-                button.classList.add('pending');
-                button.textContent = '상담 예정';
-                
-                // 애니메이션 효과
-                button.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    button.style.transform = 'scale(1)';
-                }, 200);
-            }
+            newStatus = '완료';
+            confirmMessage = '상담을 완료 처리하시겠습니까?';
+        }
+
+        if (confirm(confirmMessage)) {
+            // AJAX 요청
+            fetch('${pageContext.request.contextPath}/reservation/updateStatus.gym', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'inquiryNo=' + inquiryNo + '&status=' + encodeURIComponent(newStatus)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // UI 업데이트
+                        button.dataset.status = newStatus;
+
+                        if (newStatus === '완료') {
+                            button.classList.remove('pending');
+                            button.classList.add('completed');
+                            button.textContent = '상담 완료';
+                        } else {
+                            button.classList.remove('completed');
+                            button.classList.add('pending');
+                            button.textContent = '상담 예정';
+                        }
+
+                        // 애니메이션 효과
+                        button.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            button.style.transform = 'scale(1)';
+                        }, 200);
+
+                        alert(data.message);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('상태 변경 중 오류가 발생했습니다.');
+                });
         }
     }
 
@@ -330,20 +286,21 @@
     });
 
     // 전화 걸기 기능 (모바일에서만 작동)
-    document.querySelectorAll('.detail-item').forEach(item => {
-        const icon = item.querySelector('.detail-icon');
-        if (icon && icon.alt === '전화') {
-            item.style.cursor = 'pointer';
-            item.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const phone = this.querySelector('span:last-child').textContent;
-                if (confirm(`${phone}로 전화하시겠습니까?`)) {
-                    window.location.href = `tel:${phone}`;
-                }
-            });
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.detail-item').forEach(item => {
+            const icon = item.querySelector('.detail-icon');
+            if (icon && icon.alt === '전화') {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const phone = this.querySelector('span:last-child').textContent;
+                    if (confirm(phone + '로 전화하시겠습니까?')) {
+                        window.location.href = 'tel:' + phone.replace(/-/g, '');
+                    }
+                });
+            }
+        });
     });
 </script>
 </body>
 </html>
-
