@@ -18,5 +18,4 @@ public class Gym {
    private Date gymCreateat;
    private Date gymUpdateat;
    private String gymPhotoPath;
-   private int attCacheNo;
 }
