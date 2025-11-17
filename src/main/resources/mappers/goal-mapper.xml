@@ -83,5 +83,11 @@
         WHERE GOAL_NO = #{goalNo}
     </delete>
 
+    <update id="updateGoalStatus">
+        UPDATE GOAL
+        SET GOAL_STATUS = #{goalStatus}
+        WHERE GOAL_NO = #{goalNo}
+    </update>
+
 </mapper>
 

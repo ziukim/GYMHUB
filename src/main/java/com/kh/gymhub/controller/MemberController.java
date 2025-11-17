@@ -208,6 +208,40 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/goals/toggle.me")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleGoalStatus(
+            @RequestParam int goalManageNo,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            boolean result = goalService.toggleGoalStatus(goalManageNo, loginMember.getMemberNo());
+            if (result) {
+                response.put("success", true);
+                response.put("message", "목표 상태가 변경되었습니다.");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "목표 상태 변경에 실패했습니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "목표 상태 변경 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @GetMapping("/videoList.me")
     public String memberVideoList() { return "member/memberVideoList"; }
 
