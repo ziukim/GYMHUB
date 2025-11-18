@@ -191,6 +191,14 @@
         WHERE LOCKER_PASS_NO = #{lockerPassNo}
     </update>
 
+    <!-- 회원 탈퇴 시 락커 이용권 만료 처리 -->
+    <update id="expireLockerPassesByMemberNo">
+        UPDATE LOCKER_PASS
+        SET LOCKER_PASS_STATUS = '만료'
+        WHERE MEMBER_NO = #{memberNo}
+          AND LOCKER_PASS_STATUS = '정상'
+    </update>
+
     <!-- 락커 실제 번호로 락커 조회 -->
     <select id="selectLockerByRealNumAndGymNo" resultType="com.kh.gymhub.model.vo.Locker">
         SELECT

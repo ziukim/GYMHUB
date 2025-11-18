@@ -259,6 +259,15 @@
           AND MEMBERSHIP_STATUS = '정상'
     </update>
 
+    <!-- 회원 탈퇴 시 모든 회원권 중단 처리 -->
+    <update id="suspendAllMembershipsByMemberNo">
+        UPDATE MEMBERSHIP
+        SET MEMBERSHIP_STATUS = '중단',
+            MEMBERSHIP_UPDATE = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+          AND MEMBERSHIP_STATUS = '정상'
+    </update>
+
     <!-- 만료된 회원권을 가진 회원들의 회원번호 목록 조회 (활성 회원권이 없는 회원만) -->
     <select id="selectMemberNosWithExpiredMemberships" resultType="_int">
         SELECT DISTINCT M.MEMBER_NO

@@ -174,4 +174,33 @@ public class TrainerController {
         }
     }
 
+    // 트레이너 회원 탈퇴
+    @PostMapping("/withdrawMember.tr")
+    public String withdrawMember(@RequestParam String password,
+                                 HttpSession session,
+                                 Model model) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // 회원 탈퇴 처리
+        int result = memberService.withdrawMember(loginMember.getMemberNo(), password);
+
+        if (result > 0) {
+            // 세션 무효화
+            session.invalidate();
+            return "redirect:/?withdraw=success";
+        } else if (result == -1) {
+            session.setAttribute("errorMsg", "비밀번호가 일치하지 않습니다.");
+            return "redirect:/dashboard.tr";
+        } else {
+            model.addAttribute("errorMsg", "회원 탈퇴에 실패했습니다.");
+            return "common/error";
+        }
+    }
+
 }

@@ -20,6 +20,9 @@ public interface PtReserveMapper {
     // PT 예약 거절
     int updatePtReserveReject(@Param("ptReserveNo") int ptReserveNo);
     
+    // 회원 탈퇴 시 예정된 PT 예약 취소 처리
+    int cancelPtReservesByMemberNo(@Param("memberNo") int memberNo);
+    
     // PT 예약 번호로 조회
     PtReserve selectPtReserveByNo(@Param("ptReserveNo") int ptReserveNo);
 }

@@ -45,6 +45,9 @@ public interface LockerMapper {
     // 락커 이용권 상태를 정상으로 변경 (만료된 락커 재활성화)
     int updateLockerPassStatusToActive(@Param("lockerPassNo") int lockerPassNo);
     
+    // 회원 탈퇴 시 락커 이용권 만료 처리
+    int expireLockerPassesByMemberNo(@Param("memberNo") int memberNo);
+    
     // 락커 실제 번호로 락커 조회
     Locker selectLockerByRealNumAndGymNo(@Param("lockerRealNum") String lockerRealNum, @Param("gymNo") int gymNo);
 }
