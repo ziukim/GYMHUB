@@ -2344,4 +2344,76 @@ public class GymController {
         return result;
     }
 
+    // AJAX: 회원 강제 삭제 (헬스장 운영자)
+    @PostMapping("/member/delete.gym")
+    @ResponseBody
+    public java.util.Map<String, Object> deleteMember(@RequestBody java.util.Map<String, Object> requestData, HttpSession session) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 요청 데이터 파싱
+            Object memberNoObj = requestData.get("memberNo");
+            String password = (String) requestData.get("password");
+            
+            int memberNo = 0;
+            if (memberNoObj instanceof Number) {
+                memberNo = ((Number) memberNoObj).intValue();
+            } else if (memberNoObj != null) {
+                memberNo = Integer.parseInt(memberNoObj.toString());
+            }
+            
+            if (memberNo <= 0) {
+                result.put("success", false);
+                result.put("message", "회원 번호가 올바르지 않습니다.");
+                return result;
+            }
+            
+            if (password == null || password.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "헬스장 비밀번호를 입력해주세요.");
+                return result;
+            }
+            
+            // 회원 강제 삭제 처리
+            int deleteResult = memberService.forceDeleteMemberByGym(memberNo, gymNo, password);
+            
+            if (deleteResult > 0) {
+                result.put("success", true);
+                result.put("message", "회원이 삭제되었습니다.");
+            } else if (deleteResult == -1) {
+                result.put("success", false);
+                result.put("message", "헬스장 비밀번호가 일치하지 않습니다.");
+            } else if (deleteResult == -2) {
+                result.put("success", false);
+                result.put("message", "헬스장 운영자 정보를 찾을 수 없습니다.");
+            } else {
+                result.put("success", false);
+                result.put("message", "회원 삭제에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "회원 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
 }

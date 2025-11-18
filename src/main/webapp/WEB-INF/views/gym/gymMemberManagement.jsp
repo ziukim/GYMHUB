@@ -1470,6 +1470,32 @@
     </div>
 </div>
 
+<!-- Modal: 회원 삭제 비밀번호 확인 -->
+<div class="modal-overlay" id="deleteMemberModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title-section">
+                <h2>회원 삭제</h2>
+                <p id="deleteMemberName">회원을 삭제하시겠습니까?</p>
+            </div>
+            <button class="modal-close-btn" onclick="closeDeleteMemberModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-form-group">
+                <label>헬스장 비밀번호 <span class="required">*</span></label>
+                <input type="password" class="modal-input" id="deletePasswordInput" placeholder="헬스장 비밀번호를 입력하세요">
+                <p class="modal-help-text" style="color: #b0b0b0; font-size: 12px; margin-top: 8px;">
+                    회원 삭제 시 관련된 회원권, 구매, 락커, PT 이용권이 모두 환불/만료 처리되며, 매출에도 환불 기록이 추가됩니다.
+                </p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-footer-btn modal-footer-btn-cancel" onclick="closeDeleteMemberModal()">취소</button>
+            <button class="modal-footer-btn modal-footer-btn-submit" onclick="confirmDeleteMember()">삭제</button>
+        </div>
+    </div>
+</div>
+
 <!-- 달력 팝업 (회원 수정용) -->
 <div class="calendar-overlay" id="editStartDateCalendarOverlay" onclick="closeCalendarOnOverlay(event, 'editStartDateCalendarOverlay')">
     <div class="calendar-popup" onclick="event.stopPropagation()">
@@ -2232,47 +2258,95 @@
 
 
     // 회원 삭제 함수
+    let currentDeleteMemberNo = null;
+    let currentDeleteMemberName = null;
+    let currentDeleteRow = null;
+
     function deleteMember(button) {
         const row = button.closest('tr');
         const memberNo = row.dataset.memberNo;
         const name = row.querySelector('td:first-child').textContent;
 
-        if (confirm(name + ' 회원을 삭제하시겠습니까?')) {
-            const requestData = {
-                memberNo: parseInt(memberNo)
-            };
-            
-            fetch('${pageContext.request.contextPath}/member/delete.gym', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                if (data.success) {
-                    row.remove();
-                    
-                    // 전체 회원 수 업데이트
-                    const totalRows = document.querySelectorAll('#memberTable tbody tr').length;
-                    const headerInfo = document.querySelector('.header-info p');
-                    if (headerInfo) {
-                        headerInfo.textContent = '전체 ' + totalRows + '명';
-                    }
-                    
-                    alert(name + ' 회원을 삭제했습니다.');
-                } else {
-                    alert(data.message || '회원 삭제에 실패했습니다.');
-                }
-            })
-            .catch(function(error) {
-                console.error('회원 삭제 오류:', error);
-                alert('회원 삭제 중 오류가 발생했습니다.');
-            });
+        // 삭제할 회원 정보 저장
+        currentDeleteMemberNo = parseInt(memberNo);
+        currentDeleteMemberName = name;
+        currentDeleteRow = row;
+
+        // 모달에 회원 이름 표시
+        document.getElementById('deleteMemberName').textContent = name + ' 회원을 삭제하시겠습니까?';
+        document.getElementById('deletePasswordInput').value = '';
+
+        // 모달 열기
+        document.getElementById('deleteMemberModal').classList.add('active');
+    }
+
+    // 회원 삭제 모달 닫기
+    function closeDeleteMemberModal() {
+        document.getElementById('deleteMemberModal').classList.remove('active');
+        document.getElementById('deletePasswordInput').value = '';
+        currentDeleteMemberNo = null;
+        currentDeleteMemberName = null;
+        currentDeleteRow = null;
+    }
+
+    // 회원 삭제 확인
+    function confirmDeleteMember() {
+        const password = document.getElementById('deletePasswordInput').value.trim();
+
+        if (!password) {
+            alert('헬스장 비밀번호를 입력해주세요.');
+            return;
         }
+
+        if (!currentDeleteMemberNo) {
+            alert('삭제할 회원 정보를 찾을 수 없습니다.');
+            return;
+        }
+
+        const requestData = {
+            memberNo: currentDeleteMemberNo,
+            password: password
+        };
+
+        fetch('${pageContext.request.contextPath}/member/delete.gym', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                // 회원 이름 저장 (모달 닫기 전에)
+                const deletedMemberName = currentDeleteMemberName || '회원';
+
+                // 모달 닫기
+                closeDeleteMemberModal();
+
+                // 테이블에서 행 제거
+                if (currentDeleteRow) {
+                    currentDeleteRow.remove();
+                }
+
+                // 전체 회원 수 업데이트
+                const totalRows = document.querySelectorAll('#memberTable tbody tr').length;
+                const headerInfo = document.querySelector('.header-info p');
+                if (headerInfo) {
+                    headerInfo.textContent = '전체 ' + totalRows + '명';
+                }
+
+                alert(deletedMemberName + ' 회원을 삭제했습니다.');
+            } else {
+                alert(data.message || '회원 삭제에 실패했습니다.');
+            }
+        })
+        .catch(function(error) {
+            console.error('회원 삭제 오류:', error);
+            alert('회원 삭제 중 오류가 발생했습니다.');
+        });
     }
 
     // ========================================
