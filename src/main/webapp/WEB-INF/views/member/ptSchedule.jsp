@@ -33,7 +33,9 @@
             align-items: center;
             gap: 8px;
             padding: 8px 12px;
-            color: #0a0a0a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         /* Stats Cards */
