@@ -336,7 +336,7 @@
             background-color: #ff6b00;
             border: none;
             border-radius: 10px;
-            color: #0a0a0a;
+            color: #fff;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
