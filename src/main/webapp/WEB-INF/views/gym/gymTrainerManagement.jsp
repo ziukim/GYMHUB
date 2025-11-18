@@ -27,11 +27,22 @@
         }
 
         /* Header */
-        .page-header {
+        .page-intro {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 24px;
+        }
+        
+        .page-intro-content {
+            flex: 1;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 16px;
         }
 
         .header-left {
@@ -444,16 +455,16 @@
             <div class="content-wrapper">
                 <!-- Header -->
                 <div class="page-intro">
-                    <h1>트레이너 관리</h1>
-                    <p>헬스장의 트레이너를 등록하고 관리하세요</p>
-                </div>
-                <div class="page-header">
-                    <div class="header-left">
+                    <div class="page-intro-content">
+                        <h1>트레이너 관리</h1>
+                        <p>헬스장의 트레이너를 등록하고 관리하세요</p>
                     </div>
-                    <button class="add-trainer-button" onclick="openAddModal()">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
-                        <span>트레이너 등록</span>
-                    </button>
+                    <div class="page-header">
+                        <button class="add-trainer-button" onclick="openAddModal()">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
+                            <span>트레이너 등록</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Trainer Grid -->
