@@ -4,6 +4,7 @@ import com.kh.gymhub.model.mapper.MachineMapper;
 import com.kh.gymhub.model.vo.Machine;
 import com.kh.gymhub.model.vo.MachineManage;
 import jakarta.servlet.ServletContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -124,6 +125,30 @@ public class MachineServiceImpl implements MachineService {
     @Transactional
     public int deleteMachineManage(int machineManageNo) {
         return machineMapper.deleteMachineManage(machineManageNo);
+    }
+
+    @Override
+    @Transactional
+    public int updateMachineStatusToInspection() {
+        return machineMapper.updateMachineStatusToInspection();
+    }
+
+    /**
+     * 매일 자정에 다음 점검일이 오늘인 기구들의 상태를 점검중(I)으로 변경합니다.
+     * CRON 표현식: 초 분 시 일 월 요일
+     * "0 0 0 * * ?" = 매일 0시 0분 0초
+     */
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void scheduledMachineInspectionUpdate() {
+        try {
+            int updatedCount = this.updateMachineStatusToInspection();
+            if (updatedCount > 0) {
+                System.out.println("기구 점검 상태 업데이트 완료: " + updatedCount + "개 기구가 점검중 상태로 변경되었습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("기구 점검 상태 업데이트 중 오류 발생: " + e.getMessage());
+        }
     }
 }
 

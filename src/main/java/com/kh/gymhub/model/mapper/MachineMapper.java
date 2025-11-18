@@ -54,5 +54,11 @@ public interface MachineMapper {
      * @return 삭제된 행 수
      */
     int deleteMachineManage(@Param("machineManageNo") int machineManageNo);
+
+    /**
+     * 다음 점검일이 오늘인 기구들의 상태를 점검중(I)으로 변경
+     * @return 업데이트된 행 수
+     */
+    int updateMachineStatusToInspection();
 }
 
