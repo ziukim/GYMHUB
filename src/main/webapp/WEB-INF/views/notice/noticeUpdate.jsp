@@ -261,16 +261,12 @@
                                 <label class="form-label">첨부파일</label>
                                 <c:if test="${not empty notice.filePath}">
                                     <div class="existing-file" style="margin-bottom: 12px;">
-                                        <div style="color: #ffa366; font-weight: 500; margin-bottom: 8px;">기존 첨부파일</div>
+                                       
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <img src="${pageContext.request.contextPath}${notice.filePath}" 
                                                  alt="기존 이미지" 
                                                  style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 1px solid #ff6b00;">
-                                            <a href="${pageContext.request.contextPath}${notice.filePath}" 
-                                               target="_blank" 
-                                               style="color: #ff6b00; text-decoration: none;">
-                                                이미지 보기
-                                            </a>
+                                           
                                         </div>
                                         <div style="font-size: 12px; color: #666; margin-top: 4px;">
                                             새 파일을 선택하면 기존 파일이 교체됩니다.
@@ -285,7 +281,7 @@
                                     <span class="file-name" id="fileName">
                                         <c:choose>
                                             <c:when test="${not empty notice.filePath}">
-                                                기존 파일 유지
+                                                
                                             </c:when>
                                             <c:otherwise>
                                                 선택된 파일 없음
