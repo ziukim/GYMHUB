@@ -26,5 +26,8 @@ public interface MemberMapper {
     
     // 회원번호로 회원 조회
     Member getMemberByNo(@Param("memberNo") int memberNo);
+    
+    // 회원 탈퇴 (STATUS를 'N'으로 변경)
+    int withdrawMember(@Param("memberNo") int memberNo);
 }
 

@@ -807,6 +807,7 @@
                         <div class="edit-buttons">
                             <button class="btn btn-primary" onclick="openInfoModal()">정보 수정</button>
                             <button class="btn btn-secondary" onclick="openPasswordModal()">비밀번호 변경</button>
+                            <button class="btn btn-danger" onclick="openModal('withdrawModal')" style="background-color: #ff4444; border-color: #ff4444;">회원 탈퇴</button>
                         </div>
                     </div>
                 </div>
@@ -1059,6 +1060,39 @@
     </div>
 </div>
 
+<!-- 회원 탈퇴 모달 -->
+<div id="withdrawModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">회원 탈퇴</h3>
+            <button class="modal-close" onclick="closeModal('withdrawModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 20px; padding: 15px; background-color: #2d1810; border: 1px solid #ff6b00; border-radius: 8px;">
+                <p style="color: #ffa366; margin: 0; line-height: 1.6;">
+                    <strong style="color: #ff4444;">⚠️ 회원 탈퇴 시 주의사항</strong><br>
+                    • 탈퇴 후에는 모든 회원 정보가 삭제되며 복구할 수 없습니다.<br>
+                    • 연결된 헬스장 정보가 즉시 해제됩니다.<br>
+                    • 예정된 PT 예약이 모두 취소됩니다.<br>
+                    • 탈퇴 후 동일한 아이디로 재가입이 제한될 수 있습니다.
+                </p>
+            </div>
+            <form id="withdrawForm" action="${pageContext.request.contextPath}/withdrawMember.tr" method="post">
+                <div class="modal-form-group">
+                    <label class="modal-label">비밀번호 확인</label>
+                    <input type="password" name="password" id="withdrawPassword" class="modal-input" placeholder="비밀번호를 입력하세요" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('withdrawModal')">취소</button>
+                    <button type="submit" class="btn btn-danger" style="background-color: #ff4444; border-color: #ff4444;">탈퇴하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     // 페이지 로드 시 서버로부터 받은 메시지 출력
     document.addEventListener("DOMContentLoaded", function() {
@@ -1076,6 +1110,11 @@
     // 정보 수정 모달 열기
     function openInfoModal() {
         document.getElementById('editModal').classList.add('active');
+    }
+
+    // 모달 열기 (공통 함수)
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
     }
 
     // 모달 닫기
@@ -1198,6 +1237,28 @@
                             alert('이미지 업로드 중 오류가 발생했습니다.');
                             location.reload();
                         });
+                }
+            });
+        }
+    });
+
+    // 회원 탈퇴 폼 검증
+    document.addEventListener('DOMContentLoaded', function() {
+        const withdrawForm = document.getElementById('withdrawForm');
+        if (withdrawForm) {
+            withdrawForm.addEventListener('submit', function(e) {
+                const password = document.getElementById('withdrawPassword').value;
+                
+                if (!password) {
+                    e.preventDefault();
+                    alert('비밀번호를 입력해주세요.');
+                    return false;
+                }
+
+                // 최종 확인
+                if (!confirm('정말로 회원 탈퇴를 하시겠습니까?\n탈퇴 후에는 모든 정보가 삭제되며 복구할 수 없습니다.')) {
+                    e.preventDefault();
+                    return false;
                 }
             });
         }

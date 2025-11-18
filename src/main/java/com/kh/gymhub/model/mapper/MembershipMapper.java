@@ -45,6 +45,9 @@ public interface MembershipMapper {
     // 특정 회원의 회원권 만료 처리 (회원 삭제 시 사용)
     int expireMembershipByMemberNo(@Param("memberNo") int memberNo, @Param("gymNo") int gymNo);
     
+    // 회원 탈퇴 시 모든 회원권 중단 처리
+    int suspendAllMembershipsByMemberNo(@Param("memberNo") int memberNo);
+    
     // 만료된 회원권을 가진 회원들의 GYM_NO를 NULL로 변경할 회원번호 목록 조회
     java.util.List<Integer> selectMemberNosWithExpiredMemberships();
 }

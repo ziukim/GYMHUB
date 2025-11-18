@@ -13,5 +13,6 @@ public interface MemberService {
     int updateProfileImage(int memberNo, String photoPath);
     Member login(String memberId, String memberPwd);
     Member getMemberByIdForGymRegistration(String memberId);
+    int withdrawMember(int memberNo, String password);
 
 }

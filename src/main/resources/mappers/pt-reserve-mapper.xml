@@ -83,6 +83,19 @@
         WHERE PT_RESERVE_NO = #{ptReserveNo}
     </update>
 
+    <!-- 회원 탈퇴 시 예정된 PT 예약 취소 처리 -->
+    <update id="cancelPtReservesByMemberNo">
+        UPDATE PT_RESERVE
+        SET PT_RESERVE_STATUS = '거절됨'
+        WHERE PT_PASS_NO IN (
+            SELECT PT_PASS_NO
+            FROM PT_PASS
+            WHERE MEMBER_NO = #{memberNo}
+        )
+        AND PT_RESERVE_TIME >= SYSDATE
+        AND PT_RESERVE_STATUS IN ('대기중', '승인됨')
+    </update>
+
     <!-- PT 예약 번호로 조회 -->
     <select id="selectPtReserveByNo" resultMap="ptReserveResultMap">
         SELECT 
