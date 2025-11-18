@@ -407,12 +407,14 @@
             <h1>PT 스케줄</h1>
             <p>나의 퍼스널 트레이닝 일정을 관리하세요</p>
         </div>
-        <div class="header">
-            <button class="btn-primary" onclick="location.href='${pageContext.request.contextPath}/ptBooking.me'">
-                <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
-                <span>PT 예약</span>
-            </button>
-        </div>
+        <c:if test="${not empty ptSummary and ptSummary.totalCount > 0}">
+            <div class="header">
+                <button class="btn-primary" onclick="location.href='${pageContext.request.contextPath}/ptBooking.me'">
+                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
+                    <span>PT 예약</span>
+                </button>
+            </div>
+        </c:if>
 
         <!-- Stats Grid -->
         <div class="stats-grid">
@@ -470,7 +472,7 @@
                     background: rgba(26, 15, 10, 0.95); padding: 15px; border-radius: 10px;
                     border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
                     font-size: 12px; white-space: nowrap; z-index: 10; width: 80%;">
-                            헬스장을<br>등록해주세요!
+                            PT권을<br>등록해주세요!
                         </div>
                     </div>
 
@@ -488,7 +490,7 @@
                     background: rgba(26, 15, 10, 0.95); padding: 15px; border-radius: 10px;
                     border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
                     font-size: 12px; white-space: nowrap; z-index: 10; width: 80%;">
-                            헬스장을<br>등록해주세요!
+                            PT권을<br>등록해주세요!
                         </div>
                     </div>
 
@@ -506,7 +508,7 @@
                     background: rgba(26, 15, 10, 0.95); padding: 15px; border-radius: 10px;
                     border: 1px solid #ff6b00; text-align: center; color: #ff6b00;
                     font-size: 12px; white-space: nowrap; z-index: 10; width: 80%;">
-                            헬스장을<br>등록해주세요!
+                            PT권을<br>등록해주세요!
                         </div>
                     </div>
                 </c:otherwise>
