@@ -32,11 +32,11 @@
             justify-content: space-between;
             margin-bottom: 24px;
         }
-        
+
         .page-intro-content {
             flex: 1;
         }
-        
+
         .page-header {
             display: flex;
             align-items: center;
@@ -386,7 +386,7 @@
                         alert("${successMsg}");
                     </script>
                 </c:if>
-                
+
                 <!-- Header -->
                 <div class="page-intro">
                     <div class="page-intro-content">
