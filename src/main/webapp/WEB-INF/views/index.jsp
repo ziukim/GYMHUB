@@ -2224,9 +2224,12 @@
                 return response.json();
             })
             .then(function(data) {
+                console.log('혼잡도 데이터:', data);
                 if (data.success && data.congestionData && data.congestionData.length > 0) {
+                    console.log('혼잡도 데이터 상세:', data.congestionData);
                     updateCongestionChart(data.congestionData);
                 } else {
+                    console.log('혼잡도 데이터 없음');
                     // 데이터가 없을 경우 기본값으로 차트 초기화
                     updateCongestionChart([]);
                 }
@@ -2241,15 +2244,27 @@
     // 혼잡도 차트 업데이트 함수
     function updateCongestionChart(congestionData) {
         const svg = document.querySelector('.chart-container svg');
-        if (!svg) return;
+        if (!svg) {
+            console.error('SVG 요소를 찾을 수 없습니다.');
+            return;
+        }
 
         // 시간대별 데이터 맵 생성 (빠른 조회를 위해)
         const dataMap = {};
         if (congestionData && congestionData.length > 0) {
             congestionData.forEach(function(item) {
-                dataMap[item.TIME_SLOT] = item.AVG_COUNT || 0;
+                // 데이터 키가 대소문자 구분 없이 처리
+                const timeSlot = item.TIME_SLOT || item.time_slot || item.timeSlot;
+                const avgCount = item.AVG_COUNT !== undefined ? item.AVG_COUNT : 
+                                (item.avg_count !== undefined ? item.avg_count : 
+                                (item.avgCount !== undefined ? item.avgCount : 0));
+                if (timeSlot) {
+                    dataMap[timeSlot] = avgCount;
+                }
             });
         }
+
+        console.log('데이터 맵:', dataMap);
 
         // 시간대 목록 (순서대로)
         const timeSlots = ['06-08', '08-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'];
@@ -2257,15 +2272,21 @@
         // 최대값 계산 (차트 스케일링을 위해)
         let maxValue = 0;
         timeSlots.forEach(function(timeSlot) {
-            const value = dataMap[timeSlot] || 0;
+            const value = parseFloat(dataMap[timeSlot]) || 0;
             if (value > maxValue) {
                 maxValue = value;
             }
         });
 
-        // 최대값이 0이면 기본값 100으로 설정
+        console.log('최대값:', maxValue);
+
+        // 최대값이 0이면 기본값 10으로 설정 (데이터가 없을 때도 차트가 보이도록)
         if (maxValue === 0) {
-            maxValue = 100;
+            maxValue = 10;
+        } else if (maxValue <= 10) {
+            // 최대값이 10 이하일 때는 최소 높이를 보장하기 위해 최대값을 10으로 설정
+            // 이렇게 하면 작은 값도 차트에서 보이도록 함
+            maxValue = 10;
         }
 
         // 차트 높이 설정 (SVG viewBox 기준)
@@ -2284,37 +2305,59 @@
         });
 
         // 새로운 바 차트 생성
+        let barsCreated = 0;
         timeSlots.forEach(function(timeSlot, index) {
-            const value = dataMap[timeSlot] || 0;
-            const barHeight = maxValue > 0 ? Math.round((value / maxValue) * chartHeight) : 0;
+            const value = parseFloat(dataMap[timeSlot]) || 0;
+            let barHeight = maxValue > 0 ? Math.round((value / maxValue) * chartHeight) : 0;
+            
+            // 값이 0보다 크면 최소 높이 보장 (최소 20px)
+            if (value > 0) {
+                if (barHeight < 20) {
+                    barHeight = 20;
+                }
+            }
+            
             const barY = chartBaseY - barHeight;
             const barX = barPositions[index];
 
-            // 바 차트 생성
-            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', barX);
-            rect.setAttribute('y', barY);
-            rect.setAttribute('width', barWidth);
-            rect.setAttribute('height', barHeight);
-            rect.setAttribute('rx', barRadius);
-            rect.setAttribute('fill', '#FF6B00');
-            rect.setAttribute('data-bar', 'true');
-            rect.setAttribute('data-time-slot', timeSlot);
-            rect.setAttribute('data-value', value);
+            console.log('시간대:', timeSlot, '값:', value, '바 높이:', barHeight);
 
-            // 툴팁을 위한 title 추가
-            const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-            title.textContent = timeSlot + ': 평균 ' + value + '명';
-            rect.appendChild(title);
+            // 바 차트 생성 (값이 0보다 크면 항상 생성)
+            if (value > 0) {
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', barX);
+                rect.setAttribute('y', barY);
+                rect.setAttribute('width', barWidth);
+                rect.setAttribute('height', barHeight);
+                rect.setAttribute('rx', barRadius);
+                rect.setAttribute('fill', '#FF6B00');
+                rect.setAttribute('data-bar', 'true');
+                rect.setAttribute('data-time-slot', timeSlot);
+                rect.setAttribute('data-value', value);
 
-            // 그리드 라인 다음에 삽입 (그리드 라인 위에 표시되도록)
-            const gridLines = svg.querySelectorAll('line[stroke="#4A3020"]');
-            if (gridLines.length > 0) {
-                svg.insertBefore(rect, gridLines[0]);
-            } else {
-                svg.appendChild(rect);
+                // 툴팁을 위한 title 추가 (소수점이 있으면 소수점 첫째 자리까지 표시)
+                const displayValue = value % 1 === 0 ? value : value.toFixed(1);
+                const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                title.textContent = timeSlot + ': 평균 ' + displayValue + '명';
+                rect.appendChild(title);
+
+                // 그리드 라인 다음에 삽입 (그리드 라인 위에 표시되도록)
+                const gridLines = svg.querySelectorAll('line[stroke="#4A3020"]');
+                if (gridLines.length > 0) {
+                    svg.insertBefore(rect, gridLines[0]);
+                } else {
+                    svg.appendChild(rect);
+                }
+                barsCreated++;
             }
         });
+        
+        console.log('생성된 바 개수:', barsCreated);
+        
+        // 데이터가 모두 0일 때 메시지 표시
+        if (barsCreated === 0 && maxValue === 10) {
+            console.warn('혼잡도 데이터가 없습니다. ATT_CACHE 테이블에 최근 7일간의 데이터가 없거나 모두 0입니다.');
+        }
 
         // Y축 레이블 업데이트 (최대값에 맞게 조정)
         const yAxisLabels = svg.querySelectorAll('text[text-anchor="end"]');
@@ -2331,7 +2374,9 @@
 
             yAxisLabels.forEach(function(label, index) {
                 if (index < yValues.length) {
-                    label.textContent = yValues[index];
+                    // 소수점이 있으면 소수점 첫째 자리까지 표시
+                    const displayValue = yValues[index] % 1 === 0 ? yValues[index] : yValues[index].toFixed(1);
+                    label.textContent = displayValue;
                 }
             });
         }

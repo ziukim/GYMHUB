@@ -34,14 +34,28 @@
 
     <!-- 특정 헬스장의 시간대별 혼잡도 조회 (최근 N일 평균) -->
     <select id="selectCongestionByGymNo" resultType="map">
+        WITH TIME_SLOTS AS (
+            SELECT '06-08' AS TIME_SLOT FROM DUAL UNION ALL
+            SELECT '08-10' FROM DUAL UNION ALL
+            SELECT '10-12' FROM DUAL UNION ALL
+            SELECT '12-14' FROM DUAL UNION ALL
+            SELECT '14-16' FROM DUAL UNION ALL
+            SELECT '16-18' FROM DUAL UNION ALL
+            SELECT '18-20' FROM DUAL UNION ALL
+            SELECT '20-22' FROM DUAL UNION ALL
+            SELECT '22-24' FROM DUAL
+        )
         SELECT
-            TIME_SLOT,
-            ROUND(AVG(MEMBER_COUNT)) AS AVG_COUNT
-        FROM ATT_CACHE
-        WHERE GYM_NO = #{gymNo}
-        AND TRUNC(CACHE_DATE) >= TRUNC(SYSDATE) - #{days}
-        GROUP BY TIME_SLOT
-        ORDER BY TIME_SLOT
+            TS.TIME_SLOT,
+            NVL(ROUND(AVG(AC.MEMBER_COUNT)), 0) AS AVG_COUNT
+        FROM TIME_SLOTS TS
+        LEFT JOIN ATT_CACHE AC ON (
+            TS.TIME_SLOT = AC.TIME_SLOT
+            AND AC.GYM_NO = #{gymNo}
+            AND TRUNC(AC.CACHE_DATE) >= TRUNC(SYSDATE) - #{days}
+        )
+        GROUP BY TS.TIME_SLOT
+        ORDER BY TS.TIME_SLOT
     </select>
 
     <!-- 특정 헬스장의 특정 날짜의 시간대별 혼잡도 조회 -->
