@@ -153,15 +153,15 @@
           AND TRUNC(MS.END_DATE) &lt;= TRUNC(SYSDATE) + 7
     </select>
 
-    <!-- 특정 월 말일 기준 활성 회원 수 조회 -->
+    <!-- 특정 월 말일 기준 활성 회원 수 조회 (등록일 <= 월말, 만료일 >= 월말) -->
     <select id="selectActiveMemberCountByGymNoAndMonthEnd" resultType="_int">
         SELECT COUNT(DISTINCT MS.MEMBER_NO)
         FROM MEMBERSHIP MS
         INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
         WHERE MS.GYM_NO = #{gymNo}
           AND M.STATUS = 'Y'
-          AND MS.MEMBERSHIP_STATUS != '만료'
           AND MS.END_DATE IS NOT NULL
+          AND MS.START_DATE IS NOT NULL
           AND TRUNC(MS.START_DATE) &lt;= 
               CASE 
                   WHEN #{year} = EXTRACT(YEAR FROM SYSDATE) AND #{month} = EXTRACT(MONTH FROM SYSDATE) 
@@ -176,14 +176,13 @@
               END
     </select>
 
-    <!-- 특정 월에 만료된 회원 수 조회 -->
+    <!-- 특정 월에 만료된 회원 수 조회 (만료일 기준) -->
     <select id="selectExpiredMemberCountByGymNoAndMonth" resultType="_int">
         SELECT COUNT(DISTINCT MS.MEMBER_NO)
         FROM MEMBERSHIP MS
         INNER JOIN MEMBER M ON MS.MEMBER_NO = M.MEMBER_NO
         WHERE MS.GYM_NO = #{gymNo}
           AND M.STATUS = 'Y'
-          AND MS.MEMBERSHIP_STATUS = '만료'
           AND MS.END_DATE IS NOT NULL
           AND EXTRACT(YEAR FROM MS.END_DATE) = #{year}
           AND EXTRACT(MONTH FROM MS.END_DATE) = #{month}
