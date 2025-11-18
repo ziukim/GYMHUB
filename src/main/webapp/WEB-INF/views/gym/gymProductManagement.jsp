@@ -510,11 +510,11 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn-save">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/check.png" alt="저장" class="icon-check" style="width: 24px; height: 24px; vertical-align: middle;">
+                       
                         저장
                     </button>
                     <button type="button" class="btn-cancel" onclick="cancelEdit()">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/cancel.png" alt="취소" class="icon-x" style="width: 24px; height: 24px; vertical-align: middle;">
+                       
                         취소
                     </button>
                 </div>
