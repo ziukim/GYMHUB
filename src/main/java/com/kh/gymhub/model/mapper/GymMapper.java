@@ -21,4 +21,7 @@ public interface GymMapper {
 
     int updateProfileImage(@Param("gymNo") int gymNo, @Param("photoPath") String photoPath);
     int updateGym(Gym gym);
+    
+    // 헬스장 탈퇴 (STATUS를 'N'으로 변경)
+    int withdrawGym(@Param("gymNo") int gymNo);
 }

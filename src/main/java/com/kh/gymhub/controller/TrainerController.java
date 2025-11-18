@@ -198,8 +198,8 @@ public class TrainerController {
             session.setAttribute("errorMsg", "비밀번호가 일치하지 않습니다.");
             return "redirect:/dashboard.tr";
         } else {
-            model.addAttribute("errorMsg", "회원 탈퇴에 실패했습니다.");
-            return "common/error";
+            session.setAttribute("errorMsg", "회원 탈퇴에 실패했습니다.");
+            return "redirect:/dashboard.tr";
         }
     }
 

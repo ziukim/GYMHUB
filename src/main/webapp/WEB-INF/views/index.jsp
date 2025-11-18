@@ -78,6 +78,7 @@
 
         .filter-wrapper {
             flex-shrink: 0;
+            position: relative;
         }
 
         .search-input {
@@ -100,7 +101,7 @@
         }
 
         .filter-select {
-            width: 200px;
+            width: 150px;
             padding: 15px 40px 15px 20px;
             background: #2d1810;
             border: 2px solid #8a6a50;
@@ -110,6 +111,17 @@
             cursor: pointer;
             appearance: none;
             position: relative;
+        }
+
+        .filter-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff6b00;
+            font-size: 14px;
+            pointer-events: none;
         }
 
         .filter-select:focus {
@@ -2349,6 +2361,11 @@
     <c:if test="${not empty errorMsg}">
         alert('${errorMsg}');
         <c:remove var="errorMsg" scope="session"/>
+    </c:if>
+    
+    <!-- 탈퇴 성공 메시지 (회원/트레이너/헬스장) -->
+    <c:if test="${param.withdraw == 'success'}">
+        alert('탈퇴가 완료되었습니다.');
     </c:if>
 
     window.addEventListener('load', function() {

@@ -259,6 +259,16 @@
           AND MEMBERSHIP_STATUS = '정상'
     </update>
 
+    <!-- 회원 삭제 시 회원권 상태를 환불로 변경 -->
+    <update id="refundMembershipsByMemberNo">
+        UPDATE MEMBERSHIP
+        SET MEMBERSHIP_STATUS = '환불',
+            MEMBERSHIP_UPDATE = SYSDATE
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND MEMBERSHIP_STATUS = '정상'
+    </update>
+
     <!-- 회원 탈퇴 시 모든 회원권 중단 처리 -->
     <update id="suspendAllMembershipsByMemberNo">
         UPDATE MEMBERSHIP

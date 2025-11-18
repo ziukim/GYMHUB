@@ -125,4 +125,13 @@
         </set>
         WHERE GYM_NO = #{gymNo}
     </update>
+
+    <!-- 헬스장 탈퇴 (STATUS를 'N'으로 변경) -->
+    <update id="withdrawGym">
+        UPDATE GYM
+        SET STATUS = 'N',
+            GYM_UPDATEAT = SYSDATE
+        WHERE GYM_NO = #{gymNo}
+        AND STATUS = 'Y'
+    </update>
 </mapper>
