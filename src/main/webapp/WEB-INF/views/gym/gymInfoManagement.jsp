@@ -359,6 +359,23 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="content-wrapper">
+                <!-- 알림 메시지 -->
+                <c:if test="${not empty alertMsg}">
+                    <script>
+                        alert("${alertMsg}");
+                    </script>
+                </c:if>
+                <c:if test="${not empty errorMsg}">
+                    <script>
+                        alert("${errorMsg}");
+                    </script>
+                </c:if>
+                <c:if test="${not empty successMsg}">
+                    <script>
+                        alert("${successMsg}");
+                    </script>
+                </c:if>
+                
                 <!-- Header -->
                 <div class="page-intro">
                     <h1>헬스장 정보 관리</h1>
@@ -366,6 +383,9 @@
                 </div>
                 <div class="page-header">
                     <div class="header-left">
+                        <button class="btn btn-danger" onclick="openModal('withdrawModal')" style="background-color: #ff4444; border-color: #ff4444; padding: 8px 20px; border-radius: 8px; color: white; font-size: 14px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-weight: 500;">
+                            헬스장 탈퇴
+                        </button>
                     </div>
                     <button class="save-button" onclick="saveGymInfo()">
                         <span>저장</span>
@@ -707,6 +727,68 @@
             }
         });
     </script>
+
+<!-- 헬스장 탈퇴 모달 -->
+<div id="withdrawModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">헬스장 탈퇴</h3>
+            <button class="modal-close" onclick="closeModal('withdrawModal')">
+                <img src="${pageContext.request.contextPath}/resources/images/icon/close.png" alt="닫기" style="width: 16px; height: 16px;">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 20px; padding: 15px; background-color: #2d1810; border: 1px solid #ff6b00; border-radius: 8px;">
+                <p style="color: #ffa366; margin: 0; line-height: 1.6;">
+                    <strong style="color: #ff4444;">⚠️ 헬스장 탈퇴 시 주의사항</strong><br>
+                    • 탈퇴 후에는 모든 헬스장 정보가 삭제되며 복구할 수 없습니다.<br>
+                    • 등록된 일반 회원이 있으면 탈퇴할 수 없습니다.<br>
+                    • 트레이너는 자동으로 헬스장 연결이 해제됩니다.<br>
+                    • 탈퇴 후 동일한 이름으로 재등록이 제한될 수 있습니다.
+                </p>
+            </div>
+            <form id="withdrawForm" action="${pageContext.request.contextPath}/withdrawGym.gym" method="post">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('withdrawModal')">취소</button>
+                    <button type="submit" class="btn btn-danger" style="background-color: #ff4444; border-color: #ff4444;">탈퇴하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 모달 열기
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    // 모달 닫기
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.classList.remove('active');
+        }
+    }
+
+    // 헬스장 탈퇴 폼 검증
+    document.addEventListener('DOMContentLoaded', function() {
+        const withdrawForm = document.getElementById('withdrawForm');
+        if (withdrawForm) {
+            withdrawForm.addEventListener('submit', function(e) {
+                // 최종 확인
+                if (!confirm('정말로 헬스장 탈퇴를 하시겠습니까?\n탈퇴 후에는 모든 정보가 삭제되며 복구할 수 없습니다.\n등록된 일반 회원이 있으면 탈퇴할 수 없습니다.')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
 

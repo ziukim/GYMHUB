@@ -18,4 +18,6 @@ public interface GymService {
 
     int updateProfileImage(int gymNo, String photoPath);
     int updateGym(Gym gym);
+    int withdrawGym(int gymNo);
+    int countRegularMembersByGymNo(int gymNo);
 }

@@ -500,6 +500,43 @@ public class GymController {
         return "gym/gymInfoManagement";
     }
 
+    // 헬스장 탈퇴
+    @PostMapping("/withdrawGym.gym")
+    public String withdrawGym(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            session.setAttribute("errorMsg", "헬스장 운영자만 접근할 수 있습니다.");
+            return "redirect:/";
+        }
+
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            session.setAttribute("errorMsg", "헬스장 정보를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+
+        // 일반 회원 수 체크 (MEMBER_TYPE = 1)
+        int regularMemberCount = gymService.countRegularMembersByGymNo(gymNo);
+        
+        if (regularMemberCount > 0) {
+            session.setAttribute("errorMsg", "등록된 일반 회원이 있어 탈퇴할 수 없습니다. (현재 " + regularMemberCount + "명)");
+            return "redirect:/info.gym";
+        }
+
+        // 헬스장 탈퇴 처리
+        int result = gymService.withdrawGym(gymNo);
+
+        if (result > 0) {
+            // 세션 무효화
+            session.invalidate();
+            return "redirect:/?withdraw=success";
+        } else {
+            session.setAttribute("errorMsg", "헬스장 탈퇴에 실패했습니다.");
+            return "redirect:/info.gym";
+        }
+    }
+
     @GetMapping("/trainer.gym")
     public String trainerManagement(HttpSession session, Model model) {
         // 세션에서 로그인 정보 확인
