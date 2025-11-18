@@ -186,19 +186,14 @@
             <c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
                 <jsp:include page="../common/sidebar/sidebarGym.jsp" />
             </c:when>
-            <c:otherwise>
-                <jsp:include page="../common/sidebar/sidebarGym.jsp" />
-            </c:otherwise>
         </c:choose>
 
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
-            <div class="page-header">
-                <div class="header-left">
-                    <button class="back-button" onclick="location.href='${pageContext.request.contextPath}/notice.no'">←</button>
-                    <h1 class="page-title">공지사항 작성</h1>
-                </div>
+            <div class="page-intro">
+                <h1>공지사항 작성</h1>
+                <p>새로운 공지사항을 작성하세요</p>
             </div>
 
             <!-- Form Container -->
