@@ -342,11 +342,11 @@
             border-radius: 8px;
             width: 123px;
             height: 51px;
-            font-size: 20px;
-            color: black;
+            font-size: 16px;
+            color: #fff;
             cursor: pointer;
             transition: opacity 0.2s;
-            font-weight: 700;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -444,16 +444,11 @@
             opacity: 0.8;
         }
 
-        .modal-button.cancel {
-            background-color: #0a0a0a;
-            border: 1px solid #8a6a50;
-            color: white;
-            font-size: 16px;
-        }
+
 
         .modal-button.confirm {
             background-color: #ff6b00;
-            color: #0a0a0a;
+            color: #fff;
             font-size: 16px;
             font-weight: 700;
         }
@@ -540,6 +535,22 @@
         .trainer-option-info {
             font-size: 12px;
             color: #8a6a50;
+        }
+
+        .calendar-close-btn{
+            color: #fff;
+        }
+
+        .modal-button.cancel {
+            padding: 14px 32px;
+            background-color: #0a0a0a;
+            border: 1px solid #ff6b00;
+            border-radius: 10px;
+            color: #ff6b00;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+
         }
     </style>
 </head>
@@ -684,7 +695,7 @@
     </div>
 
     <div class="modal-actions">
-        <button class="modal-button cancel" onclick="closeModal()">취소</button>
+        <button class="modal-button cancel" id="cancle" onclick="closeModal()">취소</button>
         <button class="modal-button confirm" onclick="confirmBooking()">신청 확정하기</button>
     </div>
 </div>

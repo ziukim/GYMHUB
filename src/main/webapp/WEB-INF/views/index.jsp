@@ -812,7 +812,7 @@
         /* 방문 예약 버튼 */
         .booking-btn {
             background-color: #ff6b00;
-            color: #0a0a0a;
+            color: #fff;
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
