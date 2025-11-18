@@ -1607,6 +1607,44 @@ public class GymController {
         
         return result;
     }
+    
+    // 현재 이용자 수 조회 (AJAX)
+    @GetMapping("/attendance/currentCount.ajax")
+    @ResponseBody
+    public Map<String, Object> getCurrentAttendanceCount(HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 확인
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            // 현재 이용자 수 조회 (입실만 있고 퇴실이 없는 회원 수)
+            Integer currentCount = attendanceService.getTodayAttendanceCountByGymNo(gymNo);
+            result.put("success", true);
+            result.put("currentCount", currentCount != null ? currentCount : 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "현재 이용자 수 조회 중 오류가 발생했습니다: " + e.getMessage());
+            result.put("currentCount", 0);
+        }
+        
+        return result;
+    }
 
     // 관리자 메인 페이지
     @GetMapping("/adminMain.gym")

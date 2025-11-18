@@ -74,6 +74,12 @@
             color: #FF6B00;
             font-weight: 700;
         }
+        
+        .today-count-label {
+            font-size: 12px;
+            color: #8A6A50;
+            margin-bottom: 4px;
+        }
 
         .icon-section {
             margin-bottom: 25px;
@@ -347,7 +353,8 @@
     <div class="header-section">
         <div class="today-info">
             <div class="today-date" id="todayDate"></div>
-            <div class="today-count">출석: <span id="todayCount">0</span>명</div>
+            <div class="today-count-label">현재 이용자 수</div>
+            <div class="today-count"><span id="todayCount">0</span>명</div>
         </div>
     </div>
 
@@ -420,6 +427,7 @@
 
     window.onload = function() {
         updateTodayDate();
+        loadCurrentAttendanceCount();
     };
 
     function updateTodayDate() {
@@ -427,6 +435,26 @@
         var options = { month: 'long', day: 'numeric', weekday: 'short' };
         var dateStr = today.toLocaleDateString('ko-KR', options);
         document.getElementById('todayDate').textContent = dateStr;
+    }
+
+    // 현재 이용자 수 조회
+    function loadCurrentAttendanceCount() {
+        fetch('${pageContext.request.contextPath}/attendance/currentCount.ajax')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    document.getElementById('todayCount').textContent = data.currentCount || 0;
+                } else {
+                    console.error('현재 이용자 수 조회 실패:', data.message);
+                    document.getElementById('todayCount').textContent = 0;
+                }
+            })
+            .catch(function(error) {
+                console.error('현재 이용자 수 조회 오류:', error);
+                document.getElementById('todayCount').textContent = 0;
+            });
     }
 
     // 전화번호 자동 하이픈 추가
@@ -496,14 +524,10 @@
                     membershipInfo: data.membershipInfo || ''
                 };
                 
+                // 출석 체크 후 현재 이용자 수 다시 조회
+                loadCurrentAttendanceCount();
+                
                 if (data.type === '입실') {
-                    // 오늘 출석 수 업데이트 (페이지 새로고침 없이)
-                    // 실제로는 서버에서 오늘 출석 수를 다시 조회해야 하지만,
-                    // 간단하게 1 증가시킴
-                    var todayCountElement = document.getElementById('todayCount');
-                    var currentCount = parseInt(todayCountElement.textContent) || 0;
-                    todayCountElement.textContent = currentCount + 1;
-                    
                     showResult(member, 'checkin', timeStr);
                 } else if (data.type === '퇴실') {
                     showResult(member, 'checkout', timeStr);
