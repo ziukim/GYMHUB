@@ -891,7 +891,6 @@
     // 예약된 시간 조회 함수
     function loadBookedTimeSlots() {
         if (!selectedTrainer || !selectedDate) {
-            console.log('loadBookedTimeSlots 취소: 트레이너 또는 날짜 미선택');
             return;
         }
 
@@ -900,21 +899,13 @@
         var day = String(selectedDate.getDate()).padStart(2, '0');
         var dateStr = year + '-' + month + '-' + day;
 
-        console.log('예약 시간 조회 요청:', {
-            trainerNo: selectedTrainer.id,
-            trainerName: selectedTrainer.name,
-            date: dateStr
-        });
-
         fetch('${pageContext.request.contextPath}/pt/bookedSlots.ajax?trainerNo=' + selectedTrainer.id + '&date=' + dateStr)
             .then(function(response) {
                 return response.json();
             })
             .then(function(data) {
-                console.log('서버 응답:', data);
                 if (data.success) {
                     var bookedSlots = data.bookedSlots || [];
-                    console.log('예약된 시간:', bookedSlots);
                     updateTimeSlots(bookedSlots);
                 }
             })
@@ -925,14 +916,11 @@
 
     // 시간 슬롯 예약 상태 업데이트
     function updateTimeSlots(bookedSlots) {
-        console.log('updateTimeSlots 실행, bookedSlots:', bookedSlots);
         timeSlots.forEach(function(slot) {
             var slotTime = slot.time.split(' - ')[0];
             slot.isBooked = bookedSlots.indexOf(slotTime) >= 0;
-            console.log('  슬롯:', slotTime, '→', slot.isBooked ? '예약됨' : '빈 시간');
         });
         renderTimeSlots();
-        console.log('화면 재렌더링 완료');
     }
 
     // 오버레이 클릭 시 닫기
