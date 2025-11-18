@@ -1278,8 +1278,6 @@
                     return;
                 }
 
-                console.log('목표 상태가 변경되었습니다.');
-
                 // 목표 목록 다시 불러오기 (대시보드 + 모달 모두 갱신)
                 await fetchGoals(false);
 

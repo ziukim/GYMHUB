@@ -264,7 +264,6 @@
         document.getElementById('videoModal').classList.add('active');
 
         // 실제 구현 시 Ajax로 비디오 정보 가져오기
-        console.log('Video No: ' + videoNo + ' 재생');
     }
 
     // 모달 닫기
