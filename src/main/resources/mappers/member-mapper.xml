@@ -272,4 +272,39 @@
         WHERE MEMBER_NO = #{memberNo}
         AND STATUS = 'Y'
     </update>
+
+    <!-- 헬스장의 일반 회원 수 조회 (MEMBER_TYPE = 1) -->
+    <select id="countRegularMembersByGymNo" parameterType="_int" resultType="_int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE GYM_NO = #{gymNo}
+          AND MEMBER_TYPE = 1
+          AND STATUS = 'Y'
+    </select>
+
+    <!-- 헬스장 운영자 조회 (MEMBER_TYPE = 3, GYM_NO = 해당 헬스장) -->
+    <select id="selectGymOwnerByGymNo" parameterType="_int" resultMap="memberResultMap">
+        SELECT MEMBER_NO,
+        MEMBER_TYPE,
+        MEMBER_ID,
+        MEMBER_PWD,
+        MEMBER_NAME,
+        MEMBER_ADDRESS,
+        MEMBER_PHONE,
+        MEMBER_BIRTH,
+        STATUS,
+        MEMBER_CREATEAT,
+        MEMBER_UPDATEAT,
+        MEMBER_EMAIL,
+        MEMBER_PHOTO_PATH,
+        GYM_NO,
+        TRAINER_LICENSE,
+        TRAINER_CAREER,
+        TRAINER_AWARD
+        FROM MEMBER
+        WHERE GYM_NO = #{gymNo}
+          AND MEMBER_TYPE = 3
+          AND STATUS = 'Y'
+        AND ROWNUM = 1
+    </select>
 </mapper>

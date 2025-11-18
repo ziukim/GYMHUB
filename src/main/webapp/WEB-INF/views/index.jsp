@@ -2338,6 +2338,11 @@
         alert('${errorMsg}');
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
+    
+    <!-- 탈퇴 성공 메시지 (회원/트레이너/헬스장) -->
+    <c:if test="${param.withdraw == 'success'}">
+        alert('탈퇴가 완료되었습니다.');
+    </c:if>
 
     window.addEventListener('load', function() {
         if (sessionStorage.getItem('visitReserved') === 'true') {

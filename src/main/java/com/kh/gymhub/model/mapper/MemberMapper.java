@@ -29,5 +29,11 @@ public interface MemberMapper {
     
     // 회원 탈퇴 (STATUS를 'N'으로 변경)
     int withdrawMember(@Param("memberNo") int memberNo);
+    
+    // 헬스장의 일반 회원 수 조회 (MEMBER_TYPE = 1)
+    int countRegularMembersByGymNo(@Param("gymNo") int gymNo);
+    
+    // 헬스장 운영자 조회 (MEMBER_TYPE = 3, GYM_NO = 해당 헬스장)
+    Member selectGymOwnerByGymNo(@Param("gymNo") int gymNo);
 }
 

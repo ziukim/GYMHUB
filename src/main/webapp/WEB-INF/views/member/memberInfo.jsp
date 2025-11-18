@@ -213,6 +213,18 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <!-- 알림 메시지 -->
+        <c:if test="${not empty alertMsg}">
+            <script>
+                alert("${alertMsg}");
+            </script>
+        </c:if>
+        <c:if test="${not empty errorMsg}">
+            <script>
+                alert("${errorMsg}");
+            </script>
+        </c:if>
+        
         <div class="page-intro">
             <h1>내 정보</h1>
             <p>회원 정보를 확인하고 관리하세요</p>
