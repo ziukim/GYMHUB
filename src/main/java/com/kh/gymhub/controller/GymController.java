@@ -312,13 +312,6 @@ public class GymController {
             model.addAttribute("brokenLockers", brokenLockers);
             model.addAttribute("availableLockers", availableLockers);
             
-            // 10. PT 신청관리
-            List<com.kh.gymhub.model.vo.PtReserve> pendingPtReserves = ptReserveService.getPendingPtReservesByGymNo(gymNo);
-            List<com.kh.gymhub.model.vo.PtReserve> approvedOrRejectedPtReserves = ptReserveService.getApprovedOrRejectedPtReservesByGymNo(gymNo);
-            
-            model.addAttribute("pendingPtReserves", pendingPtReserves != null ? pendingPtReserves : new ArrayList<>());
-            model.addAttribute("approvedOrRejectedPtReserves", approvedOrRejectedPtReserves != null ? approvedOrRejectedPtReserves : new ArrayList<>());
-            
         } catch (Exception e) {
             e.printStackTrace();
             // 기본값 설정
@@ -339,8 +332,6 @@ public class GymController {
             model.addAttribute("expiredLockers", 0);
             model.addAttribute("brokenLockers", 0);
             model.addAttribute("availableLockers", 0);
-            model.addAttribute("pendingPtReserves", new ArrayList<>());
-            model.addAttribute("approvedOrRejectedPtReserves", new ArrayList<>());
         }
         
         return "gym/gymDashBoard";
