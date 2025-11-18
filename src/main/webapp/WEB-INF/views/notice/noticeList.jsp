@@ -46,6 +46,7 @@
             border: 2px solid #ff6b00;
             border-radius: 8px;
             padding: 20px;
+            margin-top: 20px;
             transition: all 0.3s;
             cursor: pointer;
         }
