@@ -552,15 +552,9 @@
 
     // 재고 추가 폼 제출
     function submitAddForm() {
-        console.log('=== submitAddForm 시작 ===');
-
         const stockName = document.getElementById('addStockName').value.trim();
         const targetStockCount = document.getElementById('addTargetStockCount').value;
         const stockPrice = document.getElementById('addStockPrice').value;
-
-        console.log('stockName:', stockName);
-        console.log('targetStockCount:', targetStockCount);
-        console.log('stockPrice:', stockPrice);
 
         if (!stockName || !targetStockCount || !stockPrice) {
                 alert('모든 필수 항목을 입력해주세요.');
@@ -572,18 +566,14 @@
         formData.append('targetStockCount', targetStockCount);
         formData.append('stockPrice', stockPrice);
 
-        console.log('fetch 요청 시작');
-
         fetch('${pageContext.request.contextPath}/stockInsert.gym', {
             method: 'POST',
             body: formData
         })
             .then(response => {
-                console.log('response:', response);
                 return response.text();
             })
             .then(result => {
-                console.log('result:', result);
                 if (result === 'success') {
                     alert('재고가 추가되었습니다.');
                     // 페이지 전체 새로고침이 아닌 목록 페이지로 이동

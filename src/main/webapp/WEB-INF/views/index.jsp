@@ -1678,9 +1678,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const gymDetailImage = document.getElementById('gymDetailImage');
         if (gymDetailImage) {
-            gymDetailImage.addEventListener('load', function() {
-                console.log('이미지 로드 성공:', this.src);
-            });
             gymDetailImage.addEventListener('error', function() {
                 console.error('이미지 로드 실패:', this.src);
                 // 대체 이미지로 변경
@@ -1733,7 +1730,6 @@
                     .then(data => {
                         // 응답 데이터 trim 처리 (공백/줄바꿈 제거)
                         const trimmedData = data.trim();
-                        console.log('아이디 중복 체크 결과:', trimmedData);
 
                         // 응답 형식 검증
                         if (trimmedData === 'NNNNY') {
