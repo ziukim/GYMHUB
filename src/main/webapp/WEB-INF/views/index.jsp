@@ -1601,7 +1601,7 @@
 <div class="modal-overlay gym-select-modal" id="gymSelectModal">
     <div class="modal-container">
         <button class="modal-close" id="closeGymSelectModal" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #ff6b00; font-size: 24px; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; z-index: 10;">×</button>
-        
+
         <div class="logo-section">
             <span class="logo-text" style="font-size: 42px; color: #FF6B00; font-weight: 900;">GYMHub</span>
         </div>
@@ -1675,7 +1675,7 @@
 <script>
     // 전역 변수로 contextPath 설정
     window.contextPath = '${pageContext.request.contextPath}';
-    
+
     // 로그인 상태 확인 (서버에서 전달)
     <c:choose>
         <c:when test="${not empty loginMember}">
@@ -1685,7 +1685,7 @@
             window.isLoggedIn = false;
         </c:otherwise>
     </c:choose>
-    
+
     // 이미지 로드 확인 및 디버깅
     document.addEventListener('DOMContentLoaded', function() {
         const gymDetailImage = document.getElementById('gymDetailImage');
@@ -1817,7 +1817,7 @@
             const idInput = this.querySelector('input[name="id"]');
             if (idInput) {
                 const idValue = idInput.value.trim();
-                
+
                 // 아이디가 입력되었는지 확인
                 if (!idValue) {
                     e.preventDefault();
@@ -1825,7 +1825,7 @@
                     idInput.focus();
                     return false;
                 }
-                
+
                 // 아이디 최소 길이 확인
                 if (idValue.length < 4) {
                     e.preventDefault();
@@ -1833,12 +1833,12 @@
                     idInput.focus();
                     return false;
                 }
-                
+
                 // 중복 체크 완료 여부 확인
                 const idHelperText = idInput.nextElementSibling;
                 if (idHelperText && idHelperText.classList.contains('helper-text')) {
                     // 중복 체크가 완료되지 않았거나, 사용 불가능한 경우
-                    if (idHelperText.classList.contains('hidden') || 
+                    if (idHelperText.classList.contains('hidden') ||
                         !idHelperText.classList.contains('success')) {
                         e.preventDefault();
                         if (idHelperText.classList.contains('error')) {
@@ -2350,7 +2350,7 @@
         alert('${errorMsg}');
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
-    
+
     <!-- 탈퇴 성공 메시지 (회원/트레이너/헬스장) -->
     <c:if test="${param.withdraw == 'success'}">
         alert('탈퇴가 완료되었습니다.');
