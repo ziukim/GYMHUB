@@ -1004,9 +1004,13 @@ public class GymController {
             // 2. lockerPassStatus가 null인 경우 (락커권이 없는 경우)
             List<LockerPass> availableLockers = new java.util.ArrayList<>();
             for (LockerPass locker : allLockers) {
+                // 빈 락커이면서 고장나지 않은 락커만 추가
                 if (locker.getMemberName() == null || locker.getMemberName().trim().isEmpty()) {
                     if (locker.getLockerPassStatus() == null || locker.getLockerPassStatus().trim().isEmpty()) {
-                        availableLockers.add(locker);
+                        // 고장난 락커 제외
+                        if (!"고장".equals(locker.getLockerStatus())) {
+                            availableLockers.add(locker);
+                        }
                     }
                 }
             }
