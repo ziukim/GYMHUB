@@ -26,11 +26,22 @@
         }
 
         /* Header */
-        .page-header {
+        .page-intro {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 24px;
+        }
+        
+        .page-intro-content {
+            flex: 1;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 16px;
         }
 
         .header-left {
@@ -378,18 +389,20 @@
                 
                 <!-- Header -->
                 <div class="page-intro">
-                    <h1>헬스장 정보 관리</h1>
-                    <p>헬스장의 기본 정보를 수정하고 관리하세요</p>
-                </div>
-                <div class="page-header">
-                    <div class="header-left">
-                        <button class="btn btn-danger" onclick="openModal('withdrawModal')" style="background-color: #ff4444; border-color: #ff4444; padding: 8px 20px; border-radius: 8px; color: white; font-size: 14px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-weight: 500;">
-                            헬스장 탈퇴
+                    <div class="page-intro-content">
+                        <h1>헬스장 정보 관리</h1>
+                        <p>헬스장의 기본 정보를 수정하고 관리하세요</p>
+                    </div>
+                    <div class="page-header">
+                        <div class="header-left">
+                            <button class="btn btn-danger" onclick="openModal('withdrawModal')" style="background-color: #ff4444; border-color: #ff4444; padding: 8px 20px; border-radius: 8px; color: white; font-size: 14px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-weight: 500;">
+                                헬스장 탈퇴
+                            </button>
+                        </div>
+                        <button class="save-button" onclick="saveGymInfo()">
+                            <span>저장</span>
                         </button>
                     </div>
-                    <button class="save-button" onclick="saveGymInfo()">
-                        <span>저장</span>
-                    </button>
                 </div>
 
                 <!-- Image Upload Section -->

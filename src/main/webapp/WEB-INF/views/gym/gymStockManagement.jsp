@@ -13,11 +13,22 @@
         /* main-content, page-header는 common.css에 있음 */
         
         /* Header */
-        .page-header {
+        .page-intro {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 24px;
+        }
+        
+        .page-intro-content {
+            flex: 1;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 16px;
         }
         
         .header-left {
@@ -333,16 +344,16 @@
         <div class="main-content">
             <!-- Header -->
             <div class="page-intro">
-                <h1>재고 관리</h1>
-                <p>헬스장의 회원권과 재고를 등록하고 관리하세요</p>
-            </div>
-            <div class="page-header">
-                <div class="header-left">
+                <div class="page-intro-content">
+                    <h1>재고 관리</h1>
+                    <p>헬스장의 회원권과 재고를 등록하고 관리하세요</p>
                 </div>
-                <button class="add-btn" onclick="openAddModal()">
-                    <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
-                    <span>재고 추가</span>
-                </button>
+                <div class="page-header">
+                    <button class="add-btn" onclick="openAddModal()">
+                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
+                        <span>재고 추가</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Stats Cards -->
