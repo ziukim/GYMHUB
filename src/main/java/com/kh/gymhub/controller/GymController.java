@@ -220,7 +220,7 @@ public class GymController {
             }
             model.addAttribute("expiringMembers", expiringMembers);
             
-            // 6. 최근 5개월 회원수 통계 (간단한 구현)
+            // 6. 최근 5개월 회원수 통계 (등록/만료 날짜 기준 집계)
             List<Map<String, Object>> monthlyStats = new ArrayList<>();
             for (int i = 4; i >= 0; i--) {
                 java.util.Calendar monthCal = java.util.Calendar.getInstance();
@@ -228,11 +228,29 @@ public class GymController {
                 int statYear = monthCal.get(java.util.Calendar.YEAR);
                 int statMonth = monthCal.get(java.util.Calendar.MONTH) + 1;
                 
+                // 해당 월 말일 기준 활성 회원 수 (등록일 <= 월말, 만료일 >= 월말)
+                Integer monthMemberCount = membershipMapper.selectActiveMemberCountByGymNoAndMonthEnd(gymNo, statYear, statMonth);
+                if (monthMemberCount == null) {
+                    monthMemberCount = 0;
+                }
+                
+                // 해당 월에 등록된 회원 수
+                Integer monthNewCount = membershipMapper.selectNewMemberCountByGymNoAndMonth(gymNo, statYear, statMonth);
+                if (monthNewCount == null) {
+                    monthNewCount = 0;
+                }
+                
+                // 해당 월에 만료된 회원 수
+                Integer monthExpiredCount = membershipMapper.selectExpiredMemberCountByGymNoAndMonth(gymNo, statYear, statMonth);
+                if (monthExpiredCount == null) {
+                    monthExpiredCount = 0;
+                }
+                
                 Map<String, Object> stat = new HashMap<>();
                 stat.put("month", statMonth);
-                stat.put("memberCount", totalMembers); // 간단히 전체 회원 수로 설정 (실제로는 월별 조회 필요)
-                stat.put("newCount", i == 0 ? newMembers : 0); // 이번 달만 신규 회원 수
-                stat.put("expiredCount", 0); // 만료 수는 별도 조회 필요
+                stat.put("memberCount", monthMemberCount); // 해당 월 말일 기준 활성 회원 수
+                stat.put("newCount", monthNewCount); // 해당 월에 등록된 회원 수
+                stat.put("expiredCount", monthExpiredCount); // 해당 월에 만료된 회원 수
                 monthlyStats.add(stat);
             }
             model.addAttribute("monthlyStats", monthlyStats);

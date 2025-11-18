@@ -685,7 +685,7 @@
                                 <c:if test="${not empty ptInfo.TRAINERNAME}">
                                     <div class="info-row">
                                         <span class="info-label">담당 트레이너</span>
-                                        <span class="info-value">${ptInfo.TRAINERNAME} 코치</span>
+                                        <span class="info-value">${ptInfo.TRAINERNAME} 트레이너</span>
                                     </div>
                                 </c:if>
                                 <c:if test="${not empty ptInfo.NEXTSCHEDULE}">

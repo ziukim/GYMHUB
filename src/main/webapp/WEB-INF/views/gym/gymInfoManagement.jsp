@@ -117,22 +117,25 @@
         }
 
         .upload-button {
-            background: #ff6b00;
+            background-color: #ff6b00;
             border: none;
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 8px 20px;
-            color: #0a0a0a;
-            font-size: 13px;
+            color: white;
+            font-size: 14px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: opacity 0.2s;
+            gap: 8px;
+            transition: all 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 500;
             width: fit-content;
         }
 
         .upload-button:hover {
-            opacity: 0.9;
+            background-color: #ff8500;
+            box-shadow: 0 0 12px rgba(255, 107, 0, 0.4);
         }
 
         /* Form Grid */

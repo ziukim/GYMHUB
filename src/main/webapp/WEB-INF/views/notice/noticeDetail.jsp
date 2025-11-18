@@ -10,23 +10,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
     <style>
         /* noticeDetail 전용 스타일 */
-        /* main-content, page-header, header-left는 common.css에 있음 */
-        
-        /* back-button은 common.css에 있으므로 hover 효과만 추가 */
-        .back-button:hover {
-            transform: translateX(-3px);
-        }
-
-        .page-title-wrapper {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .page-subtitle {
-            font-size: 12px;
-            color: #b0b0b0;
-            margin-top: 4px;
-        }
+        /* main-content, page-intro는 common.css에 있음 */
 
         /* Notice Detail Card */
         .notice-detail-card {
@@ -184,13 +168,9 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
-            <div class="page-header">
-                <div class="header-left">
-                    <button class="back-button" onclick="history.back()">←</button>
-                    <div class="page-title-wrapper">
-                        <h1 class="page-title">공지사항</h1>
-                    </div>
-                </div>
+            <div class="page-intro">
+                <h1>공지사항</h1>
+                <p>공지사항 상세 내용을 확인하세요</p>
             </div>
 
             <!-- Notice Detail Card -->
