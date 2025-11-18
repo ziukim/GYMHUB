@@ -32,6 +32,7 @@
             AND LP.LOCKER_PASS_STATUS = '정상'
         LEFT JOIN MEMBER M ON LP.MEMBER_NO = M.MEMBER_NO
         WHERE L.GYM_NO = #{gymNo}
+
         ORDER BY L.LOCKER_REAL_NUM ASC
     </select>
 
