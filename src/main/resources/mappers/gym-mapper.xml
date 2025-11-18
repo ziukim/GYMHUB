@@ -79,7 +79,7 @@
         G.STATUS,
         G.GYM_CREATEAT,
         G.GYM_UPDATEAT,
-        G.GYM_PHOTO_PATH,
+        G.GYM_PHOTO_PATH
         FROM GYM G
         LEFT JOIN (
         SELECT

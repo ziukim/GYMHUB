@@ -360,12 +360,12 @@
         <div class="main-content">
             <div class="content-wrapper">
                 <!-- Header -->
-                <div class="page-intro">
-                    <h1>헬스장 정보 관리</h1>
-                    <p>헬스장의 기본 정보를 수정하고 관리하세요</p>
-                </div>
                 <div class="page-header">
                     <div class="header-left">
+                        <div style="display: flex; flex-direction: column;">
+                            <h1 style="color: #ff6b00; font-size: 32px; margin: 0 0 8px 0;">헬스장 정보 관리</h1>
+                            <p style="color: #8a6a50; font-size: 14px; margin: 0;">헬스장의 기본 정보를 수정하고 관리하세요</p>
+                        </div>
                     </div>
                     <button class="save-button" onclick="saveGymInfo()">
                         <span>저장</span>

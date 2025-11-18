@@ -227,15 +227,14 @@
             <div class="page-intro">
                 <h1>공지사항</h1>
                 <p>헬스장의 최신 소식을 확인하세요</p>
+                <div class="page-header" style="display: flex; justify-content: flex-end; margin-bottom: 0px;">
+                    <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
+                        <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
+                            <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
+                        </button>
+                    </c:if>
+                </div>
             </div>
-            <div class="page-header" style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
-                <c:if test="${not empty sessionScope.loginMember and sessionScope.loginMember.memberType == 3}">
-                    <button class="add-button" onclick="location.href='${pageContext.request.contextPath}/noticeEnrollForm.no'">
-                        <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"> 공지사항 작성
-                    </button>
-                </c:if>
-            </div>
-
             <!-- Search Section -->
             <div class="search-section">
                 <input type="text" class="search-bar" placeholder="공지사항 검색..." id="searchInput">
