@@ -45,6 +45,9 @@ public interface MembershipMapper {
     // 특정 회원의 회원권 만료 처리 (회원 삭제 시 사용)
     int expireMembershipByMemberNo(@Param("memberNo") int memberNo, @Param("gymNo") int gymNo);
     
+    // 회원 삭제 시 회원권 상태를 환불로 변경
+    int refundMembershipsByMemberNo(@Param("memberNo") int memberNo, @Param("gymNo") int gymNo);
+    
     // 회원 탈퇴 시 모든 회원권 중단 처리
     int suspendAllMembershipsByMemberNo(@Param("memberNo") int memberNo);
     

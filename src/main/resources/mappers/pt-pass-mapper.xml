@@ -63,5 +63,14 @@
         WHERE PT_PASS_NO = #{ptPassNo}
     </update>
 
+    <!-- 회원 삭제 시 PT 이용권 만료 처리 (PT_END를 현재 날짜로 설정) -->
+    <update id="expirePtPassesByMemberNo">
+        UPDATE PT_PASS
+        SET PT_END = TRUNC(SYSDATE)
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND PT_END > TRUNC(SYSDATE)
+    </update>
+
 </mapper>
 

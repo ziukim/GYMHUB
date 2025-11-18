@@ -1036,7 +1036,11 @@
             .then(function(data) {
                 document.getElementById('editMachineManageNo').value = data.machineManageNo;
                 document.getElementById('modalMachineName').textContent = data.machineName + ' - ' + data.brand;
-                document.getElementById('editMachineStatus').value = data.machineStatus || 'Y';
+                
+                // 원래 상태를 저장 (상태 변경 감지용)
+                var originalStatus = data.machineStatus || 'Y';
+                document.getElementById('editMachineStatus').setAttribute('data-original-status', originalStatus);
+                document.getElementById('editMachineStatus').value = originalStatus;
 
                 if (data.machineCheckedDate) {
                     var checkedDate = new Date(data.machineCheckedDate);
@@ -1063,6 +1067,34 @@
         var day = String(date.getDate()).padStart(2, '0');
         return year + '-' + month + '-' + day;
     }
+
+    // 현재 날짜 + 28일 계산
+    function getNextCheckDate(checkDate) {
+        var date = new Date(checkDate);
+        date.setDate(date.getDate() + 28);
+        return formatDateForInput(date);
+    }
+
+    // 상태 변경 이벤트 리스너 (점검중 -> 정상일 때 날짜 자동 설정)
+    document.addEventListener('DOMContentLoaded', function() {
+        var statusSelect = document.getElementById('editMachineStatus');
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                var currentStatus = this.value;
+                var originalStatus = this.getAttribute('data-original-status');
+                
+                // 점검중(I)에서 정상(Y)으로 변경될 때
+                if (originalStatus === 'I' && currentStatus === 'Y') {
+                    // 최근 점검일을 현재 날짜로 설정
+                    var today = new Date();
+                    document.getElementById('editMachineCheckedDate').value = formatDateForInput(today);
+                    
+                    // 다음 점검일을 현재 날짜 + 28일로 설정
+                    document.getElementById('editMachineNextCheck').value = getNextCheckDate(today);
+                }
+            });
+        }
+    });
 
     // 기구 정보 수정
     function submitMachineUpdate() {

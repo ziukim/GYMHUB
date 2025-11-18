@@ -13,5 +13,8 @@ public interface PtPassMapper {
     
     // PT 이용권 횟수 추가
     int updatePtPassCount(@Param("ptPassNo") int ptPassNo, @Param("additionalCount") int additionalCount);
+    
+    // 회원 삭제 시 PT 이용권 만료 처리
+    int expirePtPassesByMemberNo(@Param("memberNo") int memberNo, @Param("gymNo") int gymNo);
 }
 

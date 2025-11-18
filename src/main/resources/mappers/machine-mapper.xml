@@ -112,5 +112,14 @@
         WHERE MACHINE_MANAGE_NO = #{machineManageNo}
     </delete>
 
+    <!-- 7. 다음 점검일이 오늘인 기구들의 상태를 점검중(I)으로 변경 -->
+    <update id="updateMachineStatusToInspection">
+        UPDATE MACHINE_MANAGE
+        SET MACHINE_STATUS = 'I'
+        WHERE MACHINE_NEXT_CHECK IS NOT NULL
+          AND TRUNC(MACHINE_NEXT_CHECK) = TRUNC(SYSDATE)
+          AND MACHINE_STATUS != 'I'
+    </update>
+
 </mapper>
 

@@ -43,5 +43,29 @@
         WHERE PURCHASE_NO = #{purchaseNo}
     </select>
 
+    <!-- 회원 삭제 시 구매 상태를 환불로 변경 -->
+    <update id="refundPurchasesByMemberNo">
+        UPDATE PURCHASE
+        SET PURCHASE_STATUS = '환불'
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND PURCHASE_STATUS = '결제'
+    </update>
+
+    <!-- 회원번호와 헬스장번호로 구매 목록 조회 -->
+    <select id="selectPurchasesByMemberNoAndGymNo" resultMap="purchaseResultMap">
+        SELECT PURCHASE_NO,
+               MEMBER_NO,
+               GYM_NO,
+               PURCHASE_DATE,
+               PURCHASE_COST,
+               PURCHASE_STATUS
+        FROM PURCHASE
+        WHERE MEMBER_NO = #{memberNo}
+          AND GYM_NO = #{gymNo}
+          AND PURCHASE_STATUS = '결제'
+        ORDER BY PURCHASE_DATE DESC
+    </select>
+
 </mapper>
 

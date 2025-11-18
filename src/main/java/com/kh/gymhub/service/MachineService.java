@@ -45,5 +45,11 @@ public interface MachineService {
      * @return 삭제 성공 여부
      */
     int deleteMachineManage(int machineManageNo);
+
+    /**
+     * 다음 점검일이 오늘인 기구들의 상태를 점검중으로 변경
+     * @return 업데이트된 기구 수
+     */
+    int updateMachineStatusToInspection();
 }
 
