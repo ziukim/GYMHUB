@@ -339,7 +339,7 @@
             <div class="page-header">
                 <div class="header-left">
                 </div>
-                <button class="add-btn" onclick="openAddModal()">햐햐
+                <button class="add-btn" onclick="openAddModal()">
                     <img src="${pageContext.request.contextPath}/resources/images/icon/add.png" alt="추가" style="width: 16px; height: 16px;">
                     <span>재고 추가</span>
                 </button>
