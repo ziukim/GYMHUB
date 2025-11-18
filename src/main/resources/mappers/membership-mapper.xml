@@ -230,6 +230,15 @@
         WHERE MEMBERSHIP_NO = #{membershipNo}
     </update>
 
+    <!-- 회원권 시작일과 만료일 업데이트 -->
+    <update id="updateMembershipDates">
+        UPDATE MEMBERSHIP
+        SET START_DATE = #{newStartDate},
+            END_DATE = #{newEndDate},
+            MEMBERSHIP_UPDATE = SYSDATE
+        WHERE MEMBERSHIP_NO = #{membershipNo}
+    </update>
+
     <!-- 만료된 회원권 상태 업데이트 (END_DATE가 SYSDATE보다 이전이고 상태가 '정상'인 회원권) -->
     <update id="updateExpiredMemberships">
         UPDATE MEMBERSHIP

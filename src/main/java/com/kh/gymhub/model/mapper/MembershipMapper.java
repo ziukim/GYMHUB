@@ -36,6 +36,9 @@ public interface MembershipMapper {
     // 회원권 만료일 연장
     int updateMembershipEndDate(@Param("membershipNo") int membershipNo, @Param("newEndDate") java.util.Date newEndDate);
     
+    // 회원권 시작일과 만료일 업데이트
+    int updateMembershipDates(@Param("membershipNo") int membershipNo, @Param("newStartDate") java.util.Date newStartDate, @Param("newEndDate") java.util.Date newEndDate);
+    
     // 만료된 회원권 상태 업데이트 (END_DATE가 SYSDATE보다 이전인 회원권)
     int updateExpiredMemberships();
     

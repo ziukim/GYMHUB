@@ -2200,53 +2200,64 @@ public class GymController {
             String lockerRealNum = requestData.get("lockerRealNum") != null ? requestData.get("lockerRealNum").toString() : null;
             String originalLockerRealNum = requestData.get("originalLockerRealNum") != null ? requestData.get("originalLockerRealNum").toString() : null;
             
-            // 이용권 연장 처리
+            // 이용권 수정 처리 (기존 회원권이 있는 경우만)
             if (productNos != null && !productNos.isEmpty()) {
                 // 회원권 정보 조회
                 Membership membership = membershipMapper.selectMembershipByMemberNo(memberNo, gymNo);
                 
-                if (membership != null) {
-                    // 상품 정보 조회하여 기간 계산
-                    List<Product> allProducts = productService.getProductsByGymNo(gymNo);
-                    int maxDays = 0;
-                    
-                    for (Integer productNo : productNos) {
-                        Product product = null;
-                        for (int i = 0; i < allProducts.size(); i++) {
-                            Product p = allProducts.get(i);
-                            if (p != null && p.getProductNo() == productNo) {
-                                product = p;
-                                break;
-                            }
-                        }
-                        
-                        if (product != null && ("회원권".equals(product.getProductType()) || "락커".equals(product.getProductType()))) {
-                            // durationMonths는 실제로 일 수를 저장함
-                            int days = product.getDurationMonths();
-                            maxDays = Math.max(maxDays, days);
+                if (membership == null) {
+                    result.put("success", false);
+                    result.put("message", "기존 회원권이 없습니다. 회원 등록 기능을 사용해주세요.");
+                    return result;
+                }
+                
+                // 상품 정보 조회하여 기간 계산
+                List<Product> allProducts = productService.getProductsByGymNo(gymNo);
+                int maxDays = 0;
+                
+                for (Integer productNo : productNos) {
+                    Product product = null;
+                    for (int i = 0; i < allProducts.size(); i++) {
+                        Product p = allProducts.get(i);
+                        if (p != null && p.getProductNo() == productNo) {
+                            product = p;
+                            break;
                         }
                     }
                     
-                    if (maxDays > 0) {
-                        // 기존 만료일에서 기간 추가
-                        java.util.Date currentEndDate = membership.getEndDate();
-                        if (currentEndDate != null) {
-                            java.util.Calendar cal = java.util.Calendar.getInstance();
-                            cal.setTime(currentEndDate);
-                            cal.add(java.util.Calendar.DAY_OF_MONTH, maxDays);
-                            java.util.Date newEndDate = cal.getTime();
-                            
-                            // 회원권 만료일 연장
-                            int updateResult = membershipMapper.updateMembershipEndDate(membership.getMembershipNo(), new java.sql.Date(newEndDate.getTime()));
-                            
-                            if (updateResult > 0) {
-                                result.put("extensionApplied", true);
-                                result.put("extensionDays", maxDays);
-                            }
-                        }
+                    if (product != null && ("회원권".equals(product.getProductType()) || "락커".equals(product.getProductType()))) {
+                        // durationMonths는 실제로 일 수를 저장함
+                        int days = product.getDurationMonths();
+                        maxDays = Math.max(maxDays, days);
                     }
-                } else {
-                    result.put("message", "활성 회원권을 찾을 수 없습니다.");
+                }
+                
+                if (maxDays > 0) {
+                    // 시작일을 현재 날짜로 설정 (수정일 기준)
+                    java.util.Date startDate = new java.util.Date();
+                    
+                    // 만료일 계산 (시작일 + 기간)
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(startDate);
+                    cal.add(java.util.Calendar.DAY_OF_MONTH, maxDays);
+                    java.util.Date endDate = cal.getTime();
+                    
+                    // 회원권 시작일과 만료일 업데이트
+                    int updateResult = membershipMapper.updateMembershipDates(
+                        membership.getMembershipNo(), 
+                        new java.sql.Date(startDate.getTime()),
+                        new java.sql.Date(endDate.getTime())
+                    );
+                    
+                    if (updateResult > 0) {
+                        result.put("membershipUpdated", true);
+                        result.put("startDate", new java.text.SimpleDateFormat("yyyy-MM-dd").format(startDate));
+                        result.put("endDate", new java.text.SimpleDateFormat("yyyy-MM-dd").format(endDate));
+                    } else {
+                        result.put("success", false);
+                        result.put("message", "회원권 정보 업데이트에 실패했습니다.");
+                        return result;
+                    }
                 }
             }
             
