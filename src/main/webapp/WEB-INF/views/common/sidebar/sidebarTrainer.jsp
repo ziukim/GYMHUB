@@ -298,6 +298,11 @@
             <span>공지사항</span>
         </a>
 
+        <a href="${pageContext.request.contextPath}/ptSchedule.tr" class="nav-item ${currentPage == 'ptSchedule' ? 'active' : ''}">
+            <img src="${pageContext.request.contextPath}/resources/images/icon/calendar.png" alt="PT 스케줄" class="nav-icon">
+            <span>PT 스케줄</span>
+        </a>
+
         <a href="javascript:void(0);" onclick="openLogoutModal(); return false;" class="nav-item logout">
             <img src="${pageContext.request.contextPath}/resources/images/icon/output.png" alt="로그아웃" class="nav-icon">
             <span>로그아웃</span>

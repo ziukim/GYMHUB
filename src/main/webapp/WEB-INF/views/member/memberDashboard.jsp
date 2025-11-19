@@ -542,7 +542,7 @@
 
         .modal-btn-submit {
             background: #ff6b00;
-            color: #0a0a0a;
+            color: white;
             font-weight: 600;
         }
 
@@ -1170,7 +1170,7 @@
                 <!-- Buttons -->
                 <div style="display: flex; gap: 12px; padding-top: 16px;">
                     <button class="modal-btn modal-btn-cancel" id="cancelAddGoalBtn">취소</button>
-                    <button class="modal-btn modal-btn-submit" id="submitAddGoalBtn">목표 설정!</button>
+                    <button class="modal-btn modal-btn-submit" id="submitAddGoalBtn">목표 설정</button>
                 </div>
             </div>
         </div>

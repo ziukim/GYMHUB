@@ -51,5 +51,15 @@ public class PtReserveServiceImpl implements PtReserveService {
     public List<PtReserve> getApprovedOrRejectedPtReservesByGymNoAndDate(int gymNo, String reserveDate) {
         return ptReserveMapper.selectApprovedOrRejectedPtReservesByGymNoAndDate(gymNo, reserveDate);
     }
+
+    @Override
+    public List<PtReserve> getApprovedPtReservesByTrainerNo(int ptTrainerNo) {
+        return ptReserveMapper.selectApprovedPtReservesByTrainerNo(ptTrainerNo);
+    }
+
+    @Override
+    public List<PtReserve> getApprovedPtReservesByTrainerNoAndDate(int ptTrainerNo, String reserveDate) {
+        return ptReserveMapper.selectApprovedPtReservesByTrainerNoAndDate(ptTrainerNo, reserveDate);
+    }
 }
 

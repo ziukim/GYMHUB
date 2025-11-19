@@ -25,6 +25,12 @@ public interface PtReserveService {
     
     // 날짜별 승인됨/거절됨 PT 예약 조회 (헬스장별)
     List<PtReserve> getApprovedOrRejectedPtReservesByGymNoAndDate(int gymNo, String reserveDate);
+    
+    // 트레이너별 승인된 PT 예약 조회 (PT_TRAINER_NO 기반)
+    List<PtReserve> getApprovedPtReservesByTrainerNo(int ptTrainerNo);
+    
+    // 날짜별 트레이너별 승인된 PT 예약 조회 (PT_TRAINER_NO 기반)
+    List<PtReserve> getApprovedPtReservesByTrainerNoAndDate(int ptTrainerNo, String reserveDate);
 
 }
 
