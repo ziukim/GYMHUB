@@ -517,27 +517,30 @@
         /* Modal Buttons */
         .modal-btn {
             flex: 1;
-            height: 36px;
+            height: 40px;
+            padding: 12px 24px;
             border-radius: 8px;
             font-family: 'Noto Sans KR', sans-serif;
             font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
             border: none;
-        }
-
-        .modal-btn:hover {
-            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-btn-cancel {
-            background: #0a0a0a;
-            border: 1px solid #8a6a50;
+            background: #2d1810;
+            border: 2px solid #8a6a50;
             color: #8a6a50;
         }
 
         .modal-btn-cancel:hover {
-            background: #2d1810;
+            background: #3d2815;
+            border-color: #ffa366;
+            color: #ffa366;
         }
 
         .modal-btn-submit {
