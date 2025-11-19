@@ -297,11 +297,63 @@
                 grid-template-columns: 1fr;
             }
 
-            .tabs-container {
-                flex-direction: column;
-            }
+        .tabs-container {
+            flex-direction: column;
         }
-    </style>
+    }
+
+    /* 날짜 필터 스타일 */
+    .date-filter-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .date-selector {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background-color: #2d1810;
+        border: 2px solid #ff6b00;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex: 1;
+        max-width: 300px;
+    }
+
+    .date-selector:hover {
+        border-color: #ff8533;
+        background-color: #3a2a1f;
+    }
+
+    .date-text {
+        flex: 1;
+        color: #ffa366;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .filter-clear-btn {
+        padding: 12px 20px;
+        background-color: transparent;
+        border: 2px solid #8a6a50;
+        border-radius: 8px;
+        color: #8a6a50;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-clear-btn:hover {
+        border-color: #ff6b00;
+        color: #ff6b00;
+        background-color: rgba(255, 107, 0, 0.1);
+    }
+</style>
 </head>
 <body>
 <div class="app-container">
@@ -340,8 +392,25 @@
             </button>
         </div>
 
+        <!-- 날짜 필터 -->
+        <div class="date-filter-container">
+            <div class="date-selector" onclick="openDateCalendar()">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M6.66667 1.66667V5" stroke="#8A6A50" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M13.3333 1.66667V5" stroke="#8A6A50" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15.8333 3.33334H4.16667C3.24619 3.33334 2.5 4.07953 2.5 5V16.6667C2.5 17.5872 3.24619 18.3333 4.16667 18.3333H15.8333C16.7538 18.3333 17.5 17.5872 17.5 16.6667V5C17.5 4.07953 16.7538 3.33334 15.8333 3.33334Z" stroke="#8A6A50" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2.5 8.33334H17.5" stroke="#8A6A50" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="date-text" id="selectedDateText">전체 날짜</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M5 7.5L10 12.5L15 7.5" stroke="#8A6A50" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <button class="filter-clear-btn" id="clearDateFilter" onclick="clearDateFilter()" style="display: none;">필터 초기화</button>
+        </div>
+
         <!-- 대기중 탭 -->
-        <div class="tab-panel active" id="pending-panel">
+        <div class="tab-panel active" id="pending-panel" data-tab="pending">
             <c:choose>
                 <c:when test="${not empty pendingPtReserves}">
                     <c:forEach var="ptReserve" items="${pendingPtReserves}">
@@ -403,7 +472,7 @@
         </div>
 
         <!-- 완성 내역 탭 -->
-        <div class="tab-panel" id="completed-panel">
+        <div class="tab-panel" id="completed-panel" data-tab="completed">
             <c:choose>
                 <c:when test="${not empty approvedOrRejectedPtReserves}">
                     <c:forEach var="ptReserve" items="${approvedOrRejectedPtReserves}">
@@ -470,6 +539,31 @@
     </div>
 </div>
 
+<!-- 날짜 선택 달력 팝업 -->
+<div class="calendar-overlay" id="dateCalendarOverlay" onclick="closeDateCalendarOnOverlay(event)">
+    <div class="calendar-popup" onclick="event.stopPropagation()">
+        <div class="calendar-header">
+            <button type="button" class="calendar-nav-btn" onclick="prevDateMonth()">◀</button>
+            <div class="calendar-month" id="dateCalendarMonth"></div>
+            <button type="button" class="calendar-nav-btn" onclick="nextDateMonth()">▶</button>
+        </div>
+
+        <div class="calendar-weekdays">
+            <div class="calendar-weekday">일</div>
+            <div class="calendar-weekday">월</div>
+            <div class="calendar-weekday">화</div>
+            <div class="calendar-weekday">수</div>
+            <div class="calendar-weekday">목</div>
+            <div class="calendar-weekday">금</div>
+            <div class="calendar-weekday">토</div>
+        </div>
+
+        <div class="calendar-days" id="dateCalendarDays"></div>
+
+        <button type="button" class="calendar-close-btn" onclick="closeDateCalendar()">확인</button>
+    </div>
+</div>
+
 <!-- 트레이너 배정 모달 (common.css의 .modal-overlay 사용) -->
 <div class="modal-overlay" id="trainerModal">
     <div class="modal-container">
@@ -500,6 +594,9 @@
     var contextPath = '${pageContext.request.contextPath}';
     var currentCard = null;
     var currentPtReserveNo = null;
+    var selectedFilterDate = null;
+    var dateCurrentMonth = new Date();
+    var dateTempSelected = null;
 
     // 탭 전환 기능
     function initializeTabs() {
@@ -528,6 +625,11 @@
                 var targetPanel = document.getElementById(targetTab + '-panel');
                 if (targetPanel) {
                     targetPanel.classList.add('active');
+                }
+
+                // 날짜 필터가 적용되어 있으면 해당 탭의 데이터도 필터링
+                if (selectedFilterDate) {
+                    filterByDate();
                 }
             });
         }
@@ -674,6 +776,296 @@
         // 탭 초기화
         initializeTabs();
     });
+
+    // ========================================
+    // 날짜 필터링 관련 함수
+    // ========================================
+
+    // 달력 열기
+    function openDateCalendar() {
+        dateTempSelected = selectedFilterDate ? new Date(selectedFilterDate) : null;
+        renderDateCalendar();
+        document.getElementById('dateCalendarOverlay').classList.add('show');
+    }
+
+    // 달력 닫기
+    function closeDateCalendar() {
+        if (dateTempSelected) {
+            selectedFilterDate = new Date(dateTempSelected);
+            updateDateFilterDisplay();
+            filterByDate();
+        }
+        document.getElementById('dateCalendarOverlay').classList.remove('show');
+    }
+
+    // 오버레이 클릭 시 달력 닫기
+    function closeDateCalendarOnOverlay(event) {
+        if (event.target.id === 'dateCalendarOverlay') {
+            closeDateCalendar();
+        }
+    }
+
+    // 달력 렌더링
+    function renderDateCalendar() {
+        var year = dateCurrentMonth.getFullYear();
+        var month = dateCurrentMonth.getMonth();
+
+        // 월 표시
+        var monthNames = ['1월', '2월', '3월', '4월', '5월', '6월',
+            '7월', '8월', '9월', '10월', '11월', '12월'];
+        document.getElementById('dateCalendarMonth').textContent = year + '년 ' + monthNames[month];
+
+        // 날짜 계산
+        var firstDay = new Date(year, month, 1).getDay();
+        var lastDate = new Date(year, month + 1, 0).getDate();
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        var daysContainer = document.getElementById('dateCalendarDays');
+        daysContainer.innerHTML = '';
+
+        // 이전 달 빈 칸
+        for (var i = 0; i < firstDay; i++) {
+            var emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day other-month';
+            daysContainer.appendChild(emptyDay);
+        }
+
+        // 현재 달 날짜
+        for (var date = 1; date <= lastDate; date++) {
+            var dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day current-month';
+            dayElement.textContent = date;
+
+            var currentDate = new Date(year, month, date);
+            currentDate.setHours(0, 0, 0, 0);
+
+            // 오늘 날짜 표시
+            if (currentDate.getTime() === today.getTime()) {
+                dayElement.classList.add('today');
+            }
+
+            // 날짜 선택 이벤트 (과거 날짜도 선택 가능)
+            dayElement.onclick = (function(d) {
+                return function() {
+                    selectFilterDate(new Date(year, month, d));
+                };
+            })(date);
+
+            // 선택된 날짜 표시
+            if (dateTempSelected &&
+                dateTempSelected.getFullYear() === year &&
+                dateTempSelected.getMonth() === month &&
+                dateTempSelected.getDate() === date) {
+                dayElement.classList.add('selected');
+            }
+
+            daysContainer.appendChild(dayElement);
+        }
+    }
+
+    // 날짜 선택
+    function selectFilterDate(date) {
+        dateTempSelected = date;
+        renderDateCalendar();
+    }
+
+    // 이전 달
+    function prevDateMonth() {
+        dateCurrentMonth.setMonth(dateCurrentMonth.getMonth() - 1);
+        renderDateCalendar();
+    }
+
+    // 다음 달
+    function nextDateMonth() {
+        dateCurrentMonth.setMonth(dateCurrentMonth.getMonth() + 1);
+        renderDateCalendar();
+    }
+
+    // 선택된 날짜 표시 업데이트
+    function updateDateFilterDisplay() {
+        if (selectedFilterDate) {
+            var weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            var year = selectedFilterDate.getFullYear();
+            var month = selectedFilterDate.getMonth() + 1;
+            var day = selectedFilterDate.getDate();
+            var weekday = weekdays[selectedFilterDate.getDay()];
+
+            var dateString = year + '년 ' + month + '월 ' + day + '일 ' + weekday;
+            document.getElementById('selectedDateText').textContent = dateString;
+            document.getElementById('clearDateFilter').style.display = 'block';
+        } else {
+            document.getElementById('selectedDateText').textContent = '전체 날짜';
+            document.getElementById('clearDateFilter').style.display = 'none';
+        }
+    }
+
+    // 날짜별 필터링
+    function filterByDate() {
+        var activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+        var dateStr = null;
+
+        if (selectedFilterDate) {
+            var year = selectedFilterDate.getFullYear();
+            var month = String(selectedFilterDate.getMonth() + 1).padStart(2, '0');
+            var day = String(selectedFilterDate.getDate()).padStart(2, '0');
+            dateStr = year + '-' + month + '-' + day;
+        }
+
+        // 날짜가 선택되지 않았으면 전체 조회
+        if (!dateStr) {
+            location.reload();
+            return;
+        }
+
+        // AJAX로 날짜별 조회
+        fetch(contextPath + '/pt/filterByDate.ajax?date=' + dateStr + '&tab=' + activeTab)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    renderFilteredReserves(data.reserves, activeTab);
+                } else {
+                    alert(data.message || '데이터 조회에 실패했습니다.');
+                }
+            })
+            .catch(function(error) {
+                console.error('날짜 필터링 오류:', error);
+                alert('날짜 필터링 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 필터링된 예약 목록 렌더링
+    function renderFilteredReserves(reserves, tab) {
+        var panel = document.getElementById(tab + '-panel');
+        var container = panel.querySelector('.pt-request-card') ? panel : panel;
+
+        // 기존 카드 제거
+        var existingCards = panel.querySelectorAll('.pt-request-card');
+        for (var i = 0; i < existingCards.length; i++) {
+            existingCards[i].remove();
+        }
+
+        // 빈 메시지 제거
+        var emptyMsg = panel.querySelector('div[style*="text-align: center"]');
+        if (emptyMsg) {
+            emptyMsg.remove();
+        }
+
+        if (reserves && reserves.length > 0) {
+            // 예약 카드 생성
+            for (var i = 0; i < reserves.length; i++) {
+                var reserve = reserves[i];
+                var card = createReserveCard(reserve, tab);
+                panel.appendChild(card);
+            }
+        } else {
+            // 빈 메시지 표시
+            var emptyDiv = document.createElement('div');
+            emptyDiv.style.cssText = 'text-align: center; padding: 40px; color: #b0b0b0;';
+            emptyDiv.textContent = tab === 'pending' ? '해당 날짜에 대기중인 PT 신청이 없습니다.' : '해당 날짜에 승인/거절 내역이 없습니다.';
+            panel.appendChild(emptyDiv);
+        }
+
+        // 카운트 업데이트
+        var countElement = document.getElementById(tab === 'pending' ? 'pendingCount' : 'completedCount');
+        if (countElement) {
+            countElement.textContent = ' (' + (reserves ? reserves.length : 0) + ')';
+        }
+    }
+
+    // 예약 카드 생성
+    function createReserveCard(reserve, tab) {
+        var card = document.createElement('div');
+        card.className = 'pt-request-card';
+        card.setAttribute('data-pt-reserve-no', reserve.ptReserveNo);
+
+        var statusClass = '';
+        var statusText = '';
+        if (tab === 'pending') {
+            statusClass = 'status-pending';
+            statusText = '대기중';
+        } else if (reserve.ptReserveStatus === '승인됨') {
+            statusClass = 'status-completed';
+            statusText = '승인됨';
+        } else {
+            statusClass = 'status-cancelled';
+            statusText = '거절됨';
+        }
+
+        var reserveDate = '';
+        if (reserve.ptReserveTime) {
+            var date = new Date(reserve.ptReserveTime);
+            var year = date.getFullYear();
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var day = String(date.getDate()).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            reserveDate = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+        }
+
+        var html = '<div class="card-header-section">' +
+            '<div class="user-icon">' +
+            '<img src="' + contextPath + '/resources/images/icon/person.png" alt="사용자">' +
+            '</div>' +
+            '<div class="card-user-info">' +
+            '<div class="card-user-name">' + (reserve.memberName || '') + '</div>' +
+            '<div class="card-user-id">회원 번호: ' + (reserve.memberNo || '') + '</div>' +
+            '</div>' +
+            '<span class="card-status ' + statusClass + '">' + statusText + '</span>' +
+            '</div>' +
+            '<div class="card-details">' +
+            '<div class="detail-item">' +
+            '<span class="detail-label">' +
+            '<img src="' + contextPath + '/resources/images/icon/calendar.png" alt="예약일" class="detail-icon"> 예약일:' +
+            '</span>' +
+            '<span class="detail-value">' + reserveDate + '</span>' +
+            '</div>';
+
+        if (tab === 'completed' && reserve.ptReserveStatus === '승인됨' && reserve.trainerName) {
+            html += '<div class="detail-item">' +
+                '<span class="detail-label">' +
+                '<img src="' + contextPath + '/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 배정 트레이너:' +
+                '</span>' +
+                '<span class="detail-value">' + reserve.trainerName + '</span>' +
+                '</div>';
+        } else if (reserve.ptTrainer) {
+            html += '<div class="detail-item">' +
+                '<span class="detail-label">' +
+                '<img src="' + contextPath + '/resources/images/icon/person.png" alt="트레이너" class="detail-icon"> 희망 트레이너:' +
+                '</span>' +
+                '<span class="detail-value">' + (reserve.desiredTrainerName || reserve.ptTrainer + '번') + '</span>' +
+                '</div>';
+        }
+
+        html += '<div class="detail-item">' +
+            '<span class="detail-label">' +
+            '<img src="' + contextPath + '/resources/images/icon/call.png" alt="연락처" class="detail-icon"> 연락처:' +
+            '</span>' +
+            '<span class="detail-value">' + (reserve.memberPhone || '-') + '</span>' +
+            '</div>' +
+            '</div>';
+
+        if (tab === 'pending') {
+            html += '<div class="card-actions">' +
+                '<button class="action-btn approve-btn" onclick="handleApprove(this)">✓ 승인</button>' +
+                '<button class="action-btn reject-btn" onclick="handleReject(this)">✕ 거절</button>' +
+                '</div>';
+        }
+
+        html += '</div>';
+        card.innerHTML = html;
+
+        return card;
+    }
+
+    // 날짜 필터 초기화
+    function clearDateFilter() {
+        selectedFilterDate = null;
+        updateDateFilterDisplay();
+        location.reload();
+    }
 </script>
 </body>
 </html>

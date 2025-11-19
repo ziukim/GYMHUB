@@ -128,4 +128,21 @@
         WHERE INQUIRY_NO = #{inquiryNo}
     </update>
 
+    <!-- ✅ 날짜별 예약 상담 조회 (헬스장별) -->
+    <select id="selectReservationsByGymNoAndDate" resultMap="inquiryReserveWithMemberResultMap">
+        SELECT
+        IR.INQUIRY_NO,
+        IR.GYM_NO,
+        IR.MEMBER_NO,
+        IR.VISIT_DATETIME,
+        IR.INQUIRY_STATUS,
+        IR.INQUIRY_MEMO,
+        M.MEMBER_NAME,
+        M.MEMBER_PHONE
+        FROM INQUIRY_RESERVE IR
+        JOIN MEMBER M ON IR.MEMBER_NO = M.MEMBER_NO
+        WHERE IR.GYM_NO = #{gymNo}
+        AND TRUNC(IR.VISIT_DATETIME) = TO_DATE(#{reserveDate}, 'YYYY-MM-DD')
+        ORDER BY IR.VISIT_DATETIME DESC
+    </select>
 </mapper>

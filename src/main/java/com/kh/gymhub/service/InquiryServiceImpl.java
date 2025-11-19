@@ -163,4 +163,9 @@ public class InquiryServiceImpl implements InquiryService {
     public int updateInquiryStatus(int inquiryNo, String status) {
         return inquiryMapper.updateInquiryStatus(inquiryNo, status);
     }
+
+    @Override
+    public List<InquiryReserve> getReservationsByGymNoAndDate(int gymNo, String reserveDate) {
+        return inquiryMapper.selectReservationsByGymNoAndDate(gymNo, reserveDate);
+    }
 }

@@ -69,4 +69,12 @@ public interface InquiryMapper {
      * @return 성공 시 1, 실패 시 0
      */
     int updateInquiryStatus(@Param("inquiryNo") int inquiryNo, @Param("status") String status);
+    
+    /**
+     * 날짜별 예약 상담 조회 (헬스장별)
+     * @param gymNo 헬스장 번호
+     * @param reserveDate 예약 날짜 (YYYY-MM-DD)
+     * @return 예약 목록
+     */
+    List<InquiryReserve> selectReservationsByGymNoAndDate(@Param("gymNo") int gymNo, @Param("reserveDate") String reserveDate);
 }

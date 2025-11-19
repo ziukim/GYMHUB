@@ -213,4 +213,41 @@ public class BookingController {
 
         return result;
     }
+
+    // AJAX: 날짜별 예약 상담 조회
+    @GetMapping("/reservation/filterByDate.ajax")
+    @ResponseBody
+    public Map<String, Object> filterReservationsByDate(@RequestParam("date") String date, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null || loginMember.getMemberType() != 3) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 헬스장 번호 가져오기
+        Integer gymNo = loginMember.getGymNo();
+        if (gymNo == null) {
+            result.put("success", false);
+            result.put("message", "헬스장 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        
+        try {
+            List<InquiryReserve> reservations = inquiryService.getReservationsByGymNoAndDate(gymNo, date);
+            
+            result.put("success", true);
+            result.put("reservations", reservations != null ? reservations : new ArrayList<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "데이터 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
+    }
 }
