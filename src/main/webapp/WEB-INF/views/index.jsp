@@ -1934,25 +1934,29 @@
                             '<p>주말: ' + weekendHour + '</p>';
                     }
 
-                    // 이미지 설정 - 수정된 부분
+                    // 이미지 설정
                     const gymImage = document.getElementById('gymDetailImage');
-                    if (gymImage) {
-                        const mainImageContainer = gymImage.parentElement;
-                        if (mainImageContainer) {
-                            if (gym.gymPhotoPath) {
-                                // 이미지가 있는 경우
-                                gymImage.style.display = 'block';
-                                // 슬래시가 이미 있으면 contextPath만, 없으면 contextPath + /
-                                if (gym.gymPhotoPath.startsWith('/')) {
-                                    gymImage.src = '${pageContext.request.contextPath}' + gym.gymPhotoPath;
-                                } else {
-                                    gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
-                                }
+                    const mainImageContainer = gymImage ? gymImage.parentElement : null;
+                    
+                    // 이미지 요소가 없거나 innerHTML로 인해 사라진 경우 복원
+                    if (mainImageContainer && !mainImageContainer.querySelector('img#gymDetailImage')) {
+                        mainImageContainer.innerHTML = '<img src="${pageContext.request.contextPath}/resources/images/icon/logo.png" alt="헬스장 이미지" id="gymDetailImage" style="width: 100%; height: 100%; object-fit: cover; display: block;">';
+                    }
+                    
+                    // 이미지 경로 설정
+                    const currentGymImage = document.getElementById('gymDetailImage');
+                    if (currentGymImage) {
+                        currentGymImage.style.display = 'block';
+                        if (gym.gymPhotoPath) {
+                            // 이미지가 있는 경우
+                            if (gym.gymPhotoPath.startsWith('/')) {
+                                currentGymImage.src = '${pageContext.request.contextPath}' + gym.gymPhotoPath;
                             } else {
-                                // 이미지가 없는 경우
-                                gymImage.style.display = 'none';
-                                mainImageContainer.innerHTML = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #8a6a50; font-size: 14px;">헬스장 이미지가 없습니다</div>';
+                                currentGymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
                             }
+                        } else {
+                            // 이미지가 없는 경우 - 기본 로고 표시
+                            currentGymImage.src = '${pageContext.request.contextPath}/resources/images/icon/logo.png';
                         }
                     }
 
