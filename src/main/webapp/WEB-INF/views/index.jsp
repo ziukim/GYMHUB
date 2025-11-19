@@ -1870,137 +1870,154 @@
                     const gymDetail = data.gymDetail || {};
 
                     // 모달에 데이터 설정
-                    document.getElementById('gymDetailTitle').textContent = gym.gymName || '헬스장';
-                    document.getElementById('gymDetailDescription').textContent = gymDetail.intro || gym.intro || '소개 정보가 없습니다.';
+                    const gymDetailTitle = document.getElementById('gymDetailTitle');
+                    const gymDetailDescription = document.getElementById('gymDetailDescription');
+                    if (gymDetailTitle) gymDetailTitle.textContent = gym.gymName || '헬스장';
+                    if (gymDetailDescription) gymDetailDescription.textContent = gymDetail.intro || gym.intro || '소개 정보가 없습니다.';
 
                     // 주소 설정 (detailAddress가 있으면 우선, 없으면 gymAddress)
                     const address = gymDetail.detailAddress || gym.gymAddress || '주소 정보 없음';
-                    document.getElementById('gymDetailAddress').textContent = address;
+                    const gymDetailAddress = document.getElementById('gymDetailAddress');
+                    if (gymDetailAddress) gymDetailAddress.textContent = address;
 
                     // 가격 설정
                     const priceContainer = document.getElementById('gymDetailPrice');
-                    priceContainer.innerHTML = ''; // 초기화
+                    if (priceContainer) priceContainer.innerHTML = ''; // 초기화
                     const products = data.products || gym.products || [];
-                    if (products && products.length > 0) {
+                    if (priceContainer) {
+                        if (products && products.length > 0) {
 
-                        // 상품 타입별로 분류
-                        const membershipProducts = products.filter(p => p.productType === '회원권');
+                            // 상품 타입별로 분류
+                            const membershipProducts = products.filter(p => p.productType === '회원권');
 
-                        // 회원권 가격 표시
-                        if (membershipProducts.length > 0) {
-                            const membershipHTML = '<p style="margin-bottom: 8px; color: #ff6b00; font-weight: 600;">회원권</p>';
-                            priceContainer.innerHTML += membershipHTML;
+                            // 회원권 가격 표시
+                            if (membershipProducts.length > 0) {
+                                const membershipHTML = '<p style="margin-bottom: 8px; color: #ff6b00; font-weight: 600;">회원권</p>';
+                                priceContainer.innerHTML += membershipHTML;
 
-                            membershipProducts.forEach(function(product) {
-                                const durationValue = Number(product.durationMonths);
-                                const priceValue = Number(product.productPrice);
+                                membershipProducts.forEach(function(product) {
+                                    const durationValue = Number(product.durationMonths);
+                                    const priceValue = Number(product.productPrice);
 
-                                const duration = durationValue >= 30
-                                    ? Math.floor(durationValue / 30) + '개월'
-                                    : durationValue + '일';
-                                const price = priceValue.toLocaleString('ko-KR');
+                                    const duration = durationValue >= 30
+                                        ? Math.floor(durationValue / 30) + '개월'
+                                        : durationValue + '일';
+                                    const price = priceValue.toLocaleString('ko-KR');
 
-                                // 문자열 연결 방식 사용 (템플릿 리터럴 대신)
-                                const priceHTML = '<p>' + duration + ': ' + price + '원</p>';
-                                priceContainer.innerHTML += priceHTML;
-                            });
+                                    // 문자열 연결 방식 사용 (템플릿 리터럴 대신)
+                                    const priceHTML = '<p>' + duration + ': ' + price + '원</p>';
+                                    priceContainer.innerHTML += priceHTML;
+                                });
+                            } else {
+                                priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
+                            }
                         } else {
                             priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
                         }
-                    } else {
-                        priceContainer.innerHTML = '<p>가격 정보가 없습니다.</p>';
                     }
 
                     // 전화번호 설정
                     const phone = gym.gymPhone || '전화번호 없음';
-                    document.getElementById('gymDetailPhone').textContent = phone;
-                    document.getElementById('gymDetailPhone').href = 'tel:' + phone;
+                    const gymDetailPhone = document.getElementById('gymDetailPhone');
+                    if (gymDetailPhone) {
+                        gymDetailPhone.textContent = phone;
+                        gymDetailPhone.href = 'tel:' + phone;
+                    }
 
                     // 운영시간 설정
                     const weekHour = gymDetail.weekBusinessHour || '정보 없음';
                     const weekendHour = gymDetail.weekendBusinessHour || '정보 없음';
-                    document.getElementById('gymDetailHours').innerHTML =
-                        '<p>평일: ' + weekHour + '</p>' +
-                        '<p>주말: ' + weekendHour + '</p>';
+                    const gymDetailHours = document.getElementById('gymDetailHours');
+                    if (gymDetailHours) {
+                        gymDetailHours.innerHTML =
+                            '<p>평일: ' + weekHour + '</p>' +
+                            '<p>주말: ' + weekendHour + '</p>';
+                    }
 
                     // 이미지 설정 - 수정된 부분
                     const gymImage = document.getElementById('gymDetailImage');
-                    const mainImageContainer = gymImage.parentElement;
-
-                    if (gym.gymPhotoPath) {
-                        // 이미지가 있는 경우
-                        gymImage.style.display = 'block';
-                        // 슬래시가 이미 있으면 contextPath만, 없으면 contextPath + /
-                        if (gym.gymPhotoPath.startsWith('/')) {
-                            gymImage.src = '${pageContext.request.contextPath}' + gym.gymPhotoPath;
-                        } else {
-                            gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
+                    if (gymImage) {
+                        const mainImageContainer = gymImage.parentElement;
+                        if (mainImageContainer) {
+                            if (gym.gymPhotoPath) {
+                                // 이미지가 있는 경우
+                                gymImage.style.display = 'block';
+                                // 슬래시가 이미 있으면 contextPath만, 없으면 contextPath + /
+                                if (gym.gymPhotoPath.startsWith('/')) {
+                                    gymImage.src = '${pageContext.request.contextPath}' + gym.gymPhotoPath;
+                                } else {
+                                    gymImage.src = '${pageContext.request.contextPath}/' + gym.gymPhotoPath;
+                                }
+                            } else {
+                                // 이미지가 없는 경우
+                                gymImage.style.display = 'none';
+                                mainImageContainer.innerHTML = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #8a6a50; font-size: 14px;">헬스장 이미지가 없습니다</div>';
+                            }
                         }
-                    } else {
-                        // 이미지가 없는 경우
-                        gymImage.style.display = 'none';
-                        mainImageContainer.innerHTML = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #8a6a50; font-size: 14px;">헬스장 이미지가 없습니다</div>';
                     }
 
                     // 시설 정보를 뱃지와 시설 아이콘으로 표시
                     const badgesContainer = document.getElementById('gymDetailBadges');
                     const facilityGrid = document.getElementById('facilityGrid');
-                    badgesContainer.innerHTML = ''; // 기존 뱃지 초기화
-                    facilityGrid.innerHTML = ''; // 기존 시설 아이콘 초기화
+                    
+                    if (badgesContainer && facilityGrid) {
+                        badgesContainer.innerHTML = ''; // 기존 뱃지 초기화
+                        facilityGrid.innerHTML = ''; // 기존 시설 아이콘 초기화
 
-                    // 시설 아이콘 매핑 (facilitiesInfo의 값에 따라 아이콘 선택)
-                    // gymInfoManagement.jsp의 data-facility 값과 일치시킴
-                    const facilityIcons = {
-                        '24시간': 'clock.png',
-                        '주차가능': 'parking.png',
-                        '주차': 'parking.png', // 호환성을 위해 유지
-                        '샤워실': 'shower.png',
-                        '락커실': 'locker.png',
-                        '락커': 'locker.png', // 호환성을 위해 유지
-                        '무료 WiFi': 'wifi.png',
-                        '와이파이': 'wifi.png', // 호환성을 위해 유지
-                        'PT': 'person.png',
-                        'GX 프로그램': 'people.png',
-                        'GX': 'people.png', // 호환성을 위해 유지
-                        '카페': 'people.png',
-                        '수영장': 'people.png',
-                        '필라테스': 'people.png',
-                        '사우나': 'people.png',
-                        '최신기구': 'machine.png',
-                        '운동복': 'locker.png',
-                        '수건': 'shower.png'
-                    };
+                        // 시설 아이콘 매핑 (facilitiesInfo의 값에 따라 아이콘 선택)
+                        // gymInfoManagement.jsp의 data-facility 값과 일치시킴
+                        const facilityIcons = {
+                            '24시간': 'clock.png',
+                            '주차가능': 'parking.png',
+                            '주차': 'parking.png', // 호환성을 위해 유지
+                            '샤워실': 'shower.png',
+                            '락커실': 'locker.png',
+                            '락커': 'locker.png', // 호환성을 위해 유지
+                            '무료 WiFi': 'wifi.png',
+                            '와이파이': 'wifi.png', // 호환성을 위해 유지
+                            'PT': 'person.png',
+                            'GX 프로그램': 'people.png',
+                            'GX': 'people.png', // 호환성을 위해 유지
+                            '카페': 'people.png',
+                            '수영장': 'people.png',
+                            '필라테스': 'people.png',
+                            '사우나': 'people.png',
+                            '최신기구': 'machine.png',
+                            '운동복': 'locker.png',
+                            '수건': 'shower.png'
+                        };
 
-                    const facilitiesInfo = gymDetail.facilitiesInfo || gym.facilitiesInfo;
-                    if (facilitiesInfo) {
-                        const facilities = facilitiesInfo.split(',');
+                        const facilitiesInfo = gymDetail.facilitiesInfo || gym.facilitiesInfo;
+                        if (facilitiesInfo) {
+                            const facilities = facilitiesInfo.split(',');
 
-                        facilities.forEach(facility => {
-                            const trimmedFacility = facility.trim();
+                            facilities.forEach(facility => {
+                                const trimmedFacility = facility.trim();
 
-                            // 뱃지 생성
-                            const badge = document.createElement('span');
-                            badge.className = 'badge';
-                            badge.textContent = trimmedFacility;
-                            badgesContainer.appendChild(badge);
+                                // 뱃지 생성
+                                const badge = document.createElement('span');
+                                badge.className = 'badge';
+                                badge.textContent = trimmedFacility;
+                                badgesContainer.appendChild(badge);
 
-                            // 시설 아이콘 생성
-                            const facilityItem = document.createElement('div');
-                            facilityItem.className = 'facility-item';
+                                // 시설 아이콘 생성
+                                const facilityItem = document.createElement('div');
+                                facilityItem.className = 'facility-item';
 
-                            const iconName = facilityIcons[trimmedFacility] || 'machine.png'; // 기본 아이콘
+                                const iconName = facilityIcons[trimmedFacility] || 'machine.png'; // 기본 아이콘
 
-                            facilityItem.innerHTML =
-                                '<img src="' + window.contextPath + '/resources/images/icon/' + iconName + '"' +
-                                '     alt="' + trimmedFacility + '" style="width: 24px; height: 24px;">' +
-                                '<span>' + trimmedFacility + '</span>';
+                                facilityItem.innerHTML =
+                                    '<img src="' + window.contextPath + '/resources/images/icon/' + iconName + '"' +
+                                    '     alt="' + trimmedFacility + '" style="width: 24px; height: 24px;">' +
+                                    '<span>' + trimmedFacility + '</span>';
 
-                            facilityGrid.appendChild(facilityItem);
-                        });
-                    } else {
-                        // 시설 정보가 없는 경우
-                        badgesContainer.innerHTML = '<span class="badge">정보 없음</span>';
-                        facilityGrid.innerHTML = '<p style="color: #8a6a50; text-align: center; grid-column: 1 / -1;">시설 정보가 없습니다.</p>';
+                                facilityGrid.appendChild(facilityItem);
+                            });
+                        } else {
+                            // 시설 정보가 없는 경우
+                            badgesContainer.innerHTML = '<span class="badge">정보 없음</span>';
+                            facilityGrid.innerHTML = '<p style="color: #8a6a50; text-align: center; grid-column: 1 / -1;">시설 정보가 없습니다.</p>';
+                        }
                     }
 
                     loadGymMachines(gymNo);

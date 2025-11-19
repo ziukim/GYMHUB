@@ -675,7 +675,7 @@
                 <!-- 예약 상담 -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">예약 상담</div>
+                        <div class="card-title">오늘의 예약 상담</div>
                         <div class="badge">
                             <div class="badge-text">
                                 <c:choose>
