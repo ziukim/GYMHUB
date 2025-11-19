@@ -236,6 +236,7 @@ public class TrainerController {
             formatted.put("ptReserveNo", reserve.getPtReserveNo());
             formatted.put("memberName", reserve.getMemberName());
             formatted.put("memberPhone", reserve.getMemberPhone());
+            formatted.put("memberPhotoPath", reserve.getMemberPhotoPath());
             formatted.put("ptReserveTime", reserve.getPtReserveTime());
             formatted.put("reserveDate", dateOnlyFormat.format(reserve.getPtReserveTime()));
             formatted.put("reserveTime", timeFormat.format(reserve.getPtReserveTime()));
@@ -282,6 +283,7 @@ public class TrainerController {
                 formatted.put("ptReserveNo", reserve.getPtReserveNo());
                 formatted.put("memberName", reserve.getMemberName());
                 formatted.put("memberPhone", reserve.getMemberPhone());
+                formatted.put("memberPhotoPath", reserve.getMemberPhotoPath());
                 formatted.put("ptReserveTime", reserve.getPtReserveTime());
                 formatted.put("reserveDate", dateOnlyFormat.format(reserve.getPtReserveTime()));
                 formatted.put("reserveTime", timeFormat.format(reserve.getPtReserveTime()));

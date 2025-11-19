@@ -11,6 +11,7 @@
         <result property="ptReserveStatus" column="PT_RESERVE_STATUS"/>
         <result property="memberName" column="MEMBER_NAME"/>
         <result property="memberPhone" column="MEMBER_PHONE"/>
+        <result property="memberPhotoPath" column="MEMBER_PHOTO_PATH"/>
         <result property="trainerName" column="TRAINER_NAME"/>
         <result property="desiredTrainerName" column="DESIRED_TRAINER_NAME"/>
         <result property="memberNo" column="MEMBER_NO"/>
@@ -182,6 +183,7 @@
             NVL(PR.PT_RESERVE_STATUS, '대기중') AS PT_RESERVE_STATUS,
             M.MEMBER_NAME,
             M.MEMBER_PHONE,
+            M.MEMBER_PHOTO_PATH,
             T.MEMBER_NAME AS TRAINER_NAME,
             DT.MEMBER_NAME AS DESIRED_TRAINER_NAME,
             PP.MEMBER_NO,
@@ -207,6 +209,7 @@
             NVL(PR.PT_RESERVE_STATUS, '대기중') AS PT_RESERVE_STATUS,
             M.MEMBER_NAME,
             M.MEMBER_PHONE,
+            M.MEMBER_PHOTO_PATH,
             T.MEMBER_NAME AS TRAINER_NAME,
             DT.MEMBER_NAME AS DESIRED_TRAINER_NAME,
             PP.MEMBER_NO,

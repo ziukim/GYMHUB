@@ -20,6 +20,7 @@ public class PtReserve {
     // 조인을 위한 필드
     private String memberName; // 회원 이름
     private String memberPhone; // 회원 전화번호
+    private String memberPhotoPath; // 회원 프로필 사진 경로
     private String trainerName; // 배정된 트레이너 이름
     private String desiredTrainerName; // 희망 트레이너 이름
     private int memberNo; // 회원 번호
