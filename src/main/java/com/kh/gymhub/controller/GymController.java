@@ -180,9 +180,17 @@ public class GymController {
             model.addAttribute("totalSales", totalSales);
             model.addAttribute("month", month);
             
-            // 2. 전체 회원 수 (활성 회원권 보유자)
+            // 2. 전체 회원 수 (활성 회원권 보유자 - 만료 회원 제외)
             List<MemberWithMembership> members = membershipMapper.selectMembersWithMembershipByGymNo(gymNo);
-            int totalMembers = members != null ? members.size() : 0;
+            int totalMembers = 0;
+            if (members != null) {
+                for (MemberWithMembership member : members) {
+                    // 만료 상태가 아닌 회원만 카운트
+                    if (member.getMembershipStatus() == null || !member.getMembershipStatus().equals("만료")) {
+                        totalMembers++;
+                    }
+                }
+            }
             model.addAttribute("totalMembers", totalMembers);
             
             // 3. 신규 회원 수 (이번 달 가입)

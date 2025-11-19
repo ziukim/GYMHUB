@@ -615,14 +615,7 @@
                             <c:forEach var="stat" items="${monthlyStats}" varStatus="status">
                                 <div class="monthly-card">
                                     <div class="stat-icon">
-                                        <c:choose>
-                                            <c:when test="${status.last}">
-                                                <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
                                     </div>
                                     <div class="stat-info">
                                         <div class="stat-label">${stat.month}월 회원수</div>
@@ -640,7 +633,7 @@
                             <c:forEach var="i" begin="1" end="5">
                                 <div class="monthly-card">
                                     <div class="stat-icon">
-                                        <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
                                     </div>
                                     <div class="stat-info">
                                         <div class="stat-label">-</div>
