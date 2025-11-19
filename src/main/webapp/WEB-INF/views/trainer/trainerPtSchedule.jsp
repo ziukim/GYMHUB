@@ -133,11 +133,15 @@
             height: 40px;
             background-color: rgba(255, 107, 0, 0.1);
             border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
         }
 
         .user-icon img {
-            width: 24px;
-            height: 24px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .schedule-user-info {
@@ -419,7 +423,14 @@
                         <div class="pt-schedule-card">
                             <div class="pt-schedule-header">
                                 <div class="user-icon">
-                                    <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="회원">
+                                    <c:choose>
+                                        <c:when test="${not empty reserve.memberPhotoPath}">
+                                            <img src="${pageContext.request.contextPath}${reserve.memberPhotoPath}" alt="${reserve.memberName}">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${pageContext.request.contextPath}/resources/images/icon/person.png" alt="회원">
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <div class="schedule-user-info">
                                     <div class="schedule-user-name">${reserve.memberName}</div>
@@ -666,11 +677,17 @@
                 card.className = 'pt-schedule-card';
                 
                 var phoneHtml = reserve.memberPhone ? reserve.memberPhone : '-';
+                var photoHtml = '';
+                if (reserve.memberPhotoPath && reserve.memberPhotoPath.trim() !== '') {
+                    photoHtml = '<img src="' + contextPath + reserve.memberPhotoPath + '" alt="' + reserve.memberName + '">';
+                } else {
+                    photoHtml = '<img src="' + contextPath + '/resources/images/icon/person.png" alt="회원">';
+                }
                 
                 card.innerHTML = 
                     '<div class="pt-schedule-header">' +
                     '    <div class="user-icon">' +
-                    '        <img src="' + contextPath + '/resources/images/icon/person.png" alt="회원">' +
+                    photoHtml +
                     '    </div>' +
                     '    <div class="schedule-user-info">' +
                     '        <div class="schedule-user-name">' + reserve.memberName + '</div>' +
