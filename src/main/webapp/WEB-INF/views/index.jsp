@@ -1142,6 +1142,7 @@
                         <a href="${pageContext.request.contextPath}/dashboard.gym" class="btn btn-secondary">대시보드</a>
                     </c:when>
                 </c:choose>
+                <a href="${pageContext.request.contextPath}/logout.me" class="btn btn-primary">로그아웃</a>
             </c:when>
             <c:otherwise>
                 <button class="btn btn-secondary" id="loginBtn">로그인</button>
