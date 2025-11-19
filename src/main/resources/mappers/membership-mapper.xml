@@ -114,7 +114,7 @@
         LEFT JOIN LOCKER L ON LP.LOCKER_NO = L.LOCKER_NO
         WHERE MS.GYM_NO = #{gymNo}
             AND M.STATUS = 'Y'
-            AND MS.MEMBERSHIP_STATUS = '정상'
+            AND MS.MEMBERSHIP_STATUS IN ('정상', '만료')
         ORDER BY MS.START_DATE DESC, M.MEMBER_NAME ASC
     </select>
 
