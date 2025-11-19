@@ -2,9 +2,11 @@ package com.kh.gymhub.controller;
 
 import com.kh.gymhub.model.vo.GymNotice;
 import com.kh.gymhub.model.vo.Member;
+import com.kh.gymhub.model.vo.PtReserve;
 import com.kh.gymhub.service.MemberService;
 import com.kh.gymhub.service.DashboardService;
 import com.kh.gymhub.service.NoticeService;
+import com.kh.gymhub.service.PtReserveService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -12,9 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,13 +31,15 @@ public class TrainerController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final DashboardService dashboardService;
     private final NoticeService noticeService;
+    private final PtReserveService ptReserveService;
 
     @Autowired
-    public TrainerController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, DashboardService dashboardService, NoticeService noticeService) {
+    public TrainerController(MemberService memberService, BCryptPasswordEncoder bCryptPasswordEncoder, DashboardService dashboardService, NoticeService noticeService, PtReserveService ptReserveService) {
         this.memberService = memberService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.dashboardService = dashboardService;
         this.noticeService = noticeService;
+        this.ptReserveService = ptReserveService;
     }
 
     // 트레이너 대시보드
@@ -201,6 +209,96 @@ public class TrainerController {
             session.setAttribute("errorMsg", "회원 탈퇴에 실패했습니다.");
             return "redirect:/dashboard.tr";
         }
+    }
+
+    // 트레이너 PT 스케줄 관리 페이지
+    @GetMapping("/ptSchedule.tr")
+    public String ptSchedule(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        if (loginMember == null) {
+            model.addAttribute("errorMsg", "로그인이 필요합니다.");
+            return "common/error";
+        }
+
+        // 트레이너 번호로 승인된 PT 예약 조회
+        int trainerNo = loginMember.getMemberNo();
+        List<PtReserve> reserves = ptReserveService.getApprovedPtReservesByTrainerNo(trainerNo);
+
+        // 데이터 포맷팅
+        List<Map<String, Object>> formattedReserves = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+        SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy.MM.dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+        for (PtReserve reserve : reserves) {
+            Map<String, Object> formatted = new HashMap<>();
+            formatted.put("ptReserveNo", reserve.getPtReserveNo());
+            formatted.put("memberName", reserve.getMemberName());
+            formatted.put("memberPhone", reserve.getMemberPhone());
+            formatted.put("ptReserveTime", reserve.getPtReserveTime());
+            formatted.put("reserveDate", dateOnlyFormat.format(reserve.getPtReserveTime()));
+            formatted.put("reserveTime", timeFormat.format(reserve.getPtReserveTime()));
+            formatted.put("reserveTimeLabel", dateFormat.format(reserve.getPtReserveTime()));
+            formatted.put("ptReserveStatus", reserve.getPtReserveStatus());
+            formattedReserves.add(formatted);
+        }
+
+        model.addAttribute("reserves", formattedReserves);
+        model.addAttribute("currentPage", "ptSchedule");
+
+        return "trainer/trainerPtSchedule";
+    }
+
+    // AJAX: 날짜별 PT 스케줄 조회
+    @GetMapping("/ptSchedule/filterByDate.ajax")
+    @ResponseBody
+    public Map<String, Object> filterPtScheduleByDate(@RequestParam("date") String date, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 세션에서 로그인 정보 확인
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        
+        if (loginMember == null) {
+            result.put("success", false);
+            result.put("message", "권한이 없습니다.");
+            return result;
+        }
+        
+        // 트레이너 번호 가져오기
+        int trainerNo = loginMember.getMemberNo();
+        
+        try {
+            List<PtReserve> reserves = ptReserveService.getApprovedPtReservesByTrainerNoAndDate(trainerNo, date);
+            
+            // 데이터 포맷팅
+            List<Map<String, Object>> formattedReserves = new ArrayList<>();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+            SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy.MM.dd");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+            for (PtReserve reserve : reserves) {
+                Map<String, Object> formatted = new HashMap<>();
+                formatted.put("ptReserveNo", reserve.getPtReserveNo());
+                formatted.put("memberName", reserve.getMemberName());
+                formatted.put("memberPhone", reserve.getMemberPhone());
+                formatted.put("ptReserveTime", reserve.getPtReserveTime());
+                formatted.put("reserveDate", dateOnlyFormat.format(reserve.getPtReserveTime()));
+                formatted.put("reserveTime", timeFormat.format(reserve.getPtReserveTime()));
+                formatted.put("reserveTimeLabel", dateFormat.format(reserve.getPtReserveTime()));
+                formatted.put("ptReserveStatus", reserve.getPtReserveStatus());
+                formattedReserves.add(formatted);
+            }
+            
+            result.put("success", true);
+            result.put("reserves", formattedReserves != null ? formattedReserves : new ArrayList<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "데이터 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return result;
     }
 
 }
