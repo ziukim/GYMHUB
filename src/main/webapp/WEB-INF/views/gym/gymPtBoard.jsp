@@ -374,18 +374,20 @@
 
         <!-- Tabs -->
         <div class="tabs-container">
-            <button class="tab-btn active" data-tab="pending">
+            <button class="tab-btn ${currentTab == 'pending' ? 'active' : ''}" 
+                    onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?tab=pending&currentPage=1'">
                 대기중 <span class="tab-count" id="pendingCount">
                     (<c:choose>
-                        <c:when test="${not empty pendingPtReserves}">${pendingPtReserves.size()}</c:when>
+                        <c:when test="${not empty pendingPi}">${pendingPi.listCount}</c:when>
                         <c:otherwise>0</c:otherwise>
                     </c:choose>)
                 </span>
             </button>
-            <button class="tab-btn" data-tab="completed">
+            <button class="tab-btn ${currentTab == 'completed' ? 'active' : ''}" 
+                    onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?tab=completed&currentPage=1'">
                 승인/거절 <span class="tab-count" id="completedCount">
                     (<c:choose>
-                        <c:when test="${not empty approvedOrRejectedPtReserves}">${approvedOrRejectedPtReserves.size()}</c:when>
+                        <c:when test="${not empty approvedPi}">${approvedPi.listCount}</c:when>
                         <c:otherwise>0</c:otherwise>
                     </c:choose>)
                 </span>
@@ -410,7 +412,7 @@
         </div>
 
         <!-- 대기중 탭 -->
-        <div class="tab-panel active" id="pending-panel" data-tab="pending">
+        <div class="tab-panel ${currentTab == 'pending' ? 'active' : ''}" id="pending-panel" data-tab="pending">
             <c:choose>
                 <c:when test="${not empty pendingPtReserves}">
                     <c:forEach var="ptReserve" items="${pendingPtReserves}">
@@ -469,10 +471,47 @@
                     </div>
                 </c:otherwise>
             </c:choose>
+            
+            <!-- 대기중 탭 페이징 -->
+            <c:if test="${not empty pendingPi}">
+                <div class="pagination">
+                    <!-- 이전 버튼 -->
+                    <c:if test="${pendingPi.currentPage > 1}">
+                        <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?currentPage=${pendingPi.currentPage - 1}&tab=pending'">
+                            이전
+                        </button>
+                    </c:if>
+                    <c:if test="${pendingPi.currentPage <= 1}">
+                        <button class="pagination-btn disabled">이전</button>
+                    </c:if>
+                    
+                    <!-- 페이지 번호 버튼 -->
+                    <c:forEach var="p" begin="${pendingPi.startPage}" end="${pendingPi.endPage}">
+                        <c:if test="${p == pendingPi.currentPage}">
+                            <button class="pagination-btn active">${p}</button>
+                        </c:if>
+                        <c:if test="${p != pendingPi.currentPage}">
+                            <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?currentPage=${p}&tab=pending'">
+                                ${p}
+                            </button>
+                        </c:if>
+                    </c:forEach>
+                    
+                    <!-- 다음 버튼 -->
+                    <c:if test="${pendingPi.currentPage < pendingPi.maxPage}">
+                        <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?currentPage=${pendingPi.currentPage + 1}&tab=pending'">
+                            다음
+                        </button>
+                    </c:if>
+                    <c:if test="${pendingPi.currentPage >= pendingPi.maxPage}">
+                        <button class="pagination-btn disabled">다음</button>
+                    </c:if>
+                </div>
+            </c:if>
         </div>
 
         <!-- 완성 내역 탭 -->
-        <div class="tab-panel" id="completed-panel" data-tab="completed">
+        <div class="tab-panel ${currentTab == 'completed' ? 'active' : ''}" id="completed-panel" data-tab="completed">
             <c:choose>
                 <c:when test="${not empty approvedOrRejectedPtReserves}">
                     <c:forEach var="ptReserve" items="${approvedOrRejectedPtReserves}">
@@ -535,6 +574,43 @@
                     </div>
                 </c:otherwise>
             </c:choose>
+            
+            <!-- 승인/거절 탭 페이징 -->
+            <c:if test="${not empty approvedPi}">
+                <div class="pagination">
+                    <!-- 이전 버튼 -->
+                    <c:if test="${approvedPi.currentPage > 1}">
+                        <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?currentPage=${approvedPi.currentPage - 1}&tab=completed'">
+                            이전
+                        </button>
+                    </c:if>
+                    <c:if test="${approvedPi.currentPage <= 1}">
+                        <button class="pagination-btn disabled">이전</button>
+                    </c:if>
+                    
+                    <!-- 페이지 번호 버튼 -->
+                    <c:forEach var="p" begin="${approvedPi.startPage}" end="${approvedPi.endPage}">
+                        <c:if test="${p == approvedPi.currentPage}">
+                            <button class="pagination-btn active">${p}</button>
+                        </c:if>
+                        <c:if test="${p != approvedPi.currentPage}">
+                            <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?currentPage=${p}&tab=completed'">
+                                ${p}
+                            </button>
+                        </c:if>
+                    </c:forEach>
+                    
+                    <!-- 다음 버튼 -->
+                    <c:if test="${approvedPi.currentPage < approvedPi.maxPage}">
+                        <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/ptBoard.gym?currentPage=${approvedPi.currentPage + 1}&tab=completed'">
+                            다음
+                        </button>
+                    </c:if>
+                    <c:if test="${approvedPi.currentPage >= approvedPi.maxPage}">
+                        <button class="pagination-btn disabled">다음</button>
+                    </c:if>
+                </div>
+            </c:if>
         </div>
     </div>
 </div>

@@ -121,6 +121,53 @@
         ORDER BY IR.VISIT_DATETIME DESC
     </select>
 
+    <!-- ✅ 헬스장 번호로 예약 조회 (페이징) -->
+    <select id="selectReservationsByGymNoPaged" resultMap="inquiryReserveWithMemberResultMap">
+        SELECT * FROM (
+            SELECT ROWNUM RNUM, A.* FROM (
+                SELECT
+                    IR.INQUIRY_NO,
+                    IR.GYM_NO,
+                    IR.MEMBER_NO,
+                    IR.VISIT_DATETIME,
+                    IR.INQUIRY_STATUS,
+                    IR.INQUIRY_MEMO,
+                    M.MEMBER_NAME,
+                    M.MEMBER_PHONE
+                FROM INQUIRY_RESERVE IR
+                JOIN MEMBER M ON IR.MEMBER_NO = M.MEMBER_NO
+                WHERE IR.GYM_NO = #{gymNo}
+                ORDER BY IR.VISIT_DATETIME DESC
+            ) A
+        ) WHERE RNUM BETWEEN #{startRow} AND #{endRow}
+    </select>
+
+    <!-- ✅ 헬스장 번호로 예약 수 조회 (페이징용) -->
+    <select id="selectReservationCountByGymNo" parameterType="_int" resultType="_int">
+        SELECT COUNT(*)
+        FROM INQUIRY_RESERVE IR
+        JOIN MEMBER M ON IR.MEMBER_NO = M.MEMBER_NO
+        WHERE IR.GYM_NO = #{gymNo}
+    </select>
+
+    <!-- ✅ 헬스장 번호로 오늘 날짜 예약 조회 (회원 정보 포함) -->
+    <select id="selectTodayReservationsByGymNo" parameterType="_int" resultMap="inquiryReserveWithMemberResultMap">
+        SELECT
+        IR.INQUIRY_NO,
+        IR.GYM_NO,
+        IR.MEMBER_NO,
+        IR.VISIT_DATETIME,
+        IR.INQUIRY_STATUS,
+        IR.INQUIRY_MEMO,
+        M.MEMBER_NAME,
+        M.MEMBER_PHONE
+        FROM INQUIRY_RESERVE IR
+        JOIN MEMBER M ON IR.MEMBER_NO = M.MEMBER_NO
+        WHERE IR.GYM_NO = #{gymNo}
+          AND TRUNC(IR.VISIT_DATETIME) = TRUNC(SYSDATE)
+        ORDER BY IR.VISIT_DATETIME ASC
+    </select>
+
     <!-- ✅ 예약 상태 업데이트 -->
     <update id="updateInquiryStatus">
         UPDATE INQUIRY_RESERVE
@@ -142,7 +189,8 @@
         FROM INQUIRY_RESERVE IR
         JOIN MEMBER M ON IR.MEMBER_NO = M.MEMBER_NO
         WHERE IR.GYM_NO = #{gymNo}
-        AND TRUNC(IR.VISIT_DATETIME) = TO_DATE(#{reserveDate}, 'YYYY-MM-DD')
+          AND TRUNC(IR.VISIT_DATETIME) = TO_DATE(#{reserveDate}, 'YYYY-MM-DD')
         ORDER BY IR.VISIT_DATETIME DESC
     </select>
+
 </mapper>

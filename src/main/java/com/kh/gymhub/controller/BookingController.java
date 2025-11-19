@@ -142,39 +142,50 @@ public class BookingController {
 
     // ✅ 예약 관리 페이지
     @GetMapping("/reservation.gym")
-    public String gymReservationManagement(HttpSession session, Model model) {
-        System.out.println("====================================");
-        System.out.println("예약 관리 페이지 접근!");
-
+    public String gymReservationManagement(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+                                           HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("loginMember");
-        System.out.println("loginMember: " + loginMember);
 
         if (loginMember == null || loginMember.getMemberType() != 3) {
-            System.out.println("권한 없음!");
             session.setAttribute("errorMsg", "헬스장 운영자만 접근 가능합니다.");
             return "redirect:/";
         }
 
         Integer gymNo = loginMember.getGymNo();
-        System.out.println("gymNo: " + gymNo);
-
         if (gymNo == null || gymNo <= 0) {
-            System.out.println("소속 헬스장 없음!");
             session.setAttribute("errorMsg", "소속된 헬스장이 없습니다.");
             return "redirect:/dashboard.gym";
         }
 
-        List<InquiryReserve> reservationList = inquiryService.getReservationsByGymNo(gymNo);
-        System.out.println("예약 목록: " + (reservationList != null ? reservationList.size() : 0) + "건");
-
-        if (reservationList != null) {
-            for (InquiryReserve r : reservationList) {
-                System.out.println("  - " + r.getMemberName() + " / " + r.getVisitDatetime() + " / " + r.getInquiryStatus());
+        try {
+            // 페이징 설정
+            int pageLimit = 10; // 페이지 버튼 개수
+            int boardLimit = 10; // 한 페이지에 보여줄 예약 수
+            
+            // 전체 예약 수 조회
+            Integer listCount = inquiryService.getReservationCountByGymNo(gymNo);
+            if (listCount == null) {
+                listCount = 0;
             }
+            
+            // PageInfo 객체 생성
+            com.kh.gymhub.common.vo.PageInfo pi = new com.kh.gymhub.common.vo.PageInfo(currentPage, listCount, pageLimit, boardLimit);
+            
+            // 페이징된 예약 목록 조회
+            int startRow = (pi.getCurrentPage() - 1) * pi.getBoardLimit() + 1;
+            int endRow = startRow + pi.getBoardLimit() - 1;
+            
+            List<InquiryReserve> reservationList = inquiryService.getReservationsByGymNoPaged(gymNo, startRow, endRow);
+            
+            model.addAttribute("reservationList", reservationList != null ? reservationList : new ArrayList<>());
+            model.addAttribute("pi", pi);
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("reservationList", new ArrayList<>());
+            // 에러 발생 시 기본 PageInfo 생성
+            com.kh.gymhub.common.vo.PageInfo pi = new com.kh.gymhub.common.vo.PageInfo(1, 0, 10, 10);
+            model.addAttribute("pi", pi);
         }
-
-        model.addAttribute("reservationList", reservationList);
-        System.out.println("====================================");
 
         return "gym/gymReservationManagement";
     }

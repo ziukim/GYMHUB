@@ -1,11 +1,11 @@
 package com.kh.gymhub.service;
 
 import com.kh.gymhub.model.mapper.InquiryMapper;
-import com.kh.gymhub.model.mapper.InquiryMapper;
 import com.kh.gymhub.model.vo.InquiryReserve;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -167,5 +167,29 @@ public class InquiryServiceImpl implements InquiryService {
     @Override
     public List<InquiryReserve> getReservationsByGymNoAndDate(int gymNo, String reserveDate) {
         return inquiryMapper.selectReservationsByGymNoAndDate(gymNo, reserveDate);
+    }
+
+    @Override
+    public List<InquiryReserve> getTodayReservationsByGymNo(int gymNo) {
+        if (gymNo <= 0) {
+            return new ArrayList<>();
+        }
+        return inquiryMapper.selectTodayReservationsByGymNo(gymNo);
+    }
+
+    @Override
+    public List<InquiryReserve> getReservationsByGymNoPaged(int gymNo, int startRow, int endRow) {
+        if (gymNo <= 0) {
+            return new ArrayList<>();
+        }
+        return inquiryMapper.selectReservationsByGymNoPaged(gymNo, startRow, endRow);
+    }
+
+    @Override
+    public Integer getReservationCountByGymNo(int gymNo) {
+        if (gymNo <= 0) {
+            return 0;
+        }
+        return inquiryMapper.selectReservationCountByGymNo(gymNo);
     }
 }

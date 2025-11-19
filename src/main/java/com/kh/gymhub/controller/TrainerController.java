@@ -73,7 +73,8 @@ public class TrainerController {
 
     // 트레이너 공지사항
     @GetMapping("/noticeList.tr")
-    public String trainerNoticeList(HttpSession session, Model model) {
+    public String trainerNoticeList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+                                     HttpSession session, Model model) {
         // 세션에서 로그인 정보 확인
         Member loginMember = (Member) session.getAttribute("loginMember");
 
@@ -83,11 +84,36 @@ public class TrainerController {
             return "notice/noticeList";
         }
 
-        // 헬스장 번호로 공지사항 조회
-        int gymNo = loginMember.getGymNo();
-        List<GymNotice> notices = noticeService.getNoticesByGymNo(gymNo);
-
-        model.addAttribute("notices", notices != null ? notices : new java.util.ArrayList<>());
+        try {
+            // 페이징 설정
+            int pageLimit = 10; // 페이지 버튼 개수
+            int boardLimit = 10; // 한 페이지에 보여줄 공지사항 수
+            
+            // 헬스장 번호로 공지사항 수 조회
+            int gymNo = loginMember.getGymNo();
+            Integer listCount = noticeService.getNoticeCountByGymNo(gymNo);
+            if (listCount == null) {
+                listCount = 0;
+            }
+            
+            // PageInfo 객체 생성
+            com.kh.gymhub.common.vo.PageInfo pi = new com.kh.gymhub.common.vo.PageInfo(currentPage, listCount, pageLimit, boardLimit);
+            
+            // 페이징된 공지사항 목록 조회
+            int startRow = (pi.getCurrentPage() - 1) * pi.getBoardLimit() + 1;
+            int endRow = startRow + pi.getBoardLimit() - 1;
+            
+            List<GymNotice> notices = noticeService.getNoticesByGymNoPaged(gymNo, startRow, endRow);
+            
+            model.addAttribute("notices", notices != null ? notices : new java.util.ArrayList<>());
+            model.addAttribute("pi", pi);
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("notices", new java.util.ArrayList<>());
+            // 에러 발생 시 기본 PageInfo 생성
+            com.kh.gymhub.common.vo.PageInfo pi = new com.kh.gymhub.common.vo.PageInfo(1, 0, 10, 10);
+            model.addAttribute("pi", pi);
+        }
 
         return "notice/noticeList";
     }

@@ -74,4 +74,27 @@ public interface InquiryService {
      * @return 예약 목록
      */
     List<InquiryReserve> getReservationsByGymNoAndDate(int gymNo, String reserveDate);
+    
+    /**
+     * 헬스장 번호로 오늘 날짜 예약 조회
+     * @param gymNo 헬스장 번호
+     * @return 오늘 날짜의 예약 목록
+     */
+    List<InquiryReserve> getTodayReservationsByGymNo(int gymNo);
+    
+    /**
+     * 헬스장 번호로 예약 조회 (페이징)
+     * @param gymNo 헬스장 번호
+     * @param startRow 시작 행
+     * @param endRow 끝 행
+     * @return 예약 목록
+     */
+    List<InquiryReserve> getReservationsByGymNoPaged(int gymNo, int startRow, int endRow);
+    
+    /**
+     * 헬스장 번호로 예약 수 조회 (페이징용)
+     * @param gymNo 헬스장 번호
+     * @return 예약 수
+     */
+    Integer getReservationCountByGymNo(int gymNo);
 }

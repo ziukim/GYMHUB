@@ -128,5 +128,35 @@
         DELETE FROM GYM_NOTICE
         WHERE NOTICE_NO = #{noticeNo}
     </delete>
+
+    <!-- 헬스장 공지사항 조회 (페이징) -->
+    <select id="selectNoticesByGymNoPaged" resultMap="noticeResultMap">
+        SELECT * FROM (
+            SELECT ROWNUM RNUM, A.* FROM (
+                SELECT 
+                    NOTICE_NO,
+                    NOTICE_TITLE,
+                    NOTICE_WRITER,
+                    NOTICE_CATEGORY,
+                    NOTICE_CONTENT,
+                    NOTICE_DATE,
+                    NOTICE_FIX_STATUS,
+                    NOTICE_FILE_PATH,
+                    GYM_NO
+                FROM GYM_NOTICE
+                WHERE GYM_NO = #{gymNo}
+                ORDER BY 
+                    CASE WHEN NOTICE_FIX_STATUS = 'Y' THEN 0 ELSE 1 END,
+                    NOTICE_DATE DESC
+            ) A
+        ) WHERE RNUM BETWEEN #{startRow} AND #{endRow}
+    </select>
+
+    <!-- 헬스장 공지사항 수 조회 (페이징용) -->
+    <select id="selectNoticeCountByGymNo" parameterType="int" resultType="_int">
+        SELECT COUNT(*)
+        FROM GYM_NOTICE
+        WHERE GYM_NO = #{gymNo}
+    </select>
 </mapper>
 

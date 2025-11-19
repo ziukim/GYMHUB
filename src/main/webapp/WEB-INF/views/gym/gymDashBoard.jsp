@@ -181,6 +181,28 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        .reservation-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .reservation-list::-webkit-scrollbar-track {
+            background: #1a0f0a;
+            border-radius: 4px;
+        }
+
+        .reservation-list::-webkit-scrollbar-thumb {
+            background: #ff6b00;
+            border-radius: 4px;
+        }
+
+        .reservation-list::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
         }
 
         .reservation-item {
@@ -615,14 +637,7 @@
                             <c:forEach var="stat" items="${monthlyStats}" varStatus="status">
                                 <div class="monthly-card">
                                     <div class="stat-icon">
-                                        <c:choose>
-                                            <c:when test="${status.last}">
-                                                <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
                                     </div>
                                     <div class="stat-info">
                                         <div class="stat-label">${stat.month}월 회원수</div>
@@ -640,7 +655,7 @@
                             <c:forEach var="i" begin="1" end="5">
                                 <div class="monthly-card">
                                     <div class="stat-icon">
-                                        <img src="${pageContext.request.contextPath}/resources/images/icon/breakdown.png" alt="통계" style="width: 24px; height: 24px;">
+                                        <img src="${pageContext.request.contextPath}/resources/images/icon/people.png" alt="통계" style="width: 24px; height: 24px;">
                                     </div>
                                     <div class="stat-info">
                                         <div class="stat-label">-</div>
