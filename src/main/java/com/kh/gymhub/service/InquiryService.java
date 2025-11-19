@@ -66,4 +66,12 @@ public interface InquiryService {
      * @return 성공 시 1, 실패 시 0
      */
     int updateInquiryStatus(int inquiryNo, String status);
+    
+    /**
+     * 날짜별 예약 상담 조회 (헬스장별)
+     * @param gymNo 헬스장 번호
+     * @param reserveDate 예약 날짜 (YYYY-MM-DD)
+     * @return 예약 목록
+     */
+    List<InquiryReserve> getReservationsByGymNoAndDate(int gymNo, String reserveDate);
 }

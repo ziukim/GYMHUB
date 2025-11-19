@@ -25,5 +25,11 @@ public interface PtReserveMapper {
     
     // PT 예약 번호로 조회
     PtReserve selectPtReserveByNo(@Param("ptReserveNo") int ptReserveNo);
+    
+    // 날짜별 대기중인 PT 예약 조회 (헬스장별)
+    List<PtReserve> selectPendingPtReservesByGymNoAndDate(@Param("gymNo") int gymNo, @Param("reserveDate") String reserveDate);
+    
+    // 날짜별 승인됨/거절됨 PT 예약 조회 (헬스장별)
+    List<PtReserve> selectApprovedOrRejectedPtReservesByGymNoAndDate(@Param("gymNo") int gymNo, @Param("reserveDate") String reserveDate);
 }
 
