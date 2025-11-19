@@ -156,6 +156,13 @@
             color: white;
         }
 
+        /* Filter Button Active State */
+        .filter-btn.active {
+            border: 1px solid #ff6b00;
+            background-color: rgba(255, 107, 0, 0.2); /* Optional: add a subtle background */
+            color: #ff6b00; /* Optional: change text color */
+        }
+
         /* Modal */
         .modal {
             background-color: #1a0f0a;
@@ -1067,10 +1074,10 @@
                     <p>전체 ${empty members ? 0 : members.size()}명</p>
                 </div>
                 <div class="header-buttons">
-                    <button class="filter-btn" onclick="filterMembers('all')">전체</button>
-                    <button class="filter-btn" onclick="filterMembers('new')">신규</button>
-                    <button class="filter-btn" onclick="filterMembers('expiring')">만료예정</button>
-                    <button class="filter-btn" onclick="filterMembers('expired')">만료</button>
+                    <button class="filter-btn" data-status="all" onclick="filterMembers('all')">전체</button>
+                    <button class="filter-btn" data-status="new" onclick="filterMembers('new')">신규</button>
+                    <button class="filter-btn" data-status="expiring" onclick="filterMembers('expiring')">만료예정</button>
+                    <button class="filter-btn" data-status="expired" onclick="filterMembers('expired')">만료</button>
                     <button class="add-member-btn" onclick="addMember()">
                         <span>+</span>
                         <span>신규 회원 등록</span>
@@ -1528,6 +1535,19 @@
 
     function filterMembers(status) {
         const rows = document.querySelectorAll('#memberTable tbody tr');
+        const filterButtons = document.querySelectorAll('.header-buttons .filter-btn');
+
+        // 모든 필터 버튼에서 'active' 클래스 제거
+        filterButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+
+        // 현재 선택된 필터 버튼에 'active' 클래스 추가
+        filterButtons.forEach(button => {
+            if (button.dataset.status === status) {
+                button.classList.add('active');
+            }
+        });
 
         rows.forEach(row => {
             if (status === 'all') {
@@ -1545,6 +1565,11 @@
         const visibleRows = document.querySelectorAll('#memberTable tbody tr:not([style*="display: none"])');
         document.querySelector('.header-info p').textContent = '전체 ' + visibleRows.length + '명';
     }
+
+    // 페이지 로드 시 '전체' 필터 버튼 활성화
+    document.addEventListener('DOMContentLoaded', function() {
+        filterMembers('all');
+    });
 
     // 신규 회원 등록 함수
     function addMember() {
