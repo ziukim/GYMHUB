@@ -806,7 +806,7 @@
 
         .more-text {
             font-size: 12px;
-            color: #b8b8b8;
+            color: white;
             text-align: left;
             margin-bottom: 24px;
             background-color: #ff6b00;
