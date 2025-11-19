@@ -1074,7 +1074,7 @@
                     <p>전체 ${empty members ? 0 : members.size()}명</p>
                 </div>
                 <div class="header-buttons">
-                    <button class="filter-btn" data-status="all" onclick="filterMembers('all')">전체</button>
+                    <button class="filter-btn" data-status="normal" onclick="filterMembers('normal')">정상</button>
                     <button class="filter-btn" data-status="new" onclick="filterMembers('new')">신규</button>
                     <button class="filter-btn" data-status="expiring" onclick="filterMembers('expiring')">만료예정</button>
                     <button class="filter-btn" data-status="expired" onclick="filterMembers('expired')">만료</button>
@@ -1550,8 +1550,13 @@
         });
 
         rows.forEach(row => {
-            if (status === 'all') {
-                row.style.display = '';
+            if (status === 'normal') {
+                // 정상 필터: 정상 상태, 만료임박 상태, 신규 상태 모두 표시
+                if (row.dataset.status === 'normal' || row.dataset.status === 'expiring' || row.dataset.status === 'new') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             } else {
                 if (row.dataset.status === status) {
                     row.style.display = '';
@@ -1566,9 +1571,9 @@
         document.querySelector('.header-info p').textContent = '전체 ' + visibleRows.length + '명';
     }
 
-    // 페이지 로드 시 '전체' 필터 버튼 활성화
+    // 페이지 로드 시 '정상' 필터 버튼 활성화
     document.addEventListener('DOMContentLoaded', function() {
-        filterMembers('all');
+        filterMembers('normal');
     });
 
     // 신규 회원 등록 함수
