@@ -312,6 +312,53 @@
                     <h3>검색 결과가 없습니다</h3>
                     <p>다른 검색어로 시도해보세요</p>
                 </div>
+                
+                <!-- 페이징 -->
+                <c:if test="${not empty pi}">
+                    <%
+                        // 현재 요청 URL에서 경로 추출
+                        String requestURI = request.getRequestURI();
+                        String paginationPath = "/notice.no"; // 기본값
+                        
+                        if (requestURI.contains("/notice.me")) {
+                            paginationPath = "/notice.me";
+                        } else if (requestURI.contains("/noticeList.tr")) {
+                            paginationPath = "/noticeList.tr";
+                        } else if (requestURI.contains("/notice.no")) {
+                            paginationPath = "/notice.no";
+                        }
+                        pageContext.setAttribute("paginationPath", paginationPath);
+                    %>
+                    <div class="pagination">
+                        <!-- 이전 버튼 -->
+                        <c:if test="${pi.currentPage > 1}">
+                            <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}${paginationPath}?currentPage=${pi.currentPage - 1}'">
+                                이전
+                            </button>
+                        </c:if>
+                        
+                        <!-- 페이지 번호 버튼 -->
+                        <c:if test="${pi.maxPage > 0}">
+                            <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
+                                <c:if test="${p == pi.currentPage}">
+                                    <button class="pagination-btn active">${p}</button>
+                                </c:if>
+                                <c:if test="${p != pi.currentPage}">
+                                    <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}${paginationPath}?currentPage=${p}'">
+                                        ${p}
+                                    </button>
+                                </c:if>
+                            </c:forEach>
+                        </c:if>
+                        
+                        <!-- 다음 버튼 -->
+                        <c:if test="${pi.currentPage < pi.maxPage}">
+                            <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}${paginationPath}?currentPage=${pi.currentPage + 1}'">
+                                다음
+                            </button>
+                        </c:if>
+                    </div>
+                </c:if>
             </div>
         </div>
     </div>

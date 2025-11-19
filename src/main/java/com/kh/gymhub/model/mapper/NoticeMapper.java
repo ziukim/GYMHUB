@@ -15,5 +15,11 @@ public interface NoticeMapper {
     int updateNotice(GymNotice notice);
     int updateNoticeFixStatus(@Param("noticeNo") int noticeNo, @Param("fixStatus") String fixStatus);
     int deleteNotice(@Param("noticeNo") int noticeNo);
+    
+    // 페이징용 공지사항 조회
+    List<GymNotice> selectNoticesByGymNoPaged(@Param("gymNo") int gymNo, @Param("startRow") int startRow, @Param("endRow") int endRow);
+    
+    // 페이징용 공지사항 수 조회
+    Integer selectNoticeCountByGymNo(@Param("gymNo") int gymNo);
 }
 

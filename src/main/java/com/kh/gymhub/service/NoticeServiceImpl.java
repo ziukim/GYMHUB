@@ -265,5 +265,21 @@ public class NoticeServiceImpl implements NoticeService {
 
         return changeName;
     }
+
+    @Override
+    public List<GymNotice> getNoticesByGymNoPaged(int gymNo, int startRow, int endRow) {
+        if (gymNo <= 0) {
+            return new java.util.ArrayList<>();
+        }
+        return noticeMapper.selectNoticesByGymNoPaged(gymNo, startRow, endRow);
+    }
+
+    @Override
+    public Integer getNoticeCountByGymNo(int gymNo) {
+        if (gymNo <= 0) {
+            return 0;
+        }
+        return noticeMapper.selectNoticeCountByGymNo(gymNo);
+    }
 }
 

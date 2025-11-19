@@ -61,5 +61,37 @@ public class PtReserveServiceImpl implements PtReserveService {
     public List<PtReserve> getApprovedPtReservesByTrainerNoAndDate(int ptTrainerNo, String reserveDate) {
         return ptReserveMapper.selectApprovedPtReservesByTrainerNoAndDate(ptTrainerNo, reserveDate);
     }
+
+    @Override
+    public List<PtReserve> getPendingPtReservesByGymNoPaged(int gymNo, int startRow, int endRow) {
+        if (gymNo <= 0) {
+            return new java.util.ArrayList<>();
+        }
+        return ptReserveMapper.selectPendingPtReservesByGymNoPaged(gymNo, startRow, endRow);
+    }
+
+    @Override
+    public Integer getPendingPtReserveCountByGymNo(int gymNo) {
+        if (gymNo <= 0) {
+            return 0;
+        }
+        return ptReserveMapper.selectPendingPtReserveCountByGymNo(gymNo);
+    }
+
+    @Override
+    public List<PtReserve> getApprovedOrRejectedPtReservesByGymNoPaged(int gymNo, int startRow, int endRow) {
+        if (gymNo <= 0) {
+            return new java.util.ArrayList<>();
+        }
+        return ptReserveMapper.selectApprovedOrRejectedPtReservesByGymNoPaged(gymNo, startRow, endRow);
+    }
+
+    @Override
+    public Integer getApprovedOrRejectedPtReserveCountByGymNo(int gymNo) {
+        if (gymNo <= 0) {
+            return 0;
+        }
+        return ptReserveMapper.selectApprovedOrRejectedPtReserveCountByGymNo(gymNo);
+    }
 }
 

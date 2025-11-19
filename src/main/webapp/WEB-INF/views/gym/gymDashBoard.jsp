@@ -181,6 +181,28 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        .reservation-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .reservation-list::-webkit-scrollbar-track {
+            background: #1a0f0a;
+            border-radius: 4px;
+        }
+
+        .reservation-list::-webkit-scrollbar-thumb {
+            background: #ff6b00;
+            border-radius: 4px;
+        }
+
+        .reservation-list::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
         }
 
         .reservation-item {

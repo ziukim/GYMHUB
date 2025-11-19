@@ -13,5 +13,11 @@ public interface NoticeService {
     int updateNotice(GymNotice notice, MultipartFile file);
     int updateNoticeFixStatus(int noticeNo, String fixStatus);
     int deleteNotice(int noticeNo);
+    
+    // 페이징용 공지사항 조회
+    List<GymNotice> getNoticesByGymNoPaged(int gymNo, int startRow, int endRow);
+    
+    // 페이징용 공지사항 수 조회
+    Integer getNoticeCountByGymNo(int gymNo);
 }
 

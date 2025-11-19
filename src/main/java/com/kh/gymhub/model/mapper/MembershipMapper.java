@@ -12,6 +12,12 @@ public interface MembershipMapper {
     int insertMembership(Membership membership);
     List<MemberWithMembership> selectMembersWithMembershipByGymNo(@Param("gymNo") int gymNo);
     
+    // 페이징용 회원 목록 조회
+    List<MemberWithMembership> selectMembersWithMembershipByGymNoPaged(@Param("gymNo") int gymNo, @Param("startRow") int startRow, @Param("endRow") int endRow);
+    
+    // 페이징용 회원 수 조회
+    Integer selectMemberCountByGymNo(@Param("gymNo") int gymNo);
+    
     // 활성 회원 수 조회 (만료되지 않은 회원권)
     Integer selectActiveMemberCountByGymNo(@Param("gymNo") int gymNo);
     

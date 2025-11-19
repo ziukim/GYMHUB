@@ -263,8 +263,8 @@ public class GymController {
             }
             model.addAttribute("monthlyStats", monthlyStats);
             
-            // 7. 예약 상담 (모든 상태)
-            List<com.kh.gymhub.model.vo.InquiryReserve> reservationList = inquiryService.getReservationsByGymNo(gymNo);
+            // 7. 예약 상담 (오늘 날짜만)
+            List<com.kh.gymhub.model.vo.InquiryReserve> reservationList = inquiryService.getTodayReservationsByGymNo(gymNo);
             model.addAttribute("reservationList", reservationList != null ? reservationList : new ArrayList<>());
             
             // 8. 재고 현황
@@ -346,7 +346,9 @@ public class GymController {
     }
 
     @GetMapping("/ptBoard.gym")
-    public String ptBoard(HttpSession session, Model model) {
+    public String ptBoard(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+                          @RequestParam(value = "tab", defaultValue = "pending") String tab,
+                          HttpSession session, Model model) {
         // 세션에서 로그인 정보 확인
         Member loginMember = (Member) session.getAttribute("loginMember");
         
@@ -363,19 +365,56 @@ public class GymController {
         }
         
         try {
-            // 대기중인 PT 예약 조회
-            List<com.kh.gymhub.model.vo.PtReserve> pendingPtReserves = ptReserveService.getPendingPtReservesByGymNo(gymNo);
+            // 페이징 설정
+            int pageLimit = 10; // 페이지 버튼 개수
+            int boardLimit = 10; // 한 페이지에 보여줄 예약 수
             
-            // 승인/거절된 PT 예약 조회
-            List<com.kh.gymhub.model.vo.PtReserve> approvedOrRejectedPtReserves = ptReserveService.getApprovedOrRejectedPtReservesByGymNo(gymNo);
+            if ("pending".equals(tab)) {
+                // 대기중인 PT 예약 페이징
+                Integer listCount = ptReserveService.getPendingPtReserveCountByGymNo(gymNo);
+                if (listCount == null) {
+                    listCount = 0;
+                }
+                
+                com.kh.gymhub.common.vo.PageInfo pi = new com.kh.gymhub.common.vo.PageInfo(currentPage, listCount, pageLimit, boardLimit);
+                
+                int startRow = (pi.getCurrentPage() - 1) * pi.getBoardLimit() + 1;
+                int endRow = startRow + pi.getBoardLimit() - 1;
+                
+                List<com.kh.gymhub.model.vo.PtReserve> pendingPtReserves = ptReserveService.getPendingPtReservesByGymNoPaged(gymNo, startRow, endRow);
+                
+                model.addAttribute("pendingPtReserves", pendingPtReserves != null ? pendingPtReserves : new ArrayList<>());
+                model.addAttribute("pendingPi", pi);
+            } else {
+                // 승인/거절된 PT 예약 페이징
+                Integer listCount = ptReserveService.getApprovedOrRejectedPtReserveCountByGymNo(gymNo);
+                if (listCount == null) {
+                    listCount = 0;
+                }
+                
+                com.kh.gymhub.common.vo.PageInfo pi = new com.kh.gymhub.common.vo.PageInfo(currentPage, listCount, pageLimit, boardLimit);
+                
+                int startRow = (pi.getCurrentPage() - 1) * pi.getBoardLimit() + 1;
+                int endRow = startRow + pi.getBoardLimit() - 1;
+                
+                List<com.kh.gymhub.model.vo.PtReserve> approvedOrRejectedPtReserves = ptReserveService.getApprovedOrRejectedPtReservesByGymNoPaged(gymNo, startRow, endRow);
+                
+                model.addAttribute("approvedOrRejectedPtReserves", approvedOrRejectedPtReserves != null ? approvedOrRejectedPtReserves : new ArrayList<>());
+                model.addAttribute("approvedPi", pi);
+            }
             
-            model.addAttribute("pendingPtReserves", pendingPtReserves != null ? pendingPtReserves : new ArrayList<>());
-            model.addAttribute("approvedOrRejectedPtReserves", approvedOrRejectedPtReserves != null ? approvedOrRejectedPtReserves : new ArrayList<>());
+            model.addAttribute("currentTab", tab);
             
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("pendingPtReserves", new ArrayList<>());
             model.addAttribute("approvedOrRejectedPtReserves", new ArrayList<>());
+            com.kh.gymhub.common.vo.PageInfo defaultPi = new com.kh.gymhub.common.vo.PageInfo(1, 0, 10, 10);
+            if ("pending".equals(tab)) {
+                model.addAttribute("pendingPi", defaultPi);
+            } else {
+                model.addAttribute("approvedPi", defaultPi);
+            }
         }
         
         return "gym/gymPtBoard";
@@ -399,9 +438,10 @@ public class GymController {
         }
         
         try {
-            // 해당 헬스장의 회원 목록 조회
+            // 전체 회원 목록 조회 (페이징 없음)
             List<MemberWithMembership> members = membershipMapper.selectMembersWithMembershipByGymNo(gymNo);
-            model.addAttribute("members", members);
+            
+            model.addAttribute("members", members != null ? members : new java.util.ArrayList<>());
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("members", new java.util.ArrayList<>());

@@ -267,6 +267,43 @@
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
+                
+                <!-- 페이징 -->
+                <c:if test="${not empty pi}">
+                    <div class="pagination">
+                        <!-- 이전 버튼 -->
+                        <c:if test="${pi.currentPage > 1}">
+                            <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/reservation.gym?currentPage=${pi.currentPage - 1}'">
+                                이전
+                            </button>
+                        </c:if>
+                        <c:if test="${pi.currentPage <= 1}">
+                            <button class="pagination-btn disabled">이전</button>
+                        </c:if>
+                        
+                        <!-- 페이지 번호 버튼 -->
+                        <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
+                            <c:if test="${p == pi.currentPage}">
+                                <button class="pagination-btn active">${p}</button>
+                            </c:if>
+                            <c:if test="${p != pi.currentPage}">
+                                <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/reservation.gym?currentPage=${p}'">
+                                    ${p}
+                                </button>
+                            </c:if>
+                        </c:forEach>
+                        
+                        <!-- 다음 버튼 -->
+                        <c:if test="${pi.currentPage < pi.maxPage}">
+                            <button class="pagination-btn" onclick="location.href='${pageContext.request.contextPath}/reservation.gym?currentPage=${pi.currentPage + 1}'">
+                                다음
+                            </button>
+                        </c:if>
+                        <c:if test="${pi.currentPage >= pi.maxPage}">
+                            <button class="pagination-btn disabled">다음</button>
+                        </c:if>
+                    </div>
+                </c:if>
             </div>
         </div>
     </div>

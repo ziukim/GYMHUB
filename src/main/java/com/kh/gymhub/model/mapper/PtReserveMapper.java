@@ -37,5 +37,17 @@ public interface PtReserveMapper {
     
     // 날짜별 트레이너별 승인된 PT 예약 조회 (PT_TRAINER_NO 기반)
     List<PtReserve> selectApprovedPtReservesByTrainerNoAndDate(@Param("ptTrainerNo") int ptTrainerNo, @Param("reserveDate") String reserveDate);
+    
+    // 대기중인 PT 예약 조회 (페이징)
+    List<PtReserve> selectPendingPtReservesByGymNoPaged(@Param("gymNo") int gymNo, @Param("startRow") int startRow, @Param("endRow") int endRow);
+    
+    // 대기중인 PT 예약 수 조회 (페이징용)
+    Integer selectPendingPtReserveCountByGymNo(@Param("gymNo") int gymNo);
+    
+    // 승인됨/거절됨 PT 예약 조회 (페이징)
+    List<PtReserve> selectApprovedOrRejectedPtReservesByGymNoPaged(@Param("gymNo") int gymNo, @Param("startRow") int startRow, @Param("endRow") int endRow);
+    
+    // 승인됨/거절됨 PT 예약 수 조회 (페이징용)
+    Integer selectApprovedOrRejectedPtReserveCountByGymNo(@Param("gymNo") int gymNo);
 }
 
