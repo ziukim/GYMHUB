@@ -89,7 +89,7 @@ CREATE TABLE GYM (
     GYM_NO NUMBER NOT NULL,
     GYM_NAME VARCHAR2(200) NOT NULL,
     GYM_OWNER VARCHAR2(100) NOT NULL,
-    GYM_PHONE NUMBER NOT NULL,
+    GYM_PHONE VARCHAR2(20) NOT NULL,
     GYM_ADDRESS VARCHAR2(500) NOT NULL,
     STATUS VARCHAR2(1) DEFAULT 'Y' NOT NULL,
     GYM_CREATEAT DATE DEFAULT SYSDATE NOT NULL,
@@ -651,14 +651,14 @@ INSERT INTO STOCK VALUES (SEQ_STOCK_ID.NEXTVAL, '손목 보호대', 35, 18000);
 -- ============================================
 
 -- 3. GYM (헬스장센터) - 대부분 NOT NULL
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '강남 피트니스', '김대표', 0212341234, '서울 강남구 테헤란로 123', 'Y', SYSDATE, SYSDATE, '/images/gym1.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '홍대 헬스클럽', '이사장', 0223452345, '서울 마포구 홍익로 456', 'Y', SYSDATE, SYSDATE, '/images/gym2.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '판교 스포츠센터', '박원장', 0334563456, '경기 성남시 분당구 판교로 789', 'Y', SYSDATE, SYSDATE, '/images/gym3.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '잠실 휘트니스', '최관장', 0245674567, '서울 송파구 올림픽로 321', 'Y', SYSDATE, SYSDATE, '/images/gym4.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '신촌 짐', '정대표', 0256785678, '서울 서대문구 신촌로 654', 'Y', SYSDATE, SYSDATE, '/images/gym5.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '수원 스포츠클럽', '강사장', 0317896789, '경기 수원시 영통구 광교로 987', 'Y', SYSDATE, SYSDATE, '/images/gym6.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '분당 헬스장', '조원장', 0318907890, '경기 성남시 분당구 정자로 147', 'Y', SYSDATE, SYSDATE, '/images/gym7.jpg');
-INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '일산 피트니스', '윤관장', 0319018901, '경기 고양시 일산동구 중앙로 258', 'Y', SYSDATE, SYSDATE, '/images/gym8.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '강남 피트니스', '김대표', '02-1234-1234', '서울 강남구 테헤란로 123', 'Y', SYSDATE, SYSDATE, '/images/gym1.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '홍대 헬스클럽', '이사장', '02-2345-2345', '서울 마포구 홍익로 456', 'Y', SYSDATE, SYSDATE, '/images/gym2.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '판교 스포츠센터', '박원장', '031-3456-3456', '경기 성남시 분당구 판교로 789', 'Y', SYSDATE, SYSDATE, '/images/gym3.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '잠실 휘트니스', '최관장', '02-4567-4567', '서울 송파구 올림픽로 321', 'Y', SYSDATE, SYSDATE, '/images/gym4.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '신촌 짐', '정대표', '02-5678-5678', '서울 서대문구 신촌로 654', 'Y', SYSDATE, SYSDATE, '/images/gym5.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '수원 스포츠클럽', '강사장', '031-789-6789', '경기 수원시 영통구 광교로 987', 'Y', SYSDATE, SYSDATE, '/images/gym6.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '분당 헬스장', '조원장', '031-890-7890', '경기 성남시 분당구 정자로 147', 'Y', SYSDATE, SYSDATE, '/images/gym7.jpg');
+INSERT INTO GYM VALUES (SEQ_GYM_NO.NEXTVAL, '일산 피트니스', '윤관장', '031-901-8901', '경기 고양시 일산동구 중앙로 258', 'Y', SYSDATE, SYSDATE, '/images/gym8.jpg');
 
 -- 4. ATT_CACHE (출결캐싱) - 각 헬스장별 2일치 시간대별 혼잡도 데이터
 -- 헬스장 1번 (강남 피트니스) - 어제
@@ -1139,3 +1139,5 @@ LEFT JOIN MEMBER M ON G.GYM_NO = M.GYM_NO
 WHERE M.MEMBER_TYPE = 1
 GROUP BY G.GYM_NAME
 ORDER BY COUNT(M.MEMBER_NO) DESC;
+
+ALTER TABLE GYM MODIFY GYM_PHONE VARCHAR2(20);
