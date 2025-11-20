@@ -209,10 +209,23 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
         }
 
         .preview-image.show {
             display: block;
+        }
+
+        .upload-placeholder {
+            position: relative;
+            z-index: 1;
+        }
+
+        .upload-placeholder.hidden {
+            display: none;
         }
 
         .hidden {
@@ -342,9 +355,9 @@
                     </div>
 
                     <div class="equipment-content">
-                        <div class="image-upload-area" onclick="document.getElementById('imageInput1').click()">
+                        <div class="image-upload-area" data-item-id="1">
                             <img id="previewImage1" class="preview-image" alt="미리보기">
-                            <div id="uploadPlaceholder1">
+                            <div id="uploadPlaceholder1" class="upload-placeholder">
                                 <div class="upload-icon">
                                     <img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 48px; height: 48px;">
                                 </div>
@@ -352,7 +365,7 @@
                                 <div class="upload-subtext">JPG, PNG 파일 (최대 10MB)</div>
                             </div>
                         </div>
-                        <input type="file" id="imageInput1" class="hidden" accept="image/*" onchange="handleImageUpload(this, 1)" required>
+                        <input type="file" id="imageInput1" class="hidden" accept="image/*" data-item-id="1" required>
 
                         <div class="form-grid">
                             <div class="form-group">
@@ -395,9 +408,9 @@
             '<span class="equipment-number">기구 #' + equipmentCount + '</span>' +
             '</div>' +
             '<div class="equipment-content">' +
-            '<div class="image-upload-area" onclick="document.getElementById(\'imageInput' + equipmentCount + '\').click()">' +
+            '<div class="image-upload-area" data-item-id="' + equipmentCount + '">' +
             '<img id="previewImage' + equipmentCount + '" class="preview-image" alt="미리보기">' +
-            '<div id="uploadPlaceholder' + equipmentCount + '">' +
+            '<div id="uploadPlaceholder' + equipmentCount + '" class="upload-placeholder">' +
             '<div class="upload-icon">' +
             '<img src="${pageContext.request.contextPath}/resources/images/icon/image.png" alt="이미지" style="width: 48px; height: 48px;">' +
             '</div>' +
@@ -405,7 +418,7 @@
             '<div class="upload-subtext">JPG, PNG 파일 (최대 10MB)</div>' +
             '</div>' +
             '</div>' +
-            '<input type="file" id="imageInput' + equipmentCount + '" class="hidden" accept="image/*" onchange="handleImageUpload(this, ' + equipmentCount + ')" required>' +
+            '<input type="file" id="imageInput' + equipmentCount + '" class="hidden" accept="image/*" data-item-id="' + equipmentCount + '" required>' +
             '<div class="form-grid">' +
             '<div class="form-group">' +
             '<label class="form-label">머신 이름<span class="required">*</span></label>' +
@@ -421,6 +434,18 @@
         
         newItem.innerHTML = itemHTML;
         container.appendChild(newItem);
+
+        // 이미지 업로드 영역 클릭 이벤트 연결
+        var uploadArea = newItem.querySelector('.image-upload-area');
+        var imageInput = newItem.querySelector('#imageInput' + equipmentCount);
+        uploadArea.addEventListener('click', function() {
+            imageInput.click();
+        });
+
+        // 파일 선택 이벤트 연결
+        imageInput.addEventListener('change', function() {
+            handleImageUpload(this, equipmentCount);
+        });
 
         newItem.style.opacity = '0';
         newItem.style.transform = 'translateY(20px)';
@@ -471,11 +496,17 @@
             reader.onload = function(e) {
                 var previewImage = document.getElementById('previewImage' + itemNumber);
                 var uploadPlaceholder = document.getElementById('uploadPlaceholder' + itemNumber);
+                
+                if (!previewImage || !uploadPlaceholder) {
+                    console.error('이미지 미리보기 요소를 찾을 수 없습니다. itemNumber: ' + itemNumber);
+                    return;
+                }
+
                 var uploadArea = previewImage.parentElement;
 
                 previewImage.src = e.target.result;
                 previewImage.classList.add('show');
-                uploadPlaceholder.style.display = 'none';
+                uploadPlaceholder.classList.add('hidden');
                 uploadArea.classList.add('has-image');
             };
             reader.readAsDataURL(file);
@@ -612,8 +643,9 @@
         processNext();
     }
 
-    // 입력 필드 포커스 효과
+    // 입력 필드 포커스 효과 및 이미지 업로드 영역 이벤트 초기화
     document.addEventListener('DOMContentLoaded', function() {
+        // 입력 필드 포커스 효과
         var inputs = document.querySelectorAll('.form-input');
         for (var i = 0; i < inputs.length; i++) {
             inputs[i].addEventListener('focus', function() {
@@ -621,6 +653,18 @@
             });
             inputs[i].addEventListener('blur', function() {
                 this.style.transform = 'scale(1)';
+            });
+        }
+
+        // 첫 번째 기구의 이미지 업로드 영역 클릭 이벤트 연결
+        var firstUploadArea = document.querySelector('.image-upload-area[data-item-id="1"]');
+        var firstImageInput = document.getElementById('imageInput1');
+        if (firstUploadArea && firstImageInput) {
+            firstUploadArea.addEventListener('click', function() {
+                firstImageInput.click();
+            });
+            firstImageInput.addEventListener('change', function() {
+                handleImageUpload(this, 1);
             });
         }
     });
