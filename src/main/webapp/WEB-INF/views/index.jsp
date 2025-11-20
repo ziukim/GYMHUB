@@ -1194,11 +1194,17 @@
                                     <div class="gym-title">${gym.gymName}</div>
                                     <div class="gym-location">
                                         <c:choose>
+                                            <c:when test="${not empty gym.gymAddress && not empty gym.detailAddress}">
+                                                ${gym.gymAddress}, ${gym.detailAddress}
+                                            </c:when>
+                                            <c:when test="${not empty gym.gymAddress}">
+                                                ${gym.gymAddress}
+                                            </c:when>
                                             <c:when test="${not empty gym.detailAddress}">
                                                 ${gym.detailAddress}
                                             </c:when>
                                             <c:otherwise>
-                                                ${gym.gymAddress}
+                                                주소 정보 없음
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
@@ -1875,8 +1881,21 @@
                     if (gymDetailTitle) gymDetailTitle.textContent = gym.gymName || '헬스장';
                     if (gymDetailDescription) gymDetailDescription.textContent = gymDetail.intro || gym.intro || '소개 정보가 없습니다.';
 
-                    // 주소 설정 (detailAddress가 있으면 우선, 없으면 gymAddress)
-                    const address = gymDetail.detailAddress || gym.gymAddress || '주소 정보 없음';
+                    // 주소 설정 (gymAddress와 detailAddress를 모두 표시)
+                    let address = '';
+                    if (gym.gymAddress && gymDetail.detailAddress) {
+                        // 둘 다 있으면 함께 표시
+                        address = gym.gymAddress + ', ' + gymDetail.detailAddress;
+                    } else if (gym.gymAddress) {
+                        // gymAddress만 있으면
+                        address = gym.gymAddress;
+                    } else if (gymDetail.detailAddress) {
+                        // detailAddress만 있으면
+                        address = gymDetail.detailAddress;
+                    } else {
+                        // 둘 다 없으면
+                        address = '주소 정보 없음';
+                    }
                     const gymDetailAddress = document.getElementById('gymDetailAddress');
                     if (gymDetailAddress) gymDetailAddress.textContent = address;
 
