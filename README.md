@@ -330,17 +330,55 @@ GYMHUB/
 
 ## 📸 화면 미리보기 (Preview)
 
-| 기능 | 설명 |
-|------|-----------|
-| 메인 페이지 | 헬스장 목록 조회 및 검색 |
-| 회원 대시보드 | 회원 정보, 출결 현황, 회원권 정보 |
-| 트레이너 대시보드 | PT 일정, 회원 관리 |
-| 헬스장 운영자 대시보드 | 매출 통계, 회원 현황, 기구 관리 |
-| PT 예약 | PT 이용권 구매 및 예약 |
-| 출결 관리 | 입실/퇴실 기록 및 통계 |
-| 락커 관리 | 락커 배정 및 상태 관리 |
+### 🏠 메인 페이지 및 공통 기능
 
-> **참고**: 실제 화면 캡처 이미지는 추후 추가 예정입니다.
+| 화면 | 설명 | 이미지 |
+|------|------|--------|
+| 메인 페이지 | 헬스장 목록 조회 및 검색 | ![메인 페이지](./src/main/webapp/resources/previewImages/index.png) |
+| 헬스장 상세 모달 | 헬스장 상세 정보, 시설, 혼잡도 조회 | ![헬스장 상세 모달](./src/main/webapp/resources/previewImages/index-detailmodal.png) |
+| 로그인 필요 모달 | 로그인 필요 시 표시되는 모달 | ![로그인 필요](./src/main/webapp/resources/previewImages/login-required.png) |
+| 방문 예약 | 헬스장 방문 예약 신청 | ![방문 예약](./src/main/webapp/resources/previewImages/booking.png) |
+| 회원가입 (일반 회원) | 일반 회원 회원가입 | ![회원가입](./src/main/webapp/resources/previewImages/enroll-member.png) |
+| 회원가입 (트레이너) | 트레이너 회원가입 | ![트레이너 회원가입](./src/main/webapp/resources/previewImages/eneoll-trainer.png) |
+| 회원가입 (헬스장 운영자) | 헬스장 운영자 회원가입 | ![헬스장 운영자 회원가입](./src/main/webapp/resources/previewImages/enroll-gym.png) |
+| 헬스장 미등록 회원 | 헬스장에 등록되지 않은 회원 화면 | ![헬스장 미등록 회원](./src/main/webapp/resources/previewImages/none-gym-member.png) |
+
+### 👤 회원 기능
+
+| 화면 | 설명 | 이미지 |
+|------|------|--------|
+| 회원 대시보드 | 회원 정보, 출결 현황, 회원권 정보 | ![회원 대시보드](./src/main/webapp/resources/previewImages/member-dashboard.png) |
+| 회원 정보 | 회원 정보 조회 및 수정 | ![회원 정보](./src/main/webapp/resources/previewImages/memberInfo.png) |
+| PT 예약 | PT 이용권 구매 및 예약 | ![PT 예약](./src/main/webapp/resources/previewImages/pt-booking.png) |
+| PT 스케줄 | 회원의 PT 일정 조회 | ![PT 스케줄](./src/main/webapp/resources/previewImages/pt-스케줄.png) |
+
+### 🏋️ 트레이너 기능
+
+| 화면 | 설명 | 이미지 |
+|------|------|--------|
+| 트레이너 대시보드 | PT 일정, 회원 관리 | ![트레이너 대시보드](./src/main/webapp/resources/previewImages/trainer-dashboard.png) |
+| 트레이너 PT 스케줄 | 트레이너의 PT 일정 관리 | ![트레이너 PT 스케줄](./src/main/webapp/resources/previewImages/trainer-pt-스케줄.png) |
+
+### 🏢 헬스장 운영자 기능
+
+| 화면 | 설명 | 이미지 |
+|------|------|--------|
+| 헬스장 선택 | 헬스장 운영자 메뉴 선택 | ![헬스장 선택](./src/main/webapp/resources/previewImages/select-gym.png) |
+| 헬스장 대시보드 | 매출 통계, 회원 현황, 기구 관리 | ![헬스장 대시보드](./src/main/webapp/resources/previewImages/gym-dashboard.png) |
+| 출결 체크 | 회원 입실/퇴실 관리 | ![출결 체크](./src/main/webapp/resources/previewImages/check-in.png) |
+| 회원 관리 | 회원 목록 조회 및 관리 | ![회원 관리](./src/main/webapp/resources/previewImages/gym-member-management.png) |
+| 회원 등록 | 신규 회원 등록 | ![회원 등록](./src/main/webapp/resources/previewImages/gym-member-enroll.png) |
+| 트레이너 관리 | 트레이너 목록 조회 및 관리 | ![트레이너 관리](./src/main/webapp/resources/previewImages/gym-trainer-manage.png) |
+| 회원권 관리 | 회원권 상품 관리 | ![회원권 관리](./src/main/webapp/resources/previewImages/gym-membership.png) |
+| PT 보드 | PT 예약 현황 관리 | ![PT 보드](./src/main/webapp/resources/previewImages/gym-ptboard.png) |
+| 방문 예약 관리 | 방문 예약 목록 및 승인 관리 | ![방문 예약 관리](./src/main/webapp/resources/previewImages/gym-booking-manage.png) |
+| 공지사항 관리 | 공지사항 등록 및 관리 | ![공지사항 관리](./src/main/webapp/resources/previewImages/gym-notice.png) |
+| 유튜브 영상 관리 | 운동 영상 URL 관리 | ![유튜브 영상 관리](./src/main/webapp/resources/previewImages/gym-youtube.png) |
+| 헬스장 상세 정보 | 헬스장 정보 및 시설 관리 | ![헬스장 상세 정보](./src/main/webapp/resources/previewImages/gym-detail-form.png) |
+| 기구 등록 | 운동 기구 등록 및 관리 | ![기구 등록](./src/main/webapp/resources/previewImages/gym-machine-enroll.png) |
+| 재고 관리 | 재고 물품 입출고 관리 | ![재고 관리](./src/main/webapp/resources/previewImages/gym-stock-manage.png) |
+| 매출 관리 | 매출 통계 및 현황 조회 | ![매출 관리](./src/main/webapp/resources/previewImages/gym-sales.png) |
+| 시설 관리 | 헬스장 시설 정보 관리 | ![시설 관리](./src/main/webapp/resources/previewImages/gym-fa.png) |
 
 ## 💡 학습 포인트 (Learning Points)
 
