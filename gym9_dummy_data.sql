@@ -48,7 +48,7 @@ COMMIT;
 
 -- 1. GYM_DETAIL (헬스장 상세정보) - 없으면 생성
 INSERT INTO GYM_DETAIL (GYM_DETAIL_NO, INTRO, FACILITIES_INFO, DETAIL_ADDRESS, WEEK_BUSINESS_HOUR, WEEKEND_BUSINESS_HOUR, GYM_NO)
-SELECT SEQ_GYM_DETAIL_NO.NEXTVAL, '해운대 해변가 프리미엄 피트니스 센터', '주차장,샤워실,락커룸,사우나,GX프로그램,PT,24시간', '부산 해운대구 해운대해변로 264, 3-4층', '06:00-24:00', '08:00-22:00', 9
+SELECT SEQ_GYM_DETAIL_NO.NEXTVAL, '해운대 해변가 프리미엄 피트니스 센터', '주차가능,샤워실,락커실,사우나,GX 프로그램,PT,24시간', '부산 해운대구 해운대해변로 264, 3-4층', '06:00-24:00', '08:00-22:00', 9
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM GYM_DETAIL WHERE GYM_NO = 9);
 
@@ -489,3 +489,24 @@ SELECT '인바디 기록: 약 200건' AS INFO FROM DUAL;
 SELECT '목표 관리: 약 150건' AS INFO FROM DUAL;
 SELECT '방문 예약: 약 20건' AS INFO FROM DUAL;
 SELECT '총 매출 건수: 약 90건 (회원권 70건 + PT 20건)' AS INFO FROM DUAL;
+
+
+
+UPDATE GYM_DETAIL
+SET FACILITIES_INFO = REPLACE(
+    REPLACE(
+        REPLACE(FACILITIES_INFO, '주차장', '주차가능'),
+        '락커룸', '락커실'
+    ),
+    'GX프로그램', 'GX 프로그램'
+)
+WHERE FACILITIES_INFO LIKE '%주차장%'
+   OR FACILITIES_INFO LIKE '%락커룸%'
+   OR FACILITIES_INFO LIKE '%GX프로그램%';
+
+COMMIT;
+
+-- 확인 쿼리 (수정 후 확인용)
+SELECT GYM_NO, FACILITIES_INFO
+FROM GYM_DETAIL
+WHERE FACILITIES_INFO IS NOT NULL;
