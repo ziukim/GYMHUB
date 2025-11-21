@@ -534,7 +534,7 @@ GYMHUB/
 - `LOCKER`: 락커 정보
 - `LOCKER_PASS`: 락커 이용권
 - `ATTENDANCE`: 출결 정보
-- `ATT_CACHE`: 출결 캐시 (실시간 혼잡도)
+- `ATT_CACHE`: 출결 캐시 (평균 혼잡도)
 - `MACHINE`: 기구 정보
 - `MACHINE_MANAGE`: 기구 관리 정보
 - `STOCK`: 재고 물품
