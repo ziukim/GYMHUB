@@ -463,7 +463,10 @@ GYMHUB/
 
 자세한 데이터베이스 구조는 `gymhub.sql` 파일을 참고하세요.
 
-![Uploading GYMhub (3).png…]()
+### 📊 ERD (Entity Relationship Diagram)
+
+![GymHub ERD](./src/main/webapp/resources/previewImages/GYMhub%20(3).png)
+
 
 
 ## 🚧 개발 환경 요구사항
